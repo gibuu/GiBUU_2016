@@ -1,0 +1,3 @@
+SUBDIREXCL :=
+FILEEXCL :=test.f90 printTable.f90 testHagedornstate.f90
+EXEFILE :=testHagedornstate.f90
