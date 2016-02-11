@@ -29,7 +29,7 @@ module expNeutrinofluxes
   public ::  LBNEenergyNU
   public ::  LBNEenergyBARNU
   public ::  LBNOenergyNU
-  public ::  NOMADenergyNU 
+  public ::  NOMADenergyNU
   public ::  BNBenergyNUe, BNBenergyNUebar,  BNBenergyNUmu, BNBenergyNUmubar
 
   logical, save :: firsttime=.true.
@@ -46,7 +46,7 @@ module expNeutrinofluxes
   !
   real, save    :: Eb=0.034
   ! PURPOSE
-  ! contant binding energy used for energy and Q2 reconstruction based on 
+  ! contant binding energy used for energy and Q2 reconstruction based on
   ! QE scattering kinematics
   !
   !***************************************************************************
@@ -258,12 +258,12 @@ contains
   ! real function MiniBooNEenergyBARNU()
   !
   ! PURPOSE
-  ! This function gives back the antineutrino energy for the MiniBooNE 
+  ! This function gives back the antineutrino energy for the MiniBooNE
   ! experiment in antineutrino mode (=negartive polarity).
   ! It determines the energy randomly weighted with the flux.
   ! Flux is taken from  http://www-boone.fnal.gov/for_physicists/data_release/flux/
   ! paper for reference
-  ! A. A. Aguilar-Arevalo et al., "The Neutrino Flux Prediction at MiniBooNE" 
+  ! A. A. Aguilar-Arevalo et al., "The Neutrino Flux Prediction at MiniBooNE"
   ! Phys. Rev. D. 79, 072002 (2009)
   !*************************************************************************
   real function MiniBooNEenergyBARNU()
@@ -302,7 +302,7 @@ contains
     end if
 
     do
-       z=rn() ! if z< 1.5*1.731/(1.5*1.731 + 2.5*0.219)=0.82585878 
+       z=rn() ! if z< 1.5*1.731/(1.5*1.731 + 2.5*0.219)=0.82585878
               ! generate flux below 1.525 GeV, otherwise above
        if (z<0.82585878) then
           enumin=0.025
@@ -350,18 +350,18 @@ contains
 
     real, intent(in), dimension (0:3) :: k_out
     real :: mfsq,Qs_min,Qs_max
-    
-    
+
+
  !!!!
  ! Reconstruct Qs only if recEnergy within flux cuts
  !!!!
-   if(energylimit_for_Qsrec) then   
+   if(energylimit_for_Qsrec) then
     if(CCQE_recEnergy(k_out) <  Enu_lower_cut   &
        & .or. CCQE_recEnergy(k_out) >  Enu_upper_cut) then
        CCQE_recQs=30.                        ! 30 = arbitrary, unphysically high value
-    end if  
-   end if  
- 
+    end if
+   end if
+
     mfsq=max(SP(k_out,k_out),0.)
     CCQE_recQs=-mfsq+2.*CCQE_recEnergy(k_out)*(k_out(0)-k_out(3))
 
@@ -862,7 +862,7 @@ contains
     character(100) :: fileName
     integer :: status
   ! dimension= max number of energy values in flux file
-    real, dimension(220),save :: enu, flux
+    real, dimension(221),save :: enu, flux
     integer :: j,jmax
 
     !athmospheric oscillation parameters
@@ -889,7 +889,7 @@ contains
              write(*,*)'error reading file'
              stop
           else
-             write(*,*)'file read sucessful'
+             write(*,*)'file read sucessful, jmax=',jmax
           end if
        else
           write(*,*)'problems with file'
@@ -912,13 +912,13 @@ contains
        x=enumin+v*(enumax-enumin)
 
 
-       j=1
+       j=2 ! avoid interpolation problems!
        do
           if(x.lt.enu(j)) exit
           j=j+1
        end do
-
        y = flux(j-1) + (x - enu(j-1))*(flux(j)-flux(j-1))/(enu(j)-enu(j-1))
+
        if(w.lt.y/ymax) exit
     end do
     T2K_ND_numu_energy=x
@@ -1352,7 +1352,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the MINERvA experiment
- ! in neutrino mode. 
+ ! in neutrino mode.
  ! Flux is obtained from B. Tice, June 2013
  !*************************************************************************
  real function MINERVAenergyNU()
@@ -1394,7 +1394,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled antineutrino energy for the MINERvA experiment
- ! in antineutrino mode. 
+ ! in antineutrino mode.
  ! Flux is obtained from B. Tice, June 2013
  !*************************************************************************
  real function MINERVAenergyBARNU()
@@ -1436,7 +1436,7 @@ contains
   !
   ! PURPOSE
   ! This function returns the sampled neutrino energy for the LBNE  experiment
-  ! in neutrino mode. 
+  ! in neutrino mode.
   ! Flux is obtained from P. Huber, Virginia Tech, March 2013
   !*************************************************************************
   real function LBNEenergyNU()
@@ -1473,7 +1473,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled antineutrino energy for the LBNE experiment
- ! in antineutrino mode. 
+ ! in antineutrino mode.
  ! Flux is obtained from P. Huber, Virginia Tech, March 2013
  !*************************************************************************
  real function LBNEenergyBARNU()
@@ -1502,7 +1502,7 @@ contains
      LBNEenergyBARNU = eneut(NDIM,jmax,sumflux,enu)
 
  end function LBNEenergyBARNU
- 
+
  !*************************************************************************
  !****f* expNeutrinofluxes/LBNOenergyNU
  ! NAME
@@ -1510,7 +1510,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the LBNO  experiment
- ! in antineutrino mode. 
+ ! in antineutrino mode.
  ! Flux is obtained from Dario Autiero, May 2014
  !*************************************************************************
  real function LBNOenergyNU()
@@ -1538,8 +1538,8 @@ contains
 
      LBNOenergyNU = eneut(NDIM,jmax,sumflux,enu)
 
- end function LBNOenergyNU   
- 
+ end function LBNOenergyNU
+
  !*************************************************************************
  !****f* expNeutrinofluxes/NOMADenergyNU
  ! NAME
@@ -1547,7 +1547,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the NOMAD  experiment
- ! in antineutrino mode. 
+ ! in antineutrino mode.
  ! Flux is obtained from Roberto Petti, Jan.  2014
  !*************************************************************************
  real function NOMADenergyNU()
@@ -1575,8 +1575,8 @@ contains
 
      NOMADenergyNU = eneut(NDIM,jmax,sumflux,enu)
 
- end function NOMADenergyNU  
- 
+ end function NOMADenergyNU
+
  !*************************************************************************
  !****f* expNeutrinofluxes/BNBenergyNUe
  ! NAME
@@ -1584,7 +1584,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the BNB experiment
- ! in electron-neutrino mode. 
+ ! in electron-neutrino mode.
  ! Flux is obtained from Anne Schukraft, December 2015
  !*************************************************************************
  real function BNBenergyNUe()
@@ -1612,8 +1612,8 @@ contains
 
      BNBenergyNUe = eneut(NDIM,jmax,sumflux,enu)
 
- end function BNBenergyNUe      
- 
+ end function BNBenergyNUe
+
  !*************************************************************************
  !****f* expNeutrinofluxes/BNBenergyNUebar
  ! NAME
@@ -1621,7 +1621,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the BNB experiment
- ! in electron-antineutrino mode. 
+ ! in electron-antineutrino mode.
  ! Flux is obtained from Anne Schukraft, December 2015
  !*************************************************************************
  real function BNBenergyNUebar()
@@ -1650,7 +1650,7 @@ contains
      BNBenergyNUebar = eneut(NDIM,jmax,sumflux,enu)
 
  end function BNBenergyNUebar
- 
+
   !*************************************************************************
  !****f* expNeutrinofluxes/BNBenergyNUmu
  ! NAME
@@ -1658,7 +1658,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the BNB experiment
- ! in muon-neutrino mode. 
+ ! in muon-neutrino mode.
  ! Flux is obtained from Anne Schukraft, December 2015
  !*************************************************************************
  real function BNBenergyNUmu()
@@ -1686,7 +1686,7 @@ contains
 
      BNBenergyNUmu = eneut(NDIM,jmax,sumflux,enu)
 
- end function BNBenergyNUmu     
+ end function BNBenergyNUmu
 
  !*************************************************************************
  !****f* expNeutrinofluxes/BNBenergyNUmubar
@@ -1695,7 +1695,7 @@ contains
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the BNB experiment
- ! in muon-antineutrino mode. 
+ ! in muon-antineutrino mode.
  ! Flux is obtained from Anne Schukraft, December 2015
  !*************************************************************************
  real function BNBenergyNUmubar()
@@ -1723,9 +1723,8 @@ contains
 
      BNBenergyNUmubar = eneut(NDIM,jmax,sumflux,enu)
 
- end function BNBenergyNUmubar     
-       
-  
+ end function BNBenergyNUmubar
+
+
 
  end module expNeutrinofluxes
-

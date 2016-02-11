@@ -22,8 +22,8 @@
 !
 ! for kinetic energy distribution of pions see diff_000_dSigma_dEkin_pi_charge..... .dat  (1 pion in the final state )
 ! for kinetic energy distribution of nucleons see diff_000_dSigma_dEkin_N_charge..... .dat  (1 pion in the final state )
-! for kinetic energy distribution of kaons see diff_000_dSigma_dEkin_K_charge..... .dat  (1 pion in the final state )  
-!       these files will only be in output if in the namelist &detailed_diff  you set forkaon=.true. 
+! for kinetic energy distribution of kaons see diff_000_dSigma_dEkin_K_charge..... .dat  (1 pion in the final state )
+!       these files will only be in output if in the namelist &detailed_diff  you set forkaon=.true.
 !       the same applies for eta, antikaons, Lambda and Sigma hyperons
 ! to change the maximal kinetic energy (in the output file only) and binning, change ekinMax and dEkin  in the same namelist
 !
@@ -48,7 +48,7 @@
 &neutrino_induced
        process_ID      =  2 ! 2:CC, 3:NC, -2:antiCC, -3:antiNC
        flavor_ID       =  2 ! 1:electron, 2:muon, 3:tau
-!	  
+!
 
 !       nuXsectionMode  =  0 !  0: integratedSigma
 !       nuXsectionMode  =  1 !  1: dSigmadCosThetadElepton
@@ -66,14 +66,14 @@
 !       nuXsectionMode  = 15 ! 15: EXP_dSigmadElepton
 !       nuXsectionMode  = 16 ! 16: EXP_dSigmaMC
 !       nuXsectionMode  = 17 ! 17: EXP_dSigmadW
- 
-!   for calculations with given, fixed neutrino energy 
-!       nuXsectionMode  =  6 !  6: dSigmaMC 
+
+!   for calculations with given, fixed neutrino energy
+!       nuXsectionMode  =  6 !  6: dSigmaMC
 !   calculation for flux-veraged cross sections (choose with flag nuExp): above  plus 10
         nuXsectionMode  = 16 ! 16: EXP_dSigmaMC
 !
 !   The values for nuExp are ! only relevant if nuXsectionmode.ge.10
-!	   
+!
 !       nuExp           =  0 !  0: noExp
 !       nuExp           =  1 !  1: MiniBooNE-nu
 !       nuExp           =  2 !  2: ANL
@@ -92,7 +92,7 @@
 !       nuExp           = 15 ! 15: DUNE nu
 !       nuExp           = 16 ! 16: DUNE barnu
 !
-!   subprocesses to take into account      
+!   subprocesses to take into account
        includeQE       = T
        includeDELTA    = T
        includeRES      = T
@@ -106,15 +106,15 @@
 !   Flux cuts
 &nl_fluxcuts
        Enu_lower_cut    = 0.0
-       Enu_upper_cut    = 20.0 
-       energylimit_for_Qsrec = T   ! switch for using fluxcuts also in Q^2 reconstr.   
-/       
-!    
+       Enu_upper_cut    = 20.0
+       energylimit_for_Qsrec = T   ! switch for using fluxcuts also in Q^2 reconstr.
+/
+!
 
 
 
 ! file code/density/nucleus.f90
-&target     
+&target
 	target_Z=6
 	target_A=12
 	densitySwitch_Static=2          ! 0: density=0.0, 1: Wood-Saxon by Lenske, 2 : NPA 554, 3: Wood-Saxon by Lenske, different neutron and proton radii,
@@ -168,13 +168,14 @@
 
 &lepton2p2h
       ME_Version=4            ! This is the Christy model
-      
+/
+
 !****************
 ! form factors for resonance production
 !****************
 ! file code/init/lepton/formfactors_ResProd/formFactor_ResProd.f90
 &input_FF_ResProd
-  FF_ResProd=0                    ! 0=MAID in CM-frame, 1=fit of Lalakulich ,2=MAID in LAB-frame 
+  FF_ResProd=0                    ! 0=MAID in CM-frame, 1=fit of Lalakulich ,2=MAID in LAB-frame
   MA=0.95                         ! axial mass in the Delta resonance form factors based on ANL=0.95  or BNL=1.3
 /
 
@@ -194,14 +195,14 @@
 	singlePiModel=1                 ! 0 for HNV, 1 for MAID
 !	invariantMasscut=100.           ! cut events with invariant mass above
 	REScutW1=2.0                    ! these 4 parameters describe the transition
-                                  ! region in invariant mass W between the 
-                                  ! resonances and DIS, see 
-                                  ! "Lalakulich Gallmeister Mosel 
+                                  ! region in invariant mass W between the
+                                  ! resonances and DIS, see
+                                  ! "Lalakulich Gallmeister Mosel
                                   !  PRC86(2012)014607" for details
 	REScutW2=2.05
 	DIScutW1=1.6
 	DIScutW2=1.65
-!  
+!
   invariantMasscut=20.           ! mass cuts on Wrec
   invariantMassCut_BG = 20.      ! mass cuts on Wrec
 /
@@ -232,7 +233,7 @@
 
 ! file  code/analysis/neutrinoAnalysis.f90
 &neutrinoAnalysis
-	radialScale=0                   
+	radialScale=0
 	detailed_diff_output=.true.     ! differential xsec; see namelist detailed_diff for max values and bins of the histograms
 	kineticEnergyDetectionThreshold_nucleon=0.
 	kineticEnergyDetectionThreshold_chargedpion=0.
@@ -242,8 +243,8 @@
 	reconstruct_neutrino_energy=.true.  ! calculate neutrino energy reconstruction for varios final states (see nl_specificEvent)
 	specificEvent_analysis=.true.       ! extra cross sections for specific final states; see namelist nl_specificEvent
 										                  ! also provides Q2 and energy reconstruction
-	inclusiveAnalysis=.false.            !if .true. we don't care whether particles have made it out       
-	outputEvents=.true.                   ! output list of events and all outgoing particles in each event to the file FinalEvents.dat 
+	inclusiveAnalysis=.false.            !if .true. we don't care whether particles have made it out
+	outputEvents=.true.                   ! output list of events and all outgoing particles in each event to the file FinalEvents.dat
 !  AngleUpperDetectionThresholdDegrees_lepton = 20.    ! outgoing lepton acceptance cut
 !  EnergyDetectionThreshold_lepton=0.0                 ! outgoing lepton acceptance cut
 
@@ -254,7 +255,7 @@
 &W_distributions
   dW_Npi=0.02
   Wmax_Npi=2.0
-/  
+/
 
 
 ! file code/analysis/LesHouchesAnalysis.f90
@@ -293,10 +294,10 @@ $nl_specificEvent          ! any .true. in this namelist must be combines with s
 	Xn_no_pi=.true. ! specificEvent=16
 !
 !  binning for reconstruction of Q2 and Enu
-! 
+!
   binsizeQ2=0.01      ! 0.01
-  binsizeEnu=0.05     ! 0.02 
-  maxQ2=3.0           ! 5.0 for LBNE   
+  binsizeEnu=0.05     ! 0.02
+  maxQ2=3.0           ! 5.0 for LBNE
   maxEnu=10.0				  ! 5.0 for T
 /
 
@@ -319,8 +320,8 @@ $nl_specificEvent          ! any .true. in this namelist must be combines with s
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! file code/init/neutrino/matrixelement.f90
 &neutrino_matrixelement
-    which_resonanceModel=0          !0=QE + matrixelements from MAID, 
-                                    !1=QE matrixelements + old Delta, 
+    which_resonanceModel=0          !0=QE + matrixelements from MAID,
+                                    !1=QE matrixelements + old Delta,
                                     !2=Rein-Sehgal
 /
 
@@ -343,13 +344,13 @@ $nl_specificEvent          ! any .true. in this namelist must be combines with s
     mediumSwitch=.true.               ! if .false. vacuum widths will be used for all resonances
                                       ! and other switches are not meaningful/relevant
     mediumSwitch_Delta=.true.         ! Use Oset broadening of the Delta (only relevant for mediumSwitch_coll=.false.)
-    mediumSwitch_coll=.false.         ! Use collisional broadening of all resonances 
+    mediumSwitch_coll=.false.         ! Use collisional broadening of all resonances
 /
 
-&barBar_BarBar                        ! suppresses Delta excitation NN -> Delta N 
+&barBar_BarBar                        ! suppresses Delta excitation NN -> Delta N
                                       ! with density, foll. Song & Ko
   deltaN_densityDependence = F
-/ 
+/
 
 ! file  code/spectralFunctions/spectralFunc.f90
 &spectralFunction
@@ -361,7 +362,7 @@ $nl_specificEvent          ! any .true. in this namelist must be combines with s
 !################################################
 ! propagation
 !################################################
-! file  code/propagation/propagation.f90   
+! file  code/propagation/propagation.f90
 &propagation
 	delta_P=0.01                    ! Delta Momentum for derivatives
 	delta_E=0.01                    ! Delta Energy for derivatives
@@ -446,4 +447,3 @@ $nl_specificEvent          ! any .true. in this namelist must be combines with s
 &initRandom
       SEED=45678                ! Seed for the random number
 /
-
