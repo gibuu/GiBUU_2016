@@ -475,7 +475,9 @@ contains
     targetNuc%charge = Target_Z
     targetNuc%fermiMotion=fermiMotion
     targetNuc%densitySwitch_static=densitySwitch_static
-
+    
+    if (Target_A == 1) ReAdjustForConstBinding = .false.
+    
     if (ReAdjustForConstBinding) then
        write(*,*)
        write(*,*) 'We us the initial density distribution only'
