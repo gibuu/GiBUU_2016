@@ -54,10 +54,10 @@ module initHiLepton
   ! * 14: JLAB,  5GeV, rho0 experiment
   ! * 15: JLAB,  4GeV, rho0 experiment
   ! * 16: EIC, E_e and E_A given explicit (3+30,11+30,4+100)
-  ! * 17: no detector, total cross section, Ebeam 
+  ! * 17: no detector, total cross section, Ebeam
   ! * 18: E665, 470GeV
   !
-  ! please note: 
+  ! please note:
   ! The entry "iExperiment == 0" replaces the old HiPhoton event type.
   !*************************************************************************
 
@@ -75,7 +75,7 @@ module initHiLepton
   ! *  2 : EMC, full efficiency
   ! *  3 : CLAS, only cuts (th_e=12°..50°, th_hadron=6°..143°)
   ! *  4 : CLAS, full efficiency + cuts as for 5GeV
-  ! *  5 : CLAS, electron: cuts (th_e=12°..50°), 
+  ! *  5 : CLAS, electron: cuts (th_e=12°..50°),
   !              hadrons: efficiency+cuts as for 5GeV
   ! * 90 : full acceptance
   !*************************************************************************
@@ -108,7 +108,7 @@ module initHiLepton
   logical,save :: ModusCalcFluxNorm=.false.
   !
   ! PURPOSE
-  ! if this flag is true, than we do not really generate events. We only 
+  ! if this flag is true, than we do not really generate events. We only
   ! select nu and Q2 according an equal distribution and plot the flux (and
   ! the flux multiplied with AccWeight).
   ! Normally we choose nu and Q2 according flux*Accweight via von-Neumann-
@@ -150,11 +150,11 @@ module initHiLepton
   !*************************************************************************
   !****g* initHiLepton/user_ymax
   ! SOURCE
-  real :: user_ymax = -99.9 
+  real :: user_ymax = -99.9
   ! PURPOSE
   ! user given value for ymax, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_numin
   ! SOURCE
@@ -162,7 +162,7 @@ module initHiLepton
     ! PURPOSE
   ! user given value for numin, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_numax
   ! SOURCE
@@ -170,7 +170,7 @@ module initHiLepton
   ! PURPOSE
   ! user given value for numax, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_costmin
   ! SOURCE
@@ -178,7 +178,7 @@ module initHiLepton
   ! PURPOSE
   ! user given value for costmin, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_costmax
   ! SOURCE
@@ -186,27 +186,27 @@ module initHiLepton
   ! PURPOSE
   ! user given value for costmax, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_smin
   ! SOURCE
-  real :: user_smin = -99.9 
+  real :: user_smin = -99.9
   ! PURPOSE
   ! user given value for smin, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_xBmin
   ! SOURCE
-  real :: user_xBmin = -99.9 
+  real :: user_xBmin = -99.9
   ! PURPOSE
   ! user given value for xBmin, overrides default value if reasonable
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* initHiLepton/user_qsqmin
   ! SOURCE
-  real :: user_qsqmin = -99.9 
+  real :: user_qsqmin = -99.9
   ! PURPOSE
   ! user given value for qsqmin, overrides default value if reasonable
   !*************************************************************************
@@ -214,7 +214,7 @@ module initHiLepton
   !*************************************************************************
   !****g* initHiLepton/user_maxw
   ! SOURCE
-  real :: user_maxw = -99.9 
+  real :: user_maxw = -99.9
   ! PURPOSE
   ! user given value for maxw, overrides default value if reasonable
   !*************************************************************************
@@ -229,19 +229,19 @@ module initHiLepton
   ! Flag to indicate, whether we should check Pauli blocking already during
   ! generation or only at the end.
   !
-  ! if .false. (default), events will be generated in a first stage without 
+  ! if .false. (default), events will be generated in a first stage without
   ! Pauli blocking. This is then tested afterwards. If the generated event
   ! is blocked, it will be redone! Thus Pauli blocking does *not* change the
   ! total cross section, only the relative strength will be reshuffled.
   !
-  ! if .true., then blocked events will be excluded from the Monte Carlo 
+  ! if .true., then blocked events will be excluded from the Monte Carlo
   ! decision and the total cross section will be reduced.
   !
   ! NOTES
   ! The behaviour, if no event at all is possible, is at the moment a little
   ! bit unpredictable ;)
   !*************************************************************************
-  
+
   logical,save :: initFlag=.true.
 
 
@@ -323,16 +323,16 @@ contains
   ! subroutine InitHiLeptonInduced(rParts,pParts,targetNuc)
   !
   ! PURPOSE
-  ! This routine initializes the total given perturbative particle vector 
+  ! This routine initializes the total given perturbative particle vector
   ! "pParts" by calling "genHiPhotonEvent" for every nucleon given in "rParts"
   ! and inserting the output of every successful event into "pParts".
-  ! 
+  !
   ! For every incoming "photon" a new set of the kinematic variables
   ! according the constraints of the given experiment/detector is choosen.
   !
   ! Particle weights are set by the total XS of the generating event.
   !
-  ! Outgoing particles are in a system, where the (intermediate) PHOTON 
+  ! Outgoing particles are in a system, where the (intermediate) PHOTON
   ! defines the z-axis, not the (incoming) LEPTON.
   ! The scattering happens in a plane (except fermi motion), where the
   ! second momentum component (i.e. y-direction) vanishes.
@@ -437,7 +437,7 @@ contains
 
        call CreateHist2D(h2D_nuQ2_Flux, "nuQ2: Flux",P1,P2,dP,.true.)
        call CreateHist2D(h2D_nuQ2_FluxW,"nuQ2: Flux (weights)",P1,P2,dP,.true.)
-       
+
        call CreateHist2D(h2D_nuQ2(0),"nuQ2: considered",P1,P2,dP,.true.)
 !!$       call CreateHist2D(h2D_nuQ2(1),"nuQ2: 103 [phi;el]",P1,P2,dP,.true.)
 !!$       call CreateHist2D(h2D_nuQ2(2),"nuQ2: 300 [Lambda K]",P1,P2,dP,.true.)
@@ -461,7 +461,7 @@ contains
 
        call setToDefault(partPhoton)
        partPhoton%ID = 999
-       
+
        initFlag=.false.
     end if
 
@@ -495,11 +495,11 @@ contains
     end if
 
     ! setting last collision time of all target nucleons to the past:
-    
+
     rParts%lastCollisionTime = -9.9 ! DUMMY value
 
     do iEns=1,nEns
-       if (realRun) iiPart = int(rn()*nPart)+1 ! int just cuts the digits! 
+       if (realRun) iiPart = int(rn()*nPart)+1 ! int just cuts the digits!
 
 !       write(*,*) 'iiPart:',iEns,iiPart
 
@@ -534,7 +534,7 @@ contains
                 cycle ParticleLoop
              endif
           end do
-          
+
 !!$          call WriteParticle(6,iEns,iPart,target)
 !!$          call write_electronNucleon_event(eNev_RunData, .false.)
 
@@ -610,7 +610,7 @@ contains
                 if (DoPr(1)) write(*,*) 'Redo event: conservation! ',iEns,iPart
                 cycle RetryLoop
              end if
-             
+
              !...check Pauli Blocking
              flagOK = checkPauli(outPart, rParts)
              if (.not.flagOK) then
@@ -624,7 +624,7 @@ contains
           !...Give the particles their (final) number
 
           NumbersAlreadySet = AcceptGuessedNumbers()
-          
+
           posOut = 0
           if (realRun) then
              outPart%perturbative = .false.
@@ -641,7 +641,7 @@ contains
 
           call CollHist_UpdateHist((/partPhoton,target/), outPart, &
                  & (/0,0/), posOut, XS_tot)
-          
+
           iNr = iPart
           if (realRun) iNr = -1
           call EventInfo_HiLep_Store(iEns,iNr,XS_tot,nu,Q2,eps,channel,Ebeam,phiLep,W,target%position)
@@ -685,11 +685,11 @@ contains
 
           call AddHist2D(h2D_nuQ2(0),(/nu,Q2/), XS_tot)
 !!$          select case(HiPhotonEventType)
-!!$          case (103) 
+!!$          case (103)
 !!$             call AddHist2D(h2D_nuQ2(1),(/nu,Q2/), XS_tot)
-!!$          case (300) 
+!!$          case (300)
 !!$             call AddHist2D(h2D_nuQ2(2),(/nu,Q2/), XS_tot)
-!!$          case (400) 
+!!$          case (400)
 !!$             call AddHist2D(h2D_nuQ2(3),(/nu,Q2/), XS_tot)
 !!$          case DEFAULT
 !!$             call AddHist2D(h2D_nuQ2(4),(/nu,Q2/), XS_tot)
@@ -712,11 +712,9 @@ contains
     if (DoPr(2)) write(*,*) '^^'
 
     W = sqrt(max(0., mN**2+2*mN*nu-Q2))
-    write(165,'(20ES14.5)') nu,Q2,W,eps, Sum_XS*mul1, Sum_XS_Arr_low*mul1, Sum_XS_Arr*mul1
+!    write(165,'(20ES14.5)') nu,Q2,W,eps, Sum_XS*mul1, Sum_XS_Arr_low*mul1, Sum_XS_Arr*mul1
 
     if (DoStatistics) then
-
-       write(165,'(20ES14.5)') nu,Q2,W,eps, Sum_XS*mul1, Sum_XS_Arr_low*mul1, Sum_XS_Arr*mul1
 
        call WriteHist2D_Gnuplot(h2D_shad,DoAve=.true.,MaxVal=-1.0,file='initHiLep.Shadowing.dat',dump=.true.)
 
@@ -724,7 +722,7 @@ contains
 
        call WriteHist2D_Gnuplot(h2D_nuQ2_Eps,DoAve=.true.,MaxVal=-1.0,file='initHiLep.nuQ2.Eps.dat',dump=.true.)
        call WriteHist2D_Gnuplot(h2D_nuQ2_EpsR,DoAve=.true.,MaxVal=-1.0,file='initHiLep.nuQ2.EpsR.dat',dump=.true.)
-       
+
        call WriteHist2D_Gnuplot(h2D_nuQ2_flux,add=add0,mul=mul0,file='initHiLep.nuQ2.Flux.dat',dump=.true.)
        call WriteHist2D_Gnuplot(h2D_nuQ2_fluxW,add=add0,mul=mul0,file='initHiLep.nuQ2.FluxW.dat',dump=.true.)
        do i=0,4
@@ -733,7 +731,7 @@ contains
 
 !!$       call WriteHist(h_RhoTP,add=add0,mul=mul0,file='initHiLep.RhoTP.dat',dump=.true.) ! FOR TEST PURPOSES
 !!$       call WriteHist(h_RhoTF,add=add0,mul=mul0,file='initHiLep.RhoTF.dat',dump=.true.)
-       
+
        call WriteHist2D_Gnuplot(h2D_WvsWfree,add=add0,mul=mul1,file='initHiLep.WvsWfree.dat',dump=.true.)
        call WriteHist2D_Gnuplot(h2D_WvsW0,add=add0,mul=mul1,file='initHiLep.WvsW0.dat',dump=.true.)
        call WriteHist(h_pFermi,add=add0,mul=mul1,file='initHiLep.pFermi.dat',dump=.true.)
@@ -742,9 +740,9 @@ contains
        if (getSMM_Flag()) then
           call EventInfo_HiLep_Dump()
        end if
-       
+
     end if ! DoStatistics
-    
+
   end subroutine InitHiLeptonInduced
 
   !*************************************************************************
@@ -755,7 +753,7 @@ contains
   ! PURPOSE
   ! read initialisation of "InitHiLeptonInduced" from input file,
   ! namelist "HiLeptonNucleus"
-  ! 
+  !
   !*************************************************************************
   subroutine initInput
 
@@ -1009,7 +1007,7 @@ contains
           numin=2.0
           qsqmin=0.8
           ymax=0.97
-       Case(15)!JLab currently 4 GeV, rho0 experiment 
+       Case(15)!JLab currently 4 GeV, rho0 experiment
           Ebeam=4.
           numin=2.05
           qsqmin=0.6
@@ -1137,7 +1135,7 @@ contains
        qsqmin = 0.1
 
     case DEFAULT
-       
+
        write(*,*) 'Case not implemented:',AccFlag,iExperiment
        call TRACEBACK()
 
@@ -1170,7 +1168,7 @@ contains
        write (*,'("        : ",A10," = ",0P,f13.5," --> ",f13.5)') "ymax",ymax,numax/Ebeam
        ymax = numax/Ebeam
     end if
-    
+
     if (user_costmin>-1.0) then
        write (*,'("OVERRIDE: ",A10," = ",0P,f13.5," --> ",f13.5)') "costmin",costmin,user_costmin
        costmin = user_costmin
@@ -1207,7 +1205,7 @@ contains
     write (*,*) "!   user_qsqmin  = ",qsqmin
     write (*,*) "!   user_maxw    = ",maxw
 
-    
+
     !***** Calculate the boundaries: *****
 
     Q2min=max(qsqmin,2.*Ebeam*(Ebeam-numax)*(1.-costmax))
@@ -1242,7 +1240,7 @@ contains
     write(*,*)
 
   end subroutine initExperiment
-  
+
   !*************************************************************************
   !****s* initHiLepton/initFixedKin
   ! NAME
@@ -1251,7 +1249,7 @@ contains
   ! PURPOSE
   ! set kinematical constraints according to no experiment but to given
   ! fixed kinematics. The namelist 'HiPhotonKinematics' is read.
-  ! 
+  !
   ! NOTES
   ! you also have to set e.g. numin,numax etc. in order to ensure correct
   ! treatment of histograms
@@ -1432,7 +1430,7 @@ contains
     costmin = -1.0
     costmax =  1.0
     smin = 0.0
-    
+
 
   end subroutine initFixedKin
 
@@ -1460,7 +1458,7 @@ contains
   !
   ! needed e.g. in analysis routines
   !*************************************************************************
-  subroutine GetEnergies(Ebeam_,EIC_Ee_,EIC_EA_) 
+  subroutine GetEnergies(Ebeam_,EIC_Ee_,EIC_EA_)
     real, intent(out) :: Ebeam_
     real, intent(out),OPTIONAL :: EIC_Ee_, EIC_EA_
     Ebeam_ = Ebeam
@@ -1468,7 +1466,7 @@ contains
     if (present(EIC_EA_)) EIC_EA_=EIC_EA
   end subroutine GetEnergies
 
-  
+
   !*************************************************************************
   !****s* initHiLepton/GetPhotonKin
   ! NAME
@@ -1550,19 +1548,19 @@ contains
   ! * type(electronNucleon_event) :: eNev -- The incoming electron
   !
   ! NOTES
-  ! * since we changed the definition according the MC selection, the 
-  !   values given for "maxW" are not valid anymore. 
+  ! * since we changed the definition according the MC selection, the
+  !   values given for "maxW" are not valid anymore.
   !   We have done some preliminary runs for some configurations to
   !   readjust he values. All non-checked values are set to zero.
-  !   You may get a lot of "adjust maxW"-messages in 
+  !   You may get a lot of "adjust maxW"-messages in
   !   first runs. See the file "initHiLep.AdjustMaxW.txt" for the largest
   !   value used so far, readjust the values in the code, recompile, restart.
   ! * depending on the flag "eN_event/restingNucleon" the flux is calculated
-  !   as average over the fermi momentum or using the momentum of the 
+  !   as average over the fermi momentum or using the momentum of the
   !   target nucleon for fT and epsilon.
   !*************************************************************************
   subroutine photonFluxMC(eNev,pTarget)
- 
+
     use constants, only: pi, mN
     use eN_event, only: eNeV_GetKinV,eNev_SetProcess,eNev_init_BnQ, &
          eNeV_Set_PhiLepton
@@ -1751,7 +1749,7 @@ contains
           AccWeight = asin(th2H/th)-asin(th1H/th)
        else if (th.lt.th4H) then
           AccWeight = asin(th2H/th)-acos(0.17/th)
-       else 
+       else
           AccWeight = 0.
        endif
        AccWeight = AccWeight/pihalf
@@ -1764,7 +1762,7 @@ contains
           AccWeight = asin(th1E/th)
        else if (th.lt.th3E) then
           AccWeight = asin(th1E/th)-acos(th2E/th)
-       else 
+       else
           AccWeight = 0.
        endif
        AccWeight = AccWeight/pihalf
@@ -1777,7 +1775,7 @@ contains
              AccWeight = 0.
           else if (th.lt.th2Ce) then
              AccWeight = 1.
-          else 
+          else
              AccWeight = 0.
           endif
        case (-1,1) ! --- hadron
@@ -1785,7 +1783,7 @@ contains
              AccWeight = 0.
           else if (th.lt.th2C) then
              AccWeight = 1.
-          else 
+          else
              AccWeight = 0.
           endif
        end select
@@ -1802,7 +1800,7 @@ contains
              AccWeight = 0.
           else if (th.lt.th2Ce) then
              AccWeight = 1.
-          else 
+          else
              AccWeight = 0.
           endif
        case DEFAULT
@@ -1815,13 +1813,13 @@ contains
 
     case DEFAULT
 
-       
+
        write(*,*) 'AccWeight: iDetector=',iDetector
        call TRACEBACK()
 
     end select
 
-  contains       
+  contains
 
     !***********************************************************************
     !****f* AccWeight/CLAS
@@ -1848,7 +1846,7 @@ contains
       REAL :: theta_min, theta_max,delta_phi, exp
       INTEGER :: electron,pos_hadron, neg_hadron
       REAL :: d2r,theta
-      
+
       data t_max/3375./
       data phi0_el/30./
       data phi0_nh/25./
@@ -1868,13 +1866,13 @@ contains
       data electron/0/
       data pos_hadron/1/
       data neg_hadron/-1/
-      data d2r/0.01754533/      
-      
+      data d2r/0.01754533/
+
       data t_current/2250./
-      
+
       theta=theta_rad*180./pi
       Acc = 0.0
-      
+
       IF(part_type.EQ.electron) THEN
          theta_min = theta0_el+thetas_el/(p*t_max/t_current+p_shift)
          if(theta.gt.theta_min.and.theta.lt.theta_max)then
@@ -1909,15 +1907,15 @@ contains
             endif
          endif
       ENDIF
-    
+
 !c      vb1 = acc*sin(theta/57.3)/2. ! fraction of theta solid angle
 
-!c     I comment out the above. I define the acceptance as the probability 
+!c     I comment out the above. I define the acceptance as the probability
 !c     of an event in a particular bin getting accepted. It must range from
 !c     0 to 1. It does not have to equal 4pi when integrated over.
 
       CLAS = acc
-      
+
     end FUNCTION CLAS
 
   end function AccWeight
@@ -1970,7 +1968,7 @@ contains
     ! if it was a 2p2h event, no checks are possible.
     if (channel.eq.origin_2p2hQE) return
     if (channel.eq.origin_2p2hDelta) return
-    
+
     checkConservation = .FALSE.
 
     call setToDefault(outSUM)
@@ -2026,7 +2024,7 @@ contains
 !!$             return
 !!$          end if
 !!$       end do
-       
+
     end if
 
     checkConservation = .TRUE.
