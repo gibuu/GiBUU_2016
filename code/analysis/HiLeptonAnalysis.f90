@@ -143,8 +143,8 @@ module HiLeptonAnalysis
   ! switch on/off: Estimate potential/future final state interactions
   !
   ! Plot the sqrt(s) distribution of potential final state interactions of
-  ! perturbative particles with the nucleus (real) particles). 
-  ! (The interactions do not happen, this is calculated before every 
+  ! perturbative particles with the nucleus (real) particles).
+  ! (The interactions do not happen, this is calculated before every
   ! propagation.)
   ! In order to select the particle class for which one wants to report the
   ! FSI, please change directly the code.
@@ -186,7 +186,7 @@ module HiLeptonAnalysis
   ! PURPOSE
   ! Store general averages, as eq. <Q^2>, <W> etc.
   ! SOURCE
-  ! 
+  !
   type tAverage
      real :: sum0,sum,W,Q2,nu
   end type tAverage
@@ -200,7 +200,7 @@ module HiLeptonAnalysis
   integer,parameter :: nAccWeight=2
 
   real, parameter :: add0 = 1e-20 ! dummy add for histograms
-  
+
   real,save :: NLeptons
 
   type(histogramMP), save :: hMP_zH,hMP_nu,hMP_Q2,hMP_pT2 ! identified hadrons
@@ -239,7 +239,7 @@ module HiLeptonAnalysis
 
   type(histogram), dimension(:,:), allocatable, save :: hJLAB5_R_nu,hJLAB5_R_Q2,hJLAB5_R_zH
   real, dimension(:,:,:,:), allocatable, save :: hJLAB5_pT2_ARR
-  
+
   type(histogram2D), dimension(2), save :: H2D_CollHistPT
 
   type(histogramMP), save :: hMP_EIC_zH, hMP_EIC_nu, hMP_EIC_Q2
@@ -264,7 +264,7 @@ module HiLeptonAnalysis
 
   !************ Histograms for 'DoFindRho0':
 
-  ! proc: 
+  ! proc:
   ! * 2001 : VMD, 2002 : direct, 2003 : anomalous, 2004 : DIS, 2000 : misc
 
   type(histogram),  save :: hRho0MV, hRho0MX, hRho0DE, hRho0DecTime
@@ -292,6 +292,7 @@ module HiLeptonAnalysis
   !************ Histograms for 'DoBrooks':
 
   type(histogramMC), save :: hBrooks
+  real, dimension(:,:,:,:), allocatable :: ArrBrooks
 
   !************ Histograms for 'DoClassifyFirst':
 
@@ -300,7 +301,7 @@ module HiLeptonAnalysis
   type(histogramMP), dimension(-1:10),  save :: hMP_zH_Generation
 
   !************ Histograms for 'DoMandelT':
-  
+
   type(histogramMP), save :: hMP_MandelstamT
 
   !************ Histograms for 'DoCentralN':
@@ -310,19 +311,19 @@ module HiLeptonAnalysis
   type(histogram), save   :: H_CN_b, H_CN_bT, H_CN_bZ
   type(histogram2D), save :: H2D_CN_pTz(0:1)
 
-  !************ 
+  !************
 
 !  integer, parameter :: iPartSet = 1 ! Set of Particles in HistMP
   integer, parameter :: iPartSet = 2 ! Set of Particles in HistMP
 
   character(3), dimension(-1:1), parameter :: piName  = (/'pi-','pi0','pi+'/)
   character(2), dimension(0:1),  parameter :: nucName = (/'N0','N+'/)
-  
+
   PUBLIC :: DoHiLeptonAnalysis
   PUBLIC :: HiLeptonAnalysisPerTime
-  
+
 contains
-  
+
 
 
   !*********************************************************************
@@ -339,7 +340,7 @@ contains
   ! * type(particle),dimension(:,:) :: pertPart -- the perturbative particle vector
   ! * integer                       :: MassNum  -- the size of the nucleus
   ! * logical                       :: finalFlag -- flag, whether it is the final call
-  ! * logical,             optional :: beforeRUN -- flag, whether this routine is 
+  ! * logical,             optional :: beforeRUN -- flag, whether this routine is
   !   called before all timesteps (i.e. directly after init) or at the end of a run
   !
   ! OUTPUT
@@ -372,7 +373,7 @@ contains
 
     use PauliBlockingModule, only: WriteBlockMom
     use idTable, only: pion
-    
+
     type(particle),dimension(:,:),intent(in),   target :: realPart
     type(particle),dimension(:,:),intent(inout),target :: pertPart
     integer,intent(in) :: MassNum
@@ -403,7 +404,7 @@ contains
 !    type(tPreEvListEntry), save :: PreEvListEntry
 
     type(tParticleListNode), POINTER :: pNode
-    
+
 
     real :: AccWeight, hWeight
     real :: zH
@@ -413,6 +414,8 @@ contains
     real :: dum
     real :: mul0 ! parameters for histograms
     integer :: iNr
+    integer :: iQ2, ixB, izH
+    real :: r
 
     type(particle),dimension(:,:),pointer :: pArr
 
@@ -420,7 +423,7 @@ contains
 
     DoBeforeRUN = .FALSE.
     if (present(beforeRUN)) DoBeforeRUN = beforeRUN
-    
+
     write(*,*) '------------------- Do High Energy Lepton Analysis ---------------------'
 
     if (HiLepton_getRealRun()) then
@@ -443,9 +446,9 @@ contains
        nRuns=0
        iExperiment = getiExperiment()
        call resetBinning()
-       
+
        allocate(nPertPart(nEns))
-       
+
        if (DoTIMES) call DoTimes_INIT()
 
        call GlobalAverage_ZERO()
@@ -507,7 +510,7 @@ contains
 
        if (DoBrooks) then
           call CreateHistMC(hBrooks, 'dN(pi+)/dpT2', 0.0,2.0,0.02, 8)
-          hBrooks%xDesc='pT2 [GeV}'
+          hBrooks%xDesc='pT2 [GeV]'
           hBrooks%yDesc=(/ "Q2=1-2, nu=2-3, z=0.5-0.6", &
                &           "Q2=1-2, nu=2-3, z=0.6-0.7", &
                &           "Q2=1-2, nu=3-4, z=0.5-0.6", &
@@ -516,6 +519,9 @@ contains
                &           "Q2=2-3, nu=2-3, z=0.6-0.7", &
                &           "Q2=2-3, nu=3-4, z=0.5-0.6", &
                &           "Q2=2-3, nu=3-4, z=0.6-0.7" /)
+
+          allocate( ArrBrooks(6,5,10,0:1) ) ! Q, xB, zH
+          ArrBrooks = 0.0
        end if
 
        if (DoMandelT) then
@@ -540,7 +546,7 @@ contains
           call CreateHist(H_CN_bT,"bT",0.,5.,0.1)
           call CreateHist(H_CN_bZ,"bZ",-5.,5.,0.1)
        end if
-       
+
        write(*,*) '***HiLeptonAnalysis: Initializing... [END]'
     end if
 
@@ -563,7 +569,7 @@ contains
                         & call AddHist2D(H2DleptonXS(3+mod(EventType,1000)), (/Q2,nu/), Weight)
                 endif
                 call GlobalAverage_ADD(Weight, Q2, nu)
-                
+
              end if
              if (HiLepton_getRealRun()) exit
           end do
@@ -571,7 +577,7 @@ contains
 
        if (DoEventAdd) then
 
-          ! repeating here 3 times the double loop structure 
+          ! repeating here 3 times the double loop structure
           ! is necessary: (iEns,iNuc) .ne. (i,j) !!!
 
           do i=1,nEns
@@ -584,7 +590,7 @@ contains
              do j=1,size(pArr,dim=2)
                 if(pArr(i,j)%Id <  0) exit
                 if(pArr(i,j)%Id <= 0) cycle
-                
+
                 if(pArr(i,j)%lastCollisionTime <  0) cycle
 
                 iEns = pArr(i,j)%firstEvent / 1000
@@ -602,7 +608,7 @@ contains
                 end if
              end do
           end do
-             
+
           if (DoOutChannels) then
              open(141,file='OutChannels.INIT.dat', status='unknown')
              rewind(141)
@@ -804,9 +810,9 @@ contains
        call PreEvList_Print(141,PreEvListRhoOrig,mul0)
        close(141)
 
-       ! Due to historical reasons, the following file names had a "JLAB" in it. 
+       ! Due to historical reasons, the following file names had a "JLAB" in it.
        ! Some analysis tools may be confused by this.
-       ! You may replace "Rho0_" instead of "JLABrho" and vice versa. 
+       ! You may replace "Rho0_" instead of "JLABrho" and vice versa.
 
 
        ! --- nu Q2 ---
@@ -925,6 +931,28 @@ contains
 
     if (DoBrooks) then
        call WriteHistMC(hBrooks,'HiLep.Brooks.dat',add=add0,mul=mul0,dump=.true.)
+       open(141,file='HiLep.Brooks.detailed.dat', status='unknown')
+       rewind(141)
+       write(141,'(A)') "# <pT2> for Q2,xB,zH bins"
+       write(141,'(A)') "#    Q2 = 1-1.5, 1.5-2, 2-2.5, 2.5-3, 3-3.5, 3.5-4"
+       write(141,'(A)') "#    xB = 0.1-0.19, 0.19-0.28, 0.28-0.37, 0.37-0.46, 0.46-0.55"
+       write(141,'(A)') "#    zH = 0-0.1, ... 0.9-1"
+       write(141,'(A)') "#"
+       write(141,'(A)') "# iQ2,ixB,izH, <pT2>, sum(w), sum(pT2*w)"
+
+       do iQ2=1,6
+          do ixB=1,3
+             do izH=1,10
+                if (ArrBrooks(iQ2,ixB,izH,0)>0) then
+                   r = ArrBrooks(iQ2,ixB,izH,1)/ArrBrooks(iQ2,ixB,izH,0)
+                else
+                   r = 99.9
+                end if
+                write(141,'(3i3.0,1P,3e13.4)') iQ2,ixB,izH, r, ArrBrooks(iQ2,ixB,izH,:)
+             end do
+          end do
+       end do
+       close(141)
     end if
 
     if (DoFSIsqrts) then
@@ -1006,21 +1034,21 @@ contains
     subroutine DoTimes_INIT()
 
       use initHiLepton, only: GetEnergies
-      
+
       real :: Ebeam
 
       call CreateHist(HH1(1), 'time 1'   ,0.0,1.1,0.02)
       call CreateHist(HH1(2), 'time 2'   ,0.0,1.1,0.02)
       call CreateHist(HH1(3), 'timediff' ,0.0,1.1,0.02)
-      
+
       call CreateHist(HH2(0), 'ALL'   ,0.0,1.1,0.02)
       call CreateHist(HH2(1), 'QQ string '   ,0.0,1.1,0.02)
       call CreateHist(HH2(2), 'QgQ string'   ,0.0,1.1,0.02)
       call CreateHist(HH2(3), 'gg string '   ,0.0,1.1,0.02)
       call CreateHist(HH2(4), 'Cluster1  '   ,0.0,1.1,0.02)
       call CreateHist(HH2(5), 'Cluster2  '   ,0.0,1.1,0.02)
-      call CreateHist(HH2(6), 'DokuLine  '   ,0.0,1.1,0.02)    
-      call CreateHist(HH2(7), 'MISC      '   ,0.0,1.1,0.02)  
+      call CreateHist(HH2(6), 'DokuLine  '   ,0.0,1.1,0.02)
+      call CreateHist(HH2(7), 'MISC      '   ,0.0,1.1,0.02)
 
       call CreateHistMP(HHMP(1), 'time 1 vs z'   ,0.0,1.1,0.02, 2)
       call CreateHistMP(HHMP(2), 'time 2 vs z'   ,0.0,1.1,0.02, 2)
@@ -1054,15 +1082,15 @@ contains
             if (pertPart(i,j)%ID <  0) exit
             if (pertPart(i,j)%ID <= 0) cycle
             Part = pertPart(i,j)
-            
+
             rDum1 = Part%productionTime
             rDum2 = Part%formationTime
-            
+
             if (EventInfo_HiLep_Get(i,Part%firstEvent,Weight,nu,Q2,epsilon,EventType,Ebeam)) then
             else
                write(*,*) 'Ooops,L111'
             endif
-            
+
             zH = Part%momentum(0)/nu
             !velo = sqrt(Part%velocity(1)**2+Part%velocity(2)**2+Part%velocity(3)**2)
 
@@ -1075,7 +1103,7 @@ contains
 !!$            rDum2=rDum2/Part%momentum(0)
 
             w0 = Part%perweight
-            
+
             if (rDum2 .ge. 0.0) then
                call AddHist(hh1(1),zH,w0,w0*rDum1)
                call AddHist(hh1(2),zH,w0,w0*rDum2)
@@ -1096,7 +1124,7 @@ contains
                   end if
                endif
             endif
-            
+
 
             if (PIL_FormInfo_GET(Part%number,internalN)) then
                ! write(*,*) 'ok'
@@ -1107,15 +1135,15 @@ contains
             iInt = mod(internalN/10,10)
             if (iInt==0) iInt = 7
             iIntErr = mod(internalN,10)
-            
+
             w1 = 0.0
             if (iIntErr.ne.0) w1=w0
-            
+
             call AddHist(hh2(0),hh2(iInt),zH,w0,w1)
-            
+
          enddo
       enddo
-      
+
     end subroutine DoTimes_CALC
 
     !*************************************************************************
@@ -1127,7 +1155,7 @@ contains
          call WriteHist(hh1(i),add=add0,mul=1./nRuns,DoAve=.true.,&
               &file='DoTIMES.'//trim(intToChar(140+i))//'.dat')
       end do
-      
+
       do i=0,7
          call WriteHist(hh2(i),add=add0,mul=1./nRuns,&
               &file='DoTIMES.'//trim(intToChar(150+i))//'.dat')
@@ -1156,7 +1184,7 @@ contains
          call WriteHistMP(hhMPnulead(i),add=add0,mul=mul0,&
               &file='DoTIMES.MPnu'//trim(intToChar(140+i))//'.lead.N.dat')
       end do
-      
+
     end subroutine DoTimes_Write
 
     !*************************************************************************
@@ -1165,7 +1193,7 @@ contains
       do i=1,3
          call RemoveHist(hh1(i))
       end do
-      
+
       do i=0,7
          call RemoveHist(hh2(i))
       end do
@@ -1186,7 +1214,7 @@ contains
     ! * The current event is added to histogram histMX(iHist).
     !
     ! NOTES
-    ! we use the global variables: 
+    ! we use the global variables:
     ! * nu,Q2,pPart,nRuns
     ! * histMX
     ! * PreEvArr
@@ -1228,15 +1256,15 @@ contains
 
       case (2)
          vecMiss(0) = vecMiss(0) + 2.01355*0.931494
-         if(Q2.eq.1.1) then 
+         if(Q2.eq.1.1) then
             MassCut=2.00
-         else if(Q2.eq.2.15) then 
+         else if(Q2.eq.2.15) then
             MassCut=2.00
-         else if(Q2.eq.3.00) then 
+         else if(Q2.eq.3.00) then
             MassCut=2.025
-         else if(Q2.eq.3.91) then 
+         else if(Q2.eq.3.91) then
             MassCut=2.04
-         else if(Q2.eq.4.69) then 
+         else if(Q2.eq.4.69) then
             MassCut=2.08
          else
             write(*,*) 'Clasie: wrong Q2:',Q2
@@ -1245,15 +1273,15 @@ contains
 
       case(12)
          vecMiss(0) = vecMiss(0) + 12.0107*0.931494
-         if(Q2.eq.1.1) then 
+         if(Q2.eq.1.1) then
             MassCut=11.35
-         else if(Q2.eq.2.15) then 
+         else if(Q2.eq.2.15) then
             MassCut=11.375
-         else if(Q2.eq.3.00) then 
+         else if(Q2.eq.3.00) then
             MassCut=11.400
-         else if(Q2.eq.3.91) then 
+         else if(Q2.eq.3.91) then
             MassCut=11.400
-         else if(Q2.eq.4.69) then 
+         else if(Q2.eq.4.69) then
             MassCut=11.425
          else
             write(*,*) 'Clasie: wrong Q2:',Q2
@@ -1262,15 +1290,15 @@ contains
 
       case(27)
          vecMiss(0) = vecMiss(0) + 26.9800*0.931494
-         if(Q2.eq.1.1) then 
+         if(Q2.eq.1.1) then
             MassCut=25.275
-         else if(Q2.eq.2.15) then 
+         else if(Q2.eq.2.15) then
             MassCut=25.325
-         else if(Q2.eq.3.00) then 
+         else if(Q2.eq.3.00) then
             MassCut=25.35
-         else if(Q2.eq.3.91) then 
+         else if(Q2.eq.3.91) then
             MassCut=25.38
-         else if(Q2.eq.4.69) then 
+         else if(Q2.eq.4.69) then
             MassCut=25.40
          else
             write(*,*) 'Clasie: wrong Q2:',Q2
@@ -1279,15 +1307,15 @@ contains
 
       case(63)
          vecMiss(0) = vecMiss(0) + 63.5460*0.931494
-         if(Q2.eq.1.1) then 
+         if(Q2.eq.1.1) then
             MassCut=59.35
-         else if(Q2.eq.2.15) then 
+         else if(Q2.eq.2.15) then
             MassCut=59.40
-         else if(Q2.eq.3.00) then 
+         else if(Q2.eq.3.00) then
             MassCut=59.40
-         else if(Q2.eq.3.91) then 
+         else if(Q2.eq.3.91) then
             MassCut=59.45
-         else if(Q2.eq.4.69) then 
+         else if(Q2.eq.4.69) then
             MassCut=59.50
          else
             write(*,*) 'Clasie: wrong Q2:',Q2
@@ -1296,15 +1324,15 @@ contains
 
       case(197)
          vecMiss(0) = vecMiss(0) + 196.9237*0.931494
-         if(Q2.eq.1.1) then 
+         if(Q2.eq.1.1) then
             MassCut=183.57
-         else if(Q2.eq.2.15) then 
+         else if(Q2.eq.2.15) then
             MassCut=183.63
-         else if(Q2.eq.3.00) then 
+         else if(Q2.eq.3.00) then
             MassCut=183.63
-         else if(Q2.eq.3.91) then 
+         else if(Q2.eq.3.91) then
             MassCut=183.67
-         else if(Q2.eq.4.69) then 
+         else if(Q2.eq.4.69) then
             MassCut=183.74
          else
             write(*,*) 'Clasie: wrong Q2:',Q2
@@ -1319,7 +1347,7 @@ contains
       MassMiss = sqrt(vecMiss(0)**2-Dot_Product(vecMiss(1:3),vecMiss(1:3)))
 
       ! Select the forward pion production events:
-      
+
       kTg = sqrt(Dot_Product(vecMiss(1:3),vecMiss(1:3)))
       ph = absmom(pPart)
 
@@ -1393,7 +1421,7 @@ contains
            &/)
 
       integer :: i
-           
+
       if (evtype.gt.5000) then
          SelectChannel = 17
          return
@@ -1411,7 +1439,7 @@ contains
       call TRACEBACK()
 
     end function SelectChannel
-    
+
     !*************************************************************************
 
     subroutine CalcFSIsqrts
@@ -1431,7 +1459,7 @@ contains
             call AddHist(hFSIsqrts, srts,pPart%perWeight)
          end do
       end do
-      
+
     end subroutine CalcFSIsqrts
 
 
@@ -1482,14 +1510,14 @@ contains
          DoMorrowInit = .false.
       end if
 
-      
+
       do i=1,nEns
          do j=1,MassNum
-            
+
             !=== 1: Decide whether it is a two pion event:
 
             flagOK=.true.
-            
+
             do ii=1,4
                if (PreEvArr(i,j)%preE(ii)%mass.ne.PreCompArr(0)%preE(ii)%mass) &
                     & flagOK=.false. ! attention: abuse of mass
@@ -1530,13 +1558,13 @@ contains
             MandelstamT = 0.0
 
             pNode1 => EventArr(i,j)%particleList%first
-            do 
+            do
               if (.not. ASSOCIATED(pNode1)) exit
               iH1 = MorrowPartClass(pNode1%V%ID,pNode1%V%charge)
 
               pNode2=>pNode1%next
               do
-                 if (.not. ASSOCIATED(pNode2)) exit 
+                 if (.not. ASSOCIATED(pNode2)) exit
                  iH2 = MorrowPartClass(pNode2%V%ID,pNode2%V%charge)
 
                  mass = abs4(pNode1%V%momentum+pNode2%V%momentum)
@@ -1553,7 +1581,7 @@ contains
                     write(*,*) 'wrong iH:',iH1,iH2
                     write(*,*) EventArr(i,j)%particleList%nEntries
                     call TRACEBACK()
-                    ! This error means: it is not a p pi pi event, 
+                    ! This error means: it is not a p pi pi event,
                     ! but plus some additional particle
                  end select
 
@@ -1592,15 +1620,18 @@ contains
             MorrowPartClass = 4 ! == pi-
          end select
       end select
-      
+
     end function MorrowPartClass
-    
+
     !*************************************************************************
-    
+
     subroutine BrooksAnalysis
 
-      real :: zH, pT2
+      use constants, only: mN
+
+      real :: zH, pT2, xB
       integer :: i,j,iCh
+      integer :: iQ2, ixB, izH
 
       do i=1,nEns
          do j=1,size(pertPart,dim=2)
@@ -1613,6 +1644,45 @@ contains
             end if
 
             zH = pertPart(i,j)%momentum(0)/nu
+            xB = Q2/(2*mN*nu)
+            pT2 = pertPart(i,j)%momentum(1)**2 + pertPart(i,j)%momentum(2)**2
+
+
+            iQ2 = 0
+            if (Q2 < 1.5) then
+               iQ2 = 1
+            else if (Q2 < 2.0) then
+               iQ2 = 2
+            else if (Q2 < 2.5) then
+               iQ2 = 3
+            else if (Q2 < 3.0) then
+               iQ2 = 4
+            else if (Q2 < 3.5) then
+               iQ2 = 5
+            else if (Q2 < 4.0) then
+               iQ2 = 6
+            end if
+
+            izH = (zH/0.1)+1
+
+            ixB = 0
+            if (xB < 0.19) then
+               ixB = 1
+            else if (xB < 0.28) then
+               ixB = 2
+            else if (xB < 0.37) then
+               ixB = 3
+            else if (xB < 0.46) then
+               ixB = 4
+            else if (xB < 0.55) then
+               ixB = 5
+            end if
+
+            if (iQ2 > 0 .and. ixB > 0) then
+               ArrBrooks(iQ2,ixB,izH,0) = ArrBrooks(iQ2,ixB,izH,0)+Weight
+               ArrBrooks(iQ2,ixB,izH,1) = ArrBrooks(iQ2,ixB,izH,1)+(pT2*Weight)
+            end if
+
 
             if (zH<0.5) cycle
             if (zH>0.7) cycle
@@ -1628,17 +1698,15 @@ contains
             if (nu>3) iCh = iCh + 2
             if (zH>0.6) iCh = iCh + 1
 
-            pT2 = pertPart(i,j)%momentum(1)**2 + pertPart(i,j)%momentum(2)**2
-
             call AddHistMC(hBrooks,pT2,iCh+1,Weight)
-            
+
 
          end do
       end do
     end subroutine BrooksAnalysis
 
     !*************************************************************************
-    
+
     subroutine FindRho0Analysis
       use idTable, only: rho
       use ParticleProperties, only: hadron
@@ -1690,7 +1758,7 @@ contains
             else
                pNode => EventArr(i,j)%particleList%first
             end if
-               
+
             do while (ASSOCIATED(pNode))
 
                ! first check, whether it is really a rho0:
@@ -1703,10 +1771,10 @@ contains
                end if
 
                CutFlag = .true.
-               
+
                select case (iExperiment)
                case (14,15) !  JLAB,  4/5GeV (CLAS, rho0)
-!                  if (abs(pNode%V%position(2)).gt.0.1) AccFlag = .false. ! <-- Delta E; not used acc. Kawtar 
+!                  if (abs(pNode%V%position(2)).gt.0.1) AccFlag = .false. ! <-- Delta E; not used acc. Kawtar
 
                   MandelstamT = abs4Sq((/nu,0.0,0.0,sqrt(nu**2+Q2)/)-pNode%V%momentum)
                   if (MandelstamT.lt.-0.4) CutFlag = .false.
@@ -1741,7 +1809,7 @@ contains
                   w0 = pNode%V%perWeight
                   w1 = w0
                   if (pNode%V%scaleCS.lt.1.0) w1=0 ! do not count 'half' rhos
-                                                   ! abuse: scaleCS==prob.decay 
+                                                   ! abuse: scaleCS==prob.decay
                   if (AccFlag.neqv.CutFlag) w1=0
 
 
@@ -1752,7 +1820,7 @@ contains
                   call AddHist(hRho0Theta,pNode%V%offShellParameter,w0,w1) ! abuse: ...==thetaDecay !!!
 
                   call AddHist(hRho0Mom,pNode%V%momentum(0),w0,w1)
-                  
+
 
                   hWeight = PreEvArr0(i,j)%weight
                   PreEvArr0(i,j)%weight = w0 * 1000
@@ -1813,7 +1881,7 @@ contains
 
             w2 = 0.0
             if (EventArr(i,j)%particleList%nEntries .le. 2) w2 = Weight ! 'exclusive' event
-               
+
             do while (ASSOCIATED(pNode))
                pPart => pNode%V
 
@@ -1824,7 +1892,7 @@ contains
             end do
          end do
       end do
-      
+
     end subroutine MandelTAnalysis
 
     !*************************************************************************
@@ -1842,7 +1910,7 @@ contains
       real,parameter :: densMax = 0.16
 !       type(dichte) :: dens
       logical :: isUnbound
-      
+
       do i=1,nEns
          do j=1,MassNum
             iNr = j
@@ -1874,12 +1942,12 @@ contains
                      pT = absVec(pPart%momentum(1:2))
                      z = pPart%momentum(0)/nu
                      Ekin = pPart%momentum(0)-mN
-                     
+
                      call AddHist2D(H2D_CN_b(pPart%charge), (/b,p/), Weight)
                      call AddHist2D(H2D_CN_bT(pPart%charge), (/bT,p/), Weight)
                      call AddHist2D(H2D_CN_bZ(pPart%charge), (/bZ,p/), Weight)
                      call AddHist2D(H2D_CN_bZE(pPart%charge), (/bZ,Ekin/), Weight)
-                     
+
                      call AddHist2D(H2D_CN_pTz(pPart%charge), (/pT,z/), Weight)
 
                   endif
@@ -1890,7 +1958,7 @@ contains
             if (HiLepton_getRealRun()) exit
          end do
       end do
-      
+
     end subroutine CentralNAnalysis
   end subroutine DoHiLeptonAnalysis
 
@@ -1937,16 +2005,16 @@ contains
     rewind(5)
     read(5,nml=HiLepton_Analysis,IOSTAT=ios)
     call Write_ReadingInput('HiLepton_Analysis',0,ios)
-    
+
     write(*,*) 'DoLeptonKinematics :',DoLeptonKinematics
     write(*,*) 'DoHadronKinematics :',DoHadronKinematics
     write(*,*)
-    write(*,*) 'DoTimes         :',DoTimes       
-    write(*,*) 'DoOutChannels   :',DoOutChannels 
-    write(*,*) 'DoInvMasses     :',DoInvMasses   
-    write(*,*) 'DoFindRho0      :',DoFindRho0    
-    write(*,*) 'DoClasie        :',DoClasie 
-    write(*,*) 'DoMorrow        :',DoMorrow   
+    write(*,*) 'DoTimes         :',DoTimes
+    write(*,*) 'DoOutChannels   :',DoOutChannels
+    write(*,*) 'DoInvMasses     :',DoInvMasses
+    write(*,*) 'DoFindRho0      :',DoFindRho0
+    write(*,*) 'DoClasie        :',DoClasie
+    write(*,*) 'DoMorrow        :',DoMorrow
     write(*,*) 'DoBrooks        :',DoBrooks
     write(*,*) 'DoFSIsqrts      :',DoFSIsqrts
     write(*,*) 'DoMandelT       :',DoMandelT
@@ -1976,7 +2044,7 @@ contains
   ! PURPOSE
   ! Reset all Histogramms used.
   !
-  ! Allocates all arrays and sets necessary parameters. 
+  ! Allocates all arrays and sets necessary parameters.
   ! INPUTS
   ! ---
   ! OUTPUT
@@ -2012,7 +2080,7 @@ contains
        call GetPhotonKin(nu,Q2,W)
        nuR = ValueRange( nu-0.1, nu+0.1, 0.1)
        Q2R = ValueRange( Q2-0.1, Q2+0.1, 0.1)
-       
+
 
     case(1) ! HERMES: D,N.Kr
        !-------------------------------------------------------
@@ -2091,7 +2159,7 @@ contains
 !       EHR%l=1.4
        EHR%l=0.0
 
-    case(6) ! EMC: 100 
+    case(6) ! EMC: 100
        !-------------------------------------------------------
        iDetector = 2
        nuR = ValueRange(10.0,  85.0, 2.0)
@@ -2099,7 +2167,7 @@ contains
        zHR%l=0.0
        EHR%l=3.0
 
-    case(8) ! EMC: 200 
+    case(8) ! EMC: 200
        !-------------------------------------------------------
        iDetector = 2
        nuR = ValueRange(30.0, 170.0,  5.0)
@@ -2107,7 +2175,7 @@ contains
        zHR%l=0.0
        EHR%l=3.0
 
-    case(9) ! EMC: 280 
+    case(9) ! EMC: 280
        !-------------------------------------------------------
        iDetector = 2
        nuR = ValueRange(50.0, 240.0,  5.0)
@@ -2115,7 +2183,7 @@ contains
        zHR%l=0.0
        EHR%l=5.0
 
-    case(12) ! Mainz, Yoon: 1.5  
+    case(12) ! Mainz, Yoon: 1.5
        !-------------------------------------------------------
        iDetector = 90
        nuR = ValueRange( 0.0, 2.0,  0.02)
@@ -2167,7 +2235,7 @@ contains
 
     call CreateHist(hLep_Q2, "N_e(Q2), <nu>(Q2)", Q2R%l,Q2R%u,Q2R%d)
     call CreateHist(hLep_nu, "N_e(nu), <Q2>(nu)", 0.0  ,nuR%u,nuR%d)
-    
+
     do i=1,2
        call CreateHist(hKin_zH_Q2(i), "<Q2>(zH) ("//trim(AccName(i))//")", zHR%l,zHR%u,zHR%d)
        call CreateHist(hKin_nu_Q2(i), "<Q2>(nu) ("//trim(AccName(i))//")", nuR%l,nuR%u,nuR%d)
@@ -2227,7 +2295,7 @@ contains
           call CreateHistMP(hMP_zHClass(i), "dN_id/(N_e dzH) "//trim(IntToChar(i)),  0.0,  1.2,  0.01, iPartSet)
           call CreateHistMP(hMP_pT2Class(i), "d<pT2>/dzH "//trim(IntToChar(i)),  0.0,  1.2,  0.01, iPartSet)
        end do
-       
+
        call CreateHistMP(hMP_zH_Generation(-1), "dN_id/(N_e dzH) Generation ALL",  0.0,  1.2,  0.01, iPartSet)
        do i=0,10
           call CreateHistMP(hMP_zH_Generation(i), "dN_id/(N_e dzH) Generation "//intToChar(i),  0.0,  1.2,  0.01, iPartSet)
@@ -2235,11 +2303,11 @@ contains
     end if
 
     if (CollHist_GetDoCollHistory()) then
-       call CreateHist2D(H2D_CollHistPT(1), "d<pT2>(chgd.pi)/dzH (classified)", (/-16.5,0.0/), (/16.5,1.2/), (/1.0,0.01/)) 
-       call CreateHist2D(H2D_CollHistPT(2), "d<pT2>(chgd.pi)/dzH (classified,100)", (/-16.5,0.0/), (/16.5,1.2/), (/1.0,0.01/)) 
+       call CreateHist2D(H2D_CollHistPT(1), "d<pT2>(chgd.pi)/dzH (classified)", (/-16.5,0.0/), (/16.5,1.2/), (/1.0,0.01/))
+       call CreateHist2D(H2D_CollHistPT(2), "d<pT2>(chgd.pi)/dzH (classified,100)", (/-16.5,0.0/), (/16.5,1.2/), (/1.0,0.01/))
     end if
 
-    select case (iExperiment) 
+    select case (iExperiment)
     case (11)  ! HERMES (final paper)
        do i=1,3
           call CreateHistMP(hMP_nu_zh(i), "dN_id/(N_e dnu)"//BinNameZ(i),  0.0,  nuR%u,nuR%d, 1)
@@ -2258,7 +2326,7 @@ contains
 
     case (5) ! JLAB,  5GeV (CLAS)
 
-       if (ALLOCATED(hJLAB5_R_nu)) then 
+       if (ALLOCATED(hJLAB5_R_nu)) then
           write(*,*) 'hJLAB5_R_nu allready allocated. stop!'
           stop
        endif
@@ -2309,12 +2377,12 @@ contains
        hh_WR  = ValueRange( 1.8,  3.2,  0.02)
 
     case (16) ! EIC
-       
+
        call CreateHistMP(hMP_EIC_zH, "dN/dzH", 0.0,  1.2,  zhR%d, 3)
        call CreateHistMP(hMP_EIC_nu, "dN/dnu", nuR%l,nuR%u,nuR%d, 3)
        call CreateHistMP(hMP_EIC_Q2, "dN/dnu", Q2R%l,Q2R%u,Q2R%d, 3)
        do iQ2=1,5
-          call CreateHistMP(hMP_EIC_nu_Q2(iQ2), "dN/dnu [bin(Q2)="//Achar(iQ2+48)//"]", nuR%l,nuR%u,nuR%d, 3) 
+          call CreateHistMP(hMP_EIC_nu_Q2(iQ2), "dN/dnu [bin(Q2)="//Achar(iQ2+48)//"]", nuR%l,nuR%u,nuR%d, 3)
           call CreateHistMP(hMP_EIC_zH_Q2(iQ2), "dN/dzH [bin(Q2)="//Achar(iQ2+48)//"]", 0.0,  1.2,  zhR%d, 3)
        end do
 
@@ -2367,7 +2435,7 @@ contains
   ! PURPOSE
   ! By calling this routine, the histogramms according the leptons are filled.
   ! INPUTS
-  ! * real :: nu -- nu value of Event 
+  ! * real :: nu -- nu value of Event
   ! * real :: Q2 -- Q**2 value of Event
   ! * real :: Weight -- perturbative weight of Event
   ! OUTPUT
@@ -2397,7 +2465,7 @@ contains
   ! By calling this routine, the histogramms according the hadron are filled.
   ! INPUTS
   ! * type(particle) :: Part -- the particle
-  ! * real :: nu -- nu value of Event 
+  ! * real :: nu -- nu value of Event
   ! * real :: Q2 -- Q**2 value of Event
   ! * real :: Ebeam -- Energy of the Lepton Beam
   ! * real :: phi_Lepton -- Angle of scattered Lepton
@@ -2416,7 +2484,7 @@ contains
     type(particle),intent(in) :: Part
     real,intent(in) :: nu,Q2,Ebeam,phi_Lepton
     integer, intent(in) :: iEns,iPart
-    
+
     integer,parameter :: IDbmax=100
     integer :: ID, IZ
     logical :: acceptFlag
@@ -2433,7 +2501,7 @@ contains
     IZ=Part%charge
     zh=Part%momentum(0)/nu
     pp = absMom(Part)
-       
+
     pT2 = Part%momentum(1)**2 + Part%momentum(2)**2 ! pT^2 according photon axis
 !      write(*,*) 'pT2:',pT2,pT2L
 !      pT2 = pT2L                                      ! pT^2 according lepton axis
@@ -2442,11 +2510,11 @@ contains
     W0 = Part%perWeight
     W1 = W0 * AccWeight ! weight for charged particles
     W2 = W1             ! weight for identified spectra
-    
+
     select case(iExperiment)
-       
+
     case (1) ! Hermes (H,N,Kr)
-       
+
        select case (ID)
        case (nucleon)
           if (pp <  4.0) W2 = 0.0
@@ -2455,9 +2523,9 @@ contains
           if (pp <  2.5) W2 = 0.0
           if (pp > 15.0) W2 = 0.0
        end select
-       
+
     case (2) ! Hermes (Ne)
-       
+
        select case (ID)
        case (nucleon)
           if (pp <  4.0) W2 = 0.0
@@ -2488,9 +2556,9 @@ contains
        case DEFAULT
           if (pp <  1.0) W2 = 0.0
        end select
-       
+
     case(10) ! Hermes@12GeV
-             
+
        if (pp <  1.0) W2 = 0.0
 
     end select
@@ -2538,7 +2606,7 @@ contains
 !    else
 !       iClass = 5 ! something else
 !    endif
-       
+
     if (DoClassifyFirst) then
        call AddHistMP(HMP_zHClass(0),     Part, zH,W2)
        call AddHistMP(HMP_pT2Class(0),    Part, zH,W2,W2*pT2)
@@ -2547,7 +2615,7 @@ contains
           call AddHistMP(HMP_zHClass(iClass), Part, zH,W2)
           call AddHistMP(HMP_pT2Class(iClass),Part, zH,W2,W2*pT2)
        endif
-       
+
        iGen = history_getGeneration(Part%history)
        call AddHistMP(hMP_zH_Generation(-1),Part, zH, W2)
        if (iGen.lt.11) then
@@ -2580,7 +2648,7 @@ contains
              iGen = 2
              iClass = iClass/100
           end if
-          
+
           call AddHist2D(H2D_CollHistPT(iGen), (/iClass*1.0, zH/), W2,W2*pT2)
 
        end if
@@ -2619,17 +2687,17 @@ contains
 
     if (ID==pion) then
        call AddHist2D(H2DpTAvePion(IZ), (/nu,zH/),W2,W2*pT2 )
-       
+
        call AddHist2D(H2DpTPionNU(IZ), (/nu,pT2/),W2)
        call AddHist2D(H2DpTPionQ2(IZ), (/Q2,pT2/),W2)
 
     end if
 
     if (iExperiment.eq.11) then ! HERMES (final paper)
-       ! please note: we have already zH > 0.2. Is this correct???     
+       ! please note: we have already zH > 0.2. Is this correct???
 
        call DoBinning_11
-       
+
     endif
 
   contains
@@ -2655,7 +2723,7 @@ contains
 
     !-----------------------------------------------------------------
     subroutine DoBinning_11
-      
+
       if (zH.lt.0.4) then
          i=1
       else if (zH.lt.0.7) then
@@ -2663,7 +2731,7 @@ contains
       else
          i=3
       endif
-      call AddHistMP(HMP_nu_zH(i), Part, nu,  W2,W0) 
+      call AddHistMP(HMP_nu_zH(i), Part, nu,  W2,W0)
       call AddHistMP(HMP_Q2_zH(i), Part, Q2,  W2,W0)
       call AddHistMP(HMP_pT2_zH(i),Part, pT2, W2,W0)
 
@@ -2683,7 +2751,7 @@ contains
       else
          i=2
       endif
-      call AddHistMP(HMP_nu_pT(i), Part, nu,  W2,W0) 
+      call AddHistMP(HMP_nu_pT(i), Part, nu,  W2,W0)
       call AddHistMP(HMP_zH_pT(i), Part, zH,  W2,W0)
       call AddHistMP(HMP_Q2_pT(i), Part, Q2,  W2,W0)
 
@@ -2714,7 +2782,7 @@ contains
 
       call AddHistMP(HMP_EIC_nu, Part, nu,  W2,W0)
       call AddHistMP(HMP_EIC_nu_Q2(iQ2), Part, nu,  W2,W0)
-      
+
       call AddHistMP(HMP_EIC_Q2, Part, Q2,  W2,W0)
 
     end subroutine DoBinning_16
@@ -2736,7 +2804,7 @@ contains
   ! several files are (re-)written.
   !
   ! NOTES
-  ! 
+  !
   !*********************************************************************
 
   subroutine writeBinning()
@@ -2757,27 +2825,27 @@ contains
             &file='HiLep.lep.Q2.kinematics.dat',dump=.true.)
        call WriteHist(hLep_nu,add=add0,&
             &file='HiLep.lep.nu.kinematics.dat',dump=.true.)
-       
+
        call WriteHist(hLep_Q2,add=add0,DoAve=.true.,&
             &file='HiLep.lep.nuAve_Q2.kinematics.dat')
        call WriteHist(hLep_nu,add=add0,DoAve=.true.,&
             &file='HiLep.lep.Q2Ave_nu.kinematics.dat')
 
-    
+
        ! -----
 
        open(140,file='HiLep.NuQ2planeXS.SYS'//'.dat', status='unknown')
        rewind(140)
        do i=0,9
           call WriteHist2D_SYSTEM(H2DleptonXS(i),140)
-          
+
           call WriteHist2D_Gnuplot(H2DleptonXS(i),mul=mul0, add=add0,&
                &file='HiLep.NuQ2planeXS.'//trim(intToChar(i))//'.dat',dump=.true.)
        enddo
        close(140)
 
     end if
-       
+
     if (DoHadronKinematics) then
 
        ! ===== nu-spectra =====
@@ -2786,61 +2854,61 @@ contains
             &file='HiLep.nu.idH.noAcc.dat') ! noAcc
        call WriteHistMP(hMP_nu,add=add0,H2=hLep_nu,iColumn=1,&
             &file='HiLep.nu.idH.Acc.dat',dump=.true.) ! Acc
-       
+
        call WriteHist(hCH_nu,add=add0,H2=hLep_nu,&
             &file='HiLep.nu.chH.dat',dump=.true.) ! Acc, NoAcc
-       
+
        call WriteHist(hKin_nu_Q2(1),add=add0,DoAve=.true.,&
             &file='HiLep.nu.Q2.kinematics.noAcc.dat',dump=.true.) ! <Q2>(nu), noAcc
        call WriteHist(hKin_nu_Q2(2),add=add0,DoAve=.true.,&
             &file='HiLep.nu.Q2.kinematics.Acc.dat',dump=.true.) ! <Q2>(nu), Acc
-       
+
        call WriteHist(hKin_nu_zH(1),add=add0,DoAve=.true.,&
             &file='HiLep.nu.zH.kinematics.noAcc.dat',dump=.true.) ! <zH>(nu), noAcc
        call WriteHist(hKin_nu_zH(2),add=add0,DoAve=.true.,&
             &file='HiLep.nu.zH.kinematics.Acc.dat',dump=.true.) ! <zH>(nu), Acc
-       
+
        call WriteHistMP(hMP_pT2nu,DoAve=.true.,&
          &file='HiLep.AvePT2.nu.dat',dump=.true.)
-       
+
        ! ===== Q2-spectra =====
-       
+
        call WriteHistMP(hMP_Q2,add=add0,H2=hLep_Q2,iColumn=3,&
             &file='HiLep.Q2.idH.noAcc.dat') ! noAcc
        call WriteHistMP(hMP_Q2,add=add0,H2=hLep_Q2,iColumn=1,&
             &file='HiLep.Q2.idH.Acc.dat',dump=.true.) ! Acc
-       
+
        call WriteHist(hCH_Q2,add=add0,H2=hLep_Q2,&
             &file='HiLep.Q2.chH.dat',dump=.true.) ! Acc, NoAcc
-       
+
        call WriteHistMP(hMP_pT2Q2,DoAve=.true.,&
             &file='HiLep.AvePT2.Q2.dat',dump=.true.)
-       
+
        ! ===== zH-spectra =====
-       
+
        call WriteHistMP(hMP_zH,add=add0,mul=mul0,iColumn=3,&
             &file='HiLep.zH.idH.noAcc.dat') ! noAcc
        call WriteHistMP(hMP_zH,add=add0,mul=mul0,iColumn=1,&
             &file='HiLep.zH.idH.Acc.dat',dump=.true.) ! Acc
-       
+
        call WriteHist(hCH_zH,add=add0,mul=mul0,&
             &file='HiLep.zH.chH.dat',dump=.true.) ! Acc, NoAcc
-       
+
        call WriteHist(hKin_zH_Q2(1),add=add0,DoAve=.true.,&
             &file='HiLep.zH.Q2.kinematics.noAcc.dat',dump=.true.) ! <Q2>(zH), noAcc
        call WriteHist(hKin_zH_Q2(2),add=add0,DoAve=.true.,&
             &file='HiLep.zH.Q2.kinematics.Acc.dat',dump=.true.) ! <Q2>(zH), Acc
-       
+
        call WriteHist(hKin_zH_nu(1),add=add0,DoAve=.true.,&
             &file='HiLep.zH.nu.kinematics.noAcc.dat',dump=.true.) ! <nu>(zH), noAcc
        call WriteHist(hKin_zH_nu(2),add=add0,DoAve=.true.,&
             &file='HiLep.zH.nu.kinematics.Acc.dat',dump=.true.) ! <nu>(zH), Acc
-       
+
        call WriteHistMP(hMP_pT2zH,DoAve=.true.,&
             &file='HiLep.AvePT2.zH.dat',dump=.true.)
-       
+
     end if
-       
+
 !    rewind(56)
 !    call WriteHistMP(hMP_zHClass(0),56,add=add0,mul=mul0,iColumn=1) ! Acc
 !    do i=1,5
@@ -2855,7 +2923,7 @@ contains
           call WriteHistMP(hMP_pT2Class(i),DoAve=.true.,&
                & file='HiLep.pT2class.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
        end do
-       
+
        call WriteHistMP(hMP_zH_Generation(-1),add=add0,mul=mul0,iColumn=1,&
             & file='HiLep.zH_Generation.'//intToChar(999)//'.dat',dump=.true.)
        do i=0,10
@@ -2867,35 +2935,35 @@ contains
 
     if (DoHadronKinematics) then
        ! ===== pT2-spectra =====
-       
+
        call WriteHistMP(hMP_pT2,add=add0,mul=mul0,iColumn=3,&
             &file='HiLep.pT2.idH.noAcc.dat') ! noAcc
        call WriteHistMP(hMP_pT2,add=add0,mul=mul0,iColumn=1,&
             &file='HiLep.pT2.idH.Acc.dat',dump=.true.) ! Acc
-       
+
        call WriteHist(hCH_pT2,add=add0,mul=mul0,&
             &file='HiLep.pT2.chH.dat',dump=.true.) ! Acc, NoAcc
-       
+
        call WriteHistMP(hMP_pT2pT2,DoAve=.true.,&
             &file='HiLep.AvePT2.pT2.dat',dump=.true.)
-       
+
        ! =====================
-       
+
        do i=-1,1
           call WriteHist2D_Gnuplot(H2DpTAvePion(i),DoAve=.true.,maxval=0.0,&
                &file='HiLep.pT2Ave_Plane.'//piName(i)//'.dat',dump=.true.)
-          
+
           call WriteHist2D_Gnuplot(H2DpTPionZH(i), mul=mul0, add=add0,&
                &file='HiLep.pT2_zH.'//piName(i)//'.dat',dump=.true.)
-          
+
           call WriteHist2D_Gnuplot(H2DpTPionNU(i), H2=hLep_nu, add=add0,&
                &file='HiLep.pT2_nu.'//piName(i)//'.dat',dump=.true.)
-          
+
           call WriteHist2D_Gnuplot(H2DpTPionQ2(i), H2=hLep_Q2, add=add0,&
                &file='HiLep.pT2_Q2.'//piName(i)//'.dat',dump=.true.)
        enddo
-       
-       
+
+
        call WriteHist2D_Gnuplot(H2D_CollHistPT(1), DoAve=.true., mul=mul0, add=add0,&
             & file='HiLep.CollHistPT2.1.dat',dump=.true.) ! Acc
        call WriteHist2D_Gnuplot(H2D_CollHistPT(2), DoAve=.true., mul=mul0, add=add0,&
@@ -2905,40 +2973,40 @@ contains
 
        select case(iExperiment)
        case(11) ! HERMES (final paper)
-          
+
           call WriteBinning_11
-          
+
        case (5) ! JLAB@5GeV (CLAS)
-          
+
           call WriteBinning_5
-          
+
        case (16) ! EIC
-          
+
           !       call WriteHistMP(hMP_EIC_zH,add=add0,mul=mul0,iColumn=3,&
           !            &file='HiLep.EIC_zH.idH.noAcc.dat') ! noAcc
           call WriteHistMP(hMP_EIC_zH,add=add0,mul=mul0,iColumn=1,&
                &file='HiLep.EIC_zH.idH.Acc.dat',dump=.true.) ! Acc
-          
+
           !       call WriteHistMP(hMP_EIC_nu,add=add0,H2=hLep_nu,iColumn=3,&
           !            &file='HiLep.EIC_nu.idH.noAcc.dat') ! noAcc
           call WriteHistMP(hMP_EIC_nu,add=add0,H2=hLep_nu,iColumn=1,&
                &file='HiLep.EIC_nu.idH.Acc.dat',dump=.true.) ! Acc
-          
+
           !       call WriteHistMP(hMP_EIC_Q2,add=add0,H2=hLep_Q2,iColumn=3,&
           !            &file='HiLep.EIC_Q2.idH.noAcc.dat') ! noAcc
           call WriteHistMP(hMP_EIC_Q2,add=add0,H2=hLep_Q2,iColumn=1,&
                &file='HiLep.EIC_Q2.idH.Acc.dat',dump=.true.) ! Acc
-          
+
           do i=1,5
              call WriteHistMP(hMP_EIC_zH_Q2(i),add=add0,mul=mul0,iColumn=1,&
                   &file='HiLep.EIC_zH.idH.Q2_'//Achar(i+48)//'.Acc.dat',dump=.true.) ! Acc
              call WriteHistMP(hMP_EIC_nu_Q2(i),add=add0,H2=hLep_nu,iColumn=1,&
                   &file='HiLep.EIC_nu.idH.Q2_'//Achar(i+48)//'.Acc.dat',dump=.true.) ! Acc
           end do
-          
+
 
        end select
-    
+
     end if
 
 
@@ -2998,7 +3066,7 @@ contains
                 &file='HiLep.dN_id.Q2.zH.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
            call WriteHistMP(hMP_pT2_zh(i),add=add0,mul=mul0,iColumn=1,&
                 &file='HiLep.dN_id.pT2.zH.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
-           
+
            call WriteHistMP(hMP_zH_nu(i),add=add0,mul=mul0,iColumn=1,&
                 &file='HiLep.dN_id.zH.nu.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
            call WriteHistMP(hMP_Q2_nu(i),add=add0,mul=mul0,iColumn=1,&
@@ -3006,7 +3074,7 @@ contains
            call WriteHistMP(hMP_pT2_nu(i),add=add0,mul=mul0,iColumn=1,&
                 &file='HiLep.dN_id.pT2.nu.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
         end do
-        
+
         do i=1,2
            call WriteHistMP(hMP_nu_pT(i),add=add0,mul=mul0,iColumn=1,&
                 &file='HiLep.dN_id.nu.pT2.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
@@ -3015,8 +3083,8 @@ contains
            call WriteHistMP(hMP_Q2_pT(i),add=add0,mul=mul0,iColumn=1,&
                 &file='HiLep.dN_id.Q2.pT2.'//trim(intToChar(i))//'.dat',dump=.true.) ! Acc
         end do
-        
-        
+
+
       end subroutine WriteBinning_11
       !-----------------------------------------------------------------
 
@@ -3135,7 +3203,7 @@ contains
   ! particle in respect to the photon direction.
   ! INPUTS
   ! * type(particle) :: Part -- particle to consider
-  ! * real :: nu -- nu value of Event 
+  ! * real :: nu -- nu value of Event
   ! * real :: Q2 -- Q**2 value of Event
   ! * real :: Ebeam -- Energy of the Lepton Beam
   ! * real :: phi_Lepton -- Angle of scattered Lepton
@@ -3144,17 +3212,17 @@ contains
   ! * real :: weight -- weight of acceptance
   ! * real, OPTIONAL :: pT2 -- transverse momentum according lepton beam
   ! NOTES
-  ! phi_Lepton indicates the azimuthal angle of the scattered lepton 
-  ! around the axis, which is determined by the momentum of the 
+  ! phi_Lepton indicates the azimuthal angle of the scattered lepton
+  ! around the axis, which is determined by the momentum of the
   ! incoming lepton.
-  ! This is normally not the z-axis. (see below) 
-  ! 
+  ! This is normally not the z-axis. (see below)
+  !
   ! A particle can be detected, but, e.g. due to rotational systematics
   ! around the lepton beam axis, only in 50% of all cases. If the details
   ! of the detector are not important, you can then give the particle
   ! the acceptance weight 0.5.
   !
-  ! Be aware: The events are normally in a system, where the PHOTON 
+  ! Be aware: The events are normally in a system, where the PHOTON
   ! determines the z-axis.
   !*********************************************************************
   subroutine checkCuts(Part,nu,Q2,Ebeam,phi_Lepton,acceptFlag,weight, pT2)
@@ -3167,7 +3235,7 @@ contains
     real,intent(out) :: weight
     real,intent(out),optional :: pT2
 
-    real :: pBeam,pPhoton,alpha,theta, h 
+    real :: pBeam,pPhoton,alpha,theta, h
 !    real :: Eprime,pPrime
 !    real,parameter :: mLepton=0. ! neglect lepton mass just as in initLepton
 
@@ -3197,7 +3265,7 @@ contains
 
   end subroutine checkCuts
 
-  
+
   !*********************************************************************
   !****is* HiLeptonAnalysis/labrotate
   ! NAME
@@ -3210,10 +3278,10 @@ contains
   ! * phi_Lepton : angle to rotate arund z-axis
   ! * p          : vector to rotate
   ! OUTPUT
-  ! * theta  : angle 
+  ! * theta  : angle
   ! * phi    : angle
-  ! * pT2    : transverse momentum (squared) acording lepton axis  
-  ! 
+  ! * pT2    : transverse momentum (squared) acording lepton axis
+  !
   ! NOTES
   ! First the vector is rotated around the y-axis by the angle
   ! alpha (i.e. the angle between incoming lepton and photon).
@@ -3227,26 +3295,26 @@ contains
     real,intent(out) :: theta
     real,intent(out),optional :: phi
     real,intent(out),optional :: pT2
-    
+
     real :: cp,sp,ca,sa,plx,ply,plz,ptot
-    
+
     ptot=sqrt(p(1)**2+p(2)**2+p(3)**2)
-    
+
     cp=cos(phi_Lepton)
     sp=sin(phi_Lepton)
-    
+
     ca=cos(alpha)
     sa=sin(alpha)
-    
+
     plx= p(1)*ca*cp +p(2)*sp + p(3)*sa*cp
     ply=-p(1)*ca*sp +p(2)*cp - p(3)*sa*sp
     plz=-p(1)*sa             + p(3)*ca
-    
+
     theta=acos(plz/ptot)
-    
+
     if(Present(phi)) phi=atan2(ply,plx)
     if(Present(pT2)) pT2=plx**2 + ply**2
-    
+
   end subroutine labrotate
 
 
@@ -3256,7 +3324,7 @@ contains
   ! subroutine HiLeptonAnalysisPerTime(Time, pParts)
   ! PURPOSE
   ! produce statistical output after every time step
-  ! 
+  !
   ! INPUTS
   ! * real           :: Time        -- time of time step (in fm)
   ! * type(particle) :: pParts(:,:) -- particle vector of perturbative parts
@@ -3298,7 +3366,7 @@ contains
           If (pParts(i,j)%ID > 0) then
 
              Eh = pParts(i,j)%momentum(0)
-             
+
              if (EventInfo_HiLep_Get(i,pParts(i,j)%firstEvent,Weight,nu,Q2,epsilon,EventType)) then
              else
                 write(*,*) 'Ooops, L1087'
@@ -3309,7 +3377,7 @@ contains
 
              w  = pParts(i,j)%perWeight
              ws = w * pParts(i,j)%ScaleCS
-             
+
              call AddHist2D(hist_Time, (/zh,time/), ws, w)
 
              r = sqrt(DOT_PRODUCT(pParts(i,j)%position,pParts(i,j)%position))
@@ -3345,10 +3413,10 @@ contains
     real :: W
 
     W = sqrt(max(mN**2+2*mN*nu-Q2, 0.))
-    
+
     GlobalAverage%sum0 = GlobalAverage%sum0 + 1.0
     GlobalAverage%sum  = GlobalAverage%sum  + weight
-    GlobalAverage%W    = GlobalAverage%W    + weight*W 
+    GlobalAverage%W    = GlobalAverage%W    + weight*W
     GlobalAverage%Q2   = GlobalAverage%Q2   + weight*Q2
     GlobalAverage%nu   = GlobalAverage%nu   + weight*nu
 
@@ -3378,7 +3446,7 @@ contains
   !*********************************************************************
 
   subroutine WriteFileNames
-    use output 
+    use output
 
     logical, save :: first = .true.
 
@@ -3404,7 +3472,7 @@ contains
             &'')
        call writeFileDocu('DoTIMES.MP.14n[.lead][.N].dat (n=1..2)',&
             &'')
-       
+
     end if
 
     if (DoLeptonKinematics) then
@@ -3434,7 +3502,7 @@ contains
 
        call writeFileDocu('HiLep.AvePT2.XX.dat; XX=nu,Q2,zH,pT2',&
             &'identified hadrons, d<pT2>/(N_e dXX), with & without acceptance')
-    
+
 
 !    call writeFileDocu('fort.56',&
 !         &'identified hadrons, dN_id/(N_e dzH), all particles')
@@ -3446,7 +3514,7 @@ contains
 !         &'identified hadrons, dN_id/(N_e dzH), all particles, via decay of rho')
 !    call writeFileDocu('fort.564',&
 !         &'identified hadrons, dN_id/(N_e dzH), all particles, via decay of diffractive rho0')
-    
+
 
        call writeFileDocu('HiLep.pT2Ave_Plane.piX.dat; X=+,0,-',&
             &'<pT2>(nu,zH)')
@@ -3463,6 +3531,50 @@ contains
 
     end if
 
+    ! DoInvMasses = okay. Done in the module
+
+    if (DoFindRho0) then
+       call writeFileDocu('HiLep.Rho0_MV.dat','...')
+       call writeFileDocu('HiLep.Rho0_MX.dat','...')
+       call writeFileDocu('HiLep.Rho0_DE.dat','...')
+       call writeFileDocu('HiLep.Rho0_DecTime.dat','...')
+       call writeFileDocu('HiLep.Rho0_Mom.dat','...')
+       call writeFileDocu('HiLep.Rho0_Theta.dat','...')
+       call writeFileDocu('HiLep.OutChannels.RhoOrig.dat','...')
+       call writeFileDocu('HiLep.Rho0_*.dat','...')
+       ! to be continued ...
+    end if
+
+    if (DoClasie) then
+       call writeFileDocu('HiLep.Clasie.n.dat; n=1,2','...')
+    end if
+
+    if (DoBrooks) then
+       call writeFileDocu('HiLep.Brooks.dat','pi+ dN/dpT2, <pT2>; see header in file')
+       call writeFileDocu('HiLep.Brooks.detailed.dat','<pT2>; see header in file')
+    end if
+
+    if (DoMorrow) then
+       call writeFileDocu('HiLep.Morrow.n.dat; n=1..3','...')
+       call writeFileDocu('HiLep.MorrowT.n.dat; n=1..2','...')
+    end if
+
+    if (DoMandelT) then
+       call writeFileDocu('HiLep.MandelstamT.idH.excl.dat',&
+            'dN_id/(N_e d|t|), exclusive')
+       call writeFileDocu('HiLep.MandelstamT.idH.incl.dat',&
+            'dN_id/(N_e d|t|), inclusive')
+    end if
+
+    if (DoCentralN) then
+       ! to be done
+    end if
+
+    if (DoFSIsqrts) then
+       call writeFileDocu('HiLep.FSIsqrts.dat',&
+            'sqrt(s) of possible FSI')
+    end if
+
 
   end subroutine WriteFileNames
 
@@ -3471,7 +3583,7 @@ contains
 
   integer function ClassifyFirstEvent(iEns,iNuc)
     use idTable, only: nucleon, pion
-    
+
     integer, intent(in) :: iEns,iNuc
 
     type(tPreEvListEntry), POINTER :: pV
@@ -3498,7 +3610,7 @@ contains
        else if(PV%preE(1)%ID==nucleon .and. PV%preE(2)%ID>pion) then
           ClassifyFirstEvent=2
        else if(PV%preE(1)%ID>nucleon .and. PV%preE(2)%ID==pion) then
-          ClassifyFirstEvent=3 
+          ClassifyFirstEvent=3
        else if(PV%preE(1)%ID>nucleon .and. PV%preE(2)%ID>pion) then
           ClassifyFirstEvent=4
        endif
@@ -3508,7 +3620,7 @@ contains
        else if(PV%preE(1)%ID==nucleon .and. PV%preE(2)%ID==pion .and. PV%preE(3)%ID>pion) then
           ClassifyFirstEvent=6
        else if(PV%preE(1)%ID>nucleon .and. PV%preE(2)%ID==pion .and. PV%preE(3)%ID==pion) then
-          ClassifyFirstEvent=7 
+          ClassifyFirstEvent=7
        else if(PV%preE(1)%ID>nucleon .and. PV%preE(2)%ID==pion .and. PV%preE(3)%ID>pion) then
           ClassifyFirstEvent=8
        endif
