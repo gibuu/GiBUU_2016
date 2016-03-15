@@ -26,6 +26,8 @@
 ! electron-induced reactions replace this number of timesteps by something
 ! reasonable, i.e. 120 for C12 target and timestep = 0.2
 ! The event output is switched OFF
+! To produce the output in the LesHouches format to files EventOutput.Pert.*.lhe
+! switch WritePerturbativeParticles=T in the namelist &EventOutput
 ! for generation of events better use nuXsectionMode=6
 ! (16 for experimental flux)  and another jobcard as a prototype
 !-----------------------------------------------------------------------
@@ -237,9 +239,14 @@
       specificEvent_analysis=.false. ! extra cross sections for specific final states; see namelist nl_specificEvent
 										 ! also provides Q2 and energy reconstruction
       inclusiveAnalysis=.true.  !if .true. we don't care whether particles have made it out       
-      outputEvents=.false.      ! output list of events and all outgoing particles in each event to the file FinalEvents.dat
+      outputEvents=.true.      ! output list of events and all outgoing particles in each event to the file FinalEvents.dat
 /
 
+! file code/analysis/EventOutputAnalysis.f90
+&EventOutput
+!  EventFormat=1 !Les Houches(default), =2 (Oscar), = 3 (Shanghai)
+   WritePerturbativeparticles=.false. ! output list of events and all outgoing particles in each event in format specified
+/
 
 
 ! file: code/analysis/neutrinoAnalysis.f90

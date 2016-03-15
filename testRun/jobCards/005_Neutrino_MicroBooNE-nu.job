@@ -12,10 +12,8 @@
 ! the output of final events and particles in each event is given to the file FinalEvents.dat
 ! to turn it OFF switch outputEvents=.false. in the namelist &neutrinoAnalysis
 !
-! To produce the output in the LesHouches format to files
-!  * LesHouches.Pert.00000001.xml
-!  * LesHouches.Pert.00000002.xml (and so on, separate file for each subsequent run)
-!  switch LesHouchesFinalParticles_Pert=.true.  in the namelist  &LesHouches
+! To produce the output in the LesHouches format to files EventOutput.Pert.*.lhe
+! switch WritePerturbativeParticles=T in the namelist &EventOutput
 !
 !***************************************************************************************************************************************
 ! Some hints on output:
@@ -265,12 +263,11 @@
   Wmax_Npi=2.0
 /  
 
-
-! file code/analysis/LesHouchesAnalysis.f90
-&LesHouches
-   LesHouchesFinalParticles_Pert=.false. ! output list of events and all outgoing particles in each event to the file in LesHouches format
+! file code/analysis/EventOutputAnalysis.f90
+&EventOutput
+!  EventFormat=1 !Les Houches(default), =2 (Oscar), = 3 (Shanghai)
+   WritePerturbativeparticles=.false. ! output list of events and all outgoing particles in each event in format specified
 /
-
 
 
 ! file code/analysis/neutrinoAnalysis.f90

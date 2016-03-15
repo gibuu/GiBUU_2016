@@ -247,9 +247,10 @@
 /
 
 
-! file: code/analysis/EventOutputAnalysis.f90
+! file code/analysis/EventOutputAnalysis.f90
 &EventOutput
-    WritePerturbativeParticles = F  ! output list of events and all outgoing particles in each event to the file in LesHouches format
+!  EventFormat=1 !Les Houches(default), =2 (Oscar), = 3 (Shanghai)
+   WritePerturbativeparticles=.false. ! output list of events and all outgoing particles in each event in format specified
 /
 
 

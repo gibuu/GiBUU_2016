@@ -8,9 +8,11 @@
 !-----------------------------------------------------------------------
 ! This jobcard is set up for MINERvA flux, to use another flux change "nuExp" in the namelist &neutrino_induced
 !-----------------------------------------------------------------------
-! In this jobcard the most of analysis is switched OFF, see namelist &neutrinoAnalysis;
+! In this jobcard some of the analysis is switched OFF, see namelist &neutrinoAnalysis;
 ! the output of final events and particles in each event is given to the file FinalEvents.dat
 ! to turn it OFF switch outputEvents=.false. in the namelist &neutrinoAnalysis
+! To produce the output in the LesHouches format to files EventOutput.Pert.*.lhe
+! switch WritePerturbativeParticles=T in the namelist &EventOutput
 !
 !***************************************************************************************************************************************
 ! Some hints on output:
@@ -196,10 +198,10 @@
   include_W_dist=.true.               !printout of W-distributions for outgoing channel
 /
 
-
-! file: code/analysis/EventOutputAnalysis.f90
+! file code/analysis/EventOutputAnalysis.f90
 &EventOutput
-    WritePerturbativeParticles = T  ! output list of events and all outgoing particles in each event to the file in LesHouches format
+!  EventFormat=1 !Les Houches(default), =2 (Oscar), = 3 (Shanghai)
+   WritePerturbativeparticles=.false. ! output list of events and all outgoing particles in each event in format specified
 /
 
 
