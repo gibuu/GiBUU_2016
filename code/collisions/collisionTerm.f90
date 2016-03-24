@@ -97,6 +97,17 @@ module collisionTerm
   !*****************************************************************************
 
   !*****************************************************************************
+  !****g* collisionTerm/threeMesonProcesses
+  ! SOURCE
+  ! 
+  logical,save :: threeMesonProcesses=.false. 
+  ! PURPOSE
+  ! Switch on/off three-meson-induced processes.
+  ! This are the backreactions for e.g. omega -> pi pi pi etc.
+  !*****************************************************************************
+
+  
+  !*****************************************************************************
   !****g* collisionTerm/twoPlusOneBodyProcesses
   ! SOURCE
   ! 
@@ -255,7 +266,7 @@ contains
   !*****************************************************************************
   subroutine readInput
 
-    use output, only: Write_ReadingInput
+    use output, only: Write_ReadingInput,notInRelease
 
     integer :: ios
 
@@ -266,6 +277,7 @@ contains
     ! * oneBodyProcesses
     ! * twoBodyProcesses
     ! * threeBodyProcesses
+    ! * threeMesonProcesses
     ! * twoPlusOneBodyProcesses
     ! * twoBodyProcessesRealReal
     ! * twoBodyProcessesRealPert
@@ -285,8 +297,12 @@ contains
     ! * justDeleteDelta
     ! * noRecollisions
     !***************************************************************************
-    NAMELIST /collisionTerm/ oneBodyProcesses, twoBodyProcesses, threeBodyProcesses, twoPlusOneBodyProcesses, &
-         twoBodyProcessesRealReal, twoBodyProcessesRealPert, oneBodyAdditional, &
+    NAMELIST /collisionTerm/ &
+         oneBodyProcesses, twoBodyProcesses, threeBodyProcesses, &
+         twoPlusOneBodyProcesses, &
+         threeMesonProcesses, &
+         twoBodyProcessesRealReal, twoBodyProcessesRealPert, &
+         oneBodyAdditional, &
          energyCheck, maxOut, debug, collisionProtocol, printPositions, useStatistics, noNucNuc, &
          storeRho0Info, storeRho0InfoOnlyDifr, DoJustAbsorptive, &
          annihilate, annihilationTime, justDeleteDelta, &
@@ -314,6 +330,7 @@ contains
     end if
     write(*,*) 'Do 3-body-induced reactions :', threeBodyProcesses
     write(*,*) 'Do 2+1 body collisions      :', twoPlusOneBodyProcesses
+    write(*,*) 'Do 3-meson reactions        :', threeMesonProcesses
     write(*,*) 'Forbid recollisions         :', noRecollisions
     write(*,*)
 
@@ -345,6 +362,10 @@ contains
        write(*,*) 'ATTENTION: Delta N N -> NNN and Delta N -> NN: Finalstate not populated !!!!'
        write(*,*) 'ATTENTION: ONLY FOR TESTING,  NOT FOR REGULAR USE !!!!'
        write(*,*)
+    endif
+
+    if (threeMesonProcesses) then
+!       call notInRelease("threeMesonProcesses")
     endif
 
     call Write_ReadingInput('collisionTerm',1)
@@ -433,8 +454,8 @@ contains
   subroutine collideMain (teilchenPert, teilchenReal, time)
     use particleDefinition
     use output, only: DoPr, paragraph
-    use deuterium_Pl, only : deuterium_PertOrigin!,deuterium_pertOrigin_flag
-    use inputGeneral, only :localEnsemble
+    use deuterium_Pl, only: deuterium_PertOrigin!,deuterium_pertOrigin_flag
+    use inputGeneral, only: localEnsemble
     use CollHistory, only: CollHist_SetSize
     use AntibaryonWidth, only: DoAnnihilation
     use CallStack, only: Traceback
@@ -482,8 +503,12 @@ contains
        if (DoPr(2)) Write(*,paragraph)   "3-Body Processes"
        call threeBody (teilchenPert, teilchenReal, time)
     end if
-
-!    call DoThreeMeson()
+    
+    ! Evaluate three-meson interactions
+    If (threeMesonProcesses)  then
+       if (DoPr(2)) Write(*,paragraph)   "3-Meson Processes"
+       call DoThreeMeson(time)
+    end if
     
     nullify(deuterium_pertOrigin)
 

@@ -76,7 +76,7 @@ contains
     use callstack, only: traceback
     implicit none
 
-    integer :: j = 1,NDIM
+    integer :: j = 1, NDIM
     integer, intent(out) :: n_E
     integer :: ios 
     integer :: ierr

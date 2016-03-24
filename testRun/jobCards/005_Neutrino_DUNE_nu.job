@@ -92,14 +92,14 @@
 ! the number of generated events is proportional (but not equal, because some "events" can be in prohibited phase space)
 ! to target_A * numEnsembles * num_runs_SameEnergy
 &input
-	numEnsembles=4000               ! for C12 you can use 4000, for heavier nuclei should be lower; decrease it if there are problems with memory,
+	numEnsembles=1000               ! for C12 you can use 4000, for heavier nuclei should be lower; decrease it if there are problems with memory,
 	eventtype=5                     ! 5=neutrino, 200=simple transport of a given particle
 	numTimeSteps=120                ! the distance numTimeSteps*delta_T (100*0.2=20 fm in this example) should significantly exceed the radius of the target nucleus
                                   ! numTimeSteps=0 gives inclusive X-sections
 	delta_T=0.2                     ! timestep for hadron propagation
 	fullensemble=.true.
 	localEnsemble=.true.
-	num_runs_SameEnergy=50          ! increase these if you want to increase statistics (= number of generated events)
+	num_runs_SameEnergy=1           ! increase these if you want to increase statistics (= number of generated events)
 	num_Energies=1                  ! for nuXsectionMode=6 or 16 keep this 1, for other nuXsectionMode this is the number of the running Q2/Elepton/cosTheta variables, respectively
 	printParticleVectors=.false.
 	freezeRealParticles=.true.

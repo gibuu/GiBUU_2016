@@ -470,6 +470,8 @@ contains
       real :: mom(0:3), pT, mT, m, y, y0, cost, E, p, pabs, v1, v2, ut0, beta_proj, beta(1:3), gamma
       character(40) :: str
       type(tnucleus), pointer :: proj
+      integer, save :: n = 0
+      real :: fac
 
       if (first) then
          call CreateHistMC (hist_pT,   'Pion transverse momentum spectra: dN/dpT',     0.,1.,0.01,3)
@@ -557,14 +559,17 @@ contains
          end do
       end do
 
-      call WriteHistMC (hist_pT,  'PionPt.dat')
-      call WriteHistMC (hist_y,   'PionY.dat')
-      call WriteHistMC (hist_y0,  'PionY0.dat')
-      call WriteHistMC (hist_cost,'PionCost.dat')
+      n = n + 1                                        ! count runs
+      fac = num_Runs_SameEnergy*num_energies/float(n)  ! multiplication factor for writing histograms
+
+      call WriteHistMC (hist_pT,  'PionPt.dat',   mul=fac)
+      call WriteHistMC (hist_y,   'PionY.dat',    mul=fac)
+      call WriteHistMC (hist_y0,  'PionY0.dat',   mul=fac)
+      call WriteHistMC (hist_cost,'PionCost.dat', mul=fac)
       do i=0,7
          str = ""
          if (i>0) write(str,'(A,i1)') "_rapBin",i
-         call WriteHistMC (hist_mT(i), 'PionMt'//trim(str)//'.dat')
+         call WriteHistMC (hist_mT(i), 'PionMt'//trim(str)//'.dat', mul=fac)
       end do
       call WriteHistMC_avg (hist_v1_y,'PionV1_y.dat')
       call WriteHistMC_avg (hist_v2_y,'PionV2_y.dat')

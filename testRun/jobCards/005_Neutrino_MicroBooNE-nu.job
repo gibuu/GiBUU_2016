@@ -190,8 +190,8 @@
 !*****************
 ! file  code/init/neutrino/singlePionProductionMAIDlike.f90
 &neutrino_MAIDlikeBG
-  b_proton_pinull=3.0            ! parameters for 1-pion background  ANL=3       BNL=6(default)
-  b_neutron_piplus=1.5          !                                   ANL=1.5     BNL=3.0(default)
+  b_proton_pinull=3.0            ! parameters for 1-pion background  ANL=3 (default)      BNL=6
+  b_neutron_piplus=1.5          !                                   ANL=1.5 (default)    BNL=3.0
 /
 
 

@@ -22,7 +22,7 @@ module initNeutrino
   public :: init_neutrino
   public :: getFirstEventRange
   public :: getNeutrinoInfo
-  public :: nuXsectionMode, process_ID
+  public :: nuXsectionMode, process_ID, flavor_ID
   public :: nuExp
   public :: includeQE, includeDELTA, includeRES, include1pi, includeDIS, &
        & include2p2hQE, include2p2hDelta, include2pi
@@ -107,7 +107,7 @@ module initNeutrino
   ! * 5 = MiniBooNE antienutrino flux (in antineutrino mode = negative polarity)
   ! * 6 = MINOS muon-neutrino  in neutrino mode
   ! * 7 = MINOS muon-antineutrino  in neutrino mode
-  ! * 8 = NOVA neutrino (medium energy NuMI, 14 mrad off-axis)
+  ! * 8 = NOVA neutrino (medium energy NuMI, 14 mrad off-axis), FD
   ! * 9 = T2K neutrino off-axix 2.5 degrees ( at ND280 detector )
   ! * 10 = uniform distribution from Eflux_min to Eflux_max
   !       (see namelist nl_neutrino_energyFlux in the module expNeutrinoFluxes)
@@ -122,8 +122,9 @@ module initNeutrino
   ! * 19 = BNB nue          BNB= Booster Neutrino Beam
   ! * 20 = BNB nuebar
   ! * 21 = BNB numu
-  ! * 22 = BNB numubar
-  integer, parameter :: numberOfExperiments=22
+  ! * 22 = BNB numubar 
+  ! * 23 = NOvA ND
+  integer, parameter :: numberOfExperiments=23
   !***************************************************************************
 
 
@@ -133,25 +134,26 @@ module initNeutrino
         "K2K                    ", &
         "BNL                    ", "MiniBooNE barnu        ", &
         "MINOS nu numode        ", "MINOS barnu numode     ", &
-        "NOvA                   ", &
+        "NOvA FD                ", &
         "T2K OffAxis 2.5deg     ", "uniform distribution   ", &
         "MINOS nu barnumode     ", "MINOS barnu barnumode  ", &
         "MINERvA nu numode      ", "MINERvA barnu barnumode", &
         "LBNE nu                ", "LBNE barnu             ", &
         "LBNO nu numode         ", "NOMAD                  ", &
         "BNB nue                ", "BNB nuebar             ", &
-        "BNB numu               ", "BNB numubar            "/)
+        "BNB numu               ", "BNB numubar            ", &
+        "NOvA ND                "/)
 
 
   real, dimension(0:numberOfExperiments), parameter :: osclength = &
   (/ 0., 0.541, 0., 250., 0., 0.541, 735., 735., 810., 295., 0., 735., 735., &
-     0.5, 0.5, 1300., 1300., 2300., 0.6262,0.,0.,0.,0. /)
+     0.5, 0.5, 1300., 1300., 2300., 0.6262,0.,0.,0.,0.,0. /)
   ! oscillation length for various experiments in kilometers
   
   logical, dimension(0:numberOfExperiments), parameter:: OSC = &
   (/ .FALSE.,.FALSE.,.FALSE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,&
      .TRUE.,.FALSE.,.TRUE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,.TRUE.,&
-     .FALSE.,.FALSE.,.FALSE.,.FALSE. /)
+     .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE. /)
   ! OSC is true for oscillation experiments, false otherwise
   !   
   
@@ -696,7 +698,7 @@ contains
              case (7)
                 flux_enu=MINOSenergyBARNU_fluxNU()
              case (8)
-                flux_enu=NOVAenergyNU()
+                flux_enu=NOVAenergyNU_FD(Flavor_ID,Process_ID)     
              case (9)
                 flux_enu=T2K_ND_numu_energy()
              case (10)
@@ -724,7 +726,9 @@ contains
              case (21)
                 flux_enu=BNBenergyNUmu()
              case (22)
-                flux_enu=BNBenergyNUmubar()
+                flux_enu=BNBenergyNUmubar() 
+             case (23)
+                flux_enu=NOVAenergyNU_ND(Flavor_ID,Process_ID)     
              case default
                 write (*,*) 'Experiment does not exist'
                 stop                    
@@ -1387,12 +1391,13 @@ contains
 
       real, dimension(1:numberOfExperiments), parameter :: nuMaxArr = (/&
            & 2.5, 3.0, 4.0, 5.0, 2.5, & ! MiniBooNE-nu,ANL,K2K,BNL,MiniBooNE-barnu
-           & 30.0, 30.0, 5.0, 3.5, &    ! MINOS-nu-numode, MINOS-barnu-numode, NOvA, T2K OA2.5,
+           & 30.0, 30.0, 15.0, 3.5, &    ! MINOS-nu-numode, MINOS-barnu-numode, NOvA, T2K OA2.5,
            & 3.0, 30.0,  &              ! uniform distr, MINOS-nu-barnumode,
            & 30.0,      &               ! MINOS-barnu-barnumode
            & 30.0, 30.0, 30.0, 30.0, &  ! MINERvA-numu, MINERvA-antinumu,LBNE-nu,LBNE-barnu
            & 30.0, 300.0,      &        ! LBNO-nu, NOMAD     
-           & 7.5, 7.5, 7.5, 7.5      /) ! BNB-nue,BNB-nuebar,BNBnumu,BNBnumubar
+           & 7.5, 7.5, 7.5, 7.5, &      ! BNB-nue,BNB-nuebar,BNBnumu,BNBnumubar
+           & 15.      /)                ! NOvA
               
       !    numbers given in array nuMaxArr are upper boundaries for energy-transfer     
       !---------------------------------------------------------------------

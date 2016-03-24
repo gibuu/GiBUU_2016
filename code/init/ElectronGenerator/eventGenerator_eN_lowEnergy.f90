@@ -4,9 +4,9 @@
 ! module eventGenerator_eN_lowEnergy
 !
 ! PURPOSE
-! This module includes initilization routines for low energetic electron 
+! This module includes initilization routines for low energetic electron
 ! induced events
-! (Resonance region and quasi-elastic regime, i.e. 0.7<W<2 GeV) 
+! (Resonance region and quasi-elastic regime, i.e. 0.7<W<2 GeV)
 !
 ! INPUTS
 ! no namelist. All parameters are given as function arguments.
@@ -62,17 +62,17 @@ contains
   ! subroutine eventGen_eN_lowEnergy(eN,doC,whichRes,DoPauli,OutPart,channel,flagOK,XS,XS_Arr)
   !
   ! PURPOSE
-  ! Initializes one e^- N -> X events for 0.7<W<2 GeV . 
-  ! The weight each event is given by (total Xsection of event=sum over all 
-  ! possible channels). 
-  ! We make a Monte Carlo decision to choose a specific channel, which is 
-  ! returned as "OutPart". 
+  ! Initializes one e^- N -> X events for 0.7<W<2 GeV .
+  ! The weight each event is given by (total Xsection of event=sum over all
+  ! possible channels).
+  ! We make a Monte Carlo decision to choose a specific channel, which is
+  ! returned as "OutPart".
   !
-  ! The particles are produced at the place of the nucleon target. 
-  ! 
+  ! The particles are produced at the place of the nucleon target.
+  !
   ! INPUTS
   ! Scattering particles:
-  ! * type(electronNucleon_event)  :: eN -- The incoming electron and nucleon 
+  ! * type(electronNucleon_event)  :: eN -- The incoming electron and nucleon
   ! * logical, dimension(:)   :: doC -- switches, see below
   ! * logical :: DoPauli -- if .true., every event is checked for pauli blocking.
   !   if it is blocked, the corresponding cross section will be set to 0 and the
@@ -92,24 +92,24 @@ contains
   ! * 2p2hDelta -- Switch on/off gamma N N --> Delta N'
   !
   ! Special Switch for resonance production:
-  ! * logical, dimension(2:nres+1), intent(in)  :: whichRes     
-  ! With this switch special resonances can be selected, if res_flag=.true., 
+  ! * logical, dimension(2:nres+1), intent(in)  :: whichRes
+  ! With this switch special resonances can be selected, if res_flag=.true.,
   ! and whichRes is defined by the lines...
   !
   !   whichRes=.false.
   !   whichRes(Delta)=.true.
   !
   ! ... then only the Delta is included as a possible resonance channel.
-  ! 
+  !
   ! OUTPUT
   ! * integer                      :: channel     --
   !   value according to naming scheme defined in module "Electron_origin".
-  !   For all 1-Body final states the value of "channel" is given by the ID 
+  !   For all 1-Body final states the value of "channel" is given by the ID
   !   of the produced particle.
   ! * type(particle), dimension(:) :: OutPart  -- FinalState particles
   ! * logical                      :: flagOK -- .true. if OutPart was created
   ! * real, OPTIONAL               :: XS -- cross section in mub
-  ! * real,dimension(...),OPTIONAL :: XS_Arr -- cross sections according the 
+  ! * real,dimension(...),OPTIONAL :: XS_Arr -- cross sections according the
   !   internal weights (in mub, maybe also negative)
   !***************************************************************************
   subroutine eventGen_eN_lowEnergy(eN,doC,whichRes,DoPauli,realparticles,OutPart,channel,flagOK,XS,XS_Arr)
@@ -144,6 +144,7 @@ contains
 
     real, dimension(1:nC)          :: Weights
     real                           :: totalWeight
+    logical :: flagGuess
 
     flagOK =.false.
     if (present(XS)) XS = 0.0
@@ -161,7 +162,11 @@ contains
     if (doC(iC_Res)) call init_Res(eN,whichRes,OutPart_Res,weights(iC_Res))
     if (doC(iC_1Pi)) call init_1Pi(eN,OutPart_1pi,weights(iC_1pi),-999.,-999., doC(iC_Res))
     if (doC(iC_2Pi)) call init_2Pi(eN,OutPart_2pi,weights(iC_2pi))
-    if (doC(iC_DIS)) call init_DIS(eN,OutPart_DIS,weights(iC_DIS))
+    if (doC(iC_DIS)) then
+       call resetNumberGuess()
+       call init_DIS(eN,OutPart_DIS,weights(iC_DIS))
+       flagGuess = AcceptGuessedNumbers()
+    end if
     if (doC(iC_VMDrho)) call init_VMDrho(eN,OutPart_VMDrho,weights(iC_VMDrho))
     if (doC(iC_2p2hQE)) call init_2p2hQE(eN,OutPart_2p2hQE,weights(iC_2p2hQE))
     if (doC(iC_2p2hDelta)) call init_2p2hDelta(eN,OutPart_2p2hDelta,weights(iC_2p2hDelta))
@@ -238,7 +243,7 @@ contains
     Case(8) ! ===== 2p2h Delta Event =====
        OutPart(1:2)=OutPart_2p2hDelta
        channel=origin_2p2hDelta
-       
+
     Case Default
        call TRACEBACK('Wrong Monte-Carlo Decision')
     End Select
@@ -268,7 +273,7 @@ contains
   ! Check Charge and momentum conservation (.true. -> all is ok!)
   !
   ! INPUTS
-  ! * type(electronNucleon_event) :: eN -- incoming electron and nucleon 
+  ! * type(electronNucleon_event) :: eN -- incoming electron and nucleon
   ! * type(particle),dimension(:) :: f -- final state particles
   ! * integer                     :: channel -- how the event was generated,
   !   cf. iC_XXX and module Electron_origin
@@ -296,8 +301,8 @@ contains
     if (channel.eq.origin_2p2hDelta) return
 
     ! if it was a DIS event, we may violate energy-/momentum-conservation
-    ! dramatically, since we may omit ('unknown') particles. 
-    if (channel.eq.origin_DIS) return 
+    ! dramatically, since we may omit ('unknown') particles.
+    if (channel.eq.origin_DIS) return
 
     ! Total Charge:
     ! =============
@@ -375,6 +380,7 @@ contains
     eN_dummy = eN
     call lepton2p2h_DoQE(eN,outPart,XS)
     call setNumber(OutPart)
+    call setOutPartDefaults(OutPart, eN%nucleon)
     eN = eN_dummy
   end subroutine init_2p2hQE
 
@@ -393,19 +399,21 @@ contains
     use particleDefinition
     use eN_eventDefinition
     use lepton2p2h, only : lepton2p2h_DoDelta
-    
+
     type(electronNucleon_event)   , intent(inout) :: eN
     type(particle), dimension(:)  , intent(out)   :: OutPart
     real                          , intent(out)   :: XS
-    
+
     type(electronNucleon_event) :: eN_dummy
 
     eN_dummy = eN
     call lepton2p2h_DoDelta(eN,outPart,XS)
     call setNumber(OutPart)
+    call setOutPartDefaults(OutPart, eN%nucleon)
     eN = eN_dummy
+
   end subroutine init_2p2hDelta
-  
+
   !*************************************************************************
   !****s* eventGenerator_eN_lowEnergy/init_VMDrho
   ! NAME
@@ -432,7 +440,7 @@ contains
     use RMF                  , only: getRMF_flag
     use IdTable              , only: rho,nucleon
     use particleProperties   , only: hadron
-    use CollTools            , only: PythiaMSTP  
+    use CollTools            , only: PythiaMSTP
     use master_2Body         , only: setKinematics
     use lorentzTrafo         , only: lorentz,lorentzCalcBeta
     use collisionNumbering   , only: pert_numbering
@@ -468,7 +476,7 @@ contains
 
     call eNeV_GetKinV(eN, nu,Q2,W,Wfree,eps,fT)
 
-    ! instead of using the following parametrisation, which returns R 
+    ! instead of using the following parametrisation, which returns R
     ! according the TOTAL XS, we should better use something,
     ! which gives R_rho. (To Be Done!)
 
@@ -483,7 +491,7 @@ contains
     case (1) ! === PYTHIA-like ===
 
        call calcXS_gammaN2VN(Wfree,media,sig)
-       
+
        mV = hadron(rho)%mass
        Dipole  = (mV**2/(mV**2+Q2))**2
        select case(PythiaMSTP(17))
@@ -496,14 +504,14 @@ contains
           call TRACEBACK()
        end select
        LongEnh = 1. + eps * LongEnh * 4.*PARP165
-       
+
        XS = sig(1) * Dipole * LongEnh
 
     case (2) ! === fit to CLAS data (total XS) ===
 
        ! Please note the Jacobian dnu/dW as the 'prefactor'
        XS = mN/W * (83.8*W**2-525*W+862)*(Q2+1.8)**(-3.27)
-       
+
     case (3) ! fit to Pythia VMD contribution
 
        ! Please note the Jacobian dnu/dW as the 'prefactor'
@@ -523,7 +531,7 @@ contains
 
     OutPart%ID     = (/ rho, nucleon/)
     OutPart%Charge = (/ 0,   eN%nucleon%Charge /)
-    
+
     OutPart%perturbative= .true.
     OutPart%perWeight   = XS ! perturbative weight
 
@@ -574,16 +582,17 @@ contains
   ! This is mainly just a wrapper around DoColl_gammaN_Py.
   !
   ! The returned cross section (and also the weights of the particles)
-  ! is 'flux * sigma^*',  
+  ! is 'flux * sigma^*',
   !*************************************************************************
   subroutine init_DIS(eN,OutPart,XS)
-    use offshellpotential,   only: setOffShellParameter
-    use constants,           only: pi,twopi
+    use offshellpotential, only: setOffShellParameter
+    use constants, only: pi,twopi
     use particleDefinition
     use eN_eventDefinition
-    use eN_event,            only: eNeV_GetKinV,eNeV_CheckForDIS
-    use PythiaSpecFunc,      only: Init_VM_Mass
-    use Coll_gammaN,         only: DoColl_gammaN_Py
+    use eN_event, only: eNeV_GetKinV,eNeV_CheckForDIS
+    use PythiaSpecFunc, only: Init_VM_Mass
+    use Coll_gammaN, only: DoColl_gammaN_Py
+    use collisionNumbering, only: pert_numbering
 
     type(electronNucleon_event),  intent(in)  :: eN
     type(particle), dimension(:), intent(out) :: OutPart
@@ -623,6 +632,10 @@ contains
     XS = XS*fT ! prevent the XS from dividing by flux
     OutPart%perWeight=XS
 
+    !===== set some additional fields:
+
+    call setNumber(OutPart) ! ?????
+    call setOutPartDefaults(OutPart, eN%nucleon)
 
   end subroutine init_DIS
 
@@ -641,19 +654,20 @@ contains
   ! Restricted to Q^2 < 5 GeV^2 and W < 2 GeV, otherwise set to zero.
   !*************************************************************************
   subroutine init_2Pi(eN,OutPart,XS)
-    use offShellPotential                 , only: setOffShellParameter
-    use constants                         , only: pi, mN, mPi
+    use offShellPotential, only: setOffShellParameter
+    use constants, only: pi, mN, mPi
     use particleDefinition
     use mediumDefinition
-    use IdTable                           , only: pion,nucleon
+    use IdTable, only: pion,nucleon
     use eN_eventDefinition
-    use eN_event                          , only: eNeV_GetKinV
-    use random                            , only: rn
-    use nBodyPhaseSpace                   , only: momenta_in_3BodyPS
-    use ParamEP                           , only: CalcParamEP
-    use lorentzTrafo                      , only: lorentz
-    use energyCalc                        , only: energyCorrection
-    use mediumModule                      , only: mediumAt
+    use eN_event, only: eNeV_GetKinV
+    use random, only: rn
+    use nBodyPhaseSpace, only: momenta_in_3BodyPS
+    use ParamEP, only: CalcParamEP
+    use lorentzTrafo, only: lorentz
+    use energyCalc, only: energyCorrection
+    use mediumModule, only: mediumAt
+    use collisionNumbering, only: pert_numbering
 
     type(electronNucleon_event) , intent(in)  :: eN
     type(particle), dimension(3), intent(out) :: OutPart
@@ -694,6 +708,8 @@ contains
 
     !===== 3: generate an event (Q2=0):
 
+    call setToDefault(OutPart)
+
     OutPart(1:3)%ID=(/nucleon, pion, pion /)
     OutPart(1)%mass=mN
     OutPart(2:3)%mass=mPi
@@ -703,10 +719,10 @@ contains
 
     randomNumber=rn()*sig2Pi(0)
 
-    if (randomNumber .lt. sig2pi(2)) then ! === one charged pion + pi^0 
+    if (randomNumber .lt. sig2pi(2)) then ! === one charged pion + pi^0
        OutPart(1:3)%charge = (/abs(qnuk-1), 0, qnuk-abs(qnuk-1)/)
 
-    else if (randomNumber .lt. sig2pi(2)+sig2pi(3)) then ! === uncharged 
+    else if (randomNumber .lt. sig2pi(2)+sig2pi(3)) then ! === uncharged
        OutPart(1:3)%charge = (/qnuk, 0, 0/)
 
     else ! === double charged channel: gamma N -> N pi^+ pi^-
@@ -753,6 +769,11 @@ contains
     XS = XS*fT/ ( 1e3* pi/(eN%lepton_out%momentum(0)*eN%lepton_in%momentum(0)))
     OutPart(1:3)%perWeight=XS
 
+    !===== 8:  set some additional fields:
+
+    call setNumber(OutPart) ! ?????
+    call setOutPartDefaults(OutPart, eN%nucleon)
+
   end subroutine init_2Pi
 
   !*************************************************************************
@@ -761,14 +782,14 @@ contains
   ! subroutine init_2Pi_getBG(nucleon_free, Wfree, sig2pi)
   !
   ! PURPOSE
-  ! Calculate the background contribution for an e^- N -> e^- N pion pion 
+  ! Calculate the background contribution for an e^- N -> e^- N pion pion
   ! event at Q^2=0.
-  ! 
+  !
   ! Since te resonance cross section is only calculated up to W=2 GeV,
   ! it is also only possible to get some 2pi BG up to this value.
   !
   ! NOTES
-  ! This is a helper routine for init_2Pi, but also used in the neutrino 
+  ! This is a helper routine for init_2Pi, but also used in the neutrino
   ! case
   !*************************************************************************
   subroutine init_2Pi_getBG(nucleon_free, Wfree, sig2pi)
@@ -823,37 +844,37 @@ contains
   ! subroutine init_1Pi(eN,OutPart,XS,theta_k,phi_k,modeBckGrnd)
   !
   ! PURPOSE
-  ! Generate one e^- N -> e^- N pion event. 
+  ! Generate one e^- N -> e^- N pion event.
   !
-  ! The weight of the each event is given by (total Xsection of event=sum 
-  ! over all possible pion charges). 
-  ! We make a Monte Carlo decision  to determine the pion charge. 
+  ! The weight of the each event is given by (total Xsection of event=sum
+  ! over all possible pion charges).
+  ! We make a Monte Carlo decision  to determine the pion charge.
   !
-  ! The particles are produced at the place of the nucleon target. 
-  ! 
-  ! If one or more of the input angles theta_k, phi_k are negative, then we 
-  ! make a Monte-Carlo decision for those angles which are negative. In this 
+  ! The particles are produced at the place of the nucleon target.
+  !
+  ! If one or more of the input angles theta_k, phi_k are negative, then we
+  ! make a Monte-Carlo decision for those angles which are negative. In this
   ! procedure, we distribute:
   ! * phi_k flat in [0,2*pi]
   ! * cos(theta_k) flat in [-1,1]
-  ! Note that those angles are defined in the CM-frame of the outgoing pion and nucleon. 
+  ! Note that those angles are defined in the CM-frame of the outgoing pion and nucleon.
   !
-  ! If a Monte-Carlo decision on the angle is performed, then the perweight of each event 
+  ! If a Monte-Carlo decision on the angle is performed, then the perweight of each event
   ! includes the following integral measure:
-  ! * phi and theta decision: measure=int dphi_k dtheta_k=4*pi   
+  ! * phi and theta decision: measure=int dphi_k dtheta_k=4*pi
   !   --> perweight=4*pi*dsigma_dOmega_pion(phi_k,theta_k)
-  ! * phi integration       : measure=int dphi_k dtheta_k=2*pi   
+  ! * phi integration       : measure=int dphi_k dtheta_k=2*pi
   !   --> perweight=2*pi*dsigma_dOmega_pion(phi_k,theta_k
-  ! * theta integration     : measure=int dtheta_k       =2      
+  ! * theta integration     : measure=int dtheta_k       =2
   !   --> perweight=2   *dsigma_dOmega_pion(phi_k,theta_k
-  ! 
+  !
   ! INPUTS
-  ! * type(electronNucleon_event)  :: eN             
-  !   -- The underlying electron and nucleon event 
-  ! * real                         :: theta_k,phi_k  
+  ! * type(electronNucleon_event)  :: eN
+  !   -- The underlying electron and nucleon event
+  ! * real                         :: theta_k,phi_k
   !   -- Outgoing pion angles (if negative then Monte Carlo Integration).
   !   The angles are defined in the CM-Frame of the outgoing pion and nucleon
-  ! * logical                      :: modeBckGrnd 
+  ! * logical                      :: modeBckGrnd
   !   -- true: mode==background, false: mode=normal
   ! OUPTUT
   ! * type(particle), dimension(1:2)   :: OutPart
@@ -867,10 +888,10 @@ contains
     use particleDefinition
     use IdTable                     , only : nucleon
     use random                      , only : rn, rnCos
-    use constants                   , only : pi 
+    use constants                   , only : pi
     use degRad_conversion           , only : degrees
     use eN_eventDefinition          , only : electronNucleon_event,setVacuum
-    use leptonicID                  , only : EM 
+    use leptonicID                  , only : EM
     use monteCarlo                  , only : monteCarloChoose
 
     type(electronNucleon_event) , intent(in)  :: eN
@@ -885,8 +906,8 @@ contains
     integer                     :: pionCharge
     real                        :: theta_k_MC, deltaMonteCarlo, phi_k_MC,totalWeight
     real, dimension(-1:1)       :: sigma, sigmaRes
-    type(electronNucleon_event) :: eN_vacuum         
-    ! The underlying electron and nucleon event transformed to vacuum kinematics 
+    type(electronNucleon_event) :: eN_vacuum
+    ! The underlying electron and nucleon event transformed to vacuum kinematics
     real, dimension(0:3,-1:1)   :: k,pf
     logical                     :: twoRoots
     integer, parameter          :: CM=2
@@ -946,7 +967,7 @@ contains
           sigma(pionCharge)=sigma(pionCharge)-sigmares(pionCharge)
 
           ! Get In-Medium Kinematics for given pion angles
-          ! Note: We perform this for each pion charge seperately since the 
+          ! Note: We perform this for each pion charge seperately since the
           ! pion momentum depends on the pion charge,
           ! such that the pion momentum should also depend on the pion charge
           call getKinematics_eN(eN,pionCharge,eN%nucleon%charge-pionCharge,&
@@ -955,10 +976,10 @@ contains
           if(twoRoots) then
              call TRACEBACK('ERROR in init_1Pi. Two roots in getKinematics_eN!!!')
           end if
-          
+
           if(.not.flagOK) then
              ! Kinematics could not be established in the medium
-             sigma(pionCharge)=0. 
+             sigma(pionCharge)=0.
           end if
 
        end if
@@ -991,12 +1012,12 @@ contains
   !
   ! PURPOSE
   ! Initializes one e^- N -> e^- N' events. The weight of the event
-  ! is given by the  Xsection for QE scattering. 
+  ! is given by the  Xsection for QE scattering.
   !
-  ! The particles are produced at the place of the nucleon target. 
-  ! 
+  ! The particles are produced at the place of the nucleon target.
+  !
   ! INPUTS
-  ! * type(electronNucleon_event)  :: eN -- The underlying electron and nucleon event 
+  ! * type(electronNucleon_event)  :: eN -- The underlying electron and nucleon event
   ! OUPTUT
   ! * real                         :: XS - The resulting cross section (=0 for failure)
   ! * type(particle)               :: OutPart
@@ -1022,7 +1043,7 @@ contains
     flagOK = .false.
     OutPart%ID=0
     OutPart%perweight=0.0
-    
+
 
     ! Evaluate dSigma/dcos(Theta_l)/dE_l and convert it to dSigma/dOmega_l/dE_l
     sigma=dSigmadcosTheta_l_dE_l_BW_eN(eN,pf,baremass_out)/(2*pi)
@@ -1048,20 +1069,20 @@ contains
   ! subroutine init_Res(eN,OutPart,XS)
   !
   ! PURPOSE
-  ! Initializes an e^- N -> Resonance event. 
-  ! The (per)weight of the event is given by 
-  ! (total Xsection of event=sum over all resonances). 
+  ! Initializes an e^- N -> Resonance event.
+  ! The (per)weight of the event is given by
+  ! (total Xsection of event=sum over all resonances).
   ! We make a Monte Carlo decision to determine the resonance type.
   !
-  ! The particles are produced at the place of the nucleon target. 
-  ! 
+  ! The particles are produced at the place of the nucleon target.
+  !
   ! INPUTS
   ! * type(electronNucleon_event)  :: eN
-  !   -- The underlying electron and nucleon event 
-  ! * logical, dimension(2:nres+1) :: useRes 
+  !   -- The underlying electron and nucleon event
+  ! * logical, dimension(2:nres+1) :: useRes
   !   -- Switch on/off each resonance
   ! OUPTUT
-  ! * real                         :: XS 
+  ! * real                         :: XS
   !   -- The resulting cross section (=0 for failure)
   ! * type(particle)               :: OutPart
   !*************************************************************************
@@ -1092,7 +1113,7 @@ contains
     OutPart%perweight=0.0
     if (eN%QSquared.ge.5.0) return
 
-    sigma=0.    
+    sigma=0.
     ! Evaluate Xsection for each resonance
     resIDLoop: do resID=nucleon+1,nucleon+nres
        if(useRes(resID)) then
@@ -1126,15 +1147,15 @@ contains
   ! subroutine generateEvent_1Pi(OutPart,initNuc,kf,pf,xSection,pionCharge)
   !
   ! PURPOSE
-  ! Given the evaluated kinematics and cross sections, final state particles 
+  ! Given the evaluated kinematics and cross sections, final state particles
   ! are initialized for pion nucleon production.
-  ! 
+  !
   ! INPUTS
   ! * integer                       :: pionCharge -- Charge of outgoing pion
   ! * type(particle)                :: initNuc    -- initial Nucleon
   ! * real, dimension(0:3)          :: kf,pf      -- pion momentum and nucleon momentum
-  ! * real                          :: xSection   
-  !   -- Xsection for producing this event, including e.g. d(Omega) 
+  ! * real                          :: xSection
+  !   -- Xsection for producing this event, including e.g. d(Omega)
   ! OUPTUT
   ! * type(particle),dimension(1:2) :: OutPart -- final state particles
   !*************************************************************************
@@ -1151,8 +1172,6 @@ contains
     real, dimension(0:3)         , intent(in)  :: kf,pf
     real                         , intent(in)  :: xSection
 
-    integer :: i
-
     call setToDefault(OutPart)
     OutPart%ID =     (/pion,       nucleon /)
     OutPart%Charge = (/pionCharge, initNuc%charge-pionCharge/)
@@ -1161,16 +1180,11 @@ contains
     OutPart(1)%momentum = kf
     OutPart(2)%momentum = pf
 
-    OutPart%perturbative = .true.
     OutPart%perWeight    = xSection ! perturbative weight
 
     call updateVelocity(OutPart)
-    call setNumber(OutPart)
-
-    do i=1,2
-       OutPart(i)%position=initNuc%position
-       OutPart(i)%event=pert_numbering(initNuc)   ! Important for collision term: Particles won't collide immediately with InitNuc.
-    end do
+    call setNumber(OutPart) ! ???????
+    call setOutPartDefaults(OutPart, initNuc)
 
   end subroutine generateEvent_1Pi
 
@@ -1181,16 +1195,16 @@ contains
   ! subroutine  generateEvent_1Body(OutPart,initNuc,pf,xSection,ID,mass)
   !
   ! PURPOSE
-  ! Given the evaluated kinematics and cross sections, final state particles 
+  ! Given the evaluated kinematics and cross sections, final state particles
   ! are initialized for 1-body final states.
-  ! 
+  !
   ! INPUTS
   ! * integer               :: ID         -- ID of produced particle
   ! * real                  :: mass       -- mass of produced particle
   ! * type(particle)        :: initNuc    -- initial Nucleon
   ! * real, dimension(0:3)  :: pf         -- final state
-  ! * real                  :: xSection   
-  !   -- Xsection for producing this event, including e.g. d(Omega) 
+  ! * real                  :: xSection
+  !   -- Xsection for producing this event, including e.g. d(Omega)
   ! OUPTUT
   ! * type(particle), intent(out) :: OutPart -- finalstate particle
   !*************************************************************************
@@ -1199,7 +1213,7 @@ contains
     use collisionNumbering, only : pert_numbering
     use particleDefinition
 
-    type(particle)               , intent(out) :: OutPart
+    type(particle),dimension(1:1), intent(out) :: OutPart
     type(particle)               , intent(in)  :: initNuc
     real, dimension(0:3)         , intent(in)  :: pf
     real                         , intent(in)  :: xSection
@@ -1208,19 +1222,42 @@ contains
 
     call setToDefault(OutPart)
 
-    OutPart%ID      = ID
-    OutPart%charge  = initNuc%charge
-    OutPart%momentum= pf
-    OutPart%mass    = mass
-    OutPart%perturbative= .true.
-    OutPart%perWeight   = xSection ! perturbative weight
+    OutPart(:)%ID      = ID
+    OutPart(:)%charge  = initNuc%charge
+    OutPart(1)%momentum= pf
+    OutPart(:)%mass    = mass
+    OutPart(:)%perWeight   = xSection ! perturbative weight
 
     call updateVelocity(OutPart)
-    call setNumber(OutPart)
-
-    OutPart%position=initNuc%position
-    OutPart%event=pert_numbering(initNuc)  ! Important for collision term: Particles won't collide immediately with InitNuc.
+    call setNumber(OutPart) ! ????
+    call setOutPartDefaults(OutPart, initNuc)
 
   end subroutine generateEvent_1Body
+
+  !*************************************************************************
+  !****is* eventGenerator_eN_lowEnergy/setOutPartDefaults
+  ! NAME
+  ! subroutine setOutPartDefaults(OutPart, initNuc)
+  ! PURPOSE
+  ! set some fields of the outgoing particles to default values
+  !*************************************************************************
+  subroutine setOutPartDefaults(OutPart, initNuc)
+    use particleDefinition
+    use collisionNumbering, only: pert_numbering
+
+    type(particle), dimension(:), intent(inout) :: OutPart
+    type(particle), intent(in) :: initNuc
+
+    integer :: i, number
+
+    number = pert_numbering(initNuc)
+
+    do i=1,size(OutPart)
+       OutPart(i)%position=initNuc%position
+       OutPart(i)%event=number   ! Important for collision term: Particles won't collide immediately with InitNuc.
+       OutPart(i)%perturbative = .true.
+    end do
+
+  end subroutine setOutPartDefaults
 
 end module eventGenerator_eN_lowEnergy

@@ -20,7 +20,7 @@ module expNeutrinofluxes
   public ::  CCQE_recQs, CCQE_recQs_Delta, CCQE_recEnergy, CCQE_recEnergy_Delta
   public ::  ANLenergy,BNLenergy
   public ::  K2Kenergy, K2K_recEnergy, K2K_recQs
-  public ::  NOVAenergyNU, T2K_ND_numu_energy !T2Kenergy
+  public ::  NOVAenergyNU_FD, NOVAenergyNU_ND, T2K_ND_numu_energy !T2Kenergy
   public ::  MINOSenergyNU_fluxNU, MINOSenergyBARNU_fluxNU, &
              & MINOSenergyNU_fluxBARNU, MINOSenergyBARNU_fluxBARNU
   public ::  uniformFlux
@@ -79,20 +79,7 @@ module expNeutrinofluxes
   !***************************************************************************
 
 
-
-  !variables used for T2K:
-
-  !***************************************************************************
-  !****g* expNeutrinofluxes/T2K_oscillated
-  ! SOURCE
-  !
-  logical, save :: T2K_oscillated=.false.
-  ! PURPOSE
-  ! variables used for T2K
-  !
-  ! if true, use oscillated flux
-  !***************************************************************************
-
+  
 contains
 
   !************************************************************
@@ -154,39 +141,6 @@ contains
   real function MiniBooNEenergy()
     use random, only: rn
     use inputGeneral, only : path_To_Input
-!  This is old parametrization fo Tina fitted to arXiv:0806.1449 [hep-ex]
-!     real :: v,w,y,x
-!     real,parameter:: enumax=2.5
-!     real,parameter:: enumin=0.
-!
-!     real,parameter::ymax=2.37
-!     real,parameter::a0 = 25.4377
-!     real,parameter::a1 = -86.7694
-!     real,parameter::a2 = 230.211
-!     real,parameter::a3 = -259.15
-!     real,parameter::a4 = 142.498
-!     real,parameter::a5 = 0.463617
-!     real,parameter::a6 = -0.641191
-!     real,parameter::a7 = 0.726713
-!     real,parameter::a8 = -4.09136
-!     real,parameter::a9 = 0.111756
-!
-!
-!     If(initFlag) then
-!        call readInput
-!        initFlag=.false.
-!     end if
-!
-!        do
-!           v=rn()
-!           w=rn()
-!           x=enumin+v*(enumax-enumin)
-!           y=(a0*x+a1*x**2+a2*x**3+a3*x**4+a4*x**5)  &
-!              &*exp(a6+a7*x+a8*x**2+a5*x**3+a9*x**4)
-!           if(w.lt.y/ymax) exit
-!        end do
-!        MiniBooNEenergy=x
-
 
     real :: v,w,y,x
     !real,parameter:: enumax=2.525
@@ -726,119 +680,7 @@ contains
   end function K2K_recQs
 
 
-  !************************************************************
-  !****s* expNeutrinofluxes/T2Kinput
-  ! NAME
-  ! subroutine T2Kinput
-  ! PURPOSE
-  ! This subroutine reads out the namelist "T2K_energyFlux".
-  ! Only called once to initialize the module.
-  !************************************************************
-  subroutine T2KInput
-    use output, only: Write_ReadingInput
 
-    integer :: ios
-
-    !***************************************************************************
-    !****n* expNeutrinofluxes/T2K_energyFlux
-    ! NAME
-    ! NAMELIST T2K_energyFlux
-    ! PURPOSE
-    ! This Namelist includes:
-    ! * T2K_oscillated
-    !***************************************************************************
-    NAMELIST /T2K_energyFlux/ T2K_oscillated
-    call Write_ReadingInput('T2K_energyFlux',0)
-    rewind(5)
-    read(5,nml=T2K_energyFlux,IOSTAT=ios)
-
-    call Write_ReadingInput('T2K_energyFlux',0,ios)
-    if(T2K_oscillated) write(*,*) 'oscillated T2K flux is used'
-    call Write_ReadingInput('T2K_energyFlux',1)
-
-  end subroutine T2KInput
-
-!   !*************************************************************************
-!   !****f* expNeutrinofluxes/T2Kenergy
-!   ! NAME
-!   ! real function T2Kenergy()
-!   !
-!   ! PURPOSE
-!   ! This function gives back the neutrino energy for the T2K ND280 experiment.
-!   ! Flux is taken from hep-ex/0106019, Fig 6 b (black curve in top panel).
-!   !
-!   !*************************************************************************
-!   real function T2Kenergy()
-!     use random, only: rn
-!     use inputGeneral, only : path_To_Input
-!
-!     real :: v,w,y,x
-!     real,parameter :: enumax=3.5
-!     real,parameter :: enumin=0.05264
-!     real,parameter :: ymax=2.95
-!     character(100) :: fileName
-!     integer :: status
-!     real, dimension(100),save :: enu, flux
-!     integer :: j,jmax
-!
-!     !athmospheric oscillation parameters
-!     real,parameter :: sinthe=1.
-!     real,parameter :: masssq=2.5E-3
-!     real,parameter :: L=295.
-!
-!
-!     if(firsttime) then
-!
-!        call T2KInput
-!
-!        j=1
-!        fileName=trim(path_to_Input)//'/neutrino/t2kflux.dat'
-!        open(13,file=filename ,status='old',action='read',iostat=status)
-!        if(status==0) then
-!           do
-!              read(13,*,iostat=status) enu(j),flux(j)
-!              if(status/=0) exit
-!              j=j+1
-!           end do
-!           jmax=j-1
-!           if(status>0) then
-!              write(*,*)'error reading file'
-!              stop
-!           else
-!              write(*,*)'file read sucessful'
-!           end if
-!        else
-!           write(*,*)'problems with file'
-!        end if
-!        close(13)
-!
-!        if(T2K_oscillated) then
-!           do j=1,jmax
-!              flux(j)=flux(j)*(1.-sinthe*(sin(1.27*masssq*L/enu(j)))**2)
-!           end do
-!        end if
-!
-!        firsttime=.false.
-!     end if
-!
-!     do
-!        v=rn()
-!        w=rn()
-!        x=enumin+v*(enumax-enumin)
-!        j=1
-!        do
-!           if(x.lt.enu(j)) exit
-!           j=j+1
-!        end do
-!
-!        y = flux(j-1) + (x - enu(j-1))*(flux(j)-flux(j-1))/(enu(j)-enu(j-1))
-!        if(w.lt.y/ymax) exit
-!     end do
-!     T2Kenergy=x
-!
-!   end function T2Kenergy
-!
-!
 
 
   !*************************************************************************
@@ -865,15 +707,8 @@ contains
     real, dimension(221),save :: enu, flux
     integer :: j,jmax
 
-    !athmospheric oscillation parameters
-    real,parameter :: sinthe=1.
-    real,parameter :: masssq=2.5E-3
-    real,parameter :: L=295.
-
-
+   
     if(firsttime) then
-
-       call T2KInput
 
        j=1
        fileName=trim(path_to_Input)//'/neutrino/T2K_ND280_250kA-numu.dat'
@@ -895,13 +730,6 @@ contains
           write(*,*)'problems with file'
        end if
        close(13)
-
-
-       if(T2K_oscillated) then
-          do j=1,jmax
-             flux(j)=flux(j)*(1.-sinthe*(sin(1.27*masssq*L/enu(j)))**2)
-          end do
-       end if
 
        firsttime=.false.
     end if
@@ -1238,91 +1066,6 @@ contains
 
 
 
-  !*****************************************************************************
-  !****f* expNeutrinofluxes/NOVAenergyNU
-  ! NAME
-  ! real function MINOSenergyNU()
-  !
-  ! PURPOSE
-  ! This function returns the neutrino energy for the NOVA neutrino experiment.
-  ! (NuMI medium-energy 14mrad off-axis)
-  ! Flux is taken from http://www-nova.fnal.gov/nova_beam_anu.html
-  !
-  !*****************************************************************************
-  real function NOVAenergyNU()
-    use random, only: rn
-    use inputGeneral, only: path_To_Input
-
-    real :: v,w,y,x
-!    real,parameter :: enumax=9.99
-!    real,parameter :: enumin=0.11
-!    real,parameter :: ymax=41.6
-    character(100) :: fileName
-    integer :: status
-    real, dimension(53), save :: enu, flux
-    integer :: j, j0
-    real:: enumax, enumin, ymax, z
-
-     If(firsttime) then
-       j=1
-       fileName=trim(path_to_Input)//'/neutrino/NOVA-flux-neutrino.dat'
-       open(13,file=filename ,status='old',action='read',iostat=status)
-       if(status==0) then
-          do
-             read(13,*,iostat=status) enu(j),flux(j)
-             if(status/=0) exit
-             j=j+1
-          end do
-          if(status>0) then
-             write(*,*)'error reading file'
-             stop
-          else
-             write(*,*)'file read sucessful'
-          end if
-       else
-          write(*,*)'problems with file'
-       end if
-       close(13)
-       firsttime=.false.
-    end if
-
-
-    do
-       z=rn() ! if z<0.0205534 generate flux below 1.1 GeV
-       if (z<0.0205534) then
-          enumin=0.1
-          enumax=1.1
-          ymax=2.16
-          j0=1
-       elseif (z>0.8109085) then  ! generate flux above 3.1 GEV
-          enumin=3.1
-          enumax=10.00
-          ymax=2.88
-          j0=16
-       else  ! generate flux between 1.1 and 3.1
-          enumin=1.1
-          enumax=3.1
-          ymax=41.53
-          j0=6
-       end if
-
-       v=rn()
-       w=rn()
-       x=enumin+v*(enumax-enumin)
-       j=j0
-       do
-          if(x.lt.enu(j)) exit
-          j=j+1
-       end do
-       y = flux(j-1) + (x - enu(j-1))*(flux(j)-flux(j-1))/(enu(j)-enu(j-1))
-       if(w.lt.y/ymax) exit
-    end do
-    NOVAenergyNU=x
-
-  end function NOVAenergyNU
-
-
-
   !*************************************************************************
   !****f* expNeutrinofluxes/uniformFlux
   ! NAME
@@ -1365,11 +1108,6 @@ contains
     character(100) :: fluxfilename
     integer, save :: jmax
 
-!   athmospheric oscillation parameters
-!   real,parameter :: sinthe=1.
-!   real,parameter :: masssq=2.5E-3
-!   real,parameter :: L=295.
-
 !   Now reading of flux file from buuinput/neutrinos
 
     fluxfilename = 'Minerva_neutrino.dat'
@@ -1406,11 +1144,6 @@ contains
     real, dimension (0:NDIM), save :: sumflux
     character(100) :: fluxfilename
     integer, save :: jmax
-
-!   athmospheric oscillation parameters
-!   real,parameter :: sinthe=1.
-!   real,parameter :: masssq=2.5E-3
-!   real,parameter :: L=295.
 
 !   Now reading of flux file from buuinput/neutrinos
 
@@ -1724,6 +1457,162 @@ contains
      BNBenergyNUmubar = eneut(NDIM,jmax,sumflux,enu)
 
  end function BNBenergyNUmubar
+
+
+
+!*************************************************************************
+ !****f* expNeutrinofluxes/NOVAenergyNU_ND
+ ! NAME
+ ! real function NOVAenergyNU_ND(flavor_id,process_id)
+ !
+ ! PURPOSE
+ ! This function returns the sampled neutrino energy for the NOvA experiment
+ ! at the Near Detector, using the FHC files for neutrinos and RHC files for
+ ! antineutrinos
+ ! Flux is obtained from Jonathan Paley, March 2016
+ !*************************************************************************
+ real function NOVAenergyNU_ND(Flavor_ID,Process_ID)
+    use inputGeneral, only : path_To_Input
+    use esample
+
+    integer,parameter :: NDIM = 601          !maximal dimension of fluxfile
+    real, dimension (NDIM), save :: enu,flux
+    real, dimension (0:NDIM), save :: sumflux
+    character(100) :: fluxfilename
+    integer, save :: jmax 
+    integer :: nswitch,flavor_id,process_id
+
+
+
+!   Now reading of flux file from buuinput/neutrinos
+!   First, set filename for desired neutrino flavor
+
+     nswitch = sign(1,Process_ID)
+     
+     select case(nswitch)
+     
+      case (+1)
+         select case (Flavor_ID)   
+           
+           case (1) 
+           fluxfileName= 'NOvA-ND-FHC-nue.dat'   ! electron
+           
+           case (2)
+           fluxfileName= 'NOvA-ND-FHC-numu.dat'  ! muon 
+           
+           case default
+           write (*,*) 'flavor and process IDs not compatible:1'
+           stop
+         
+         end select
+           
+      case (-1)
+         
+         select case (Flavor_ID)
+         
+           case (1)                                         
+           fluxfileName= 'NOvA-ND-RHC-anue.dat'    ! anti-electron
+         
+           case (2)
+           fluxfileName= 'NOvA-ND-RHC-anumu.dat'   ! anti-muon   
+           
+           case default
+           write (*,*) 'flavor and process IDs not compatible:2'
+           stop
+         
+         end select
+      case default
+           write (*,*) 'flavor and process IDs not compatible:3'   
+     end select         
+             
+
+    if(firsttime) then
+        call read_fluxfile(NDIM,fluxfilename,jmax,enu,flux,sumflux)
+        firsttime=.false.
+    end if
+
+!   Now call of sampling routine
+
+      NOVAenergyNU_ND = eneut(NDIM,jmax,sumflux,enu)
+
+ end function NOVAenergyNU_ND 
+ 
+ !*************************************************************************
+ !****f* expNeutrinofluxes/NOVAenergyNU_FD
+ ! NAME
+ ! real function NOVAenergyNU_FD(flavor_id,process_id)
+ !
+ ! PURPOSE
+ ! This function returns the sampled neutrino energy for the NOvA experiment
+ ! at the Far Detector, using the FHC files for neutrinos and RHC files for
+ ! antineutrinos
+ ! Flux is obtained from Jonathan Paley, March 2016
+ !*************************************************************************
+ real function NOVAenergyNU_FD(Flavor_ID,Process_ID)
+    use inputGeneral, only : path_To_Input
+    use esample 
+   
+    integer,parameter :: NDIM = 601          !maximal dimension of fluxfile
+    real, dimension (NDIM), save :: enu,flux
+    real, dimension (0:NDIM), save :: sumflux
+    character(100) :: fluxfilename
+    integer, save :: jmax
+    integer :: nswitch,flavor_id,process_id
+
+
+
+!   Now reading of flux file from buuinput/neutrinos
+!   First, set filename for desired neutrino flavor
+
+     nswitch = sign(1,Process_ID)
+     
+     select case(nswitch)
+     
+      case (+1)
+         select case (Flavor_ID)   
+           
+           case (1) 
+           fluxfileName= 'NOvA-FD-FHC-nue.dat'   ! electron
+           
+           case (2)
+           fluxfileName= 'NOvA-FD-FHC-numu.dat'  ! muon 
+           
+           case default
+           write (*,*) 'flavor and process IDs not compatible:1'
+           stop
+         
+         end select
+           
+      case (-1)
+         
+         select case (Flavor_ID)
+         
+           case (1)                                         
+           fluxfileName= 'NOvA-FD-RHC-anue.dat'    ! anti-electron
+         
+           case (2)
+           fluxfileName= 'NOvA-FD-RHC-anumu.dat'   ! anti-muon   
+           
+           case default
+           write (*,*) 'flavor and process IDs not compatible:2'
+           stop
+         
+         end select
+      case default
+           write (*,*) 'flavor and process IDs not compatible:3'   
+     end select         
+             
+
+    if(firsttime) then
+        call read_fluxfile(NDIM,fluxfilename,jmax,enu,flux,sumflux)
+        firsttime=.false.
+    end if
+
+!   Now call of sampling routine
+
+      NOVAenergyNU_FD = eneut(NDIM,jmax,sumflux,enu)
+
+ end function NOVAenergyNU_FD
 
 
 

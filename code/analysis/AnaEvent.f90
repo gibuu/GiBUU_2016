@@ -2421,8 +2421,8 @@ contains
     logical, optional              :: onlyFreeParticles
     logical, optional              :: writeNeutrinoProdID
     type(tParticleListNode),Pointer  :: pNode
-    character(30),parameter :: out='(4I7,8E14.6,2I9,E14.6)'
-    character(30),parameter :: outShort='(4I7,8E14.6,2I9)'
+    character(30),parameter :: out='(4I7,8E14.6,I11,I4,E14.6)'
+    character(30),parameter :: outShort='(4I7,8E14.6,I11,I4)'
     character(35),parameter :: outA='("#",A6,3A9,8A16,A15,A18,A8)'
     integer :: i, prod_ID, Chrg_Nuc
     real :: perweight, enu

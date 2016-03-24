@@ -69,6 +69,13 @@ module PionBoxAnalysis
   ! Switch for dN/p^2 dp output
   !***************************************************************************
 
+  !***************************************************************************
+  !****g* PionBoxAnalysis/do_velrel
+  ! SOURCE
+  logical,save  :: do_velrel=.false.
+  ! PURPOSE
+  ! Switch for calculating velrel
+  !***************************************************************************
 contains
   !***************************************************************************
   !****s* PionBoxAnalysis/DoBoxAnalysisTime
@@ -318,9 +325,11 @@ contains
        end if
     end if
 
-    ! calculate average of velrel
-    call CalcAverageVelRel(realPart,timestep,nEns,nPart)
-
+    if (do_velrel) then
+       ! calculate average of velrel
+       call CalcAverageVelRel(realPart,timestep,nEns,nPart)
+    end if
+    
   end subroutine DoPionBoxAnalysisTime
 
   !***************************************************************************
@@ -438,9 +447,10 @@ contains
     ! Includes the switches:
     ! * do_Tmunu
     ! * do_P
+    ! * do_velreö
     !*************************************************************************
     NAMELIST /pionBoxAnalysis/ &
-         do_Tmunu, do_P
+         do_Tmunu, do_P, do_velrel
 
     integer :: ios
 
@@ -451,6 +461,7 @@ contains
 
     write(*,*) '  do Tmunu: ',do_Tmunu,'   flagEnsemble: ',flagEnsemble
     write(*,*) '  do P:     ',do_P
+    write(*,*) '  do velrel:',do_velrel
     
     call Write_ReadingInput('pionBoxAnalysis',1)
   end subroutine readInput

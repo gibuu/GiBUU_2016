@@ -56,8 +56,15 @@ module lepton2p2h
   ! * 4: MEC from E. Christy (8/2015), with parametrization for longitudinal
   ! * 5: MEC from Bosted arXiV:1203.2262, with parametrization for longitudinal
   ! * 6: MEC additional parametrization, with parametrization for longitudinal
+  ! *    not yet implemented
   !*************************************************************************
-
+  
+  
+  ! The following are all tunable strength parameters for 2p2h hadronic 
+  ! structure functions. Default is no tuning, i.e. all parameters = 1
+  
+  
+  
   !*************************************************************************
   !****g* lepton2p2h/ME_Norm_QE
   ! PURPOSE
@@ -65,7 +72,7 @@ module lepton2p2h
   !
   ! for (EM,CC,NC)
   ! SOURCE
-  real,dimension(1:3), save :: ME_Norm_QE    = (/1.0, 2.0, 2.0/)
+  real,dimension(1:3), save :: ME_Norm_QE    = (/1.0, 1.0, 1.0/)
   ! NOTES
   ! The value == 1 gives the coded strength
   !*************************************************************************
@@ -77,7 +84,7 @@ module lepton2p2h
   !
   ! for (EM,CC,NC)
   ! SOURCE
-  real,dimension(1:3), save :: ME_Norm_Delta = (/1.0, 2.0, 2.0/)
+  real,dimension(1:3), save :: ME_Norm_Delta = (/1.0, 1.0, 1.0/)
   ! NOTES
   ! The value == 1 is a dummy value
   !*************************************************************************
@@ -683,6 +690,7 @@ end if
     real :: nuswitch= 0 ! switch for neutrino/antineutrino in structure function
     real :: sinsqthetahalf,cossqthetahalf 
     real :: omega, Q2   ! energy transfer, four-momentum transfer 
+    real :: Tfact   ! isospin factor
     integer :: IP
 
     Q2=eN%QSquared                          !Q^2
@@ -690,9 +698,11 @@ end if
   
     IP = abs(eN%IdProcess)
     if(IP==1) then
-      nuswitch = 0
+      nuswitch = 0 
+      Tfact = 1.
     else
-      nuswitch = sign(1,eN%IdProcess) 
+      nuswitch = sign(1,eN%IdProcess)   
+      Tfact = 2.
     end if 
     
     sinsqthetahalf = 0.5*(1. - en%lepton_out%momentum(3)/k1)
@@ -703,7 +713,9 @@ end if
        &  - nuswitch*(en%lepton_in%momentum(0)+en%lepton_out%momentum(0))/mN  &
        &  * W3(Q2,omega) * sinsqthetahalf 
      
-    ME_W1W2W3 = ME_W1W2W3 * ME_Norm_QE(IP)          
+    ME_W1W2W3 = ME_W1W2W3 * Tfact * ME_Norm_QE(IP)
+  ! Factor 'Tfact' here is isospin factor T + 1 for neutrinos, not electrons
+  ! in O'Connell, Donnelly and Walecka, PRC 6 (1972) 719, eq. A10            
 
 !!!!!!!!!!!!!!!!!!!!!!!!!
 !TESTPRINTOUT

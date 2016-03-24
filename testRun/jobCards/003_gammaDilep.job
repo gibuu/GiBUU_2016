@@ -37,6 +37,10 @@
   Enable = .true.
 /
 
+&decayChannels
+  rhoDelta_is_sigmaDelta = T
+/
+
 &initRandom
   Seed = 45678,   ! seed for the random number
 /

@@ -491,6 +491,7 @@ contains
     ! PURPOSE
     ! Includes the switches:
     ! * Enable
+    ! * Extra
     ! * DeltaDalitz
     ! * DeltaDalitzFF
     ! * omegaDalitzFF
@@ -503,9 +504,9 @@ contains
     ! * nEvent_BH
     ! * kp_cut
     ! * kp_min
+    ! * binsz
     ! * filter
     ! * hadesFilterFile
-    ! * binsz
     ! * WriteEvents
     ! * p_lep_min
     ! * beta_gamma_cut
@@ -705,7 +706,7 @@ contains
     use constants, only: pi,melec,alphaQED,hbarc,mN,mPi
     use IdTable, only: Delta, F37_1950, pion, rho, phi, omegaMeson, eta, etaPrime, Kaon, Kaonbar, photon, &
                        EOV, NOP, invalidID, isBaryon, isMeson
-    use eventtypes, only: LoPion,RealPhoton,HiPion,HeavyIon,HadronInduced=>Hadron
+    use eventtypes, only: LoPion,RealPhoton,HiPion,HiLepton,HeavyIon,HadronInduced=>Hadron
     use particleProperties, only: hadron
     use random, only: rnFlat
     use mesonWidthVacuum, only: dileptonWidth
@@ -745,9 +746,9 @@ contains
     if (first) then
       pw = 1. / float(num_Runs_SameEnergy*num_energies*nevent)
       select case (eventtype)
-      case (RealPhoton) ! RealPhoton events are initialized in microbarn/A!
+      case (RealPhoton)       ! RealPhoton events are initialized in microbarn/A
         pw = pw * targNuc%mass
-      case (HiPion)     ! HiPion events are initialized in millibarn!
+      case (HiPion,HiLepton)  ! these are initialized in millibarn
         pw = pw * 1000.
       case (HeavyIon,HadronInduced)
         pw = pw / float(numEnsembles)

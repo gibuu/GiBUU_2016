@@ -2,7 +2,7 @@
 !****m* /densityStatic
 ! NAME
 ! module densityStatic
-! 
+!
 ! PURPOSE
 ! Collect routines for STATIC density calculations.
 !***************************************************************************
@@ -11,7 +11,7 @@ module densityStatic
   use nucleusDefinition
   use dichteDefinition
   use Callstack, only: Traceback
-  
+
   implicit none
 
 
@@ -58,7 +58,7 @@ contains
 
     case(1) ! Static Woods-Saxon distribution
        call TabulateDensityWoodsSaxon(nuc)
-       
+
     case(2) ! Static density prescription implemented by L.Alvarez-Russo
             ! corresponds to Oset's papers, e.g. NPA 554
 
@@ -120,7 +120,7 @@ contains
     type(tNucleus),pointer :: nuc
 
     integer :: i
-      
+
     call Write_InitStatus('density tabulation (density=0.)',0)
     write(*,'(A,F8.4)') '    dr   =',nuc%dx
     write(*,'(A,F8.4)') '    r_max=',nuc%dx*float(nuc%maxIndex)
@@ -157,7 +157,7 @@ contains
     real :: x,ratio!,h
     integer :: i
     real, parameter :: epsilon=0.001
-    
+
     call Write_InitStatus('density tabulation (Sphere)',0)
     write(*,'(A,F8.4)') '    dr   =',nuc%dx
     write(*,'(A,F8.4)') '    r_max=',nuc%dx*float(nuc%maxIndex)
@@ -200,13 +200,13 @@ contains
   !*************************************************************************
   subroutine TabulateDensityWoodsSaxon (nuc)
     use output, only: write_initstatus
-    
+
     type(tNucleus),pointer :: nuc
 
     real :: x,h,ratio
     integer :: i
     real, parameter :: epsilon=0.001
-    
+
     call Write_InitStatus('density tabulation (Woods-Saxon)',0)
     write(*,'(A,F8.4)') '    dr   =',nuc%dx
     write(*,'(A,F8.4)') '    r_max=',nuc%dx*float(nuc%maxIndex)
@@ -286,7 +286,7 @@ contains
     end if
 
     write(*,*) 'Parameters: r_ch = ',rCh(nuc%charge),' d2 = ',d2(nuc%charge)
-    
+
     ratio = float(nuc%charge)/float(nuc%mass)
 
     h1 = 4/(pi * d2(nuc%charge))**(3./2.)
@@ -329,7 +329,7 @@ contains
     real, dimension(1:3) :: radius, surface, rhoMax
     real :: x
     integer :: i
-    
+
     call Write_InitStatus('density tabulation (Lenske & Woods-Saxon)',0)
     write(*,'(A,F8.4)') '    dr   =',nuc%dx
     write(*,'(A,F8.4)') '    r_max=',nuc%dx*float(nuc%maxIndex)
@@ -382,7 +382,7 @@ contains
        x = i*nuc%dx
        call densityLuis(x,nuc%charge,nuc%mass,nuc%densTab(i,1),nuc%densTab(i,2),rp,ap,rho0p,rn,an,rho0n)
     end do
-    
+
     write(*,paragraph) ' Parameters: '
     write(*,'(A,3(1x,F8.4))') ' rp, ap, rho0p : ', rp,ap,rho0p
     write(*,'(A,3(1x,F8.4))') ' rn, an, rho0n : ', rn,an,rho0n
@@ -395,7 +395,7 @@ contains
   ! NAME
   ! subroutine TabulateDensityExRTF(nuc)
   ! PURPOSE
-  ! Tabulate the density distribution according to Relativistic 
+  ! Tabulate the density distribution according to Relativistic
   ! Thomas-Fermi model code from Horst Lenske.
   !
   ! Tabulates the static density to make it available faster for later use
@@ -439,16 +439,16 @@ contains
   !
   ! PURPOSE
   ! go through the tabulated distributions to search for the extrema
-  ! 
+  !
   !*************************************************************************
   subroutine SearchMaxVals(nuc)
     use constants, only :pi
-    
+
     type(tNucleus),pointer :: nuc
 
     integer :: i,j
     real :: x, maxV(2), maxX
-    real :: Sum(0:2,3)
+    real :: Sum(0:3,3)
 
     maxV = 0.
     maxX = 0.
@@ -467,6 +467,11 @@ contains
           Sum(j,3) = Sum(j,3)+x**(j+2)*(nuc%densTab(i,1)+nuc%densTab(i,2))
        end do
 
+       Sum(3,1) = Sum(3,1)+x**2*nuc%densTab(i,1)**2
+       Sum(3,2) = Sum(3,2)+x**2*nuc%densTab(i,2)**2
+       Sum(3,3) = Sum(3,3)+x**2*(nuc%densTab(i,1)+nuc%densTab(i,2))**2
+
+
     end do
 
     Sum = Sum*nuc%dx
@@ -479,10 +484,10 @@ contains
     write(*,*) '    MaxDens = ',nuc%MaxDens
 
     write(*,*) 'Integrations:'
-    write(*,'("    ",A10,3A18)')   ' ', 'rho(r) d^3r', 'rho(r)r d^3r', 'rho(r)r^2 d^3r'
-    write(*,'("    ",A10,3f18.3)') 'Proton:  ',Sum(0,1)*4.*pi,Sum(1,1)*4.*pi,Sum(2,1)*4.*pi
-    write(*,'("    ",A10,3f18.3)') 'Neutron: ',Sum(0,2)*4.*pi,Sum(1,2)*4.*pi,Sum(2,2)*4.*pi
-    write(*,'("    ",A10,3f18.3)') 'Baryon:  ',Sum(0,3)*4.*pi,Sum(1,3)*4.*pi,Sum(2,3)*4.*pi
+    write(*,'("   ",A8,4A13)')  ' ', 'rho d^3r', 'rho r d^3r', 'rho r^2 d^3r', 'rho^2 d^3r'
+    write(*,'("   ",A8,4f13.3)') 'Proton:  ',Sum(0:3,1)*4.*pi
+    write(*,'("   ",A8,4f13.3)') 'Neutron: ',Sum(0:3,2)*4.*pi
+    write(*,'("   ",A8,4f13.3)') 'Baryon:  ',Sum(0:3,3)*4.*pi
     write(*,*)
 
     if (nuc%radius < 0.001) then
@@ -527,7 +532,7 @@ contains
     case (1:8) ! Tabulated density distributions
 
        sqrtR=sqrt(r(1)**2+r(2)**2+r(3)**2)
-       
+
        if (sqrtR>nucl%MaxIndex*nucl%dx) then
           staticdensity%proton(0)  = 0.
           staticdensity%neutron(0) = 0.
@@ -571,7 +576,7 @@ contains
   ! * logical, optional, intent(in) :: center_in -- if true then density of centers is given in the output
   ! RESULT
   ! * real, intent(out):: rhop,rhon -- Proton and neutron densities at r
-  ! * real, intent(out):: rp,ap,rho0p,rn,an,rho0n -- parameters of the density distributions 
+  ! * real, intent(out):: rp,ap,rho0p,rn,an,rho0n -- parameters of the density distributions
   !*************************************************************************
   subroutine densityLuis(r,z,a,rhop,rhon,rp,ap,rho0p,rn,an,rho0n,center_in)
     use constants, only: pi
@@ -579,12 +584,12 @@ contains
 
     real, intent(in)::r
     integer, intent(in)::z
-    integer, intent(in)::a 
+    integer, intent(in)::a
     real, intent(out):: rhop,rhon
     real, intent(out) :: rp,ap,rho0p,rn,an,rho0n
     logical, optional, intent(in) :: center_in
     logical :: center
-    
+
     real::x,rpc,apc,rnc,anc,rmax,rin
     real::resu1,resu2,resu3,resu4
     real,dimension(:),allocatable::absi,orde1,orde2,orde3,orde4
@@ -600,9 +605,9 @@ contains
 
     call denspar(z,a,rp,ap,rn,an)
 
-    if (a.le.18) then 
+    if (a.le.18) then
        !       For light nuclei, harmonic oscilator densities are used
-       !       protons         
+       !       protons
        rpc=sqrt(rp**2-2./3.*r2)
        x=ap*rp**2/(1.+3./2.*ap)/rpc**2
        apc=2.*x/(2.-3.*x)
@@ -612,8 +617,8 @@ contains
        anc=2.*x/(2.-3.*x)
 
     else
-       !       Fermi liquid type          
-       !       protons         
+       !       Fermi liquid type
+       !       protons
        rpc=rp+5.*r2*rp/(15.*rp**2+7.*pi**2*ap**2)
        apc=sqrt((rp**3+pi**2*ap**2*rpc-rpc**3)/pi**2/rpc)
        !       neutrons
@@ -645,7 +650,7 @@ contains
 
 
     if(center) then
-       ! use the distributions of nucleon centers: 
+       ! use the distributions of nucleon centers:
        rho0p=z/resu3
        rho0n=(a-z)/resu4
        rp=rpc
@@ -671,7 +676,7 @@ contains
       real:: antz
 
       if (a.le.18) then
-         !       harmonic oscilator          
+         !       harmonic oscilator
          antz=(1.+ag*(rin/rg)**2)*exp(-(rin/rg)**2)
       else
          !       Fermi liquid
@@ -686,7 +691,7 @@ contains
 
       select case (z)
       case (4)  ! Be (9)
-         ! proton values from DeJager et al., 
+         ! proton values from DeJager et al.,
          ! At. Data and Nucl. Data Tables 14, 479 (1974)
          ! neutron values from Koptev et al., Yad. Fiz. 31, 1501 (1980)
          rp=1.78
@@ -755,9 +760,9 @@ contains
          an=ap
       case (50) ! Sn-isotopes:
          ! Values taken from R. Schmidt et al,
-         ! PRC 67, 044308 (2003) 
+         ! PRC 67, 044308 (2003)
          ! --- p and n center distribution parameters,
-         ! should not be further corrected  
+         ! should not be further corrected
          select case(A)
          case(112)
             rp=5.416
@@ -782,9 +787,9 @@ contains
          case default
             call Traceback('There is no init for this Sn isotope')
          end select
-      case (73) ! Ta(181) 
+      case (73) ! Ta(181)
          ! proton values from DeJager et al
-         ! neutron values from Koptev et al 
+         ! neutron values from Koptev et al
          rp=6.38
          ap=0.64
          rn=6.42
@@ -842,7 +847,7 @@ contains
     write(*,paragraph) 'Finished initializing density tabulation'
     write(*,*)
 
-    
+
   end subroutine TabulateDensityBirger
 
   !*************************************************************************
@@ -877,7 +882,7 @@ contains
     write(*,paragraph) 'Finished initializing density tabulation'
     write(*,*)
 
-    
+
   end subroutine TabulateDensityBirgerWelke
 
   !*************************************************************************
@@ -890,16 +895,16 @@ contains
   ! neutrons by considering the given potentials as static and fulfill the
   ! condition
   !   sqrt(p_F^2+m_N^2) + U - m_N == E_sep ~ -8MeV
-  ! With the Local-Thomas-Fermi, we connect the resulting fermi momentum to 
+  ! With the Local-Thomas-Fermi, we connect the resulting fermi momentum to
   ! a density,
   !   rho = p_F^3/(3pi^2)
   ! Since the potentials are given as function of r, we calculate rho(r).
   !
-  ! Thus, given proton and nucleon baryon potential (for fixed momentum) and 
-  ! the coulomb potential, the parametrization of the nuclear density is 
-  ! readjusted. 
+  ! Thus, given proton and nucleon baryon potential (for fixed momentum) and
+  ! the coulomb potential, the parametrization of the nuclear density is
+  ! readjusted.
   !
-  ! This routine is called by 
+  ! This routine is called by
   ! baryonPotentialModule/HandPotentialToDensityStatic
   !
   !
@@ -952,7 +957,7 @@ contains
     SumN = 0
     do i=0,nuc%MaxIndex
        x = i*nuc%dx
-       
+
 !       pF = 2*mN*(-potP(i)+nuc%ConstBinding)-potP(i)**2+nuc%ConstBinding**2
        pF = (-(potP(i)+potC(i))+nuc%ConstBinding+mN)**2 - mN**2
        if (pF.lt.0.0) then
@@ -1031,8 +1036,8 @@ contains
        end do
        close(113)
     endif
-    
-    
+
+
   end subroutine ReAdjust
 
 

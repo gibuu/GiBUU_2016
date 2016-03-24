@@ -44,7 +44,7 @@ module mesonMeson_Xsections
        etaPrime, etaPrime /), & ! 21
        (/2,21/))
 
-  integer, parameter :: nSrts = 100
+  integer, parameter :: nSrts = 500
   real, parameter :: dSrts = 0.05
   real, dimension(21,0:nSrts) :: arrPCM
   real, dimension(21) :: arrSrts0 ! the thresholds

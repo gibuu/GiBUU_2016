@@ -26,7 +26,7 @@
 ! to target_A * numEnsembles * num_runs_SameEnergy
 ! file: code/inputOutput/input.f90
 &input
-	numEnsembles=400	! for C12 you can use 4000, for heavier nuclei should be lower; decrease it if there are problems with memory,
+	numEnsembles=100	! for C12 you can use 4000, for heavier nuclei should be lower; decrease it if there are problems with memory,
 	eventtype=3		! 3 - photon induced (low energy)
 	numTimeSteps=200	! the distance numTimeSteps*delta_T (100*0.2=20 fm in this example) should significantly exceed the radius of the target nucleus
 	delta_T=0.2

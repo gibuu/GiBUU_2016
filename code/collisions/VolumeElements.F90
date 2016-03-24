@@ -689,13 +689,14 @@ contains
   ! "FindNextVE_RealPert" will start at the very first cell.
   !*************************************************************************
   subroutine VolumeElements_InitGetPart_RealPert
-
+    use callstack, only: traceBack
+    
     NULLIFY(pPert,pReal)
     iPart(1:2) = tVE%iRange(1:2,2) ! really start with max value
     iPart(3) = tVE%iRange(3,1)-1
     if (.not.FindNextVE_RealPert()) then
        write(*,*) 'VolumeElements_InitGetPart_RealPert: warning'
-!       stop
+!       call traceback
     endif
 
   end subroutine VolumeElements_InitGetPart_RealPert
@@ -1048,11 +1049,27 @@ contains
   end subroutine VolumeElements_NukSearch
 
   !*****************************************************************************
-  !****s* VolumeElements/VolumeElements_3Body
+  !****f* VolumeElements/VolumeElements_3Body
   ! NAME
-  ! logical function VolumeElements_3Body(Decay3Body, isSameBool, doInit, iEns,iInd, Part1,Part2,Part3)
+  ! logical function VolumeElements_3Body(Decay3Body, isSameBool, doInit, iEns,iInd, Part1,Part2,Part3, scaleFak)
+  ! PURPOSE
+  ! Find a triple of particles corresponding the given needs.
+  !
+  ! This routine starts with one cell, loops over all possibilities, then
+  ! switchs to the next cell, and so on, until no triple can be found any more.
+  ! Then the routine returns .false., otherwise .true.
+  !
+  ! INPUTS
+  ! * type(tDecay3Body) :: Decay3Body -- the decay to study
+  ! * integer :: isSameBool -- tricky number to hold the info, which particles
+  !   are identical
+  ! OUTPUT
+  ! * integer, dimension(1:3) :: iEns -- coordinate 1 of the 3 particles
+  ! * integer, dimension(1:3) :: iInd -- coordinate 2 of the 3 particles
+  ! * type(particle), POINTER :: Part1, Part2, Part3 -- the particles
+  ! * real :: scaleFak -- the factor nPossible/nDo
   !*****************************************************************************
-  logical function VolumeElements_3Body(Decay3Body, isSameBool, doInit, iEns,iInd, Part1,Part2,Part3)
+  logical function VolumeElements_3Body(Decay3Body, isSameBool, doInit, iEns,iInd, Part1,Part2,Part3, scaleFak)
     use DecayChannels
     use particlePointerList
     use particlePointerListDefinition
@@ -1061,14 +1078,19 @@ contains
     type(tDecay3Body), intent(in) :: Decay3Body
     integer, intent(in) :: isSameBool
     logical, intent(inOut) :: doInit
-    integer, intent(OUT), dimension(1:3) :: iEns,iInd
+    integer, intent(out), dimension(1:3) :: iEns,iInd
     type(particle), POINTER, intent(OUT) :: Part1, Part2, Part3
+    real, intent(out) :: scaleFak ! see also FindFirst3
     
     type(tParticleList), save :: L1, L2, L3
 
     type(tParticleListNode), POINTER, save :: pNode1, pNode2, pNode3
-    integer, save :: nMax
-    
+    integer, save :: nDo
+    real, save :: scaleFak_
+
+    ! default return values:
+    scaleFak = 0.0
+
     ! if it is the first call for all cells, then initialize
     if (doInit) then ! initialize
        NULLIFY(pReal)
@@ -1100,38 +1122,65 @@ contains
     call GetEnsInd( Part2, iEns(2), iInd(2) )
     call GetEnsInd( Part3, iEns(3), iInd(3) )
     
+    scaleFak = scaleFak_
     
     VolumeElements_3Body = .true.
     return
 
     
   contains
+    !***************************************************************************
+    !****if* VolumeElements_3Body/FindFirst3
+    ! NAME
+    ! logical function FindFirst3()
+    ! PURPOSE
+    ! This internal routine has two purposes:
+    ! * build up the particle lists L1, L2, L3 from the particles in the cell
+    ! * return the first possible particle triple
+    ! OUTPUT
+    ! The return vaule is .true., if everything went smoothly.
+    ! In addition, this routine sets the following internal variables:
+    ! * Part1, Part2, Part3
+    ! * pNode1, pNode2, pNode3 show to the next possible triple.
+    ! * nMax indicates the number of triples to extract
+    ! * scaleFak = nPossible/nMax
+    ! This routine ensures, that Part1, Part2, Part3 do not accidentally
+    ! point to a same particle.
+    ! NOTES
+    ! * a combinatorical factor is included in nPossible for indistinguishable
+    !   particles
+    ! * Particles are added to the lists randomly at the beginning or the end.
+    !***************************************************************************
     logical function FindFirst3()
 
       use random, only: rn_truefalse
 
+      type(tParticleListNode), POINTER :: pNode
       type(particle), POINTER :: pP
-      integer :: nPossible
-
+      integer :: nPossible, nMax, nMin
       
 !      write(*,*) 'FindFirst'
       
       FindFirst3 = .false.
 
+      scaleFak_ = 0.0 ! set default return value
+
       call ParticleList_CLEAR(L1)
       call ParticleList_CLEAR(L2)
       call ParticleList_CLEAR(L3)
+
+      ! iterate over all particles in the cell, build up L1,L2,L3:
       
-      pNode1 => pReal
+      pNode => pReal
       do
-         if (.not.ASSOCIATED(pNode1)) exit
-         pP => pNode1%V
+         if (.not.ASSOCIATED(pNode)) exit
+         pP => pNode%V
          if ((pP%ID == Decay3Body%ID(1))&
               .and.(pP%Charge == Decay3Body%Charge(1))) then
             if (rn_truefalse()) then
                call ParticleList_APPEND(L1,pP)
             else
-               call ParticleList_PrePEND(L1,pP)
+               call ParticleList_PREPEND(L1,pP)
             end if
          end if
          if ((pP%ID == Decay3Body%ID(2))&
@@ -1139,7 +1188,7 @@ contains
             if (rn_truefalse()) then
                call ParticleList_APPEND(L2,pP)
             else
-               call ParticleList_PrePEND(L2,pP)
+               call ParticleList_PREPEND(L2,pP)
             end if
          end if
          if ((pP%ID == Decay3Body%ID(3))&
@@ -1147,36 +1196,61 @@ contains
             if (rn_truefalse()) then
                call ParticleList_APPEND(L3,pP)
             else
-               call ParticleList_PrePEND(L3,pP)
+               call ParticleList_PREPEND(L3,pP)
             end if
          end if
-         pNode1 => pNode1%next
+         pNode => pNode%next
       end do
 
       if ((L1%nEntries==0).or.(L2%nEntries==0).or.(L3%nEntries==0)) then
          return  ! --> failure
       end if
 
+      ! calculate combinatorical factors:
+      
       select case (isSameBool)
       case (0) ! -- all particles different
          nPossible = L1%nEntries*L2%nEntries*L3%nEntries
          nMax = max(max(L1%nEntries,L2%nEntries),L3%nEntries)
+         nMin = min(min(L1%nEntries,L2%nEntries),L3%nEntries)
       case (3) ! -- particle 1 and 2 the same
          nPossible = (L1%nEntries*(L1%nEntries-1)*L3%nEntries)/2
          nMax = max(L1%nEntries,L3%nEntries)
+         nMin = min(L1%nEntries-1,L3%nEntries)
       case (7) ! -- all particle the same
          nPossible = (L1%nEntries*(L1%nEntries-1)*(L1%nEntries-2))/6
          nMax = L1%nEntries
+         nMin = max(0,L1%nEntries-2) ! could be < 0!
       case DEFAULT
          call traceBack('not yet implemented')
       end select
-      nMax = min(nMax,nPossible)
-      
-      write(*,*) 'nMax=',nMax,'  nPossible=',nPossible
 
+      if (nPossible==0) then
+         return  ! --> failure
+      end if
+      
+      nMax = min(nMax,nPossible)
+      nMin = min(nMin,nPossible)
+
+      ! two alternatives:
+      nDo = nMax
+      !      nDo = nMin
+
+      if (nDo <= 0) then
+         return  ! --> failure
+      end if
+      
+      scaleFak_ = real(nPossible) / nDo
+
+!      write(*,'(4(A,i4,"  "),A,f9.3)') 'nPossible=',nPossible,'nDo=',nDo,'nMin=',nMin,'nMax=',nMax,'scaleFak=',scaleFak_
+      
+      ! set pointer to particle 1:
       
       pNode1 => L1%first
       Part1 => pNode1%V
+
+      ! set pointer to particle 2:
+      ! check, whether Part1 and Part2 point to the same particle
 
       pNode2 => L2%first
       do
@@ -1186,6 +1260,9 @@ contains
          pNode2 => pNode2%next
       end do
 
+      ! set pointer to particle 3:
+      ! check, whether Part1/2 and Part3 point to the same particle
+      
       pNode3 => L3%first
       do
          if (.not.ASSOCIATED(pNode3)) return ! --> failure
@@ -1199,40 +1276,84 @@ contains
 
     end function FindFirst3
 
+    !***************************************************************************
+    !****if* VolumeElements_3Body/FindSecond3
+    ! NAME
+    ! logical function FindSecond3()
+    ! PURPOSE
+    ! This routine gives the 'next' triple.
+    ! It loops over L1, L2 and L3, until it has genarated 'nDo' triples.
+    ! This routine ensures, that Part1, Part2, Part3 do not accidentally
+    ! point to a same particle.
+    !***************************************************************************
     logical function FindSecond3()
+
+      !      write(*,*) 'FindSecond'
 
       FindSecond3 = .false.
 
-!      write(*,*) 'FindSecond'
+      do while (.not.FindSecond3)
       
-      if (nMax==1) return ! --> failure
-      nMax = nMax-1
-
+         if (nDo==0) return ! --> failure
+         nDo = nDo-1
       
-      pNode1 => pNode1%next
-      if (.not.ASSOCIATED(pNode1)) pNode1 => L1%first
-      Part1 => pNode1%V
-
-      pNode2 => pNode2%next
-      do
-         if (.not.ASSOCIATED(pNode2)) pNode2 => L2%first
-         Part2 => pNode2%V
-         if (.not.ASSOCIATED(Part1,Part2)) exit ! okay
+         pNode1 => pNode1%next
+         if (.not.ASSOCIATED(pNode1)) pNode1 => L1%first
+         Part1 => pNode1%V
+         
          pNode2 => pNode2%next
-      end do
-
-      pNode3 => pNode3%next
-      do
-         if (.not.ASSOCIATED(pNode3)) pNode3 => L3%first
-         Part3 => pNode3%V
-         if ((.not.ASSOCIATED(Part1,Part3)).and.(.not.ASSOCIATED(Part2,Part3))) exit ! okay
+         do
+            if (.not.ASSOCIATED(pNode2)) pNode2 => L2%first
+            Part2 => pNode2%V
+            if (.not.ASSOCIATED(Part1,Part2)) exit ! okay
+            pNode2 => pNode2%next
+         end do
+         
          pNode3 => pNode3%next
-      end do
+         do
+            if (.not.ASSOCIATED(pNode3)) pNode3 => L3%first
+            Part3 => pNode3%V
+            if ((.not.ASSOCIATED(Part1,Part3)).and.(.not.ASSOCIATED(Part2,Part3))) exit ! okay
+            pNode3 => pNode3%next
+         end do
 
-      FindSecond3 = .true.
+         FindSecond3 = CheckFound3()
+      end do
       return      
     end function FindSecond3
+    
+    !***************************************************************************
+    !****if* VolumeElements_3Body/CheckFound3()
+    ! NAME
+    ! logical function CheckFound3()
+    ! PURPOSE
+    ! This routine checks, whether the found triple is really according the
+    ! input wishes. This is necessary, since a successfully performed
+    ! 3->1 collision should delete the incoming mesons.
+    ! 
+    !***************************************************************************
+    logical function CheckFound3()
 
+      CheckFound3 = .false. ! default return value: failure
+
+      if (Part1%ID /= Decay3Body%ID(1)) return
+      if (Part2%ID /= Decay3Body%ID(2)) return
+      if (Part3%ID /= Decay3Body%ID(3)) return
+
+      if (Part1%Charge /= Decay3Body%Charge(1)) return
+      if (Part2%Charge /= Decay3Body%Charge(2)) return
+      if (Part3%Charge /= Decay3Body%Charge(3)) return
+
+      CheckFound3 = .true.
+    end function CheckFound3
+
+    !***************************************************************************
+    !****is* VolumeElements_3Body/GetEnsInd
+    ! NAME
+    ! subroutine GetEnsInd(pPart, iEns,iInd)
+    ! PURPOSE
+    ! needed for pointer arithmetics
+    !***************************************************************************
     subroutine GetEnsInd(pPart, iEns,iInd)
       type(particle), POINTER, intent(in) :: pPart
       integer, intent(OUT) :: iEns, iInd
