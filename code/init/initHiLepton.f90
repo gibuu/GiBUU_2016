@@ -759,7 +759,7 @@ contains
 
     use checks, only: ChecksSwitchRealRun
     use eventGenerator_eN_HiEnergy, only: ReadHiGammaNucleus
-
+    use Dilepton_Analysis, only: Dilep_Init
 
     !*************************************************************************
     !****n* initHiLepton/HiLeptonNucleus
@@ -915,6 +915,8 @@ contains
     else
        call initExperiment
     end if
+
+    call Dilep_Init (Ebeam)  ! initialize the dilepton-analysis module
 
     if (DoStatistics) then
        call writeFileDocu('initHiLep.Shadowing.dat','shadowing faktor for (bZ,bT)')

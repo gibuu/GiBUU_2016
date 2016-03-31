@@ -632,15 +632,15 @@ contains
   end subroutine SetUpTarget
 
 
-  !*************************************************************************
+  !*****************************************************************************
   !****s* GiBUU/run
   ! NAME
   ! subroutine run
   !
   ! PURPOSE
-  ! Propagate a given realParticle and pertParticle vector according to
-  ! the BUU equations
-  !*************************************************************************
+  ! Propagate a given realParticle and pertParticle vector
+  ! according to the BUU equations.
+  !*****************************************************************************
   subroutine run
     use povray, only: povray_output
     use RMF, only : getRMF_flag
@@ -687,7 +687,7 @@ contains
 
     !loop over time steps
     If (numTimeSteps==0) then
-       if (eventtype==RealPhoton .or. eventtype==HiPion) then
+       if (eventtype==RealPhoton .or. eventtype==HiPion .or. eventtype==HiLepton) then
           call Dilep_Decays(0.,pertParticles,1)
        else if (eventType==HeavyIon .or. eventType==hadron) then
           call Dilep_Decays(0.,realParticles,1)
@@ -775,6 +775,7 @@ contains
              call DoSourceAnalysis(realParticles,time,delta_T,.false.,targetNuc)
              if (stopGiBUU) EXIT PhaseSpaceEvolution !stop BUU-run after on-set of equilibration
           endif
+          call Dilep_Decays(time, pertParticles, timeStep/numTimeSteps)  ! Dilepton Analysis
 
        case(HiPion)
           call HiPionAnalysisPerTime(timestep,time,pertParticles)
@@ -968,19 +969,19 @@ contains
 
 
 
-  !*************************************************************************
+  !*****************************************************************************
   !****s* GiBUU/analysis
   ! NAME
   ! subroutine analysis(finalizeFlag,beforeRUN)
   ! PURPOSE
-  ! Analyse output of run.
+  ! Analyze output of run.
   ! INPUTS
   ! * logical :: finalizeFlag -- This flag signalises that the last run of
   !   one energy was taking place.
   ! * logical :: beforeRUN    -- Flag to indicate, whether this routine
   !   is called before or after "run" is called. Makes it possible to produce
   !   some analysis-output of the particle vector directly after its init.
-  !*************************************************************************
+  !*****************************************************************************
   subroutine analysis(finalizeFlag,beforeRUN)
     use eventtypes
     use inputGeneral, only: FinalCoulombCorrection, PrintParticleVectors, numTimeSteps
@@ -1017,29 +1018,26 @@ contains
        return ! leave this routine !!!
     endif
 
-    ! **********Final Coulomb propagation
+    !********** Final Coulomb propagation
 
     Select Case(eventType)
     Case(LoPion,RealPhoton,neutrino,HiPion,HiLepton)
        If (FinalCoulombCorrection) call CoulombPropagation (pertParticles)
     end Select
 
-    ! ***********Analysis
+    !********** Analysis
 
     Select Case(eventType)
     Case(elementary)
        write(*,*) '   Main : Calling elementary collision analysis routine'
        call DoElementaryAnalysis (realparticles, finalizeFlag)
        write(*,*) '   Main : Finished elementary collision analysis routine'
-
-       ! ******************************************************************
-        call DoHeavyIonAnalysis(realparticles,pertParticles,finalizeFlag)
-       ! ******************************************************************
+       call DoHeavyIonAnalysis(realparticles,pertParticles,finalizeFlag)
 
     Case(HeavyIon,hadron,ExternalSource)
        write(*,*) '   Main : Calling heavy ion induced analysis routine'
        call DoHeavyIonAnalysis(realparticles,pertParticles,finalizeFlag)
-       call Dilep_write_CS()                                    ! write Dilepton cross sections to file
+       call Dilep_write_CS()  ! write dilepton cross sections to file
 
     Case(LoPion)
        write(*,*) '   Main : Calling pion induced analysis routine'
@@ -1051,7 +1049,7 @@ contains
           call writeParticleVector('RealParticles_preAnalysis',realParticles)
           call writeParticleVector('PertParticles_preAnalysis',pertParticles)
        end if
-       call Dilep_write_CS() ! write Dilepton cross sections to file
+       call Dilep_write_CS()  ! write dilepton cross sections to file
        write(*,*) '   Main : Calling photon induced analysis routine'
        if(lowPhotonInit_getRealRun()) then
           call analyze_Photon(realParticles,finalizeFlag)
@@ -1074,18 +1072,18 @@ contains
        end if
 
     Case(HiPion)
-       call Dilep_write_CS() ! write Dilepton cross sections to file
+       call Dilep_write_CS()  ! write dilepton cross sections to file
        call DoHiPionAnalysis(pertParticles,finalizeFlag)
 
     Case(HiLepton)
-       call  DoHiLeptonAnalysis(realparticles,pertParticles,targetNuc%mass,finalizeFlag)
+       call DoHiLeptonAnalysis(realparticles,pertParticles,targetNuc%mass,finalizeFlag)
+       call Dilep_write_CS()  ! write dilepton cross sections to file
 
     Case(inABox_pion)
        If(finalizeFlag) call evaluate_pionGamma()
 
     Case(groundState)
        call DoHeavyIonAnalysis(realparticles,pertParticles,finalizeFlag)
-
 
     Case(transportGivenParticle)
        call radiativeDeltaDecay_write_CS(pertParticles)
