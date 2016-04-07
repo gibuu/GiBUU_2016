@@ -561,9 +561,9 @@ contains
     targNuc => getTarget()
 
     if (particle_source) then
-      nCh = 64
+      nCh = 65
     else
-      nCh = 16
+      nCh = 17
     end if
 
     ! adjust bin size according to available energy
@@ -608,22 +608,23 @@ contains
     end do
     ! set channel descriptions
     msigma%xDesc='Dilepton Mass [GeV]'
-    msigma%yDesc(1:16) = (/ "rho -> e+e-        ", "omega -> e+e-      ", "phi -> e+e-        ", "omega -> pi0 e+e-  " , &
+    msigma%yDesc(1:17) = (/ "rho -> e+e-        ", "omega -> e+e-      ", "phi -> e+e-        ", "omega -> pi0 e+e-  " , &
                             "pi0 -> e+e- gamma  ", "eta -> e+e- gamma  ", "Delta -> N e+e-    ", "eta -> e+e-        " , &
-                            "eta' -> e+e- gamma ", "pn -> pn e+e-      ", "pp -> pp e+e-      ", "pi- n -> pi- n e+e-" , &
-                            "pi- p -> pi- p e+e-", "pi+ n -> pi+ n e+e-", "pi+ p -> pi+ p e+e-", "Bethe-Heitler      " /)
+                            "eta' -> e+e- gamma ", "N*(1520) -> N e+e- ", "pn -> pn e+e-      ", "pp -> pp e+e-      " , &
+                            "pi- n -> pi- n e+e-", "pi- p -> pi- p e+e-", "pi+ n -> pi+ n e+e-", "pi+ p -> pi+ p e+e-" , &
+                            "Bethe-Heitler      " /)
     if (particle_source) then
-      msigma%yDesc(37:40) = (/ "rho (from BB coll.)  ", "rho (from mm coll.)  ", "rho (from mB coll.)  ", "rho (via meson decay)" /)
+      msigma%yDesc(38:41) = (/ "rho (from BB coll.)  ", "rho (from mm coll.)  ", "rho (from mB coll.)  ", "rho (via meson decay)" /)
       do i=Nucleon,F37_1950
         if (bar_ch(i)==0) cycle
-        msigma%yDesc(16+bar_ch(i)) = trim(hadron(i)%name) // " Dalitz decay"
-        msigma%yDesc(40+bar_ch(i)) = "rho (via " // trim(hadron(i)%name) // ")"
+        msigma%yDesc(17+bar_ch(i)) = trim(hadron(i)%name) // " Dalitz (VMD)"
+        msigma%yDesc(41+bar_ch(i)) = "rho (via " // trim(hadron(i)%name) // ")"
       end do
-      msigma%yDesc(61:64) = (/ "phi (from pi-rho coll.)", "phi (from K-Kbar coll.)", &
+      msigma%yDesc(62:65) = (/ "phi (from pi-rho coll.)", "phi (from K-Kbar coll.)", &
                                "phi (from BB coll.)    ", "phi (from mB coll.)    " /)
       call CreateHistMC (rhoMass,'mass distribution of the rho meson',0.,2.,binsz,24)
       rhoMass%xDesc='rho mass [GeV]'
-      rhoMass%yDesc(1:24) = msigma%yDesc(37:60)
+      rhoMass%yDesc(1:24) = msigma%yDesc(38:61)
     end if
     call CopyDesc (ptsigma(:), msigma)
     call CopyDesc (ysigma(:), msigma)
@@ -704,7 +705,7 @@ contains
     use particleDefinition, only: particle
     use inputGeneral, only: delta_T,numEnsembles,num_Runs_SameEnergy,num_energies,eventtype
     use constants, only: pi,melec,alphaQED,hbarc,mN,mPi
-    use IdTable, only: Delta, F37_1950, pion, rho, phi, omegaMeson, eta, etaPrime, Kaon, Kaonbar, photon, &
+    use IdTable, only: Delta, D13_1520, F37_1950, pion, rho, phi, omegaMeson, eta, etaPrime, Kaon, Kaonbar, photon, &
                        EOV, NOP, invalidID, isBaryon, isMeson
     use eventtypes, only: LoPion,RealPhoton,HiPion,HiLepton,HeavyIon,HadronInduced=>Hadron
     use particleProperties, only: hadron
@@ -857,7 +858,7 @@ contains
              print *,"error in dilepton analysis: wrong rho parents!",parents(1:2)
              stop
           end if
-          call CS(pout,40+channel,weight,mediumAtPosition%density,gen,part,i,j)
+          call CS(pout,41+channel,weight,mediumAtPosition%density,gen,part,i,j)
           call AddHistMC (rhoMass, mass, 4+channel, perw)
         end if
         inclXS(1) = inclXS(1) + perw
@@ -923,7 +924,7 @@ contains
             print *,"error in dilepton analysis: wrong phi parents!",parents(1:2)
             stop
           end if
-          call CS(pout,61+channel,weight,mediumAtPosition%density,gen,part,i,j)
+          call CS(pout,62+channel,weight,mediumAtPosition%density,gen,part,i,j)
         end if
         inclXS(3) = inclXS(3) + perw
       !=========================================================================
@@ -1017,6 +1018,25 @@ contains
           inclXS(7+ch) = inclXS(7+ch) + perw
 
           if (hadron(Delta)%decaysID(2)==0) cycle  ! no rho-N decay
+        else if (id == D13_1520) then
+          ! N*(1520) -> e+e- N
+          massma = massvac - mN              ! maximum dilepton mass (vacuum mass difference of N* and Nucleon)
+          massmi = 2.*melec                  ! minimum dilepton mass
+          mass2  = rnFlat(massmi,massma)     ! actual dilepton mass
+          dgamdm = dGamma_dM_N1520Dalitz(massvac,mass2) * (massma-massmi)
+          if (last < 1) then
+            weight = perw * dgamdm/gamma * delta_T/hbarc
+          else
+            momLRF = mom
+            if (density%baryon(0)>1E-8) then
+              betaLRF(1:3) = density%baryon(1:3)/density%baryon(0)
+              call lorentz (betaLRF, momLRF, 'Dilep_Decays')
+            end if
+            gtot = max (WidthBaryonMedium (id, massvac, momLRF, mediumAtPosition), 0.001)
+            weight = perw * dgamdm/gtot
+          end if
+          pout = DilepSim3 (mom, mass2, mN, 0)
+          call CS(pout,10,weight,mediumAtPosition%density,gen,part,i,j)
         end if
         !=======================================================================
         if (particle_source) then
@@ -1050,7 +1070,7 @@ contains
             weight = perw * gam/gtot
           end if
           if (id==Delta) weight = weight * nEvent
-          call CS(pout,16+bar_ch(id),weight,mediumAtPosition%density,gen,part,i,j)
+          call CS(pout,17+bar_ch(id),weight,mediumAtPosition%density,gen,part,i,j)
         end if
       end select
     end do
@@ -1538,6 +1558,37 @@ contains
     end function
 
   end function Delta_FF_Iachello
+
+
+  !*****************************************************************************
+  !****f* Dilepton_Analysis/dGamma_dM_N1520Dalitz
+  ! NAME
+  ! real function dGamma_dM_N1520Dalitz (W, q)
+  ! PURPOSE
+  ! This function calculates the mass differential decay width dGamma/dM of
+  ! N*(1520) -> N e+e-. See Krivoruchenko/Martemyanov/Faessler/Fuchs,
+  ! Ann. Phys. 296 (2002), 299-346, equation (III.22).
+  ! INPUTS
+  ! * real,intent(in)    :: W       ! mass of the N*
+  ! * real,intent(in)    :: q       ! invariant mass of the gamma*
+  !*****************************************************************************
+  real function dGamma_dM_N1520Dalitz (W, q)
+    use constants, only: pi, alphaQED, melec, mN
+
+    real, intent(in)    :: W, q
+
+    real :: width_gammaN
+    ! squared form factor, normalized to photon point (which is just a constant in QED approximation)
+    real, parameter :: FF = 1.182
+
+    ! N* -> N gamma*
+    width_gammaN = alphaQED/16. * (W-mN)**2/(W**3*mN**2) * ((W-mN)**2-q**2)**0.5 * ((W+mN)**2-q**2)**1.5 * FF
+
+    ! Dalitz width with lepton phase-space factors
+    dGamma_dM_N1520Dalitz = width_gammaN &
+                            * 2.*alphaQED/(3.*pi*q) * (1.+2.*melec**2/q**2) * sqrt(1.-4.*melec**2/q**2)
+
+  end function dGamma_dM_N1520Dalitz
 
 
   !*****************************************************************************
@@ -2529,9 +2580,9 @@ contains
       case (0)
         return ! nn
       case (1)
-        ch = 10 ! pn
+        ch = 11 ! pn
       case (2)
-        ch = 11 ! pp
+        ch = 12 ! pp
       end select
       if (part(1)%charge==1) then
         charged => part(1)
@@ -2546,13 +2597,13 @@ contains
       ! pion-Nucleon
       select case (part(1)%charge+part(2)%charge)
       case (-1)
-        ch = 12   ! pi(-)n
+        ch = 13   ! pi(-)n
       case (0)
-        ch = 13   ! pi(-)p
+        ch = 14   ! pi(-)p
       case (1)
-        ch = 14   ! pi(+)n
+        ch = 15   ! pi(+)n
       case (2)
-        ch = 15   ! pi(+)p
+        ch = 16   ! pi(+)p
       end select
       if (part(1)%ID==pion) then
         charged => part(1)
@@ -2586,7 +2637,7 @@ contains
 
     do k=1,nevent ! loop to enhance statistics
 
-      if ((brems==2 .or. brems==3) .and. (ch==10 .or. ch==11)) then
+      if ((brems==2 .or. brems==3) .and. (ch==11 .or. ch==12)) then
 
         ! use OBE results (table lookup & interpolation)
 
@@ -2595,7 +2646,7 @@ contains
         q0 = rnPower (-1., M, q0max)               ! dilepton energy
         q = sqrt(q0**2-M**2)                       ! dilepton momentum
 
-        if (ch==10) then
+        if (ch==11) then
           weight = getValue ( (/REAL(M,4), Ebeam(s)/), OBE_pn, oob) * (M_max-M_min)
         else
           weight = getValue ( (/REAL(M,4), Ebeam(s)/), OBE_pp, oob) * (M_max-M_min)
@@ -2755,7 +2806,7 @@ contains
       call lorentz(-b1,p_p,"BH 5.6")
       pdil(:,1)=p
       pdil(:,2)=p_p
-      call CS(pdil,16,weight,mediumAtPosition%density,0)
+      call CS(pdil,17,weight,mediumAtPosition%density,0)
     end do
 
   contains
