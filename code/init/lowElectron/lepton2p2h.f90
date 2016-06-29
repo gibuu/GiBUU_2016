@@ -18,22 +18,22 @@
 !
 ! antiEM, antiNC and antiCC are the same as EM, NC, CC.
 !
-! cases 1 - 3 give parametrizations for 2p2h part of structure function W1 
+! cases 1 - 3 give parametrizations for 2p2h part of structure function W1
 ! in terms of Q^2, no distinction for neutrinos and antineutrinos
 ! Cases 1 and 2 are those in: Lalakulich Gallmeister Mosel PRC86(2012)014614
-! Case 3 gives a reasonable description of MiniBooNE dd neutrino data 
+! Case 3 gives a reasonable description of MiniBooNE dd neutrino data
 ! cases 4 - 5 give parametrization for MEC part of W1 from Christy and Bosted
-! In this case also W3 is related to W1 (acc. Martini and Ericsson) 
+! In this case also W3 is related to W1 (acc. Martini and Ericsson)
 ! Case 4 describes double-differential data from MiniBooNE for neutrino
 ! and antineutrino scattering. It also describes the dd inclusive Xsection for
-! neutrinos from T2K. 
+! neutrinos from T2K.
 !*******************************************************************************
 module lepton2p2h
 
   use particleDefinition
   use eN_eventDefinition
   use leptonicID
-  use CALLSTACK, only: TRACEBACK  
+  use CALLSTACK, only: TRACEBACK
 
   implicit none
 
@@ -58,13 +58,14 @@ module lepton2p2h
   ! * 6: MEC additional parametrization, with parametrization for longitudinal
   ! *    not yet implemented
   !*************************************************************************
-  
-  
-  ! The following are all tunable strength parameters for 2p2h hadronic 
-  ! structure functions. Default is no tuning, i.e. all parameters = 1
-  
-  
-  
+
+
+  ! The following are all tunable strength parameters for 2p2h hadronic
+  ! structure functions. Default is no tuning, i.e. all parameters = 1.
+  ! except for ME_Long, for which default is =0 (no longitudinal component)
+
+
+
   !*************************************************************************
   !****g* lepton2p2h/ME_Norm_QE
   ! PURPOSE
@@ -111,8 +112,8 @@ module lepton2p2h
   real,dimension(1:3), save :: ME_Mass_Delta = (/1.0, 1.0, 1.0/)
   ! NOTES
   ! The value == 1 is a dummy value
-  !*************************************************************************  
-  
+  !*************************************************************************
+
   !*************************************************************************
   !****g* lepton2p2h/ME_Transversity
   ! PURPOSE
@@ -124,7 +125,7 @@ module lepton2p2h
   ! NOTES
   ! The value = 1 turns structure function W2 on so that 2p2h is pure transverse
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* lepton2p2h/ME_LONG
   ! PURPOSE
@@ -136,7 +137,7 @@ module lepton2p2h
   ! NOTES
   ! The value = 0 turns any longitudinal contribution to structure funct. W2 off
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* lepton2p2h/ME_W3
   ! PURPOSE
@@ -149,10 +150,10 @@ module lepton2p2h
   ! overall strength parameter for structure function W3
   !*************************************************************************
 
-!*************************************************************************
+  !*************************************************************************
   !****g* lepton2p2h/ME_W1W3
   ! PURPOSE
-  ! switch for choosing the connection between structure functions 
+  ! switch for choosing the connection between structure functions
   ! W1(electron) and W1(neutrino) and W3(neutrino)
   ! =1 for expressions from Martini et al
   ! =2 for expressions from O'Connell et al
@@ -165,7 +166,7 @@ module lepton2p2h
   ! Martini et al: PR C80 (2009) 065501
   !*************************************************************************
 
-!*************************************************************************
+  !*************************************************************************
   !****g* lepton2p2h/inmedW
   ! PURPOSE
   ! Controls which inv mass W is used in parametrization of 2p2h W1
@@ -177,6 +178,19 @@ module lepton2p2h
   ! inmedW = 2 : W = inv mass for Fermi moving nucleons in potential
   ! inmedW = 3 : W = inv mass for Fermi moving nucleons without potential
   !*************************************************************************
+
+  !*************************************************************************
+  !****g* lepton2p2h/T
+  ! PURPOSE
+  ! Isospin of target nucleus, factor in Eq. (A10) in O'Connell, Donnelly,
+  ! Walecka, PR C6 (1972) 719
+  !
+  ! SOURCE
+  real, save :: T = 0
+  ! NOTES
+  ! This is target isospin T, for 2p2h processes
+  !*************************************************************************
+
   logical, save:: initflag = .true.
 
 contains
@@ -208,11 +222,12 @@ contains
     ! * ME_W3
     ! * ME_W1W3
     ! * inmedW
+    ! * T
     !***********************************************************************
     NAMELIST /lepton2p2h/ ME_Version, &
                           ME_Norm_QE, ME_Norm_Delta, &
                           ME_Mass_QE, ME_Mass_Delta,ME_Transversity,ME_LONG, &
-                          ME_W3,ME_W1W3,inmedW
+                          ME_W3,ME_W1W3,inmedW,T
 
     if(.not.initFlag) return
 
@@ -223,34 +238,34 @@ contains
 
 
     select case (ME_Version)
-      
+
     case (1)
        write(*,'(A)') 'ME1  const =  4.0e-6 * ME_Norm_XX'
 !  case 1 is model-I in "Lalakulich Gallmeister Mosel PRC86(2012)014614"
-   
+
     case (2)
        write(*,'(A)') 'ME2  4.8e4 * 0.635 / Enu^2 * ME_Norm_XX  &
-                      &  in transverse part only, decreasing with Enu' 
-!  case 2 is model-II from "Lalakulich Gallmeister Mosel PRC86(2012)014614"                    
-    
+                      &  in transverse part only, decreasing with Enu'
+!  case 2 is model-II from "Lalakulich Gallmeister Mosel PRC86(2012)014614"
+
     case (3)
        write(*,'(A)') 'ME3  dipole parameterization of the "form factor" &
                       & ME=8e4*(1+Q2/MA2)^{-4},transverse part only'
-! case 3 gives a good description of MiniBooNE data with MA ~ 1.5 GeV                       
-    
+! case 3 gives a good description of MiniBooNE data with MA ~ 1.5 GeV
+
     case (4)
        write(*,'(A)') 'ME 4, parametrization of structure functions W1,W2,W3,&
                       & W1 from E. Christy'
        write(*,*) 'ME_NORM=', ME_NORM_QE,'ME_W3=',ME_W3,'ME_Trans=',    &
-                   &   ME_Transversity, 'ME_LONG=',ME_LONG, 'inmedW=',inmedW              
-                      
+                   &   ME_Transversity, 'ME_LONG=',ME_LONG, 'inmedW=',inmedW
+
     case (5)
        write(*,'(A)') 'parametrization of structure functions W1,W2,W3,&
-                      & W1 from Bosted'   
-                      
+                      & W1 from Bosted'
+
     case (6)
        write(*,'(A)') 'parametrization of structure functions W1,W2,W3,&
-                      & W1 new parametrization'     
+                      & W1 new parametrization'
 
    case DEFAULT
        write(*,*) 'ME_Version = ',ME_Version
@@ -276,6 +291,634 @@ contains
   end subroutine readInput
 
   !*************************************************************************
+  !****f* lepton2p2h/lepton2p2h_XS
+  ! NAME
+  ! real function lepton2p2h_XS(eN,outPart,DoQE)
+  ! PURPOSE
+  ! calculate the electron induced 2p2h-QE cross section
+  ! INPUTS
+  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
+  ! * type(particle),dimension(:) :: OutPart -- the outgoing particles
+  ! * logical :: DoQE -- .true. for NN final state, .false. for N Delta
+  ! OUTPUT
+  ! * the function value
+  ! NOTES
+  ! * One has to give a realistic parametrization of the matrix element
+  ! * If one randomly selects the position of the second particle, one
+  !   has to respect this in the XS calculation (and  not
+  !   multiply it with the density at the position)
+  !*************************************************************************
+  real function lepton2p2h_XS(eN,outPart,DoQE)
+
+    use minkowski, only : SP,abs4,abs4Sq
+    use constants, only : pi,twopi,mN,hbarc,alphaQED,GF,coscab
+    use twoBodyTools, only: pCM_sqr
+    use nucleus, only: getTarget
+    use nucleusdefinition
+
+    type(tnucleus), pointer :: targetNuc
+    type(electronNucleon_event), intent(in) :: eN
+    type(particle),dimension(:), intent(in) :: OutPart
+    logical,                     intent(in) :: DoQE
+
+    real :: mf1_2,mf2_2  !squares of final state nucleon masses in 2p2h process
+    real :: k,k1 ! absolute values of the 3-momentum of the in/outgoing leptons
+    real :: sqpp,pcm2 ! sqpp = (q + p + p2)^2, pcm2 = (p_cm)^2
+    real :: d2PS      !d2PS = two-body phase space, includes factor (2pi)^4
+    real :: ME        ! contraction of lepton and hadron tensor
+    real :: Atarget
+! NOTE: lepton tensor contains coupling constants and propagator**2
+    real :: couplProp    !coupling constant times propagator^2
+    real :: Q2,omega
+    integer :: iP
+
+    targetNuc => getTarget()
+    Atarget = targetNuc%mass
+
+    if (Atarget < 2) then
+    lepton2p2h_XS = 0.
+    return
+    end if
+
+
+    Q2=eN%QSquared                          !Q^2
+    omega=eN%boson%momentum(0)              !omega = energy transfer
+
+    mf1_2 = abs4Sq(outPart(1)%momentum)
+    mf2_2 = abs4Sq(outPart(2)%momentum)
+    k1=absMom(en%lepton_out)
+    k =absMom(en%lepton_in)
+
+!!!!!!!!!!!!!!!!
+if (ME_version < 4) then
+!!!!!!!!!!!!!!!!
+    lepton2p2h_XS = en%lepton_out%momentum(0)/en%lepton_in%momentum(0)
+    ! correct for both e and nu
+
+    sqpp = abs4Sq(eN%boson%momentum+eN%nucleon%momentum+eN%nucleon2%momentum)
+!   initial state Mandelstam s of boson + 2 nucleons
+    pcm2=pCM_sqr(sqpp, mf1_2, mf2_2)
+!   final state nucleon momentum squared in 2N cm system
+
+!   dOmega = 4. * pi      ! for isotropic phase space of 2 outgoing nucleons
+!   d2PS = 1.0/(4.*pi)**2  * sqrt(pcm2/sqpp) * dOmega
+!   includes factor (2pi)^4, different from PDG
+
+    d2PS = 1.0/(4.*pi)  * sqrt(pcm2/sqpp)
+!   2-body final state phase space in cm system, integrated over NN angle
+
+    lepton2p2h_XS=lepton2p2h_XS &
+         * sqrt(pcm2/(16.0*sqpp)) & ! <-- the deltas
+         * 2*twopi               ! <-- the angular integration
+
+! Now XS times probability for 2nd nucleon to be at same position
+    lepton2p2h_XS=lepton2p2h_XS &
+         * eN%nucleon2%offshellParameter ! <-- abuse !! = media%density
+
+ else       ! for Bosted parametrization of MEC in W1
+
+
+    iP = abs(eN%idProcess)
+    select case (iP)
+
+      case (1)
+         couplProp = (4*alphaQED**2)/Q2**2 * en%lepton_out%momentum(0)**2
+      case (2)
+         couplProp = (GF*coscab)**2/(2*pi**2) * en%lepton_out%momentum(0)**2
+      case (3)
+         couplProp = 0.5*GF**2/(2*pi**2) * en%lepton_out%momentum(0)**2
+         ! Coupling for NC very roughly approximated by factor 1/2
+      case default
+         write (*,*) 'reaction type must be EM, CC or NC'
+         stop
+
+    end select
+
+
+!!!!!!!!!!!!!!!
+end if
+!!!!!!!!!!!!!!
+
+! Now we have to calculate the Matrixelement:
+    select case (ME_Version)
+
+    case (1)
+       ME = ME_const(eN)
+
+    case (2)
+       ME = ME_transverse(eN)*0.635/( eN%lepton_in%momentum(0) )**2
+          !!!*1.17/eN%lepton_in%momentum(0)/(0.42+eN%lepton_in%momentum(0))**2
+
+    case (3)
+       ME = ME_Dipole_transverse(eN)
+
+    case (4:)
+       ME = ME_W1W2W3(eN)
+!    for this case ME describes experiment (except for coupling strength)
+!    and thus contains phase-space of outgoing particles
+
+    case default
+       write (*,*) 'Other cases ME_Version > 4 not yet implemented'
+    end select
+!!!!!!!!!!!!!!
+if (ME_version < 4) then
+      lepton2p2h_XS=lepton2p2h_XS* ME / (2. *eN%nucleon2%momentum(0))  &
+            & * 1/(twopi**5 *8. *eN%nucleon%momentum(0))
+
+      ! 1/GeV**2=1/1000**2/MeV**2=1/1000**2/(1/197 fm**2)=(197/1000)**2 fm**2
+      !      = (197/1000)**2 * 10 mb
+      ! Now the cross section is given in units of mb/GeV:
+
+      lepton2p2h_XS = lepton2p2h_XS*hbarc**2*10.
+
+      ! Symmetry-Factor:
+      if (IsSamePart(OutPart(1),OutPart(2))) lepton2p2h_XS = lepton2p2h_XS *0.5
+      if (IsSamePart(eN%nucleon,eN%nucleon2)) lepton2p2h_XS = lepton2p2h_XS *0.5
+
+    else        ! parametrization of W1, W2, W3
+
+     if(ME_version == 4) ME = ME * (0.145 - 0.174*Atarget**(-1./3.))/ &
+     &    (0.145 - 0.174*12**(-1./3.)) * Atarget/12
+!    The A-dependence here is taken from Mosel, Gallmeister, arXiv 16.06499,
+!    normalized to C12, since Christy-Bosted fit was for this nucleus
+
+     lepton2p2h_XS=couplProp * ME/Atarget
+!    The scaling of ME with 1/Atarget is necessary
+!    since all other cross sections are given in 1/Atarget.
+
+
+
+    ! 1/GeV**2=1/1000**2/MeV**2=1/1000**2/(1/197 fm**2)=(197/1000)**2 fm**2
+    ! = (197/1000)**2 * 10 mb
+    ! Now the cross section is given in units of mb/GeV:
+
+    lepton2p2h_XS = lepton2p2h_XS*hbarc**2*10.
+!    write(*,*) 'lepton2p2h_XS = ',lepton2p2h_XS
+
+
+!   No symmetry factors since the Bosted-Christy
+!   X-sections are fitted to exp.
+
+end if
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ contains
+
+    real function ME_const(eN)
+
+      type(electronNucleon_event), intent(in) :: eN
+      integer :: iP
+
+      iP = abs(eN%idProcess) ! anti-... same as EM, NC and CC
+
+      if (DoQE) then !=== N N final state ===
+         ME_const=1.0e-5*ME_Norm_QE(iP)
+      else           !=== N Delta final state ===
+         ME_const=1.0e-5*ME_Norm_Delta(iP)
+      end if
+
+    end function ME_const
+
+
+     real function ME_transverse(eN)
+      use minkowski, only : metricTensor, Contract
+      use leptonTensor
+
+      type(electronNucleon_event), intent(in) :: eN
+      complex, dimension(0:3,0:3) :: leptonTens, hadronTens, dummy
+      integer :: mu,nu
+      real :: ME
+      integer :: iP
+
+      iP = abs(eN%idProcess) ! anti-... same as EM, NC and CC
+
+      if (DoQE) then !=== N N final state ===
+         ME=4.8e4*ME_Norm_QE(iP)
+      else           !=== N Delta final state ===
+         ME=4.8e4*ME_Norm_Delta(iP)
+      end if
+
+      do mu=0,3
+        do nu=0,3
+           dummy(mu,nu)=eN%boson%momentum(mu)*eN%boson%momentum(nu)/eN%QSquared
+        end do
+      end do
+
+      hadronTens = ME *( - metricTensor - dummy )
+      leptonTens = leptonicTensor(eN%idProcess,eN%lepton_in%momentum,  &
+                                 & eN%lepton_out%momentum)
+
+      ME_transverse = Contract(hadronTens,leptonTens)
+
+    end function ME_transverse
+
+
+
+    !***********************************************************************
+    !****f* lepton2p2h_XS/ME_Dipole_transverse
+    ! NAME
+    ! real function ME_Dipole_transverse(eN)
+    ! PURPOSE
+    ! calculate the 2p2h matrix element according to
+    ! W_1(g_munu -q_um q_nu /Q2) * L^munu
+    ! so that the contribution is only to the transverse part
+    ! NOTES
+    !
+    ! You have full access to all incoming and outgoing particles:
+    ! * eN%lepton_in  -- incoming lepton
+    ! * eN%nucleon    -- incoming nucleon 1
+    ! * eN%nucleon2   -- incoming nucleon 2
+    !
+    ! exchanged boson:
+    ! * eN%boson      -- exchanged boson
+    !
+    ! even without considering the final state particles, you know the kind
+    ! of process via 'eN%idProcess', which may take the values EM,NC,CC and
+    ! also antiEM,antiNC,antiCC
+    !***********************************************************************
+    real function ME_Dipole_transverse(eN)
+      use minkowski, only : metricTensor, Contract
+      use leptonTensor
+
+      type(electronNucleon_event), intent(in) :: eN
+      complex, dimension(0:3,0:3) :: leptonTens, hadronTens, dummy
+      integer :: mu,nu
+      real :: ME
+      integer :: iP
+
+      iP = abs(eN%idProcess) ! anti-... same as EM, NC and CC
+
+      if (DoQE) then !=== N N final state ===
+         ME=8.0e4*ME_Norm_QE(iP)*(1. + eN%QSquared/ME_Mass_QE(iP)**2)**(-4)
+      else           !=== N Delta final state ===
+         ME=8.0e4*ME_Norm_Delta(iP)*(1+eN%QSquared/ME_Mass_Delta(iP)**2)**(-4)
+      end if
+
+
+      do mu=0,3
+        do nu=0,3
+           dummy(mu,nu)=eN%boson%momentum(mu)*eN%boson%momentum(nu)/eN%QSquared
+        end do
+      end do
+
+      hadronTens = ME *( - metricTensor - dummy )
+      leptonTens = leptonicTensor(eN%idProcess,eN%lepton_in%momentum,  &
+                                 & eN%lepton_out%momentum)
+
+      ME_Dipole_transverse = Contract(hadronTens,leptonTens)
+
+    end function ME_Dipole_transverse
+
+
+
+!***********************************************************************
+    !****f* lepton2p2h_XS/ME_W1W2W3
+    ! NAME
+    ! real function ME_W1W2W3(eN)
+    ! PURPOSE
+    ! to calculate the 2p2h contribution to the inclusive cross sections for
+    ! electrons and neutrinos, cross section depends on all 3 structure functs
+    !
+    ! NOTES
+    !
+    ! You have full access to all incoming and outgoing particles:
+    ! * eN%lepton_in  -- incoming lepton
+    ! * eN%nucleon    -- incoming nucleon 1
+    ! * eN%nucleon2   -- incoming nucleon 2
+    !
+    ! exchanged boson:
+    ! * eN%boson      -- exchanged boson
+    !
+    ! even without considering the final state particles, you know the kind
+    ! of process via 'eN%idProcess', which may take the values EM,NC,CC and
+    ! also antiEM,antiNC,antiCC
+    !***********************************************************************
+    real function ME_W1W2W3(eN)
+
+    use particleDefinition
+    use eN_eventDefinition
+    use leptonicID
+    use CALLSTACK, only: TRACEBACK
+    use minkowski, only : abs4
+    use constants, only : pi,mN,hbarc,alphaQED,GF
+
+    type(electronNucleon_event), intent(in) :: eN
+
+  ! real :: W1N,W2N,W3N
+    real :: nuswitch= 0 ! switch for neutrino/antineutrino in structure function
+  ! nuswitch = 0 for em, = +1 for neutrino, -1 for antineutrino
+    real :: sinsqthetahalf,cossqthetahalf
+    real :: omega, Q2   ! energy transfer, four-momentum transfer
+    real :: Tfact   ! isospin factor
+    integer :: IP
+    real :: GM0,GA0,MV,MA,GM,GA,GM2,GA2
+
+
+
+    Q2=eN%QSquared                          !Q^2
+    omega=eN%boson%momentum(0)              !omega = energy transfer
+
+    !    vector and axial coupling constants and cutoff masses
+     GM0 = 4.71
+     GA0 = - 1.255
+     MV =  0.84
+     MA = 1.032
+
+!   vector and axial coupling formfactors
+
+    GM = GM0 * 1./(1 + Q2/MV**2)**2
+    GA = GA0 * 1./(1 + Q2/MA**2)**2
+    GM2 = GM**2
+    GA2 = GA**2
+
+    IP = abs(eN%IdProcess)
+    if(IP==1) then
+      nuswitch = 0
+      GA2=0
+    else
+      nuswitch = sign(1,eN%IdProcess)
+    end if
+
+    sinsqthetahalf = 0.5*(1. - en%lepton_out%momentum(3)/k1)
+    cossqthetahalf = 1 - sinsqthetahalf
+
+    ME_W1W2W3 =  sinsqthetahalf * 2*W1(Q2,omega,GM2,GA2)                      &
+       &  + cossqthetahalf * W2(Q2,omega,GM2,GA2)                             &
+       &  - nuswitch*(en%lepton_in%momentum(0)+en%lepton_out%momentum(0))/mN  &
+       &  * W3(Q2,omega,GM,GA) * sinsqthetahalf
+
+    ME_W1W2W3 = ME_W1W2W3 * ME_Norm_QE(IP)
+
+    if (IP /= 1) ME_W1W2W3 = ME_W1W2W3 * (T + 1) * ME_Norm_QE(IP)
+  ! Factor 'T+1' here is isospin factor for neutrinos, not electrons
+  ! in O'Connell, Donnelly and Walecka, PRC 6 (1972) 719, eq. A10
+
+!!!!!!!!!!!!!!!!!!!!!!!!!
+!TESTPRINTOUT
+!W1N = W1(Q2,omega)
+!W2N = W2(Q2,omega)
+!W3N = W3(Q2,omega)
+!write (*,*) 'IP =',IP,'nuswitch =',nuswitch
+!write (*,*)'Enu =',en%lepton_in%momentum(0),'Q2 =', Q2,'omega =',omega
+!write(*,*) 'W1=',W1N,'W2=',W2N,'W3 =',W3N,'ME =',ME_W1W2W3
+!write (*,*) 'sinsqthetahalf=',sinsqthetahalf,'cossqthetahalf=',cossqthetahalf
+!write(*,*) '----------------------------------------------------'
+!stop
+!!!!!!!!!!!!!!!!!!!!!!!!!
+
+! Enforce positivity constraint on structure functions by keeping matrixelement
+! positive
+
+     if(ME_W1W2W3 < 0) then
+        write(*,*) 'enforce positivity constraint in 2p2h, set to 0:',ME_W1W2W3
+        write(*,*) 'Q2 =',Q2,'omega =', omega
+        ME_W1W2W3 = 0.
+     end if
+
+    end function ME_W1W2W3
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    real function W1(Q2,omega,GM2,GA2)
+! Structure function W1
+
+    real, intent(in) :: Q2,omega,GM2,GA2
+
+      IP = abs(eN%idProcess)
+
+ !     write (*,*) 'IP in W1 = ',IP
+
+    select case (IP)
+
+    case (1)                                    ! electron
+      if (DoQE) then !=== N N final state ===
+         W1= W1E(Q2,omega)
+      else           !=== N Delta final state ===
+         W1= W1E(Q2,omega)
+      end if
+
+    case (2:)                                    ! CC and NC
+
+      if (DoQE) then !=== N N final state ===
+         W1= W1NU(Q2,omega,GM2,GA2)
+      else           !=== N Delta final state ===
+         W1= W1NU(Q2,omega,GM2,GA2)
+      end if
+
+     case DEFAULT
+      write(*,*) 'ProcessID Error in 2p2h'
+     end select
+
+    end function W1
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    real function W1E(Q2,omega)
+! Structure function for electrons, parametrization for MEC term only
+
+        use constants, only : mN
+        use nucleus, only: getTarget
+        use nucleusdefinition
+        use minkowski, only : abs3,abs4sq
+
+        type(tnucleus), pointer :: targetNuc
+!         type(particle), dimension(2) :: nucleon
+
+        real ::a1,b1,c1,t1,dw2,Atarget,Wrecsq
+        real, intent(in) :: Q2,omega
+        real :: ENfree,pNplusQ
+        real :: p0,p1,p2,p3,p4,p5,p18,p19,f
+
+        targetNuc => getTarget()
+        Atarget = targetNuc%mass
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  Now Fermi-smearing, switch controls method
+      select case(inmedW)
+        case (1)
+           Wrecsq = mN**2 + 2*mN*omega - Q2
+
+        case (2)
+           Wrecsq = abs4sq(eN%boson%momentum+eN%nucleon%momentum)
+
+        case (3)
+           ENfree = sqrt(abs3(eN%nucleon%momentum)**2  +mN**2)
+           pNplusQ = abs3(eN%nucleon%momentum + eN%boson%momentum)
+           Wrecsq = (omega + ENfree)**2 - pNplusQ**2
+
+        case default
+           write (*,*) 'wrong case for Wrecsq in 2p2h'
+
+      end select
+
+      if (Wrecsq <= 0.0) then
+         W1E = 0.0
+         return
+      end if
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    select case (ME_Version)
+
+    case (4)
+
+!   This case returns the value for the structure function W1(MEC)
+!   fitted by E.Christy to inclusive electron scattering data,
+!   E. Christy, priv. comm., August 2015, fitted for C12
+
+        a1 = 6.049*Q2**2 * exp(-1.0*Q2/1.298)/(0.314+Q2)**5.708
+        b1 = 0.791 + 0.154*Q2
+        c1 = 0.290
+        t1 = (Wrecsq - b1)**2/c1**2/2.
+        dw2 = Wrecsq + Q2 * (1. - 1./2.2) - 1.0*mN*mN
+        if(dw2 < 0.0) dw2 = 0.
+
+        if (DoQE) then !=== N N final state ===
+           W1E = a1 * (exp(-1.*t1)*sqrt(dw2))/mN
+        else           !=== N Delta final state ===
+           W1E = a1 * (exp(-1.*t1)*sqrt(dw2))/mN
+!       W1E = structure function W1 for electrons
+        end if
+!         write (*,*) 'W1_MEC=',W1E
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    case (5)
+!   This case returns the value for the structure function W1(MEC)
+!   fitted by Mamyan and Bosted to inclusive electron scattering data,
+!   http://arxiv.org/abs/arXiv:1203.2262, 2012
+
+
+!      The following parameter-constants are from Bosted arXiV:1203.2262
+          p0=0.005138
+          p1=0.980710
+          p2=0.046379
+          p3=1.643300
+          p4=6.982600
+          p5=-0.226550
+          p19=-0.045536
+          if(4 < Atarget .and. Atarget < 21) p18 = 215
+          if(20 < Atarget .and. Atarget < 51) p18 = 235
+          if(50 < Atarget) p18 = 230
+
+          f=(1. + max(0.3,Q2)/p3 )**p4 /( omega**p5          &
+            &     * (1.+p18*Atarget**(1.+p19*Q2/2./mN/omega)))
+!     In the Mamyan-Bosted paper eq. (10) is wrong, corrected here,
+!     following Bosted code
+
+        if (DoQE) then !=== N N final state ===
+           W1E = p0*exp( -(Wrecsq-p1)**2/p2 )/f/mN
+!        write (*,*) 'MEC=',MEC, '    Q2=',Q2,'   omega=',omega
+      else           ! === N Delta final state ===
+           W1E = p0*exp( -(Wrecsq-p1)**2/p2 )/f /mN
+      end if
+
+     case default
+         write(*,*) 'ME_Version does not exist: ',ME_Version
+
+     end select
+
+     end function W1E
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+     real function W1NU(Q2,omega,GM2,GA2)
+! structure function W1 for neutrino-induced CC and NC MEC process
+
+     use constants, only : mN
+
+     real, intent(in) :: Q2,omega,GM2,GA2
+     real :: qvec2
+
+     qvec2 = Q2 + omega**2
+
+  select case (ME_W1W3)
+
+   case (1)       ! case for connection between W1 and W3 from Martini et al
+
+    W1NU= (1. + qvec2/omega**2 * GA2/GM2)* 2.0 * W1E(Q2,omega)
+
+   case(2)        ! case for connection between W1 and W3 from O'Connell,
+                  ! Donnelly, Walecka PR C6 (1972) 719
+    W1NU = (1. + (2*mN)**2/qvec2 * GA2/GM2) * 2.0 * W1E(Q2,omega)
+
+   case DEFAULT
+    write(*,*) 'MEW1W3 error in W1NU'
+   end select
+
+    end function W1NU
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    real function W2(Q2,omega,GM2,GA2)
+! Structure function W2
+
+    use constants, only : mN
+
+    real, intent(in) :: Q2,omega,GM2,GA2
+    real :: MDelta
+    real :: qvec2
+    integer :: IP
+
+    qvec2 = Q2 + omega**2
+!   vector and axial coupling constants and cutoff masses
+
+    MDelta = 1.232
+
+    W2 = ME_Transversity(abs(IP)) * Q2/qvec2 * W1(Q2,omega,GM2,GA2)
+! W2: term necessary for purely transverse interaction, could be turned off
+!     by setting ME_Transversity = 0, default = 1
+
+    if(ME_Long(IP) > 0) &
+    W2 = W2  + GA2*(MDelta - mN)**2/(2.*(Q2 + omega**2))* 1./(1 + Q2/0.3**2)**2&
+         & * ME_LONG(iP) * 1.e-5
+!   Structure of longitudinal term follows Martini et al (PRC 2009)
+!   ME_LONG: allows to turn off longitudinal contribution to 2p2h, default = 0
+!   W2: 2nd term for longitudinal response, strength function untested
+    end function W2
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    real function W3(Q2,omega,GM,GA)
+ ! Structure function W3, relevant only for neutrinos
+ ! W3 is directly related to W1, either according to Martini and Ericsson,
+ ! or to O'Connell, Donnelly, Walecka
+
+    use constants, only : mN
+
+    real, intent(in) :: Q2,omega,GM,GA
+    real :: qvec2
+
+    integer IP
+
+    IP = abs(eN%idProcess)
+    if(IP==1) then
+      W3 = 0.0
+      return
+    end if
+
+    qvec2 = Q2 + omega**2
+
+ select case (ME_W1W3)
+
+   case (1)       ! case for connection between W1 and W3 from Martini et al
+
+    W3 = 4.0 * qvec2/omega**2 * GA/GM * W1E(Q2,omega)* ME_W3(IP)
+!   ME_W3(IP) = arbitrary possible strength factor for W3, default = 1
+
+   case(2)        ! case for connection between W1 and W3 from O'Connell,
+                  ! Donnelly, Walecka PR C6 (1972) 719
+    W3 = 4. * (2.*mN)**2/qvec2 * GA/GM * W1E(Q2,omega) * ME_W3(IP)
+
+   case DEFAULT
+    write(*,*) 'MEW1W3 error in MECNU'
+   end select
+
+    end function W3
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  end function lepton2p2h_XS
+
+
+  !*************************************************************************
   !****s* lepton2p2h/lepton2p2h_SelectN2
   ! NAME
   ! subroutine lepton2p2h_SelectN2(eN)
@@ -296,8 +939,8 @@ contains
   !   as eq. two-particle correlatione etc.
   ! * A threshold check  Wfree>(2*mN+1MeV) is performed
   !*************************************************************************
-  subroutine lepton2p2h_SelectN2(eN,flagOK)  
-  
+  subroutine lepton2p2h_SelectN2(eN,flagOK)
+
     use mediumDefinition
     use mediumModule, only: mediumAt
     use densitymodule, only : FermiMomAt
@@ -362,8 +1005,8 @@ contains
     end do
 
     momentum = eN%boson%momentum+nucleon(1)%momentum+nucleon(2)%momentum
-    eN%W_free = abs4(momentum) 
-! invariant mass of two-nucleon + boson system    
+    eN%W_free = abs4(momentum)
+! invariant mass of two-nucleon + boson system
 
     if (eN%W_free.le.2*mN+0.001) return ! ===> failure
 
@@ -374,670 +1017,6 @@ contains
     flagOK = .true.
 
   end subroutine lepton2p2h_SelectN2
-
-  !*************************************************************************
-  !****f* lepton2p2h/lepton2p2h_XS
-  ! NAME
-  ! real function lepton2p2h_XS(eN,outPart,DoQE)
-  ! PURPOSE
-  ! calculate the electron induced 2p2h-QE cross section
-  ! INPUTS
-  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
-  ! * type(particle),dimension(:) :: OutPart -- the outgoing particles
-  ! * logical :: DoQE -- .true. for NN final state, .false. for N Delta
-  ! OUTPUT
-  ! * the function value
-  ! NOTES
-  ! * One has to give a realistic parametrization of the matrix element
-  ! * If one randomly selects the position of the second particle, one
-  !   has to respect this in the XS calculation (and  not 
-  !   multiply it with the density at the position)
-  !*************************************************************************
-  real function lepton2p2h_XS(eN,outPart,DoQE)
-
-    use minkowski, only : SP,abs4,abs4Sq
-    use constants, only : pi,twopi,mN,hbarc,alphaQED,GF,coscab
-    use twoBodyTools, only: pCM_sqr 
-    use nucleus, only: getTarget
-    use nucleusdefinition
-
-    type(tnucleus), pointer :: targetNuc
-    type(electronNucleon_event), intent(in) :: eN
-    type(particle),dimension(:), intent(in) :: OutPart
-    logical,                     intent(in) :: DoQE
-
-    real :: mf1_2,mf2_2  !squares of final state nucleon masses in 2p2h process
-    real :: k,k1 ! absolute values of the 3-momentum of the in/outgoing leptons
-    real :: sqpp,pcm2 ! sqpp = (q + p + p2)^2, pcm2 = (p_cm)^2
-    real :: d2PS      !d2PS = two-body phase space, includes factor (2pi)^4
-    real :: ME        ! contraction of lepton and hadron tensor
-    real :: Atarget
-! NOTE: lepton tensor contains coupling constants and propagator**2 
-    real :: couplProp    !coupling constant times propagator^2
-    real :: Q2,omega
-    integer :: iP     
-    
-    targetNuc => getTarget()
-    Atarget = targetNuc%mass
-     
-    if (Atarget < 2) then
-    lepton2p2h_XS = 0.
-    return
-    end if 
-    
-       
-    Q2=eN%QSquared                          !Q^2
-    omega=eN%boson%momentum(0)              !omega = energy transfer
-        
-    mf1_2 = abs4Sq(outPart(1)%momentum)
-    mf2_2 = abs4Sq(outPart(2)%momentum)
-    k1=absMom(en%lepton_out)
-    k =absMom(en%lepton_in)
-   
-!!!!!!!!!!!!!!!!
-if (ME_version < 4) then
-!!!!!!!!!!!!!!!!
-    lepton2p2h_XS = en%lepton_out%momentum(0)/en%lepton_in%momentum(0)   
-    ! correct for both e and nu 
-    
-    sqpp = abs4Sq(eN%boson%momentum+eN%nucleon%momentum+eN%nucleon2%momentum)
-!   initial state Mandelstam s of boson + 2 nucleons
-    pcm2=pCM_sqr(sqpp, mf1_2, mf2_2) 
-!   final state nucleon momentum squared in 2N cm system
-
-!   dOmega = 4. * pi      ! for isotropic phase space of 2 outgoing nucleons
-!   d2PS = 1.0/(4.*pi)**2  * sqrt(pcm2/sqpp) * dOmega
-!   includes factor (2pi)^4, different from PDG
-
-    d2PS = 1.0/(4.*pi)  * sqrt(pcm2/sqpp)
-!   2-body final state phase space in cm system, integrated over NN angle
-
-    lepton2p2h_XS=lepton2p2h_XS &
-         * sqrt(pcm2/(16.0*sqpp)) & ! <-- the deltas
-         * 2*twopi               ! <-- the angular integration   
-         
-! Now XS times probability for 2nd nucleon to be at same position         
-    lepton2p2h_XS=lepton2p2h_XS &     
-         * eN%nucleon2%offshellParameter ! <-- abuse !! = media%density         
- 
- else       ! for Bosted parametrization of MEC in W1
-    
-
-    iP = abs(eN%idProcess)  
-    select case (iP)
-    
-      case (1)
-         couplProp = (4*alphaQED**2)/Q2**2 * en%lepton_out%momentum(0)**2
-      case (2)
-         couplProp = (GF*coscab)**2/(2*pi**2) * en%lepton_out%momentum(0)**2
-      case (3)      
-         couplProp = 0.5*GF**2/(2*pi**2) * en%lepton_out%momentum(0)**2  
-         ! Coupling for NC very roughly approximated by factor 1/2
-      case default
-         write (*,*) 'reaction type must be EM, CC or NC'
-         stop
- 
-    end select          
-    
-         
-!!!!!!!!!!!!!!!
-end if 
-!!!!!!!!!!!!!!         
-                         
-! Now we have to calculate the Matrixelement:
-    select case (ME_Version)
-     
-    case (1)
-       ME = ME_const(eN)        
-      
-    case (2)
-       ME = ME_transverse(eN)*0.635/( eN%lepton_in%momentum(0) )**2     
-          !!!*1.17/eN%lepton_in%momentum(0)/(0.42+eN%lepton_in%momentum(0))**2       
-    
-    case (3)
-       ME = ME_Dipole_transverse(eN)           
-
-    case (4:)
-       ME = ME_W1W2W3(eN)
-!    for this case ME describes experiment (except for coupling strength) 
-!    and thus contains phase-space of outgoing particles
-                   
-    end select
-!!!!!!!!!!!!!!
-if (ME_version < 4) then
-      lepton2p2h_XS=lepton2p2h_XS* ME / (2. *eN%nucleon2%momentum(0))  &
-            & * 1/(twopi**5 *8. *eN%nucleon%momentum(0))            
-
-      ! 1/GeV**2=1/1000**2/MeV**2=1/1000**2/(1/197 fm**2)=(197/1000)**2 fm**2    
-      !      = (197/1000)**2 * 10 mb
-      ! Now the cross section is given in units of mb/GeV:
-      
-      lepton2p2h_XS = lepton2p2h_XS*hbarc**2*10.     
-         
-      ! Symmetry-Factor:
-      if (IsSamePart(OutPart(1),OutPart(2))) lepton2p2h_XS = lepton2p2h_XS *0.5
-      if (IsSamePart(eN%nucleon,eN%nucleon2)) lepton2p2h_XS = lepton2p2h_XS *0.5
-    
-    else        ! parametrization of W1, W2, W3
-    
-     if(ME_version == 4) ME = ME * (Atarget/12)**(1.01)
-!    The factor (Atarget/12)**1.01 gives the mass dependence of short-range
-!    pairs in the ZRA (C. Colle et al, arXiv:1503.06050), normalized to C12
-    
-     lepton2p2h_XS=couplProp * ME/Atarget 
-!    The scaling of ME with 1/Atarget is necessary
-!    since all other cross sections are given in 1/Atarget.  
-     
-
-    
-    ! 1/GeV**2=1/1000**2/MeV**2=1/1000**2/(1/197 fm**2)=(197/1000)**2 fm**2
-    ! = (197/1000)**2 * 10 mb
-    ! Now the cross section is given in units of mb/GeV:
-    
-    lepton2p2h_XS = lepton2p2h_XS*hbarc**2*10. 
-!    write(*,*) 'lepton2p2h_XS = ',lepton2p2h_XS 
-    
-
-!   No symmetry factors since the Bosted-Christy 
-!   X-sections are fitted to exp.
-       
-end if 
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
- contains
-    
-    real function ME_const(eN)
- 
-      type(electronNucleon_event), intent(in) :: eN
-      integer :: iP
-
-      iP = abs(eN%idProcess) ! anti-... same as EM, NC and CC
-
-      if (DoQE) then !=== N N final state ===
-         ME_const=1.0e-5*ME_Norm_QE(iP)
-      else           !=== N Delta final state ===
-         ME_const=1.0e-5*ME_Norm_Delta(iP)
-      end if
-
-    end function ME_const
-    
-    
-     real function ME_transverse(eN)
-      use minkowski, only : metricTensor, Contract
-      use leptonTensor
-
-      type(electronNucleon_event), intent(in) :: eN
-      complex, dimension(0:3,0:3) :: leptonTens, hadronTens, dummy
-      integer :: mu,nu
-      real :: ME
-      integer :: iP
-
-      iP = abs(eN%idProcess) ! anti-... same as EM, NC and CC
-
-      if (DoQE) then !=== N N final state ===
-         ME=4.8e4*ME_Norm_QE(iP)
-      else           !=== N Delta final state ===
-         ME=4.8e4*ME_Norm_Delta(iP)
-      end if
-
-      do mu=0,3
-        do nu=0,3
-           dummy(mu,nu)=eN%boson%momentum(mu)*eN%boson%momentum(nu)/eN%QSquared
-        end do
-      end do
-
-      hadronTens = ME *( - metricTensor - dummy )
-      leptonTens = leptonicTensor(eN%idProcess,eN%lepton_in%momentum,  &
-                                 & eN%lepton_out%momentum)
-
-      ME_transverse = Contract(hadronTens,leptonTens)
-
-    end function ME_transverse
-
-    
-
-    !***********************************************************************
-    !****f* lepton2p2h_XS/ME_Dipole_transverse
-    ! NAME
-    ! real function ME_Dipole_transverse(eN)
-    ! PURPOSE
-    ! calculate the 2p2h matrix element according to  
-    ! W_1(g_munu -q_um q_nu /Q2) * L^munu
-    ! so that the contribution is only to the transverse part
-    ! NOTES
-    !
-    ! You have full access to all incoming and outgoing particles:
-    ! * eN%lepton_in  -- incoming lepton
-    ! * eN%nucleon    -- incoming nucleon 1
-    ! * eN%nucleon2   -- incoming nucleon 2
-    !
-    ! exchanged boson:
-    ! * eN%boson      -- exchanged boson
-    !
-    ! even without considering the final state particles, you know the kind
-    ! of process via 'eN%idProcess', which may take the values EM,NC,CC and
-    ! also antiEM,antiNC,antiCC
-    !***********************************************************************
-    real function ME_Dipole_transverse(eN)
-      use minkowski, only : metricTensor, Contract
-      use leptonTensor
-
-      type(electronNucleon_event), intent(in) :: eN
-      complex, dimension(0:3,0:3) :: leptonTens, hadronTens, dummy
-      integer :: mu,nu
-      real :: ME
-      integer :: iP
-
-      iP = abs(eN%idProcess) ! anti-... same as EM, NC and CC
-
-      if (DoQE) then !=== N N final state ===
-         ME=8.0e4*ME_Norm_QE(iP)*(1. + eN%QSquared/ME_Mass_QE(iP)**2)**(-4)
-      else           !=== N Delta final state ===
-         ME=8.0e4*ME_Norm_Delta(iP)*(1+eN%QSquared/ME_Mass_Delta(iP)**2)**(-4)
-      end if
-
-
-      do mu=0,3
-        do nu=0,3
-           dummy(mu,nu)=eN%boson%momentum(mu)*eN%boson%momentum(nu)/eN%QSquared
-        end do
-      end do
-
-      hadronTens = ME *( - metricTensor - dummy )
-      leptonTens = leptonicTensor(eN%idProcess,eN%lepton_in%momentum,  &
-                                 & eN%lepton_out%momentum)
-
-      ME_Dipole_transverse = Contract(hadronTens,leptonTens)
-
-    end function ME_Dipole_transverse
-    
-
-   
-!***********************************************************************
-    !****f* lepton2p2h_XS/ME_W1W2W3
-    ! NAME
-    ! real function ME_W1W2W3(eN)
-    ! PURPOSE
-    ! to calculate the 2p2h contribution to the inclusive cross sections for 
-    ! electrons and neutrinos, cross section depends on all 3 structure functs
-    !
-    ! NOTES
-    !
-    ! You have full access to all incoming and outgoing particles:
-    ! * eN%lepton_in  -- incoming lepton
-    ! * eN%nucleon    -- incoming nucleon 1
-    ! * eN%nucleon2   -- incoming nucleon 2
-    !
-    ! exchanged boson:
-    ! * eN%boson      -- exchanged boson
-    !
-    ! even without considering the final state particles, you know the kind
-    ! of process via 'eN%idProcess', which may take the values EM,NC,CC and
-    ! also antiEM,antiNC,antiCC
-    !***********************************************************************
-    real function ME_W1W2W3(eN) 
-
-    use particleDefinition
-    use eN_eventDefinition
-    use leptonicID
-    use CALLSTACK, only: TRACEBACK  
-    use minkowski, only : abs4
-    use constants, only : pi,mN,hbarc,alphaQED,GF
-
-    type(electronNucleon_event), intent(in) :: eN
-    
-  ! real :: W1N,W2N,W3N
-    real :: nuswitch= 0 ! switch for neutrino/antineutrino in structure function
-    real :: sinsqthetahalf,cossqthetahalf 
-    real :: omega, Q2   ! energy transfer, four-momentum transfer 
-    real :: Tfact   ! isospin factor
-    integer :: IP
-
-    Q2=eN%QSquared                          !Q^2
-    omega=eN%boson%momentum(0)              !omega = energy transfer
-  
-    IP = abs(eN%IdProcess)
-    if(IP==1) then
-      nuswitch = 0 
-      Tfact = 1.
-    else
-      nuswitch = sign(1,eN%IdProcess)   
-      Tfact = 2.
-    end if 
-    
-    sinsqthetahalf = 0.5*(1. - en%lepton_out%momentum(3)/k1)
-    cossqthetahalf = 1 - sinsqthetahalf
-     
-    ME_W1W2W3 =  sinsqthetahalf * 2*W1(Q2,omega)                              &
-       &  + cossqthetahalf * W2(Q2,omega)                                     &
-       &  - nuswitch*(en%lepton_in%momentum(0)+en%lepton_out%momentum(0))/mN  &
-       &  * W3(Q2,omega) * sinsqthetahalf 
-     
-    ME_W1W2W3 = ME_W1W2W3 * Tfact * ME_Norm_QE(IP)
-  ! Factor 'Tfact' here is isospin factor T + 1 for neutrinos, not electrons
-  ! in O'Connell, Donnelly and Walecka, PRC 6 (1972) 719, eq. A10            
-
-!!!!!!!!!!!!!!!!!!!!!!!!!
-!TESTPRINTOUT
-!W1N = W1(Q2,omega)
-!W2N = W2(Q2,omega)
-!W3N = W3(Q2,omega)
-!write (*,*) 'IP =',IP,'nuswitch =',nuswitch
-!write (*,*)'Enu =',en%lepton_in%momentum(0),'Q2 =', Q2,'omega =',omega
-!write(*,*) 'W1=',W1N,'W2=',W2N,'W3 =',W3N,'ME =',ME_W1W2W3
-!write (*,*) 'sinsqthetahalf=',sinsqthetahalf,'cossqthetahalf=',cossqthetahalf
-!write(*,*) '----------------------------------------------------'
-!stop
-!!!!!!!!!!!!!!!!!!!!!!!!!  
-
-! Enforce positivity constraint on structure functions by keeping matrixelement
-! positive
-
-     if(ME_W1W2W3 < 0) then
-        write(*,*) 'enforce positivity constraint in 2p2h, set to 0:',ME_W1W2W3 
-        write(*,*) 'Q2 =',Q2,'omega =', omega
-        ME_W1W2W3 = 0.
-     end if 
-             
-    end function ME_W1W2W3    
-    
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-  
-    real function W1(Q2,omega)
-! Structure function W1
-
-    real, intent(in) :: Q2,omega
-      
-      IP = abs(eN%idProcess)        
-      
- !     write (*,*) 'IP in W1 = ',IP
-      
-    select case (IP)
-     
-    case (1)                                    ! electron
-      if (DoQE) then !=== N N final state ===
-         W1= MEC(Q2,omega) 
-      else           !=== N Delta final state ===
-         W1= MEC(Q2,omega)
-      end if 
-    
-    case (2:)                                    ! CC and NC
-      
-      if (DoQE) then !=== N N final state ===
-         W1= MECNU(Q2,omega) 
-      else           !=== N Delta final state ===
-         W1= MECNU(Q2,omega) 
-      end if 
-     
-     case DEFAULT
-      write(*,*) 'ProcessID Error in 2p2h'
-     end select                            
-    
-    end function W1
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-    real function W2(Q2,omega)
-! Structure function W2
-    
-    use constants, only : mN
-
-    real, intent(in) :: Q2,omega
-    real :: MDelta
-    integer :: IP
-    real :: GA0,MA,GA2
-
-!   vector and axial coupling constants and cutoff masses
-    GA0 = - 1.255
-    MA = 1.032
-
-!   axial coupling formfactor squared    
-    GA2 = (GA0 * 1./(1 + Q2/MA**2)**2)**2 
-  
-    MDelta = 1.232
-    
-    IP = abs(eN%idProcess)
-    if (IP == 1) GA2 = 0
-  
-    W2 = ME_Transversity(abs(IP)) * 1.0/(1 + omega**2/Q2) * W1(Q2,omega)
-! W2: 1st term necessary for purely transverse interaction     
-    if(ME_Long(IP) > 0) &
-    W2 = W2  + GA2*(MDelta - mN)**2/(2.*(Q2 + omega**2))*RSTL(Q2,omega)     &
-         & * ME_LONG(iP) * 1.e-5
-! W2: 2nd term for longitudinal response, strength function untested
-    end function W2
-    
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-    real function W3(Q2,omega)
- ! Structure function W3, relevant only for neutrinos
- ! W3 is directly related to W1, either according to Martini and Ericsson,
- ! or to O'Connell, Donnelly, Walecka
- 
-    use constants, only : mN
-
-    real, intent(in) :: Q2,omega 
-    real :: GM0,GA0,MV,MA,GM,GA
-    integer IP
-     
-    IP = abs(eN%idProcess)      
-    if(IP==1) then
-      W3 = 0.0
-      return
-    end if
-     
-!   vector and axial coupling constants and cutoff masses
-    GM0 = 4.71
-    GA0 = - 1.255
-    MV =  0.84
-    MA = 1.032
-   
-!   vector and axial coupling formfactors    
-    GM = GM0 * 1./(1 + Q2/MV**2)**2
-    GA = GA0 * 1./(1 + Q2/MA**2)**2 
-
- select case (ME_W1W3)
-  
-   case (1)       ! case for connection between W1 and W3 from Martini et al
-
-    W3 = 2 * GA*GM * RSTT(Q2,omega) * ME_W3(IP)
-! RSTT is the transverse spin-isospin response
-! in the notation of Martini and Ericson 
-
-   case(2)        ! case for connection between W1 and W3 from O'Connell,
-                  ! Donnelly, Walecka PR C6 (1972) 719
-    W3 = 4. * 4*mN**2/(Q2+omega**2) * GA/GM * MEC(Q2,omega) * ME_W3(IP)
-    
-   case DEFAULT
-    write(*,*) 'MEW1W3 error in MECNU'
-   end select 
-
-    
-     
-! RSTT : the transverse spin-isospin response in notation of Martini and Ericson    
-    
-    end function W3 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
-    real function MEC(Q2,omega) 
-
-        use constants, only : mN 
-        use nucleus, only: getTarget
-        use nucleusdefinition
-        use minkowski, only : abs3,abs4sq
-
-        type(tnucleus), pointer :: targetNuc
-!         type(particle), dimension(2) :: nucleon
-
-        real ::a1,b1,c1,t1,dw2,Atarget,Wrecsq 
-        real, intent(in) :: Q2,omega
-        real :: ENfree,pNplusQ
-        real :: p0,p1,p2,p3,p4,p5,p18,p19,f
-
-        targetNuc => getTarget()
-        Atarget = targetNuc%mass
-
-      select case(inmedW)
-        case (1)
-           Wrecsq = mN**2 + 2*mN*omega - Q2 
-
-        case (2)
-           Wrecsq = abs4sq(eN%boson%momentum+eN%nucleon%momentum)
-
-        case (3)
-           ENfree = sqrt(abs3(eN%nucleon%momentum)**2  +mN**2)  
-           pNplusQ = abs3(eN%nucleon%momentum + eN%boson%momentum)
-           Wrecsq = (omega + ENfree)**2 - pNplusQ**2
-
-        case default
-           write (*,*) 'wrong case for Wrecsq in 2p2h'
-
-      end select
-
-      if (Wrecsq <= 0.0) then
-         MEC = 0.0
-         return
-      end if
-
-    select case (ME_Version)
-    
-    case (4)  
-    
-!   This case returns the value for the structure function W1(MEC) 
-!   fitted by E.Christy to inclusive electron scattering data,
-!   E. Christy, priv. comm., August 2015
-   
-        a1 = 6.049*Q2**2 * exp(-1.0*Q2/1.298)/(0.314+Q2)**5.708
-        b1 = 0.791 + 0.154*Q2
-        c1 = 0.290
-        t1 = (Wrecsq - b1)**2/c1**2/2.
-        dw2 = Wrecsq + Q2 * (1. - 1./2.2) - 1.0*mN*mN
-        if(dw2 < 0.0) dw2 = 0.
-        
-        if (DoQE) then !=== N N final state ===
-           MEC = a1 * (exp(-1.*t1)*sqrt(dw2)) 
-        else           !=== N Delta final state ===
-           MEC = a1 * (exp(-1.*t1)*sqrt(dw2)) 
-!       MEC = structure function W1 for electrons           
-        end if  
-!         write (*,*) 'MEC=',MEC
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
- 
-    case (5)
-!   This case returns the value for the structure function W1(MEC) 
-!   fitted by Mamyan and Bosted to inclusive electron scattering data,
-!   http://arxiv.org/abs/arXiv:1203.2262, 2012
-       
-        
-!      The following parameter-constants are from Bosted arXiV:1203.2262       
-          p0=0.005138
-          p1=0.980710
-          p2=0.046379
-          p3=1.643300
-          p4=6.982600
-          p5=-0.226550
-          p19=-0.045536  
-          if(4 < Atarget .and. Atarget < 21) p18 = 215 
-          if(20 < Atarget .and. Atarget < 51) p18 = 235
-          if(50 < Atarget) p18 = 230
-       
-          f=(1. + max(0.3,Q2)/p3 )**p4 /( omega**p5          &
-            &     * (1.+p18*Atarget**(1.+p19*Q2/2./mN/omega)))
-!     In the Mamyan-Bosted paper eq. (10) is wrong, corrected here,
-!     following Bosted code
-      
-        if (DoQE) then !=== N N final state ===
-           MEC = p0*exp( -(Wrecsq-p1)**2/p2 )/f 
-!        write (*,*) 'MEC=',MEC, '    Q2=',Q2,'   omega=',omega
-      else           ! === N Delta final state ===
-         MEC = p0*exp( -(Wrecsq-p1)**2/p2 )/f 
-      end if      
-      
-     case default
-         write(*,*) 'ME_Version does not exist: ',ME_Version
-         
-     end select   
-            
-     end function MEC                   
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-     real function MECNU(Q2,omega)
-! structure function W1 for neutrino-induced CC and NC MEC process in the form
-! used by Martini
-     use constants, only : mN
-
-     real, intent(in) :: Q2,omega
-     real :: GM0,GA0,MV,MA,GM2,GA2
-
-!    vector and axial coupling constants and cutoff masses
-     GM0 = 4.71
-     GA0 = - 1.255
-     MV =  0.84
-     MA = 1.032
-
-!   vector and axial coupling formfactors     
-    GM2 = (GM0 * 1./(1 + Q2/MV**2)**2)**2
-    GA2 = (GA0 * 1./(1 + Q2/MA**2)**2)**2  
-    
-  select case (ME_W1W3)
-  
-   case (1)       ! case for connection between W1 and W3 from Martini et al
-
-    MECNU= (GM2 * omega**2/(Q2 + omega**2) + GA2) * RSTT(Q2,omega) * 2.0
-! RSTT is the transverse spin-isospin response
-! in the notation of Martini and Ericson 
-
-   case(2)        ! case for connection between W1 and W3 from O'Connell,
-                  ! Donnelly, Walecka PR C6 (1972) 719
-    MECNU = (1. + 4*mN**2/(Q2 + omega**2) * GA2/GM2 * MEC(Q2,omega) ) * 2.0
-    
-   case DEFAULT
-    write(*,*) 'MEW1W3 error in MECNU'
-   end select                    
-   
-    end function MECNU
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     
-     real function RSTT(Q2,omega)
-! This is the transverse spin-isospin response for electrons 
-! in the notation of Martini et al. PRC 80 (2009) 065501     
-     
-     use constants,only : mN
-     real, intent(in) :: Q2,omega
-     real :: GM0,MV,GM2
-
-!    vector and axial coupling constants and cutoff masses
-     GM0 = 4.71
-     MV =  0.84
-    
-!   vector and axial coupling formfactors    
-     GM2 = (GM0 * 1./(1 + Q2/MV**2)**2)**2
-     
-     RSTT = MEC(Q2,omega)/(GM2*omega**2/(Q2 + omega**2))
-     
-     end function RSTT
-     
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!      
-     
-     real function RSTL(Q2,omega)
-! This is the longitudinal spin-isospin response in notation of Martini et al    
-! can be freely parametrized
-     
-     use constants,only : mN
-     real, intent(in) :: Q2,omega
-     integer :: IP
-     
-     IP = abs(eN%idProcess)
-     
-     RSTL = - 1./(1 + Q2/0.3**2)**2  
-! Parametrizes the attractive RPA correlations at small Q2, see Martini et al 
-! Strength has to be read in. 
-     
-     end function RSTL   
-    
-    
-  end function lepton2p2h_XS 
-   
 
 
 
@@ -1184,7 +1163,7 @@ end if
 !     momentum = eN%boson%momentum+eN%nucleon%momentum+eN%nucleon2%momentum
 !
 !   setKinematics sets the final state for the two final nucleons in 2p2h
-! 
+!
 
     call setKinematics (eN%W, eN%W_free, betaToLRF, eN%betacm, media, pairIn, &
                        & OutPart(1:2), flagOK, .false.)
@@ -1239,8 +1218,8 @@ end if
     if (.not.flagOK) return ! ==> failure
 
     XS = lepton2p2h_XS(eN,outPart,.true.)
-    outPart%perWeight=XS   
-    
+    outPart%perWeight=XS
+
 !    if(XS < 0) write(*,*) 'XS= ',XS,'pW= ',outPart%perWeight
 
 !    call WriteParticle(6,1,outPart)

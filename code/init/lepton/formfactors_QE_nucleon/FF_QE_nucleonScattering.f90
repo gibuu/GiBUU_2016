@@ -33,8 +33,8 @@ module FF_QE_nucleonScattering
   logical,save::useNonStandardMA=.false.
   !
   ! PURPOSE
-  ! if one ones to use a given axial mass, set this to true and choose value
-  ! for MA
+  ! if one wants to use a specific axial mass, set this to true and choose value
+  ! for MA_in
   !***************************************************************************
 
 
