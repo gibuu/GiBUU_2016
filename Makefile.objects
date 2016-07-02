@@ -6,9 +6,9 @@
 # Sub-Makefile for the GiBUU code, to be used in the directory 'objects'
 # and all the 'testRun' directories.
 #
-# This is a template, which must be copied as a local "Makefile" 
-# into each directory in the tree where an exe-file should be produced. 
-# In particular it must be used in the directory "objects" and in 
+# This is a template, which must be copied as a local "Makefile"
+# into each directory in the tree where an exe-file should be produced.
+# In particular it must be used in the directory "objects" and in
 # each "testRun" directory.
 #*******************************************************************************
 
@@ -27,7 +27,7 @@ endif
 export CALLINGDIR := $(CURDIR)
 
 export OS = $(strip $(shell uname))
-export noPrintDirectory=--no-print-directory 
+export noPrintDirectory=--no-print-directory
 export ECHO = echo -e
 export PERL = $(strip $(shell which perl 2>/dev/null))
 ifeq ($(PERL),$(EMPTY))
@@ -57,7 +57,7 @@ EXEALL := $(patsubst %.f90, %.x, $(EXEFILE))
 EXEALL := $(patsubst %.F90, %.x, $(EXEALL))
 EXEALL := $(patsubst %.f, %.x, $(EXEALL))
 
-# The following is only well defined when compiling the 
+# The following is only well defined when compiling the
 # executable in OBJDIR (i.e. in the second call) or if
 # you use this Makefile in a directory other than OBJDIR:
 OBJDIROBJ := $(wildcard $(strip $(OBJDIR))/*.o)
@@ -80,12 +80,19 @@ else
 	FLAGSLD_FGSL=$(shell pkg-config --libs --silence-errors fgsl)
 endif
 
+### additional Compiler flags when using LHAPDF:
+
+ifeq ($(PDF),LHAPDF)
+	FLAGSFORALL+=-mcmodel=large
+	FLAGSLD_LHAPDF=-lstdc++
+endif
+
 ### Compiler flags: (use as abbreviation)
 
 FLAGSF77c=$(FLAGSF77) $(FLAGSDOUBLE) $(FLAGSFORALL) $(FLAGS_FGSL) -I$(OBJDIR)
 FLAGSF90c=$(FLAGSF90) $(FLAGSDOUBLE) $(FLAGSFORALL) $(FLAGS_FGSL) -I$(OBJDIR)
 
-FLAGSLD=-L$(strip $(LIBDIR)) -lPDF -lbz2 $(FLAGSLD_FGSL)
+FLAGSLD=-L$(strip $(LIBDIR)) -lPDF -lbz2 $(FLAGSLD_FGSL) $(FLAGSLD_LHAPDF)
 
 ### RULES:
 
@@ -97,8 +104,8 @@ FLAGSLD=-L$(strip $(LIBDIR)) -lPDF -lbz2 $(FLAGSLD_FGSL)
 all: full
 
 .PHONY : bw
-bw: 
-	@$(MAKE) StartHeader= EndHeader= StartHeader_green= StartHeader_red= blue= endBlue= 
+bw:
+	@$(MAKE) StartHeader= EndHeader= StartHeader_green= StartHeader_red= blue= endBlue=
 
 
 # In the following "workdir" will be replaced automatically by the
@@ -180,7 +187,7 @@ ModGraph:
 ### Compiling:
 
 %.o: %.f90
-	@$(ECHO) $(blue)File: `ls -l $< | awk '{print $$NF}'` $(endBlue) 
+	@$(ECHO) $(blue)File: `ls -l $< | awk '{print $$NF}'` $(endBlue)
 	$(FORT) $(FLAGSF90c) -c $<
 
 %.o: %.F90
@@ -188,7 +195,7 @@ ModGraph:
 	$(FORT) $(FLAGSF90c) -D$(FORT_NOPATH) -c $<
 
 %.o: %.f
-	@$(ECHO) $(blue)File: `ls -l $< | awk '{print $$NF}'` $(endBlue) 
+	@$(ECHO) $(blue)File: `ls -l $< | awk '{print $$NF}'` $(endBlue)
 	$(FORT) $(FLAGSF77c) -c $<
 
 ### Compiling and linking:
@@ -197,21 +204,21 @@ ModGraph:
 	@$(ECHO) $(StartHeader)"Compiling executable" $@ $(EndHeader)
 	@$(ECHO) "Flags: " $(FLAGSF90c) $(FLAGSLD)
 	@$(FORT) $(FLAGSF90c) -o $@ $< $(OBJDIROBJ) $(FLAGSLD)
-	@ln -sf $(CURDIR)/$@ $(EXEDIR) 
+	@ln -sf $(CURDIR)/$@ $(EXEDIR)
 	@$(ECHO) $(StartHeader)"...done"$(EndHeader)
 
 %.x: %.F90 $(OBJDIR)/version.o
 	@$(ECHO) $(StartHeader)"Compiling executable" $@ $(EndHeader)
 	@$(ECHO) "Flags: " $(FLAGSF90c) -D$(FORT_NOPATH) $(FLAGSLD)
 	@$(FORT) $(FLAGSF90c) -D$(FORT_NOPATH) -o $@ $< $(OBJDIROBJ) $(FLAGSLD)
-	@ln -sf $(CURDIR)/$@ $(EXEDIR) 
+	@ln -sf $(CURDIR)/$@ $(EXEDIR)
 	@$(ECHO) $(StartHeader)"...done"$(EndHeader)
 
 %.x: %.f $(OBJDIR)/version.o
 	@$(ECHO) $(StartHeader)"Compiling executable" $@ $(EndHeader)
 	@$(ECHO) "Flags: " $(FLAGSF77c) $(FLAGSLD)
 	@$(FORT) $(FLAGSF77c) -o $@ $< $(OBJDIROBJ) $(FLAGSLD)
-	@ln -sf $(CURDIR)/$@ $(EXEDIR) 
+	@ln -sf $(CURDIR)/$@ $(EXEDIR)
 	@$(ECHO) $(StartHeader)"...done"$(EndHeader)
 
 ### Rules in order to produce specific libraries from *.o files:
@@ -260,4 +267,3 @@ lib%.a: %.o
 ### DEPENDENCIES:
 
 include MakefileDepend
-
