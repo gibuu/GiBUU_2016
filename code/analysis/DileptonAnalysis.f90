@@ -1802,16 +1802,16 @@ contains
          ptot = ptot + dil(:,1) + dil(:,2)
          write (iFile, f3) electron, 1, dil(0:3,1), parts(i)%ID
          write (iFile, f3) electron, -1, dil(0:3,2), parts(i)%ID
-         if (iso>3 .and. iso<8) then
+         if ((iso>=4 .and. iso<=7) .or. iso==9 .or. iso==10) then
             ! Dalitz decays: print missing particle
             pmiss = parts(i)%momentum - dil(:,1) - dil(:,2)
             ptot = ptot + pmiss
             select case(iso)
-            case (4)
+            case (4)      ! omega Dalitz
                id = pion
-            case (5,6)
+            case (5,6,9)  ! pi0, eta, eta' Dalitz
                id = photon
-            case(7)
+            case(7,10)    ! Delta, N*(1520) Dalitz
                id = nucleon
             end select
             write (iFile, f3) id, parts(i)%charge, pmiss(0:3), parts(i)%ID
