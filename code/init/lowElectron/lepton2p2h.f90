@@ -857,12 +857,14 @@ end if
     real :: qvec2
     integer :: IP
 
+    IP = abs(eN%idProcess)
+
     qvec2 = Q2 + omega**2
 !   vector and axial coupling constants and cutoff masses
 
     MDelta = 1.232
 
-    W2 = ME_Transversity(abs(IP)) * Q2/qvec2 * W1(Q2,omega,GM2,GA2)
+    W2 = ME_Transversity(IP) * Q2/qvec2 * W1(Q2,omega,GM2,GA2)
 ! W2: term necessary for purely transverse interaction, could be turned off
 !     by setting ME_Transversity = 0, default = 1
 
