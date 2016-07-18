@@ -1800,7 +1800,7 @@ contains
       else
          ! print dilepton pair
          ptot = ptot + dil(:,1) + dil(:,2)
-         write (iFile, f3) electron, 1, dil(0:3,1), parts(i)%ID
+         write (iFile, f3) -electron, 1, dil(0:3,1), parts(i)%ID
          write (iFile, f3) electron, -1, dil(0:3,2), parts(i)%ID
          if ((iso>=4 .and. iso<=7) .or. iso==9 .or. iso==10) then
             ! Dalitz decays: print missing particle
@@ -1834,7 +1834,7 @@ contains
 
       type(particle),dimension(1:3) :: fs
       logical :: cflag, pflag, stable
-      integer :: j, parents(3), par
+      integer :: j, parents(3), par, sgn
 
       if (isHadron(p%id)) then
          stable = hadron(p%id)%stability==0
@@ -1851,7 +1851,12 @@ contains
          else
             par = 0
          end if
-         write(iFile,f3) p%id, p%charge, p%momentum(0:3), par
+         if (p%antiparticle) then
+           sgn = -1
+         else
+           sgn = 1
+         endif
+         write(iFile,f3) sgn*p%id, p%charge, p%momentum(0:3), par
       else
          ! force decay of unstable particles
          call decayParticle (p, fs, cflag, pflag, .true., 0.)
