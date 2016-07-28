@@ -51,7 +51,7 @@ module neutrinoXsection
   ! * 0 = pi N according to Nieves et al (hep-ph/0701149)
   ! * 1 = MAID-like model
   !***************************************************************************
-  
+
 
   !***************************************************************************
   !****g* neutrinoXsection/integralPrecision
@@ -253,7 +253,7 @@ module neutrinoXsection
   !***************************************************************************
 
 
-  
+
   real,save :: MC_x,MC_y
   real,save :: xyJacob  ! Jacobian from dx dy -> dcos(theta) dE'
 
@@ -297,7 +297,7 @@ contains
 
     integer :: IOS
     integer, intent(in) :: nuXsectionmode
-    
+
 
     !*************************************************************************
     !****n* neutrinoXsection/nl_neutrinoxsection
@@ -445,7 +445,7 @@ contains
        write(*,*) 'no valid input for singlePiModel -> stop', singlePiModel
        stop
     end select
-    
+
     write(*,'(a,F12.4)') ' cut         events with invariant masses above', &
          & invariantMassCut
     write(*,'(a,F12.4)') ' cut MAID BG events with invariant masses above', &
@@ -464,7 +464,7 @@ contains
        write(*,*) 'value ',DISformfakEM,' not valid for DISformfakEM!'
        stop
     end select
-    
+
     select case (DISformfakNCCC)
     case (0)
        write(*,'(A)') ' DIS form factor (CC,NC): 0,  = 1'
@@ -476,9 +476,9 @@ contains
        write(*,*) 'value ',DISformfakNCCC,' not valid for DISformfakNCCC!'
        stop
     end select
-    
+
     call Write_ReadingInput('nl_neutrinoxsection',1)
-    
+
     select case (nuXsectionMode)
 
     case(integratedSigma)
@@ -1581,7 +1581,7 @@ contains
 
     !set default output
     call setToDefault(OutPart)
-    
+
 
     ! The charges are maybe already calculated earlier, but we do it here again
     if(.not.SetHadronCharge(eNev,IP,charge_out,pion_charge_out)) return
@@ -1589,26 +1589,26 @@ contains
     ! set some abbreviations:
     process_ID = eNev%idProcess
     k_in  = eNev%lepton_in%momentum
-    k_out = eNev%lepton_out%momentum 
+    k_out = eNev%lepton_out%momentum
     Q2 = SP(k_out - k_in,k_out - k_in)
-    p_in  = eNev%nucleon%momentum  
+    p_in  = eNev%nucleon%momentum
     p_out = p_in+k_in-k_out               ! momentum of outgoing particle
-         
+
     position = eNev%nucleon%position
     charge_in = eNev%nucleon%charge
     ml_out = eNev%lepton_out%mass
     plep = sqrt(max((eNev%lepton_out%momentum(0)**2-ml_out**2),0.))
     ! ---------------
-    
+
     sig=0.
-    
- !  Now invariant mass cut on reconstructed Wrec = sqrt(mN**2 + 2*mN*nu - Q2) 
+
+ !  Now invariant mass cut on reconstructed Wrec = sqrt(mN**2 + 2*mN*nu - Q2)
  !   = invariant mass in incoming channel for free nucleon  at rest
  !  used for all production mechanisms
-      
-    Wrec = eNev%W_rec  
+
+    Wrec = eNev%W_rec
     if(Wrec .gt. invariantMasscut) return
-    
+
 
     select case(IP)
 
@@ -1674,8 +1674,8 @@ contains
     case(onePionCH_n,onePionCH_p)
 
        ! cutting the background off at high W (default REScutW2=2.05 GeV)
-       if (eNev%W_Free .gt. REScutW2) return  
-       
+       if (eNev%W_Free .gt. REScutW2) return
+
        ! invariant mass cut for pion BG contribution
        if (Wrec .gt. invariantMasscut_BG) return
 
@@ -1697,7 +1697,7 @@ contains
 
        case (1) !MAID like
 
-          !check on outgoing particles 
+          !check on outgoing particles
           invMassSQ=SP(p_out,p_out)
           if(invMassSQ.le.0.) return !reaction not possible
 
@@ -1747,11 +1747,11 @@ contains
     case(DIS_CH)
 
        if (eNev%W_Free .lt. DIScutW1) return
-         
-       !check on outgoing particles  
+
+       !check on outgoing particles
        invMassSQ=SP(p_out,p_out)
        if(invMassSQ.le.0.) return !reaction not possible
-       
+
        OutPart%position(1)=position(1)
        OutPart%position(2)=position(2)
        OutPart%position(3)=position(3)
@@ -1778,7 +1778,7 @@ contains
              sig = sig * (eNev%Qsquared/(eNev%Qsquared+0.6**2))**2
           end select
        end select
-       
+
        ! returned XS is dsigma/dE'dcost in mb/GeV
        if(.not.success) sig=0.0
        sig = sig * 1e11 ! cross section in 10^-38 cm^2 (from mbar=10^{-27} to 10^{-38})
@@ -1791,12 +1791,12 @@ contains
 !!!! 2p2h
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     case(QE2p2h)
-       
-       
+
+
        call lepton2p2h_DoQE(eNev,outPart,sig)
-       ! returned XS is dsigma/dE'dOmega in mb/GeV/A 
+       ! returned XS is dsigma/dE'dOmega in mb/GeV/A
        sig = sig * twopi * 1.e11 ! cross section dsigma/dE'dcost in 10^-38 cm^2
-       
+
     case(Delta2p2h)
        call lepton2p2h_DoDelta(eNev,outPart,sig)
        ! returned XS is dsigma/dE'dOmega in mb/GeV/A
@@ -1806,17 +1806,19 @@ contains
 !!!! two pion background
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     case(twoPion)
-       
-! mass cut !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- if (eNev%W_Free .lt. DIScutW1) return
-    
-    invMassSQ=SP(p_out,p_out)
-    if(invMassSQ.le.0.) return !reaction not possible
-       
-       if(abs(process_ID).eq.2) call DoNu2piBack(eNev,outPart,sig)
 
+       ! mass cut:
+       if (eNev%W_Free .lt. DIScutW1) return
 
-       if(abs(process_ID).eq.1) call init_2Pi(eNev,OutPart,sig)
+       invMassSQ=SP(p_out,p_out)
+       if(invMassSQ.le.0.) return ! reaction not possible
+
+       select case(abs(process_ID))
+       case (1)
+          call init_2Pi(eNev,OutPart,sig, .true.)
+       case (2)
+          call DoNu2piBack(eNev,outPart,sig)
+       end select
 
        ! returned XS is dsigma/dE'dOmega in mb/GeV
        sig = sig * twopi * 1e11 ! cross section dsigma/dE'dcost in 10^-38 cm^2
@@ -1824,7 +1826,7 @@ contains
        if(process_ID.eq.antiCC) sig=sig/2.    !decrease xsec for antineutrinos
 
     end select
-    
+
     if(process_ID.eq.EM) sig=1e-5*sig    !cross section in nanobarn for el-m reactions
 
 !    write(*,*) '>> XsecdCosthetadElepton',IP,sig

@@ -653,7 +653,7 @@ contains
   !
   ! Restricted to Q^2 < 5 GeV^2 and W < 2 GeV, otherwise set to zero.
   !*************************************************************************
-  subroutine init_2Pi(eN,OutPart,XS)
+  subroutine init_2Pi(eN,OutPart,XS, avoidSetNumbers)
     use offShellPotential, only: setOffShellParameter
     use constants, only: pi, mN, mPi
     use particleDefinition
@@ -672,7 +672,7 @@ contains
     type(electronNucleon_event) , intent(in)  :: eN
     type(particle), dimension(3), intent(out) :: OutPart
     real                        , intent(out) :: XS
-
+    logical, intent(in), OPTIONAL             :: avoidSetNumbers
 
     integer :: i
     integer :: qnuk
@@ -688,7 +688,7 @@ contains
     real :: randomNumber
     real , dimension(1:3,1:3) :: p3       ! momenta of three particles
     real :: dum1,dum2
-    logical :: flagOK
+    logical :: flagOK, doSetNumbers
 
     flagOK = .false.
     XS = 0.0
@@ -771,7 +771,9 @@ contains
 
     !===== 8:  set some additional fields:
 
-    call setNumber(OutPart) ! ?????
+    doSetNumbers = .true.
+    if (present(avoidSetNumbers)) doSetNumbers=.not.avoidSetnumbers
+    if (doSetNumbers) call setNumber(OutPart) ! ?????
     call setOutPartDefaults(OutPart, eN%nucleon)
 
   end subroutine init_2Pi

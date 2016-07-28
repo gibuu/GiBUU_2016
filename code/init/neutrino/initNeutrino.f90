@@ -13,8 +13,8 @@ module initNeutrino
 
   use neutrino_IDTable
   use Electron_origin, only: origin_singlePi, origin_doublePi, &
-       origin_DIS, origin_2p2hQE, origin_2p2hDelta 
-  
+       origin_DIS, origin_2p2hQE, origin_2p2hDelta
+
   implicit none
 
   Private
@@ -69,7 +69,7 @@ module initNeutrino
   ! SOURCE
   integer, save :: nuXsectionMode=0
   ! PURPOSE
-  ! To choose which kind of Xsection is calculated. All values set in 
+  ! To choose which kind of Xsection is calculated. All values set in
   ! module neutrino_IDTable.f90
   !
   ! possible values:
@@ -115,20 +115,20 @@ module initNeutrino
   ! * 12 = MINOS muon-antineutrino  in antineutrino mode
   ! * 13 = MINERvA muon neutrino
   ! * 14 = MINERvA muon antineutrino
-  ! * 15 = LBNE neutrino in neutrino mode 
+  ! * 15 = LBNE neutrino in neutrino mode
   ! * 16 = LBNE antineutrino in antineutrino mode
   ! * 17 = LBNO neutrino in neutrino mode
-  ! * 18 = NOMAD   
+  ! * 18 = NOMAD
   ! * 19 = BNB nue          BNB= Booster Neutrino Beam
   ! * 20 = BNB nuebar
   ! * 21 = BNB numu
-  ! * 22 = BNB numubar 
+  ! * 22 = BNB numubar
   ! * 23 = NOvA ND
   integer, parameter :: numberOfExperiments=23
   !***************************************************************************
 
 
-  
+
   character*(*), dimension(numberOfExperiments), parameter :: sExp  = (/ &
         "MiniBooNE nu           ", "ANL                    ", &
         "K2K                    ", &
@@ -149,14 +149,14 @@ module initNeutrino
   (/ 0., 0.541, 0., 250., 0., 0.541, 735., 735., 810., 295., 0., 735., 735., &
      0.5, 0.5, 1300., 1300., 2300., 0.6262,0.,0.,0.,0.,0. /)
   ! oscillation length for various experiments in kilometers
-  
+
   logical, dimension(0:numberOfExperiments), parameter:: OSC = &
   (/ .FALSE.,.FALSE.,.FALSE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,&
      .TRUE.,.FALSE.,.TRUE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,.TRUE.,&
      .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE. /)
   ! OSC is true for oscillation experiments, false otherwise
-  !   
-  
+  !
+
 
   !***************************************************************************
   !****g* initNeutrino/debugFlag
@@ -243,9 +243,9 @@ module initNeutrino
   ! Do not initialize the final state particles as perturbative particles but
   ! as real ones.
   !***************************************************************************
-  
+
   real, save :: raiseVal
- 
+
 
   !**************************************************************************
   !****g* initNeutrino/max_finalstate_ID
@@ -283,16 +283,16 @@ module initNeutrino
   real,dimension(0:max_finalstate_ID),save :: sigabsArrFinal
 
   logical, dimension(1:max_finalstate_ID) :: includeK
-  integer, dimension(1:max_finalstate_ID),parameter :: K2Hist = (/& 
+  integer, dimension(1:max_finalstate_ID),parameter :: K2Hist = (/&
   ! 1=QE, 2=Delta, 3=highRES, 4=1piBG, 5=DIS, 6=2p2hQE, 7=2p2hDelta, 8=2pi
        & 1,2,3,3,3,3,3,3,3,3,&
        & 3,3,3,3,3,3,3,3,3,3,&
        & 3,3,3,3,3,3,3,3,3,3,&
-       & 3,4,4,5,6,7,8/) 
+       & 3,4,4,5,6,7,8/)
   ! K2Hist controls output of various reaction components. The first 31 elements stand for the
-  ! number of nucleon resonances taken into account. The many '3' have the effect 
-  ! that all higher-lying resonances beyond the Delta are for the analysis being summed into 
-  ! one effective higher-lying resonance.     
+  ! number of nucleon resonances taken into account. The many '3' have the effect
+  ! that all higher-lying resonances beyond the Delta are for the analysis being summed into
+  ! one effective higher-lying resonance.
 
   integer, parameter :: max_Hist = 8 ! number of different histograms
 
@@ -305,7 +305,7 @@ module initNeutrino
        21,22,23,24,25,26,27,28,29,30, &
        31,origin_singlePi,origin_singlePi,origin_DIS, &
        origin_2p2hQE, origin_2p2hDelta, origin_doublePi /)
-  
+
 contains
 
   !***************************************************************************
@@ -376,7 +376,7 @@ contains
     end select
 
     write(*,'(a,2I2)') ' nuXsectionMode,nuExp:',nuXsectionMode,nuExp
- 
+
 
 
     write(*,*)
@@ -537,7 +537,7 @@ contains
     real :: totalWeight
     logical :: setflag
     integer, save :: numberofcalls=0
-    integer :: countfluxcutoff  
+    integer :: countfluxcutoff
     integer :: countsigmacutoff
     type(histogram), save :: energyInit
 
@@ -547,8 +547,8 @@ contains
     integer :: failuresV=0,failuresO=0
     logical :: success
     real,dimension(1:3)  :: grad_P
-    real :: fak1,fak2 
-    
+    real :: fak1,fak2
+
 
     type(electronNucleon_event) :: eNeV0,eNev1
     type(electronNucleon_event),dimension(1:max_finalstate_ID) :: eNev
@@ -569,11 +569,11 @@ contains
 !  1. a boson with four-momentum q hits Fermi-moving nucleon in potential well: W
 !  2. a boson with four-momentum q hits Fermi-moving nucleon without potential: W_free
 !  3. a boson with four-momentum q hits free nucleon: Wrec
-!   
-    type(histogram), save :: hSigmaMC_W(0:max_Hist) 
-    type(histogram), save :: hSigmaMC_Wrec(0:max_Hist) 
+!
+    type(histogram), save :: hSigmaMC_W(0:max_Hist)
+    type(histogram), save :: hSigmaMC_Wrec(0:max_Hist)
     type(histogram), save :: hSigmaMC_Wfree(0:max_Hist)
-    
+
     real :: Q2max,numax,W2max,cost
     integer :: iHist
 
@@ -641,8 +641,8 @@ contains
 
 !
 ! Now a loop over all ensembles starts
-! realParticles: in runs with frozen nuclear configuration these are the 
-! target nucleons, 1st index gives ensemble, 2nd index gives particle 
+! realParticles: in runs with frozen nuclear configuration these are the
+! target nucleons, 1st index gives ensemble, 2nd index gives particle
 ! identity, p or n
 !
 
@@ -698,7 +698,7 @@ contains
              case (7)
                 flux_enu=MINOSenergyBARNU_fluxNU()
              case (8)
-                flux_enu=NOVAenergyNU_FD(Flavor_ID,Process_ID)     
+                flux_enu=NOVAenergyNU_FD(Flavor_ID,Process_ID)
              case (9)
                 flux_enu=T2K_ND_numu_energy()
              case (10)
@@ -714,26 +714,26 @@ contains
              case (15)
                 flux_enu=LBNEenergyNU()
              case (16)
-                flux_enu=LBNEenergyBARNU() 
+                flux_enu=LBNEenergyBARNU()
              case (17)
-                flux_enu=LBNOenergyNU() 
-             case (18) 
+                flux_enu=LBNOenergyNU()
+             case (18)
                 flux_enu=NOMADenergyNU()
-             case (19) 
+             case (19)
                 flux_enu=BNBenergyNUe()
              case (20)
                 flux_enu=BNBenergyNUebar()
              case (21)
                 flux_enu=BNBenergyNUmu()
              case (22)
-                flux_enu=BNBenergyNUmubar() 
+                flux_enu=BNBenergyNUmubar()
              case (23)
-                flux_enu=NOVAenergyNU_ND(Flavor_ID,Process_ID)     
+                flux_enu=NOVAenergyNU_ND(Flavor_ID,Process_ID)
              case default
                 write (*,*) 'Experiment does not exist'
-                stop                    
+                stop
              end select
-  
+
              if (flux_enu.lt.Enu_lower_cut .or. flux_enu.gt.Enu_upper_cut) then
                 countfluxcutoff=countfluxcutoff+1
                 cycle
@@ -760,14 +760,14 @@ contains
 
           call resetNumberGuess()
 
-!calculate cross sections 
+!calculate cross sections
 !now loop over all reaction mechanisms (QE, 1pi, DIS ...2p2h)
 !max_finalstate_ID set earlier in this file
 !
 !first all cross sections are calculated, then a MC decision is made
 !which process takes place and is further propagated
 
-          
+
           particle_ID_loop: do k=1, max_finalstate_ID
 
              if (.not.includeK(k)) cycle
@@ -792,8 +792,8 @@ contains
 
              case(dSigmadCosThetadElepton)
                 call Xsec_dSigmadCosThetadElepton(eNev(k), k, &
-                     &  raiseFlag,raiseVal,pOutPart,sigma(k)) 
-! if(k == 35) write(*,*) 'sigma(35) in InitNeutrino 1 =', sigma(k) 
+                     &  raiseFlag,raiseVal,pOutPart,sigma(k))
+! if(k == 35) write(*,*) 'sigma(35) in InitNeutrino 1 =', sigma(k)
 
              case (dSigmadQsdElepton)
                 call Xsec_dSigmadQsdElepton(eNev(k), k, &
@@ -813,7 +813,7 @@ contains
 
              case(dSigmaMC)
                 call Xsec_SigmaMC(eNev(k), k, &
-                     &  raiseFlag,raiseVal,pOutPart,sigma(k))                       
+                     &  raiseFlag,raiseVal,pOutPart,sigma(k))
 
              case(dSigmadW)
                 call Xsec_SigmaMC_W(eNev(k), k, &
@@ -827,8 +827,8 @@ contains
 
              case(EXP_dSigmadCosThetadElepton)
                 call Xsec_dSigmadCosThetadElepton(eNev(k), k, &
-                     &  raiseFlag,raiseVal,pOutPart,sigma(k), flux_enu) 
-      
+                     &  raiseFlag,raiseVal,pOutPart,sigma(k), flux_enu)
+
              case (EXP_dSigmadQsdElepton)
                 call Xsec_dSigmadQsdElepton(eNev(k), k, &
                      &  raiseFlag,raiseVal,pOutPart,sigma(k), flux_enu)
@@ -895,9 +895,9 @@ contains
           firstEvent=getFirstEvent()
 
 ! event selection:
-          k = MonteCarloChoose(sigma,totalWeight) 
-! totalWeight=Perweight which should be assigned to the chosen channel  
-   
+          k = MonteCarloChoose(sigma,totalWeight)
+! totalWeight=Perweight which should be assigned to the chosen channel
+
           select case (k)
           case(0)
              write(*,*) 'Problem initNeutrino: no event generated:', sigma
@@ -915,7 +915,7 @@ contains
           finalstate = pOutPart
 
           finalState%perturbative=(.not.realRun)
-          finalState%firstEvent=FirstEvent           ! Number of first event, 
+          finalState%firstEvent=FirstEvent           ! Number of first event,
                                                      ! stays constant during run.
           finalState%perweight=totalWeight/float(numtry)
           finalState%history=0
@@ -951,21 +951,21 @@ contains
           call AddHist(hSigmaMC_Xrec(0),hSigmaMC_Xrec(iHist),&
                & eNev(k)%Qsquared/(2*mN*eNev(k)%boson%momentum(0)),&
                & fak1)
-          
-          if (eNev(k)%W > 0) then  
+
+          if (eNev(k)%W > 0) then
            call AddHist(hSigmaMC_W(0),hSigmaMC_W(iHist),&
                   & eNev(k)%W,&
-                  & fak1) 
-          end if         
-          
-          if (eNev(k)%W_free > 0) then   
+                  & fak1)
+          end if
+
+          if (eNev(k)%W_free > 0) then
   !        Write(*,*) 'Wfree', eNev(k)%W_free
              call AddHist(hSigmaMC_Wfree(0),hSigmaMC_Wfree(iHist),&
                   & eNev(k)%W_free,&
-                  & fak1)  
-          end if         
-          
-          if (eNev(k)%W_rec > 0) then   
+                  & fak1)
+          end if
+
+          if (eNev(k)%W_rec > 0) then
              call AddHist(hSigmaMC_Wrec(0),hSigmaMC_Wrec(iHist),&
                   & eNev(k)%W_rec,&
                   & fak1)
@@ -1046,8 +1046,8 @@ contains
           if (.not.checkEvent(eNev(k),finalstate,eOrigin(k))) then
              call TRACEBACK('conservations violated.')
           end if
-          
-          
+
+
           if (realRun) then
              number = real_numbering()
           else
@@ -1105,7 +1105,7 @@ contains
     write(*,'(a,I10)') ' failures due to offshell:',failuresO
     write(*,'(a,I10)') ' numtry                  =',numtry
     write(*,'(a,I10)') ' numberofsuccess         =',sum(numberofsuccess)
-    write(*,'(a,I10)') ' countsigmacutoff        =', countsigmacutoff 
+    write(*,'(a,I10)') ' countsigmacutoff        =', countsigmacutoff
     write(*,'(a,I10)') ' countfluxcutoff         =', countfluxcutoff
     write(*,'(a,F12.4)')         ' sigabs       =', sigabsArr(0)
     write(*,'(a,F12.4,a,I10,a)') ' sigabsQE     =', sigabsArr(1), '(#',numberofsuccess(1),')'
@@ -1272,8 +1272,8 @@ contains
     !
     ! Columns:
     ! * #1: x_Bjorken
-    !************************************************************************ 
-    
+    !************************************************************************
+
     !************************************************************************
     !****o* initNeutrino/neutrino.XrecXS.ZZZ.dat
     ! NAME
@@ -1292,7 +1292,7 @@ contains
     ! file neutrino.WrecXS.ZZZ.dat
     ! PURPOSE
     ! Similar to neutrino.NuXS.ZZZ.dat, but versus Wrec=qsrt(mN^2+2*mN*nu-Q2) ,
-    ! where mN=0.938 GeV = nucleon mass (see constants.f90), i.e. W 
+    ! where mN=0.938 GeV = nucleon mass (see constants.f90), i.e. W
     ! reconstructed for nucleon at rest
     !
     ! Columns:
@@ -1305,20 +1305,20 @@ contains
     ! NAME
     ! file neutrino.WfreeXS.ZZZ.dat
     ! PURPOSE
-    ! Similar to neutrino.NuXS.ZZZ.dat, but versus Wfree, i.e. W value for 
+    ! Similar to neutrino.NuXS.ZZZ.dat, but versus Wfree, i.e. W value for
     ! boson with four-momentum q and Fermi-moving nucleon, without potential
     !
     ! Columns:
     ! * #1: Wfree , GeV^2
     !************************************************************************
-    
-    
+
+
     !************************************************************************
     !****o* initNeutrino/neutrino.WXS.ZZZ.dat
     ! NAME
     ! file neutrino.WXS.ZZZ.dat
     ! PURPOSE
-    ! Similar to neutrino.NuXS.ZZZ.dat, but versus W, i.e. W value for 
+    ! Similar to neutrino.NuXS.ZZZ.dat, but versus W, i.e. W value for
     ! boson with four-momentum q and Fermi-moving nucleon in the potential
     !
     ! Columns:
@@ -1370,14 +1370,14 @@ contains
        call WriteHist(hSigmaMC_Wfree(iHist),10, &
             & mul=1.0/numberofcalls, add=1e-20,&
             & file='neutrino.WfreeXS.'//trim(intToChar(iHist))//'.dat',&
-            & dump=.false.) 
+            & dump=.false.)
        call WriteHist(hSigmaMC_W(iHist),10, &
             & mul=1.0/numberofcalls, add=1e-20,&
             & file='neutrino.WXS.'//trim(intToChar(iHist))//'.dat',&
-            & dump=.false.)                            
+            & dump=.false.)
     end do
 
-    write(*,*) '################### NEUTRINO INIT FINISHED #######################'             
+    write(*,*) '################### NEUTRINO INIT FINISHED #######################'
 
   contains
     !***********************************************************************
@@ -1395,11 +1395,11 @@ contains
            & 3.0, 30.0,  &              ! uniform distr, MINOS-nu-barnumode,
            & 30.0,      &               ! MINOS-barnu-barnumode
            & 30.0, 30.0, 30.0, 30.0, &  ! MINERvA-numu, MINERvA-antinumu,LBNE-nu,LBNE-barnu
-           & 30.0, 300.0,      &        ! LBNO-nu, NOMAD     
+           & 30.0, 300.0,      &        ! LBNO-nu, NOMAD
            & 7.5, 7.5, 7.5, 7.5, &      ! BNB-nue,BNB-nuebar,BNBnumu,BNBnumubar
            & 15.      /)                ! NOvA
-              
-      !    numbers given in array nuMaxArr are upper boundaries for energy-transfer     
+
+      !    numbers given in array nuMaxArr are upper boundaries for energy-transfer
       !---------------------------------------------------------------------
       ! setting up some arrays for switching on/off the channels
       !---------------------------------------------------------------------
@@ -1569,12 +1569,12 @@ contains
       ! * #1: variable which was raised (the same as
       !   neutrino_absorption_cross_section.dat)
       !   (e.g. Q^2 for nuXsectionMode=3=dSigmadQs mode, Elepton for
-      !   nuXsectionMode=2=dSigmadQsdElepton ) 
+      !   nuXsectionMode=2=dSigmadQsdElepton )
       ! * #2: cross section, sum over all higher resonances beyond the Delta
       ! * #3 - 31: contribution of individual nucleon resonances beyond the Delta
       !   Individual resonance numbers in Module IdTable
       !   3: P11(1440), 4: S11(1535), ..., 7: D13(1520), ... etc
-      ! 
+      !
       !********************************************************************
       if(includeRES) then
          Open(10,File='neutrino_absorption_cross_section_highRES.dat')
@@ -1713,13 +1713,13 @@ contains
          call CreateHist(hSigmaMC_Wrec(iHist), &
               & 'sigma ('//trim(intToChar(iHist))//') vs Wrec = &
               & sqrt(mN^2 +2*mN*nu - Q2) ', &
-              & 0.,sqrt(W2max),0.02) 
+              & 0.,sqrt(W2max),0.02)
          call CreateHist(hSigmaMC_Wfree(iHist), &
               & 'sigma ('//trim(intToChar(iHist))//') vs Wfree', &
-              & 0.,sqrt(W2max),0.02) 
+              & 0.,sqrt(W2max),0.02)
          call CreateHist(hSigmaMC_W(iHist), &
               & 'sigma ('//trim(intToChar(iHist))//') vs W', &
-              & 0.,sqrt(W2max),0.02)          
+              & 0.,sqrt(W2max),0.02)
       end do
 
     end subroutine DoInit
