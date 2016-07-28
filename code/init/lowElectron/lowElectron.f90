@@ -13,7 +13,7 @@
 module lowElectron
   use idTable,only : nres
 
-  implicit none
+  implicit none 
 
   PRIVATE
 
@@ -280,7 +280,7 @@ module lowElectron
   logical,save :: initFlag=.true.
 
   real, save :: originXS(-2:9) ! collect cross section according origin_...
-
+  
 
   PUBLIC :: init_lowElectron
   PUBLIC :: le_get_FirstEventRange
@@ -291,7 +291,7 @@ module lowElectron
   PUBLIC :: low_Ele_incXsection
   PUBLIC :: writeOriginXS
 
-
+  
   ! Integer to take care of the firstEvent variable
   integer, save :: first=0
 
@@ -321,7 +321,7 @@ contains
     use random        , only : rn, rnCos
     use insertion     , only : setIntoVector
     use constants     , only : pi
-    use output        , only : WriteParticleVector, subchapter, writeparticle
+    use output        , only : WriteParticleVector, subchapter
     use degRad_conversion  , only : degrees, radian
     use vector             , only : absVec
     use inputGeneral       , only : fullEnsemble
@@ -341,13 +341,13 @@ contains
     logical,parameter :: debug_local=.false. ! Switch on local debugging
 
     type(particle), dimension(1:10) :: finalState
-    type(electronNucleon_event) :: eN
-    logical :: nuclearTarget, successFlag, Do_1Pi_switch
-    integer :: numtries,numEvents, i,j, channel
-    real :: phi, xsection
-    real, dimension(0:3) :: electron_in,electron_out, electron_out_total
-    logical :: flagOK
-    logical, dimension(8) :: doC
+    type(electronNucleon_event)    :: eN
+    logical                        :: nuclearTarget, successFlag, Do_1Pi_switch
+    integer                        :: numtries,numEvents, i,j, channel
+    real                           :: phi, xsection
+    real, dimension(0:3)           :: electron_in,electron_out, electron_out_total
+    logical                        :: flagOK
+    logical, dimension(8)          :: doC
 
     write(*,*)
     write(*,subchapter) 'Initializing electron induced events'
@@ -360,7 +360,7 @@ contains
        call initInput
 
        originXS = 0.0
-
+       
        !*********************************************************************
        !****o* lowElectron/lowElectron_protocol.log
        ! NAME
@@ -424,7 +424,7 @@ contains
     write(*,*) 'Electron energy outgoing=',energy_lf
 
     originXS(-2) = energy_lf
-
+    
     Select Case(runType)
     case(constantQSquared)
        write(*,*) 'The Q^2 of the photon is chosen constant!'
@@ -559,25 +559,17 @@ contains
 
           Case(origin_2p2hDelta) ! ===== 2p2h Delta Event =====
              originXS(8) = originXS(8) + xsection
-
+       
           Case Default
              write(*,*) 'strange channel: ',channel
 
           end select
-
-
+          
+          
           ! Store the production channel via firstEvent
           finalState%firstEvent=getFirstEvent()
-
-!!$          if (finalState(1)%firstEvent .eq.81) then
-!!$             write(*,*) 'channel =',channel
-!!$             call WriteParticle(6,99,finalState)
-!!$             stop
-!!$          end if
-
           call le_whichOrigin(1,finalState(1)%firstEvent,channel)
           ! (4) Set into vector
-
           if(fullEnsemble) then
              call setIntoVector(finalState,pertParticles,successFlag,.true.)
           else
@@ -955,11 +947,11 @@ contains
   subroutine writeOriginXS(mulfak)
 
     real, intent(IN) :: mulfak
-
+    
     open(40,file='originXS.dat',position='Append')
     write(40,'(1P,12E20.5)') originXS(-2:-1),originXS(0:9)*mulfak
     close(40)
-
+    
   end subroutine writeOriginXS
-
+  
 end module lowElectron
