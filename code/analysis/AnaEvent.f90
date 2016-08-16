@@ -38,15 +38,16 @@
 module AnaEvent
 
   use AnaEventDefinition
+  use CallStack, only : TraceBack
 
   implicit none
 
   PRIVATE
   
-  logical                    :: debug=.false.
-  logical :: exclusive_meson
+  logical :: debug=.false.
+  logical :: exclusive_hadron
 
-  integer, parameter ,public:: dimSigma=120      ! number of possible channels
+  integer, parameter, public:: dimSigma=120      ! number of possible channels
   
   !*************************************************************************
   !****ig* AnaEvent/particleIDs_flag
@@ -68,8 +69,8 @@ module AnaEvent
   PUBLIC :: event_GetParticle
   PUBLIC :: makeerror_hist, seterror_hist ! used in LArAnalysis.f90
   public :: SpecificEvent_Name, IfPass_SpecificEvent
-  public :: exclusive_meson
-  public :: set_ExclMeson
+  public :: exclusive_hadron
+  public :: set_Exclusive
 
  
 contains
@@ -95,34 +96,34 @@ contains
   end subroutine set_particleIDs_flag
 
 
-  !*************************************************************************
-  !****s* AnaEvent/event_getMultiplicities
-  ! NAME
-  ! logical function event_getMultiplicities(L,ID,Charge,N)
-  !
-  ! PURPOSE
-  ! Output the multiplicities of an event.
-  !
-  ! INPUTS
-  ! * integer      :: ID      ! ID of particle
-  ! * integer      :: Charge  ! Charge of particle
-  ! * type(tAnaEvent) :: L       ! The event
-  !
-  ! OUTPUT
-  ! * integer :: N  -- Multiplicity of particle species "ID" with charge
-  !   "charge" in the event L
-  ! * function value --
-  !   true if "ID" was counted seperately,
-  !   false if "ID"-Multiplicities were included in the general
-  !   multiplicities, then "N" ist the number of all particles not being
-  !   defined in the array particleIDs (see above).
-  !
-  ! NOTES
-  ! * This routine is not suited to return the multiplicities of
-  !   anti-particles.
-  ! * We count explicitly all "particles" (NOT ANTIPARTICLES) with IDs given
-  !   in the array "particleIDs".
-  !*************************************************************************
+!   !*************************************************************************
+!   !****s* AnaEvent/event_getMultiplicities
+!   ! NAME
+!   ! logical function event_getMultiplicities(L,ID,Charge,N)
+!   !
+!   ! PURPOSE
+!   ! Output the multiplicities of an event.
+!   !
+!   ! INPUTS
+!   ! * integer      :: ID      ! ID of particle
+!   ! * integer      :: Charge  ! Charge of particle
+!   ! * type(tAnaEvent) :: L       ! The event
+!   !
+!   ! OUTPUT
+!   ! * integer :: N  -- Multiplicity of particle species "ID" with charge
+!   !   "charge" in the event L
+!   ! * function value --
+!   !   true if "ID" was counted seperately,
+!   !   false if "ID"-Multiplicities were included in the general
+!   !   multiplicities, then "N" ist the number of all particles not being
+!   !   defined in the array particleIDs (see above).
+!   !
+!   ! NOTES
+!   ! * This routine is not suited to return the multiplicities of
+!   !   anti-particles.
+!   ! * We count explicitly all "particles" (NOT ANTIPARTICLES) with IDs given
+!   !   in the array "particleIDs".
+!   !*************************************************************************
 !   logical function event_getMultiplicities(L,ID,Charge,N)
 !     use IdTable
 !
@@ -216,7 +217,6 @@ contains
     use output, only: intTochar_pm, intToChar
     use particleDefinition
     use initNeutrino, only: get_init_namelist
-    use callStack, only : traceBack
 
 
     ! Input
@@ -290,7 +290,7 @@ contains
 
           ! (0) Create the name of the cross section channel to be stored in sigma_name
           name = PartName(particleIDs(i),charge,.false.)
-          if(i <= numStableMesons .and. exclusive_meson .eqv. .true.) name = trim('excl'//name)
+          if(i <= numStableMesons .and. exclusive_hadron) name = trim('excl'//name)
           sigma_name(channel,1)=intTochar(channel)//': '// trim(name)
           sigma_name(channel,2)=intTochar(channel+dimSigma)//': error '// trim(name)
 
@@ -305,12 +305,12 @@ contains
                 if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                    sigma(channel,1)=sigma(channel,1)+part%perweight
                 else
-                   write(*,*) 'Error in event_sigma 1', j,i,charge, E(j)%numberParticles(i,charge), 'Stop!'
+                   write(*,*) j,i,charge, E(j)%numberParticles(i,charge)
                    write(*,*) particleIDs(i) 
                    write(*,*) ParticleIDs
                    fname = 'SpecialEvent'
                    call event_dump(1,E,fname)
-                   stop
+                   call Traceback()
                 end if
            end if
           end do eventLoop
@@ -361,7 +361,7 @@ contains
              end do ch_loop1
              if(foundIds.ne.numberParticles) then
                 write(*,*) 'serious error in event_sigma', foundIds,numberParticles
-                stop
+                call TraceBack()
              else
                 ! (3) Add up cross section.
                 ! We add the minimum of all perweights since the minimum determines
@@ -399,8 +399,8 @@ contains
              end if
           end do ch_loop2
           if(foundIds.ne.1) then
-             write(*,*) 'serious error in event_sigma(pi N)', foundIds
-             stop
+             write(*,*) 'foundIds =', foundIds
+             call TraceBack()
           end if
           ! Search nucleon
           ch_loop2n: do charge=0,1
@@ -411,8 +411,8 @@ contains
              end if
           end do ch_loop2n
           if(foundIds.ne.2) then
-             write(*,*) 'serious error in event_sigma(pi N)', foundIds
-             stop
+             write(*,*) 'foundIds =', foundIds
+             call TraceBack()
           else
              sigma(channel,1)=sigma(channel,1)+min(perweight(1),perweight(2))
           end if
@@ -439,8 +439,7 @@ contains
           if(event_GetParticle(E(j),nucleon,1,1,part)) then
              sigma(channel,1)=sigma(channel,1)+part%perweight
           else
-             write(*,*) 'Error in event_sigma: p w/o pi -> Stop!'
-             stop
+             call Traceback('Error in event_sigma: p w/o pi -> Stop!')
           end if
        end if
     end do
@@ -486,8 +485,7 @@ contains
              if(isHadron(particleIds(i))) then
                 name=trim(hadron(particleIDs(i))%name)
              else
-                write(*,*) 'severe problem in event_sigma! Stop!'
-                stop
+                call TraceBack('severe problem in event_sigma!')
              end if
              name = PartName(particleIds(i),charge,.false.)
              sigma_name(channel,1)=intTochar(channel)//': '// trim(name)//' +X'
@@ -501,8 +499,8 @@ contains
                    if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                       sigma(channel,1)=sigma(channel,1)+part%perweight
                    else
-                      write(*,*) 'Error in event_sigma', E(j)%numberParticles(i,charge), 'Stop!'
-                      stop
+                      write(*,*) 'numberParticles =', E(j)%numberParticles(i,charge)
+                      call TraceBack()
                    end if
                 end if
              end do eventLoop_single
@@ -531,8 +529,8 @@ contains
           if( event_GetParticle(E(j),particleIDs(1),0,1,part)) then
              sigma(channel,1)=sigma(channel,1)+part%perweight* E(j)%numberParticles(1,0)
           else
-             write(*,*) 'Error in event_sigma: Krusche pi0', E(j)%numberParticles(1,0), 'Stop!'
-             stop
+             write(*,*) 'numberParticles =', E(j)%numberParticles(1,0)
+             call TraceBack()
           end if
        end if
     end do eventLoop_Krusche1
@@ -553,8 +551,8 @@ contains
           if( event_GetParticle(E(j),particleIDs(1),1,1,part)) then
              sigma(channel,1)=sigma(channel,1)+part%perweight* E(j)%numberParticles(1,1)
           else
-             write(*,*) 'Error in event_sigma: Krusche pi+', E(j)%numberParticles(1,1), 'Stop!'
-             stop
+             write(*,*) 'numberParticles =', E(j)%numberParticles(1,1)
+             call TraceBack()
           end if
        end if
     end do eventLoop_Krusche2
@@ -576,9 +574,8 @@ contains
              sigma(channel,1)=sigma(channel,1)    &
              &  +part%perweight* E(j)%numberParticles(numStableMesons+1,1)
           else
-             write(*,*) 'Error in event_sigma: Krusche p', &
-               &  E(j)%numberParticles(numStableMesons+1,1), 'Stop!'
-             stop
+             write(*,*) 'numberParticles =', E(j)%numberParticles(numStableMesons+1,1)
+             call TraceBack()
           end if
        end if
     end do eventLoop_Krusche3
@@ -600,9 +597,8 @@ contains
              sigma(channel,1)=sigma(channel,1) + &
                &  part%perweight* E(j)%numberParticles(numStableMesons+1,0)
           else
-             write(*,*) 'Error in event_sigma: Krusche n', &
-             & E(j)%numberParticles(numStableMesons+1,0), 'Stop!'
-             stop
+             write(*,*) 'numberParticles =', E(j)%numberParticles(numStableMesons+1,0)
+             call TraceBack()
           end if
        end if
     end do eventLoop_Krusche4
@@ -623,8 +619,8 @@ contains
           if( event_GetParticle(E(j),particleIDs(1),-1,1,part)) then
              sigma(channel,1)=sigma(channel,1)+part%perweight* E(j)%numberParticles(1,-1)
           else
-             write(*,*) 'Error in event_sigma: Krusche pi-', E(j)%numberParticles(1,-1), 'Stop!'
-             stop
+             write(*,*) 'numberParticles =', E(j)%numberParticles(1,-1)
+             call TraceBack()
           end if
        end if
     end do eventLoop_Krusche5
@@ -798,7 +794,7 @@ contains
   subroutine event_dSigma_dOmega(E,dTheta,dPhi,string,runNumber,hists_theta,hists_phi,hists2D, &
     &  initHists,makeOutputIn,sameFileNameIn)
     use particleDefinition
-    use rotation , only :  get_phi_theta
+    use rotation, only :  get_phi_theta
     use degRad_conversion, only : degrees
     use particleProperties, only: PartName, validCharge_ID
     use output, only : intTochar_pm,intToChar
@@ -806,10 +802,10 @@ contains
     use hist2Df90
     use constants, only : pi
 
-    logical , intent(in), optional :: sameFileNameIn
-    logical , intent(in), optional :: makeOutputIn
+    logical, intent(in), optional :: sameFileNameIn
+    logical, intent(in), optional :: makeOutputIn
     real, intent(in) :: dTheta, dphi
-    character(*),intent(in) :: string
+    character(*), intent(in) :: string
     integer, intent(in) :: runNumber
     ! Optional
     type(histogram)  ,optional, intent(inout),dimension(1:numStableParts,-2:2) :: &
@@ -844,20 +840,13 @@ contains
     end if
 
 
-    if(present(hists_theta).neqv.present(hists_phi)  .or. &
-      &  present(hists2D).neqv.present(initHists)  & 
-      & .or.  present(hists_phi).neqv.present(hists2D)) then
-       write(*,*) 'Problem in AnaEvent/event_dSigma_dOmega:'
-       write(*,*) 'You have to give either no or all optional arguments!! Stop'
-       stop
+    if(present(hists_theta).neqv.present(hists_phi) &
+      & .or. present(hists2D).neqv.present(initHists)  &
+      & .or. present(hists_phi).neqv.present(hists2D)) then
+       call TraceBack('You have to give either no or all optional arguments!! Stop')
     end if
-    if(present(hists_theta).and.present(hists_phi).and.present(hists2D) .and. &
-       &  present(initHists)) then
-       optionals=.true.
-    else
-       optionals=.false.
-    end if
-
+    optionals = (present(hists_theta).and.present(hists_phi) &
+         .and.present(hists2D).and.present(initHists))
 
     If(runNumber.lt.1) then
        write(*,*) 'Error in event_dSigma_dOmega. runNumber.lt.1'
@@ -878,7 +867,7 @@ contains
           if(makeInitHists) then
              ! Initialize histogram
              name = PartName(particleIDs(i),charge,.false.)
-             if(i <= numStableMesons .and. exclusive_meson .eqv. .true.) name = trim('excl'//name)
+             if(i <= numStableMesons .and. exclusive_hadron) name = trim('excl'//name)
              call createHist(dsigma_dTheta, 'dSigma/dTheta('// trim(name) //&
                   & ') for single '//trim(name)// ' production' &
                   &  ,0. ,pi,dTheta)
@@ -898,7 +887,7 @@ contains
           ! prefer to use PartName(ID,charge,.false) in the following filenames [KG]
 
           name = PartName(particleIDs(i))
-          if(i <= numStableMesons .and. exclusive_meson .eqv. .true.) name = trim('excl'//name)
+          if(i <= numStableMesons .and. exclusive_hadron) name = trim('excl'//name)
           if(sameFileName) then
              filename2D=trim(string)//'_dSigma_dTheta_dPhi_'// trim(name)&
                   & //'_charge_'//intTochar_pm(charge) //'.dat'
@@ -917,9 +906,9 @@ contains
 
           ! Count contributions of any particles in the event with charge="charge"
           ! and ID="particleIDs(i):
-          eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1) 
-          if(exclusive_meson .eqv. .true.) then                        
-               if( ((i <= numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1)  &
+          eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)
+             if(exclusive_hadron) then
+                if( ((i <= numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1)  &
                   &  .and.( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1))        &
                ! so far exclusive 1 meson in final state, no other mesons
                ! now exclusive 1 baryon in final state, plus mesons   
@@ -935,10 +924,8 @@ contains
                    call addHist(dsigma_dPhi         , phi           ,part%perweight)
                    call addHist2d(dsigma_dTheta_dPhi, (/theta,phi/) ,part%perweight)
                       else
-                         write(*,*) 'Error in event_dSigma_dOmega', &
-                            &  E(j)%numberParticles(i,charge), &
-                            &  'Stop!'
-                         stop
+                         write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                         call Traceback()
                       end if
                 end if  
           else 
@@ -952,9 +939,8 @@ contains
                    call addHist(dsigma_dPhi         , phi           ,part%perweight)
                    call addHist2d(dsigma_dTheta_dPhi, (/theta,phi/) ,part%perweight)
                 else
-                   write(*,*) 'Error in event_dSigma_dOmega', &
-                      &  E(j)%numberParticles(i,charge),'Stop!'
-                   stop
+                   write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                   call Traceback()
                 end if
              end if
            end if  
@@ -1093,8 +1079,7 @@ contains
     end if
 
     If(runNumber.lt.1) then
-       write(*,*) 'Error in event_dSigma_dE. runNumber.lt.1'
-       stop
+       call Traceback('Error in event_dSigma_dE. runNumber.lt.1')
     end if 
     
  ! first loop over all particles (mesons and baryons) in IDTABLE
@@ -1113,7 +1098,7 @@ contains
 
           name = PartName(particleIds(i),charge,.false.) 
           name1 = name
-          if(i <= numStableMesons .and. exclusive_meson .eqv. .true.) name1 = trim('excl'//name)
+          if(i <= numStableMesons .and. exclusive_hadron) name1 = trim('excl'//name)
           if(makeInitHists) then
              call createHist(dsigma_dE, 'dSigma/dEkin('// trim(name1) //&
                   & ') for single '//trim(name1)// ' production' &
@@ -1139,7 +1124,7 @@ contains
 
          name = PartName(particleIDs(i))
          name1 = name
-         if(i <= numStableMesons .and. exclusive_meson .eqv. .true.) name1 = trim('excl'//name)
+         if(i <= numStableMesons .and. exclusive_hadron) name1 = trim('excl'//name)
           if(sameFileName) then
              filename=trim(string)//'_dSigma_dEkin_'// trim(name1)//'_charge_'//  & 
              &  intTochar_pm(charge) //'.dat'
@@ -1169,61 +1154,62 @@ contains
       
           eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)
      
-      ! Now exclusive X-sections for hadrons. For mesons (i <= numStableMesons) there is exactly
-      ! 1 meson of given flavor 'i' and charge 'charge' and no other mesons 
-      ! (exclusive 1 meson production). 
-      ! For baryons (i > numStableMesons) there is exactly 1 baryon of the fixed
-      ! type i and charge plus possibly other baryons of different flavor and other mesons
+      ! Now exclusive X-sections for hadrons. 
+      ! For mesons (i <= numStableMesons) there is exactly
+      ! 1 meson of given flavor 'i' and charge 'charge' and no other particles
       
       ! So far, events are checked for exclusivity only for 'stable particles', as defined
       ! earlier in AnaEvent im array ParticleIDs. It could thus be that an 'exclusive event'
       ! still contains in addition a particle that is not included in ParticleIDs. These are
       ! only heavy mesons beyond the D and heavy baryons, beyond the OmegaResonance.
-           
- Excltrue: if(exclusive_meson .eqv. .true.) then                        
-    Excl:      if( ((i <= numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1)  &
-                  &  .and.( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1))        &
-               ! so far exclusive 1 meson in final state
-                  &          .or.                                          &
-               ! now exclusive 1 baryon in final state 
-                  &  ((i > numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1) &
-                  &  .and.( sum(E(j)%numberParticles(i,:)).eq.1)) )   then 
-                  
+
+ Exclmes: if(exclusive_hadron .and. i <= numStableMesons) then
+    Excl:      if( E(j)%numberParticles(i,charge) .eq. 1  &
+                   & .and. sum(E(j)%numberParticles(1:numStableMesons,:)) .eq. 1)  then       
         partexist:    if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                          ekin=part%momentum(0)-part%mass
-                         call addHist(dsigma_dE       , ekin        ,part%perweight) 
-                         
- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                    
-! Event selection check
-!   if (charge == 0 .and. i == 1 .and. (trim(string) == 'diff_DIS_000')) then     
-!   fname = 'SpecialEvent'
-!    call event_dump(1,E,fname)     
-!    write(*,111) 'FIRST i= ',i,'   j= ',j,ekin,part%momentum(0),part%perweight, &
-!    & E(j)%numberParticles(i,charge),&
-!    & E(j)%numberParticles(1:numStableMesons,-2),E(j)%numberParticles(1:numStableMesons,-1), &
-!    & E(j)%numberParticles(1:numStableMesons,0),&
-!    & E(j)%numberParticles(1:numStableMesons,+1), &
-!    & E(j)%numberParticles(1:numStableMesons,+2), sum(E(j)%numberParticles(1,:)), &
-!    & sum(E(j)%numberParticles(1:numStableMesons,:))  
-!    111 Format(2(A,I5),3F10.3, I5/6I5/6I5/6I5/6I5/6I5/2I5)      
-!    stop
-!   end if 
- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
+                         call addHist(dsigma_dE       , ekin        ,part%perweight)
+
                       else  partexist
-                         write(*,*) 'Error in event_dSigma_dE', E(j)%numberParticles(i,charge), &
-                            &  'Stop!'
-                         stop
+                         write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                         call Traceback()
                       end if   partexist
                 end if   Excl
-          else  Excltrue
+            end if Exclmes
+       
+       ! Now exclusive X-Section for baryons, 1 baryon of given flavor and charge
+       ! and no other particle
+       
+ Exclbar: if(exclusive_hadron .and. i > numStableMesons) then 
+    Exclb:     if( ( E(j)%numberParticles(i,charge).eq.1) &
+                  & .and.( sum(E(j)%numberParticles(:,:)).eq.1))  then        
+        partex:    if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
+                         ekin=part%momentum(0)-part%mass
+                         call addHist(dsigma_dE       , ekin        ,part%perweight)
+
+                      else  partex
+                         write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                         call Traceback()
+                      end if   partex
+                end if   Exclb
+            end if Exclbar 
+ 
+       ! Now X-section for 1 and only 1 hadron of a given kind, but all sorts of other 
+       ! particles with different flavor and charge   
+            
          Incl:  if(( E(j)%numberParticles(i,charge).eq.1)  .and. &
                    &  ( sum(E(j)%numberParticles(i,:)).eq.1)) then
          Incltrue:  if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                        ekin=part%momentum(0)-part%mass
-                       call addHist(dsigma_dE       , ekin        ,part%perweight) 
-                       
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                    
+                       call addHist(dsigma_dE       , ekin        ,part%perweight)
+
+                    else Incltrue
+                       write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                       call Traceback()
+                    end if  Incltrue
+                 end if   Incl
+          
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! event selection check
 !   if (charge == -1 .and. i == 1 .and. (trim(string) == 'diff_000')) then     
 !    fname = 'SpecialEvent'
@@ -1237,15 +1223,16 @@ contains
 !    & sum(E(j)%numberParticles(1:numStableMesons,:))  
 !    111 Format(2(A,I5),3F10.3, I5/6I5/6I5/6I5/6I5/6I5/2I5)      
 !    stop
-!   end if 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                          
-                    else Incltrue 
-                       write(*,*) 'Error in event_dSigma_dE',E(j)%numberParticles(i,charge), &
-                       &  'Stop!'
-                       stop
-                    end if  Incltrue
-                 end if   Incl
-           end if  Excltrue   
+!   end if
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+
+
+
 
 
              ! Loop for 1-particle-plus-X cross sections (e.g. 1pi+ and other pi0, pi-
@@ -1257,9 +1244,8 @@ contains
                    ekin=part%momentum(0)-part%mass
                    call addHist(dsigma_dE_1X       , ekin        ,part%perweight)
                 else
-                   write(*,*) 'Error in event_dSigma_dE_1X', E(j)%numberParticles(i,charge),&
-                     &   'Stop!'
-                   stop
+                   write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                   call Traceback()
                 end if
              end if
 
@@ -1275,9 +1261,8 @@ contains
                       ekin=part%momentum(0)-part%mass
                       call addHist(dsigma_dE_2X       , ekin        ,part%perweight)
                    else
-                      write(*,*) 'Error in event_dSigma_dE_2X', E(j)%numberParticles(i,charge),&
-                      & 'Stop!'
-                      stop
+                      write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                      call Traceback()
                    end if
                 end do
              end if
@@ -1297,9 +1282,8 @@ contains
                       ! &   Ekin=',ekin, '    perweight=',part%perweight
                       call addHist(dsigma_dE_multi , ekin  ,part%perweight)
                    else
-                      write(*,*) 'Error in event_dSigma_dE_multi',E(j)%numberParticles(i,charge),&
-                      & 'Stop!'
-                      stop
+                      write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                      call Traceback()
                    end if
                 end do
              end if
@@ -1503,8 +1487,7 @@ contains
 
 
     If(runNumber.lt.1) then
-       write(*,*) 'Error in event_dEcostheta. runNumber.lt.1'
-       stop
+       call TraceBack('runNumber.lt.1')
     end if
    
     idLoop: Do i=lBound(particleIDs,dim=1),uBound(particleIDs,dim=1)
@@ -1514,11 +1497,9 @@ contains
              if(isHadron(particleIds(i))) then
                 name=trim(hadron(particleIDs(i))%name)
                 name1 = name
-                if(i <= numStableMesons .and. exclusive_meson .eqv. .true.) name1 = trim('excl'//name)
-                
+                if(i <= numStableMesons .and. exclusive_hadron) name1 = trim('excl'//name)
              else
-                write(*,*) 'severe problem in event_dEcostheta! Stop!'
-                stop
+                call TraceBack()
              end if
 
 
@@ -1580,7 +1561,7 @@ contains
              eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)          
              ! single particle events 
 
-    excl: if(exclusive_meson .eqv. .true.) then
+    excl: if(exclusive_hadron) then
                                  
          sel:  if( ((i <= numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1)  &
                   &  .and.( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1))        &
@@ -1603,10 +1584,8 @@ contains
                       call addHist(dsigma_dcostheta, costheta ,part%perweight) 
                        
                    else  getpart
-                         write(*,*) 'Error in event_dSigma_dEcostheta', &
-                            & E(j)%numberParticles(i,charge), &
-                            &  'Stop!'
-                         stop
+                      write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                      call Traceback()
                    end if  getpart
                  end if   sel
   
@@ -1626,9 +1605,8 @@ contains
                       call addHist(dsigma_dEcostheta, Ecostheta ,part%perweight)
                       call addHist(dsigma_dcostheta, costheta ,part%perweight)
                    else
-                      write(*,*) 'Error in event_dSigma_dEcostheta', &
-                      &  E(j)%numberParticles(i,charge), 'Stop!'
-                      stop
+                      write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                      call Traceback()
                    end if
               end if
           end if excl
@@ -1648,9 +1626,8 @@ contains
                       call addHist(dsigma_dEcostheta_MULTI, Ecostheta,part%perweight)
                       call addHist(dsigma_dcostheta_MULTI, costheta ,part%perweight)
                    else
-                      write(*,*) 'Error in event_dSigma_dEcostheta_MULTI', &
-                      & E(j)%numberParticles(i,charge), 'Stop!'
-                      stop
+                      write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
+                      call Traceback()
                    end if
                 end do
              end if
@@ -1726,10 +1703,10 @@ contains
 
              end if
 
-             call RemoveHist   (dsigma_dEcostheta)
-             call RemoveHist   (dsigma_dcostheta)
-             call RemoveHist   (dsigma_dEcostheta_MULTI)
-             call RemoveHist   (dsigma_dcostheta_MULTI)
+             call RemoveHist(dsigma_dEcostheta)
+             call RemoveHist(dsigma_dcostheta)
+             call RemoveHist(dsigma_dEcostheta_MULTI)
+             call RemoveHist(dsigma_dcostheta_MULTI)
 
           end if
        end Do chargeLoop
@@ -1941,15 +1918,12 @@ contains
                    W2_muon_nucleon=abs4Sq(part_muon%momentum+part_nucleon%momentum)
 
                 else
-                   write(*,*) 'Error in event_dSigma_dInvMass. Cannot get muon from the event.&
-                      & Stop!'
-                   stop
+                   call TraceBack('Cannot get muon from the event')
                 end if
 
 
              else
-                write(*,*) 'Error in event_dSigma_dInvMass. Cannot get pion from the event. Stop!'
-                stop
+                call TraceBack('Cannot get pion from the event')
              end if
              ! ----------------------------------
 
@@ -1962,12 +1936,11 @@ contains
                 !                        & '   W2_muon_nucleon=', W2_muon_nucleon
                 !write(*,*) ''
              else
-                write(*,'(4(A,g12.5))') 'Error in event_dSigma_dInvMAss. One of invariant masses &
+                write(*,'(4(A,g12.5))') 'One of invariant masses &
                      & is negative W2=', &
                      &  W2, '   W2_muon_pion=', W2_muon_pion, &
                      & '   W2_muon_nucleon=', W2_muon_nucleon, '!  Stop!'
-                write(*,*) ''
-                stop
+                call TraceBack()
              end if
 
           end if
@@ -2147,8 +2120,7 @@ contains
     end if
 
     If(runNumber.lt.1) then
-       write(*,*) 'Error in event_dSigma_dE. runNumber.lt.1'
-       stop
+       call Traceback('runNumber.lt.1')
     end if
 
 
@@ -2213,9 +2185,8 @@ contains
 
        if (pass) then
           if(.not.neutrinoProdInfo_Get(j,prod_id,perweight,lepIn_mom,lep_mom,boson_mom,nuc_mom,Chrg_Nuc)) then
-             write(*,*) 'error in getting perweight, stop'
              write(*,*) j,prod_id,perweight
-             stop
+             call Traceback()
           end if
 
           enu=lep_mom(0)+boson_mom(0)
@@ -2354,41 +2325,41 @@ contains
   end subroutine event_dSigma_dLeptonVariables
 
 
-  !*************************************************************************
-  !****s* AnaEvent/event_Print
-  ! NAME
-  ! subroutine event_Print(L)
-  !
-  ! PURPOSE
-  ! Output the event.
-  !
-  ! INPUTS
-  ! * type(tAnaEvent) :: L -- The event
-  ! * integer     :: iFile -- The number of the buffer to output into
-  !
-  !*************************************************************************
+!   !*************************************************************************
+!   !****s* AnaEvent/event_Print
+!   ! NAME
+!   ! subroutine event_Print(L)
+!   !
+!   ! PURPOSE
+!   ! Output the event.
+!   !
+!   ! INPUTS
+!   ! * type(tAnaEvent) :: L -- The event
+!   ! * integer     :: iFile -- The number of the buffer to output into
+!   !
+!   !*************************************************************************
 !   subroutine event_Print(L,iFile)
-!
+! 
 !     use particlePointerListDefinition
-!
+! 
 !     type(tAnaEvent),intent(in) :: L
 !     integer,intent(in)      :: iFile
 !     type(tParticleListNode),Pointer  :: pNode
 !     character(20),parameter :: out='(I8,4E15.6)'
-!
+! 
 !     write(iFile,'(12I8)') L%numberParticles
-!
+! 
 !     pNode => L%particleList%first
 !     do
 !        if (.not. ASSOCIATED(pNode)) return
 !        write(iFile,out) pNode%V%ID,pNode%V%perweight,pNode%V%position
 !        pNode => pNode%next
 !     end do
-!
+! 
 !   end subroutine event_Print
-
-
-
+ 
+ 
+ 
   !*************************************************************************
   !****s* AnaEvent/event_dump
   ! NAME
@@ -2573,11 +2544,13 @@ contains
     use output, only : writeParticle_debug
     use IdTable, only: isMeson
 
-    type(tAnaEvent)            :: L
+    type(tAnaEvent) :: L
     type(particle), POINTER :: V
     integer :: i
 
     call ParticleList_APPEND(L%particleList, V)
+
+    if (V%perweight < 1e-20) return
 
     ! Count particle multiplicities:
     if(.not.V%antiparticle) then
@@ -2648,9 +2621,9 @@ contains
 
     ! Search particle:
     if(present(antiparticle)) then
-       success=ParticleList_getParticle(E%particleList,ID,charge,n,P,antiparticle)
+       success=ParticleList_getParticle(E%particleList,ID,charge,n,P,antiparticle,.true.)
     else
-       success=ParticleList_getParticle(E%particleList,ID,charge,n,P,.false.)
+       success=ParticleList_getParticle(E%particleList,ID,charge,n,P,.false.,.true.)
     end if
   end function event_getParticle
 
@@ -2717,7 +2690,6 @@ contains
   !*************************************************************************
   subroutine setError_hist(a,numRuns)
     use histf90
-    use callStack, only : traceBack
 
     type(histogram), intent(inout)    ::  a
     integer,intent(in) :: numRuns
@@ -2738,7 +2710,6 @@ contains
                 if(abs(a%yval(i,3)-(a%yval(i,1)**2)/float(numRuns))  &
                     & /abs(a%yval(i,3)).gt.epsilon) then
                    call traceback()
-                   stop 'setError_hist'
                 end if
              end if
              a%yval(i,3)=-999999.
@@ -3218,103 +3189,87 @@ contains
     end select
   end subroutine SpecificEvent_Name
 
-  logical function IfPass_SpecificEvent(specificEvent,event)
+  function IfPass_SpecificEvent(specificEvent,event) result(r)
+    logical :: r
     integer, intent(in) :: specificEvent ! predefined type of event
     type(tAnaEvent), intent(in) :: event ! particular event in consideration
 
-    IfPass_SpecificEvent=.false.
     select case (specificEvent)
     case (1) ! 0 pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
-            & sum(event%numberParticles(numStableMesons+1,:)) >0 ) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
+            & sum(event%numberParticles(numStableMesons+1,:)) >0 )
     case (2) ! 1 proton, X neutrons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
-            & event%numberParticles(numStableMesons+1,1).eq.1) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
+            & event%numberParticles(numStableMesons+1,1).eq.1)
     case (3)  ! 1 pi+, no other pions, but possible mesons of other flavor
-       if ( sum(event%numberParticles(1,:)).eq.1 .and. event%numberParticles(1,1).eq.1) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.1 .and. event%numberParticles(1,1).eq.1)
     case (4)  ! 1 pi0, no other pions, but possible mesons of other flavor
-       if ( sum(event%numberParticles(1,:)).eq.1 .and. event%numberParticles(1,0).eq.1) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.1 .and. event%numberParticles(1,0).eq.1)
     case (5) ! 1 or more pi0, X other pions or other mesons
-       if ( event%numberParticles(1,0).ge.1 )     IfPass_SpecificEvent=.true.
+       r = ( event%numberParticles(1,0).ge.1 )
     case (6) ! 1 or more pi+, X other pions
-       if ( event%numberParticles(1,1).ge.1 )     IfPass_SpecificEvent=.true.
+       r = ( event%numberParticles(1,1).ge.1 )
     case (7) ! 2 protons, no neutrons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
             & event%numberParticles(numStableMesons+1,1).eq.2 .and. &
-            & event%numberParticles(numStableMesons+1,0).eq.0) &
-            & IfPass_SpecificEvent=.true.
+            & event%numberParticles(numStableMesons+1,0).eq.0)
     case (8) ! 1 proton 1 neutron, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
             & event%numberParticles(numStableMesons+1,1).eq.1 .and. &
-            & event%numberParticles(numStableMesons+1,0).eq.1) &
-            & IfPass_SpecificEvent=.true.
+            & event%numberParticles(numStableMesons+1,0).eq.1)
     case (9) ! no protons, 2 neutrons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
             & event%numberParticles(numStableMesons+1,0).eq.2 .and. &
-            & event%numberParticles(numStableMesons+1,1).eq.0) &
-            & IfPass_SpecificEvent=.true.
+            & event%numberParticles(numStableMesons+1,1).eq.0)
     case (10) ! 2 protons, any number of neutrons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
-            & event%numberParticles(numStableMesons+1,1).eq.2 ) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
+            & event%numberParticles(numStableMesons+1,1).eq.2 )
     case (11) ! 2 neutrons, any number of protons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
-            & event%numberParticles(numStableMesons+1,0).eq.2 ) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
+            & event%numberParticles(numStableMesons+1,0).eq.2 )
     case (12) ! 3 protons, X neutrons,  no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
-            &event%numberParticles(numStableMesons+1,1).eq.3 ) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
+            &event%numberParticles(numStableMesons+1,1).eq.3 )
     case (13) ! 4 protons, X neutrons,  no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
-            & event%numberParticles(numStableMesons+1,1).eq.4 ) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
+            & event%numberParticles(numStableMesons+1,1).eq.4 )
     case (14) ! 1 proton, 0 neutrons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
             & event%numberParticles(numStableMesons+1,0).eq.0  .and.  &
-            & event%numberParticles(numStableMesons+1,1).eq.1 ) &
-            & IfPass_SpecificEvent=.true.
+            & event%numberParticles(numStableMesons+1,1).eq.1 )
     case (15) ! 0 protons, 1 neutron, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
             & event%numberParticles(numStableMesons+1,1).eq.0 .and. &
-            & event%numberParticles(numStableMesons+1,0).eq.1)  &
-            & IfPass_SpecificEvent=.true.
+            & event%numberParticles(numStableMesons+1,0).eq.1)
     case (16) ! 0 protons, X neutrons, no pions
-       if ( sum(event%numberParticles(1,:)).eq.0 .and. &
+       r = ( sum(event%numberParticles(1,:)).eq.0 .and. &
             &event%numberParticles(numStableMesons+1,1).eq.0 &
-            & .and. event%numberParticles(numStableMesons+1,0) > 0 ) &
-            & IfPass_SpecificEvent=.true.
+            & .and. event%numberParticles(numStableMesons+1,0) > 0 )
     case (17) ! exclusive pi0: 1 pi0 and no other mesons of any flavor
-       if ( sum(event%numberParticles(1:numStableMesons,:)).eq.1 .and. &
-            & event%numberParticles(1,0).eq.1) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1:numStableMesons,:)).eq.1 .and. &
+            & event%numberParticles(1,0).eq.1)
     case (18) ! exclusive pi+: 1 pi+ and no other mesons of any flavor
-       if ( sum(event%numberParticles(1:numStableMesons,:)).eq.1 .and. &
-            & event%numberParticles(1,1).eq.1) &
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1:numStableMesons,:)).eq.1 .and. &
+            & event%numberParticles(1,1).eq.1)
     case (19) ! exclusive pi-: 1 pi- and no other mesons of any flavor
-       if ( sum(event%numberParticles(1:numStableMesons,:)).eq.1 .and. &
-            & event%numberParticles(1,-1).eq.1)&
-            & IfPass_SpecificEvent=.true.
+       r = ( sum(event%numberParticles(1:numStableMesons,:)).eq.1 .and. &
+            & event%numberParticles(1,-1).eq.1)
     case default
-       write(*,*) 'In IfPass_SpecificEvent  WRONG specificEvent=', specificEvent, 'STOP'
-       stop
+       r = .false.
+       write(*,*) 'WRONG specificEvent=', specificEvent
+       call Traceback()
     end select
   end function IfPass_SpecificEvent
 
 
 
- ! This subroutine sets the switch 'exclusive_meson' for truly exclusive 1 meson production
+ ! This subroutine sets the switch 'exclusive_hadron' for truly exclusive 1 meson production
  ! The calling variable 'A' is read in in neutrinoAnalysis
  
-   subroutine set_Exclmeson(A)
+   subroutine set_Exclusive(A)
    logical, intent(in) :: A
-   exclusive_meson = A
-   end subroutine set_Exclmeson
+   exclusive_hadron = A
+   end subroutine set_Exclusive
  
 
 end module AnaEvent

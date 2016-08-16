@@ -1125,7 +1125,21 @@ contains
 
     call DoWrite
 
-
+     !***********************************************************************
+     !****o* initNeutrino/neutrino_initialized_energyFlux.dat
+     ! NAME
+     ! file neutrino_initialized_energyFlux.dat
+     ! PURPOSE
+     ! This file provides the incoming neutrino flux
+     ! Only energies at which actual sampling has taken place are in this file
+     ! 
+     ! Columns:
+     ! #1: Enu (in GeV) 
+     ! #2: flux (in 1/GeV), for the calculations of X-sections relevant is only
+     !                      the normalized flux
+     ! #3: number of events
+     ! #4: should be ignored
+     !**************************************************************************
 
 
     if(nuExp.gt.0) then

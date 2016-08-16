@@ -632,9 +632,9 @@ module neutrinoAnalysis
   !***************************************************************************
   
   !***************************************************************************
-  !****g* neutrinoAnalysis/excl_meson
+  !****g* neutrinoAnalysis/excl_hadron
   ! SOURCE
-  logical :: excl_meson=.false.
+  logical :: excl_hadron=.false.
   ! PURPOSE
   ! do analysis for specific final states: specificEvent=17,18,19
   ! exclusive 1 pion, no other pions or other mesons of different flavor
@@ -903,13 +903,13 @@ contains
     ! * binsizeEnu
     ! * maxQ2
     ! * maxEnu
-    ! * excl_meson 
+    ! * excl_hadron
     !*************************************************************************
     NAMELIST /nl_specificEvent/ no_pi, p_Xn_no_pi, piplus, pi0, pi0_MULTI, &
          piplus_MULTI, &
          pp_no_pi, pn_no_pi, nn_no_pi, pp_Xn_no_pi, nn_Xp_no_pi, &
          ppp_Xn_no_pi, pppp_Xn_no_pi, p_no_pi, n_no_pi, Xn_no_pi, &
-         binsizeQ2, binsizeEnu, maxQ2, maxEnu,excl_meson
+         binsizeQ2, binsizeEnu, maxQ2, maxEnu,excl_hadron
 
     !*************************************************************************
     !****n* neutrinoAnalysis/detailed_diff
@@ -1026,17 +1026,17 @@ contains
             & '    p_no_pi=      ', p_no_pi, &
             & '    n_no_pi=      ', n_no_pi, &
             & '    Xn_no_pi=     ', Xn_no_pi, &
-            & '    excl_meson     ', excl_meson
+            & '    excl_hadron   ', excl_hadron
             
- ! The switch excl_meson selects truly exclusive 1-meson events
+ ! The switch excl_hadron selects truly exclusive 1-meson events
  ! ie. exactly 1 meson with fixed charged and no other mesons of any kind          
        
  
        call Write_ReadingInput('nl_specificEvent',1)
     end if   
     
-    call set_exclmeson(excl_meson)
-    if(excl_meson .eqv. .true.) then
+    call set_Exclusive(excl_hadron)
+    if(excl_hadron .eqv. .true.) then
        excl_pi0 = .true.
        excl_piminus = .true.
        excl_piplus = .true.
@@ -2104,7 +2104,8 @@ contains
        particlePointer=>lepton(i)
 
        call event_add(events(i),particlePointer)
-
+       
+ !  Now put struck nucleon into specific event types
        particlePointer=>struckNuc(i)
        struckNuc(i)%ID=1
 

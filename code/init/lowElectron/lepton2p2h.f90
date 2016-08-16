@@ -289,6 +289,356 @@ contains
     initFlag=.false.
 
   end subroutine readInput
+  
+  !*************************************************************************
+  !****s* lepton2p2h/lepton2p2h_DoQE
+  ! NAME
+  ! subroutine lepton2p2h_DoQE(eN,outPart,XS)
+  !
+  ! PURPOSE
+  ! Do all the electron induced 2p2h-QE scattering gamma* N1 N2 -> N1' N2'
+  !
+  ! INPUTS
+  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
+  !
+  ! OUTPUT
+  ! * type(particle), dimension(:) :: OutPart -- the two produced nucleons
+  ! * real :: XS -- the cross section
+  !*************************************************************************
+  subroutine lepton2p2h_DoQE(eN,outPart,XS)
+    use output, only: WriteParticle
+
+    type(electronNucleon_event), intent(inout) :: eN
+    type(particle),dimension(:), intent(inout) :: OutPart
+    real, intent(out) :: XS
+
+    logical :: flagOK
+
+    if(initFlag) call readInput
+
+    XS = 0.0
+
+    call lepton2p2h_SelectN2(eN,flagOK)
+    if (.not.flagOK)  return ! ==> failure
+
+!    call write_electronNucleon_event(eN)
+
+    call lepton2p2h_FinalState(eN,outPart,.true.,flagOK)
+
+!!$    if (.not.flagOK) then
+!!$       call write_electronNucleon_event(eN)
+!!$       write(*,*) 'Failure'
+!!$       stop
+!!$    end if
+
+    if (.not.flagOK) return ! ==> failure
+
+    XS = lepton2p2h_XS(eN,outPart,.true.)
+    outPart%perWeight=XS
+
+!    if(XS < 0) write(*,*) 'XS= ',XS,'pW= ',outPart%perWeight
+
+!    call WriteParticle(6,1,outPart)
+!    stop
+
+  end subroutine lepton2p2h_DoQE
+
+  !*************************************************************************
+  !****s* lepton2p2h/lepton2p2h_DoDelta
+  ! NAME
+  ! subroutine lepton2p2h_DoDelta(eN,outPart,XS)
+  !
+  ! PURPOSE
+  ! Do all the electron induced 2p2h-QE scattering gamma* N1 N2 -> N Delta
+  !
+  ! INPUTS
+  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
+  !
+  ! OUTPUT
+  ! * type(particle), dimension(:) :: OutPart -- the two produced hadrons
+  ! * real :: XS -- the cross section
+  !*************************************************************************
+  subroutine lepton2p2h_DoDelta(eN,outPart,XS)
+    use output, only: WriteParticle
+
+    type(electronNucleon_event), intent(inout) :: eN
+    type(particle),dimension(:), intent(inout) :: OutPart
+    real, intent(out) :: XS
+
+    logical :: flagOK
+
+    if(initFlag) call readInput
+
+    XS = 0.0
+
+    call lepton2p2h_SelectN2(eN,flagOK)
+    if (.not.flagOK) return ! ==> failure
+
+    call lepton2p2h_FinalState(eN,outPart,.false.,flagOK)
+    if (.not.flagOK) return ! ==> failure
+
+    XS = lepton2p2h_XS(eN,outPart,.false.)
+    outPart%perWeight=XS
+
+  end subroutine lepton2p2h_DoDelta
+  
+    !*************************************************************************
+  !****s* lepton2p2h/lepton2p2h_SelectN2
+  ! NAME
+  ! subroutine lepton2p2h_SelectN2(eN)
+  !
+  ! PURPOSE
+  ! Finds the second nucleon for the 2p2h collision
+  !
+  ! INPUTS
+  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
+  !
+  ! OUTPUT
+  ! * type(electronNucleon_event) :: eN -- a second nucleon is added
+  !
+  ! NOTES
+  ! * The seond particle is generated analytically, not by selecting
+  !   a testparticle from the real particle vector.
+  ! * This is at a very basic level. You may add more sophisticated features
+  !   as eq. two-particle correlatione etc.
+  ! * A threshold check  Wfree>(2*mN+1MeV) is performed
+  !*************************************************************************
+  subroutine lepton2p2h_SelectN2(eN,flagOK)
+
+    use mediumDefinition
+    use mediumModule, only: mediumAt
+    use densitymodule, only : FermiMomAt
+    use random, only : rn, rnOmega
+    use constants, only : mN
+    use energyCalc, only : energyDetermination
+    use minkowski, only : abs4
+    use lorentzTrafo, only : lorentz
+
+    type(electronNucleon_event), intent(inout) :: eN
+    logical, intent(out) :: flagOK
+
+    type(medium)   :: media
+    type(particle) :: partN2
+    real :: p,pF
+    type(particle), dimension(2) :: nucleon
+    real, dimension(0:3) :: momentum
+    integer :: i
+
+    ! 0) Set some defaults:
+    call setToDefault(partN2)
+    flagOK = .false.
+
+    partN2%ID = 1
+    partN2%mass=mN
+
+    ! 1) select charge:
+    media=mediumAt(eN%nucleon%position)
+    if (rn()*media%density.gt.media%densityProton) then
+       partN2%charge = 0
+    else
+       partN2%charge = 1
+    end if
+
+    ! 2) select position:
+    partN2%position = eN%nucleon%position
+
+    ! 3) select 3-momentum:
+    pF = FermiMomAt(partN2%position)
+    p = pF * rn()**(1./3.)
+    partN2%momentum(1:3) = p * rnOmega()
+    partN2%momentum(0) = sqrt(mN**2+p**2)
+
+    call energyDetermination(partN2)
+
+    ! 4) change the eN information:
+
+    eN%nucleon2 = partN2
+
+    nucleon(1) = eN%nucleon
+    nucleon(2) = eN%nucleon2
+    momentum = eN%boson%momentum+nucleon(1)%momentum+nucleon(2)%momentum
+    eN%betacm = momentum(1:3)/momentum(0)
+    eN%W = abs4(momentum)
+
+    ! we calculate Wfree in the CM system:
+    do i=1,2
+       nucleon(i)%position = 999999999
+       call lorentz(eN%betacm,nucleon(i)%momentum)
+       nucleon(i)%momentum(0) = FreeEnergy(nucleon(i))
+       call lorentz(-eN%betacm,nucleon(i)%momentum)
+    end do
+
+    momentum = eN%boson%momentum+nucleon(1)%momentum+nucleon(2)%momentum
+    eN%W_free = abs4(momentum)
+! invariant mass of two-nucleon + boson system
+
+    if (eN%W_free.le.2*mN+0.001) return ! ===> failure
+
+    ! 5) abuse of 'offshellParameter' for storage of density,
+    !    needed for the 'cross section' calculation in cases 1 - 3
+
+    eN%nucleon2%offshellParameter = media%density
+    flagOK = .true.
+
+  end subroutine lepton2p2h_SelectN2
+
+
+
+  !*************************************************************************
+  !****s* lepton2p2h/lepton2p2h_FinalState
+  ! NAME
+  ! subroutine lepton2p2h_FinalState(eN,outPart,DoQE,flagOK)
+  ! PURPOSE
+  ! Generate the final state of the electron 2p2h event
+  !*************************************************************************
+  subroutine lepton2p2h_FinalState(eN,outPart,DoQE,flagOK)
+    use minkowski, only : abs4
+    use mediumDefinition
+    use mediumModule, only: mediumAt
+    use collisionNumbering, only: pert_numbering
+    use master_2Body, only: setKinematics
+    use propagation, only: updateVelocity
+    use IDtable, only: nucleon, delta
+    use random, only: rn
+    use particleProperties, only: hadron
+    use baryonWidthMedium, only: get_MediumSwitch_coll
+
+    type(electronNucleon_event), intent(in)    :: eN
+    type(particle),dimension(:), intent(inout) :: OutPart
+    logical,                     intent(in)    :: DoQE
+    logical,                     intent(out)   :: flagOK
+
+    type(particle), dimension(2) :: pairIN
+    type(medium)         :: media
+    real, dimension(1:3) :: betaToLRF
+!     real, dimension(0:3) :: momentum
+    integer :: i, ChargeIn
+
+    flagOK = .false.
+
+    if (size(OutPart).lt.2) call TRACEBACK('OutPart array too small.')
+
+    pairIN = (/ eN%boson, eN%nucleon /)
+    media=mediumAt(eN%nucleon%position)
+
+    ChargeIn = eN%nucleon%Charge+eN%nucleon2%Charge
+
+    call setToDefault(OutPart)
+
+    if (DoQE) then !=== N N final state ===
+       OutPart%ID =     (/ nucleon          , nucleon /)
+
+       select case (eN%idProcess)
+       case DEFAULT ! == EM, NC, antiEM, antiNC
+          OutPart%Charge = (/ eN%nucleon%Charge, eN%nucleon2%Charge /)
+
+       case(2)      ! == CC
+          select case(ChargeIn)
+          case (0)
+             OutPart%Charge = (/ 0, 1 /)
+          case (1)
+             OutPart%Charge = (/ 1, 1 /)
+          case (2)
+             return ! ==> failure
+          case DEFAULT
+             call TRACEBACK('ChargeIn not allowed')
+          end select
+
+       case(-2)     ! == antiCC
+          select case(ChargeIn)
+          case (0)
+             return ! ==> failure
+          case (1)
+             OutPart%Charge = (/ 0, 0 /)
+          case (2)
+             OutPart%Charge = (/ 0, 1 /)
+          case DEFAULT
+             call TRACEBACK('ChargeIn not allowed')
+          end select
+
+       end select
+
+    else           !=== N Delta final state ===
+       OutPart%ID =     (/ nucleon          , delta /)
+
+       select case (eN%idProcess)
+       case DEFAULT ! == EM, NC, antiEM, antiNC
+          OutPart(1)%Charge = nint(rn())
+          OutPart(2)%Charge = eN%nucleon%Charge+eN%nucleon2%Charge &
+                            &  - OutPart(1)%Charge
+       case(2)      ! == CC
+          select case(ChargeIn)
+          case (0)
+             OutPart(1)%Charge = nint(rn())
+             OutPart(2)%Charge = 1 - OutPart(1)%Charge
+          case (1)
+             OutPart(1)%Charge = 1
+             if (rn()<1./3.) OutPart(1)%Charge = 0  ! Delta++ n : Delta+ p = 1:2
+             !based on counting diagrams, but better ideas are needed
+             OutPart(2)%Charge = 2 - OutPart(1)%Charge
+          case (2)
+             OutPart%Charge = (/ 1, 2 /)
+          case DEFAULT
+             call TRACEBACK('ChargeIn not allowed')
+          end select
+!          call TRACEBACK('CC not yet implemented')
+       case(-2)     ! == antiCC
+          select case(ChargeIn)
+          case (2)
+             OutPart(1)%Charge = nint(rn())
+             OutPart(2)%Charge = 1 - OutPart(1)%Charge
+          case (1)
+             OutPart(1)%Charge = 0
+             if (rn()<3./4.) OutPart(1)%Charge = 1  ! Delta0 n : Delta- p = 4:3
+             !based on counting diagrams, but better ideas are needed
+             OutPart(2)%Charge =  - OutPart(1)%Charge
+          case (0)
+             OutPart%Charge = (/ 0, -1 /)
+          case DEFAULT
+             call TRACEBACK('ChargeIn not allowed')
+          end select
+!          call TRACEBACK('antiCC not yet implemented')
+       end select
+
+       ! The following is in order to avoid problems in massass:
+       if (.not.get_MediumSwitch_coll()) then
+          ! minimal value: 0.938 + Delta-MinMass + epsilon
+          if (eN%W_free .lt. hadron(1)%mass+hadron(2)%minmass+0.005) then
+             return ! ==> failure
+          end if
+       end if
+
+
+    end if
+
+    OutPart%antiparticle=.false.
+    OutPart%perturbative=.true.
+
+    OutPart%perWeight=0. ! perturbative weight = XS (here only dummy)
+
+    do i=1,2
+       OutPart(i)%position=eN%nucleon%position
+       OutPart(i)%event=pert_numbering(eN%nucleon)
+    end do
+
+! Now the final-state two nucleons get started with proper momentum and energy
+
+    betaToLRF=0.
+!     momentum = eN%boson%momentum+eN%nucleon%momentum+eN%nucleon2%momentum
+!
+!   setKinematics sets the final state for the two final nucleons in 2p2h
+!
+
+    call setKinematics (eN%W, eN%W_free, betaToLRF, eN%betacm, media, pairIn, &
+                       & OutPart(1:2), flagOK, .false.)
+
+    if (.not.flagOK) return ! ==> failure
+
+    call updateVelocity(OutPart)
+
+  end subroutine lepton2p2h_FinalState
+
+
 
   !*************************************************************************
   !****f* lepton2p2h/lepton2p2h_XS
@@ -915,358 +1265,12 @@ end if
 
     end function W3
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   end function lepton2p2h_XS
 
 
-  !*************************************************************************
-  !****s* lepton2p2h/lepton2p2h_SelectN2
-  ! NAME
-  ! subroutine lepton2p2h_SelectN2(eN)
-  !
-  ! PURPOSE
-  ! Finds the second nucleon for the 2p2h collision
-  !
-  ! INPUTS
-  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
-  !
-  ! OUTPUT
-  ! * type(electronNucleon_event) :: eN -- a second nucleon is added
-  !
-  ! NOTES
-  ! * The seond particle is generated analytically, not by selecting
-  !   a testparticle from the real particle vector.
-  ! * This is at a very basic level. You may add more sophisticated features
-  !   as eq. two-particle correlatione etc.
-  ! * A threshold check  Wfree>(2*mN+1MeV) is performed
-  !*************************************************************************
-  subroutine lepton2p2h_SelectN2(eN,flagOK)
 
-    use mediumDefinition
-    use mediumModule, only: mediumAt
-    use densitymodule, only : FermiMomAt
-    use random, only : rn, rnOmega
-    use constants, only : mN
-    use energyCalc, only : energyDetermination
-    use minkowski, only : abs4
-    use lorentzTrafo, only : lorentz
-
-    type(electronNucleon_event), intent(inout) :: eN
-    logical, intent(out) :: flagOK
-
-    type(medium)   :: media
-    type(particle) :: partN2
-    real :: p,pF
-    type(particle), dimension(2) :: nucleon
-    real, dimension(0:3) :: momentum
-    integer :: i
-
-    ! 0) Set some defaults:
-    call setToDefault(partN2)
-    flagOK = .false.
-
-    partN2%ID = 1
-    partN2%mass=mN
-
-    ! 1) select charge:
-    media=mediumAt(eN%nucleon%position)
-    if (rn()*media%density.gt.media%densityProton) then
-       partN2%charge = 0
-    else
-       partN2%charge = 1
-    end if
-
-    ! 2) select position:
-    partN2%position = eN%nucleon%position
-
-    ! 3) select 3-momentum:
-    pF = FermiMomAt(partN2%position)
-    p = pF * rn()**(1./3.)
-    partN2%momentum(1:3) = p * rnOmega()
-    partN2%momentum(0) = sqrt(mN**2+p**2)
-
-    call energyDetermination(partN2)
-
-    ! 4) change the eN information:
-
-    eN%nucleon2 = partN2
-
-    nucleon(1) = eN%nucleon
-    nucleon(2) = eN%nucleon2
-    momentum = eN%boson%momentum+nucleon(1)%momentum+nucleon(2)%momentum
-    eN%betacm = momentum(1:3)/momentum(0)
-    eN%W = abs4(momentum)
-
-    ! we calculate Wfree in the CM system:
-    do i=1,2
-       nucleon(i)%position = 999999999
-       call lorentz(eN%betacm,nucleon(i)%momentum)
-       nucleon(i)%momentum(0) = FreeEnergy(nucleon(i))
-       call lorentz(-eN%betacm,nucleon(i)%momentum)
-    end do
-
-    momentum = eN%boson%momentum+nucleon(1)%momentum+nucleon(2)%momentum
-    eN%W_free = abs4(momentum)
-! invariant mass of two-nucleon + boson system
-
-    if (eN%W_free.le.2*mN+0.001) return ! ===> failure
-
-    ! 5) abuse of 'offshellParameter' for storage of density,
-    !    needed for the 'cross section' calculation in cases 1 - 3
-
-    eN%nucleon2%offshellParameter = media%density
-    flagOK = .true.
-
-  end subroutine lepton2p2h_SelectN2
-
-
-
-  !*************************************************************************
-  !****s* lepton2p2h/lepton2p2h_FinalState
-  ! NAME
-  ! subroutine lepton2p2h_FinalState(eN,outPart,DoQE,flagOK)
-  ! PURPOSE
-  ! Generate the final state of the electron 2p2h event
-  !*************************************************************************
-  subroutine lepton2p2h_FinalState(eN,outPart,DoQE,flagOK)
-    use minkowski, only : abs4
-    use mediumDefinition
-    use mediumModule, only: mediumAt
-    use collisionNumbering, only: pert_numbering
-    use master_2Body, only: setKinematics
-    use propagation, only: updateVelocity
-    use IDtable, only: nucleon, delta
-    use random, only: rn
-    use particleProperties, only: hadron
-    use baryonWidthMedium, only: get_MediumSwitch_coll
-
-    type(electronNucleon_event), intent(in)    :: eN
-    type(particle),dimension(:), intent(inout) :: OutPart
-    logical,                     intent(in)    :: DoQE
-    logical,                     intent(out)   :: flagOK
-
-    type(particle), dimension(2) :: pairIN
-    type(medium)         :: media
-    real, dimension(1:3) :: betaToLRF
-!     real, dimension(0:3) :: momentum
-    integer :: i, ChargeIn
-
-    flagOK = .false.
-
-    if (size(OutPart).lt.2) call TRACEBACK('OutPart array too small.')
-
-    pairIN = (/ eN%boson, eN%nucleon /)
-    media=mediumAt(eN%nucleon%position)
-
-    ChargeIn = eN%nucleon%Charge+eN%nucleon2%Charge
-
-    call setToDefault(OutPart)
-
-    if (DoQE) then !=== N N final state ===
-       OutPart%ID =     (/ nucleon          , nucleon /)
-
-       select case (eN%idProcess)
-       case DEFAULT ! == EM, NC, antiEM, antiNC
-          OutPart%Charge = (/ eN%nucleon%Charge, eN%nucleon2%Charge /)
-
-       case(2)      ! == CC
-          select case(ChargeIn)
-          case (0)
-             OutPart%Charge = (/ 0, 1 /)
-          case (1)
-             OutPart%Charge = (/ 1, 1 /)
-          case (2)
-             return ! ==> failure
-          case DEFAULT
-             call TRACEBACK('ChargeIn not allowed')
-          end select
-
-       case(-2)     ! == antiCC
-          select case(ChargeIn)
-          case (0)
-             return ! ==> failure
-          case (1)
-             OutPart%Charge = (/ 0, 0 /)
-          case (2)
-             OutPart%Charge = (/ 0, 1 /)
-          case DEFAULT
-             call TRACEBACK('ChargeIn not allowed')
-          end select
-
-       end select
-
-    else           !=== N Delta final state ===
-       OutPart%ID =     (/ nucleon          , delta /)
-
-       select case (eN%idProcess)
-       case DEFAULT ! == EM, NC, antiEM, antiNC
-          OutPart(1)%Charge = nint(rn())
-          OutPart(2)%Charge = eN%nucleon%Charge+eN%nucleon2%Charge &
-                            &  - OutPart(1)%Charge
-       case(2)      ! == CC
-          select case(ChargeIn)
-          case (0)
-             OutPart(1)%Charge = nint(rn())
-             OutPart(2)%Charge = 1 - OutPart(1)%Charge
-          case (1)
-             OutPart(1)%Charge = 1
-             if (rn()<1./3.) OutPart(1)%Charge = 0  ! Delta++ n : Delta+ p = 1:2
-             !based on counting diagrams, but better ideas are needed
-             OutPart(2)%Charge = 2 - OutPart(1)%Charge
-          case (2)
-             OutPart%Charge = (/ 1, 2 /)
-          case DEFAULT
-             call TRACEBACK('ChargeIn not allowed')
-          end select
-!          call TRACEBACK('CC not yet implemented')
-       case(-2)     ! == antiCC
-          select case(ChargeIn)
-          case (2)
-             OutPart(1)%Charge = nint(rn())
-             OutPart(2)%Charge = 1 - OutPart(1)%Charge
-          case (1)
-             OutPart(1)%Charge = 0
-             if (rn()<3./4.) OutPart(1)%Charge = 1  ! Delta0 n : Delta- p = 4:3
-             !based on counting diagrams, but better ideas are needed
-             OutPart(2)%Charge =  - OutPart(1)%Charge
-          case (0)
-             OutPart%Charge = (/ 0, -1 /)
-          case DEFAULT
-             call TRACEBACK('ChargeIn not allowed')
-          end select
-!          call TRACEBACK('antiCC not yet implemented')
-       end select
-
-       ! The following is in order to avoid problems in massass:
-       if (.not.get_MediumSwitch_coll()) then
-          ! minimal value: 0.938 + Delta-MinMass + epsilon
-          if (eN%W_free .lt. hadron(1)%mass+hadron(2)%minmass+0.005) then
-             return ! ==> failure
-          end if
-       end if
-
-
-    end if
-
-    OutPart%antiparticle=.false.
-    OutPart%perturbative=.true.
-
-    OutPart%perWeight=0. ! perturbative weight = XS (here only dummy)
-
-    do i=1,2
-       OutPart(i)%position=eN%nucleon%position
-       OutPart(i)%event=pert_numbering(eN%nucleon)
-    end do
-
-! Now the final-state two nucleons get started with proper momentum and energy
-
-    betaToLRF=0.
-!     momentum = eN%boson%momentum+eN%nucleon%momentum+eN%nucleon2%momentum
-!
-!   setKinematics sets the final state for the two final nucleons in 2p2h
-!
-
-    call setKinematics (eN%W, eN%W_free, betaToLRF, eN%betacm, media, pairIn, &
-                       & OutPart(1:2), flagOK, .false.)
-
-    if (.not.flagOK) return ! ==> failure
-
-    call updateVelocity(OutPart)
-
-  end subroutine lepton2p2h_FinalState
-
-  !*************************************************************************
-  !****s* lepton2p2h/lepton2p2h_DoQE
-  ! NAME
-  ! subroutine lepton2p2h_DoQE(eN,outPart,XS)
-  !
-  ! PURPOSE
-  ! Do all the electron induced 2p2h-QE scattering gamma* N1 N2 -> N1' N2'
-  !
-  ! INPUTS
-  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
-  !
-  ! OUTPUT
-  ! * type(particle), dimension(:) :: OutPart -- the two produced nucleons
-  ! * real :: XS -- the cross section
-  !*************************************************************************
-  subroutine lepton2p2h_DoQE(eN,outPart,XS)
-    use output, only: WriteParticle
-
-    type(electronNucleon_event), intent(inout) :: eN
-    type(particle),dimension(:), intent(inout) :: OutPart
-    real, intent(out) :: XS
-
-    logical :: flagOK
-
-    if(initFlag) call readInput
-
-    XS = 0.0
-
-    call lepton2p2h_SelectN2(eN,flagOK)
-    if (.not.flagOK)  return ! ==> failure
-
-!    call write_electronNucleon_event(eN)
-
-    call lepton2p2h_FinalState(eN,outPart,.true.,flagOK)
-
-!!$    if (.not.flagOK) then
-!!$       call write_electronNucleon_event(eN)
-!!$       write(*,*) 'Failure'
-!!$       stop
-!!$    end if
-
-    if (.not.flagOK) return ! ==> failure
-
-    XS = lepton2p2h_XS(eN,outPart,.true.)
-    outPart%perWeight=XS
-
-!    if(XS < 0) write(*,*) 'XS= ',XS,'pW= ',outPart%perWeight
-
-!    call WriteParticle(6,1,outPart)
-!    stop
-
-  end subroutine lepton2p2h_DoQE
-
-  !*************************************************************************
-  !****s* lepton2p2h/lepton2p2h_DoDelta
-  ! NAME
-  ! subroutine lepton2p2h_DoDelta(eN,outPart,XS)
-  !
-  ! PURPOSE
-  ! Do all the electron induced 2p2h-QE scattering gamma* N1 N2 -> N Delta
-  !
-  ! INPUTS
-  ! * type(electronNucleon_event) :: eN -- electron-Nucleon event info
-  !
-  ! OUTPUT
-  ! * type(particle), dimension(:) :: OutPart -- the two produced hadrons
-  ! * real :: XS -- the cross section
-  !*************************************************************************
-  subroutine lepton2p2h_DoDelta(eN,outPart,XS)
-    use output, only: WriteParticle
-
-    type(electronNucleon_event), intent(inout) :: eN
-    type(particle),dimension(:), intent(inout) :: OutPart
-    real, intent(out) :: XS
-
-    logical :: flagOK
-
-    if(initFlag) call readInput
-
-    XS = 0.0
-
-    call lepton2p2h_SelectN2(eN,flagOK)
-    if (.not.flagOK) return ! ==> failure
-
-    call lepton2p2h_FinalState(eN,outPart,.false.,flagOK)
-    if (.not.flagOK) return ! ==> failure
-
-    XS = lepton2p2h_XS(eN,outPart,.false.)
-    outPart%perWeight=XS
-
-  end subroutine lepton2p2h_DoDelta
-
+  
 
 end module lepton2p2h

@@ -66,7 +66,7 @@ contains
   !*************************************************************************
   !****s* particlePointerList/ParticleList_getParticle
   ! NAME
-  ! function ParticleList_getParticle (L, ID, n, P, antiparticle) result (success)
+  ! logical function ParticleList_getParticle(L, ID, n, P, antiparticle)
   !
   ! PURPOSE
   ! Loop over the List "L" and find the "n"-th particle in the list with 
@@ -79,23 +79,29 @@ contains
   ! * integer :: charge -- charge of particle which shall be returned
   ! * integer :: n      -- We return the n-th particle in the list with %ID=ID
   ! * logical :: antiparticle -- .false. if we search for a particle, .true. for an antiparticle
+  ! * logical, OPTIONAL :: weightNonZero -- if .true. only count particles with perweight > 0
   !
   ! OUTPUT
   ! * type(particle) :: P -- n-th particle with wished ID
   ! * logical        :: success -- True if it was possible to find n-Particles 
   !   with the wished ID, False otherwise
   !*************************************************************************
-  function ParticleList_getParticle (L, ID, charge, n, P, antiparticle) result (success)
+  function ParticleList_getParticle(L, ID, charge, n, P, antiparticle, weightNonZero) result (success)
 
     type(tParticleList),intent(in) :: L
     integer,intent(in) :: ID, charge, n
     type(particle), intent(out) ::  P
     logical, intent(in) :: antiparticle
+    logical, intent(in), OPTIONAL :: weightNonZero
     logical :: success
 
     type(tParticleListNode), POINTER :: pNode
     integer :: foundIDs
-    
+    logical :: checkWeight
+
+    checkWeight =.false.
+    if (present(weightNonZero)) checkWeight = weightNonZero
+
     ! Default return values
     success = .false.
     call SetToDefault(p)
@@ -108,8 +114,14 @@ contains
 
        If (pNode%V%ID == ID) then
           If (pNode%V%charge == charge) then
-             if ((pNode%V%antiparticle.and.antiparticle) .or. ((.not.pNode%V%antiparticle).and.(.not.antiparticle))) then
-                foundIDs = foundIDs + 1
+             if (pNode%V%antiparticle.eqv.antiparticle) then
+                if (checkWeight) then
+                   if (pNode%V%perWeight > 1e-20) then
+                      foundIDs = foundIDs + 1
+                   end if
+                else
+                   foundIDs = foundIDs + 1
+                end if
                 if (foundIDs == n) then
                    ! n particles with the wanted ID are found, and the n-th particle is returned.
                    p = pNode%V
