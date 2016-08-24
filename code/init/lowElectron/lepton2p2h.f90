@@ -186,9 +186,9 @@ module lepton2p2h
   ! Walecka, PR C6 (1972) 719
   !
   ! SOURCE
-  real, save :: T = 0
+  real, save :: T = 1
   ! NOTES
-  ! This is target isospin T, for 2p2h processes
+  ! This is isospin T of NN pair, for 2p2h processes 
   !*************************************************************************
 
   logical, save:: initflag = .true.
