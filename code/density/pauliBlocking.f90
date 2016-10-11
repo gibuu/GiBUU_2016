@@ -260,7 +260,6 @@ contains
 
       if (initWeightsFlag) then
          call Write_InitStatus('Dynamic Pauli Blocking',0)
-         Write(*,*) 'distance grid has grid spacing:', deltaPos
          write(*,*) 'Start numerical integrations for the weight factors'
          call initWeights
          call Write_InitStatus('Dynamic Pauli Blocking',1)

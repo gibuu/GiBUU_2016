@@ -589,6 +589,7 @@ contains
 
     Map2HistMP_ID = 0
     if (ID<1) return
+    if (ID>122) return
 
     if (ID>100) then ! === MESON
        Map2HistMP_ID = Map2Hist_Meson(iSet,ID-100,IC)

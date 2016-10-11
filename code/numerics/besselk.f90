@@ -24,7 +24,7 @@ contains
   ! PURPOSE
   ! return the value K(2,x)
   !*************************************************************************
-  real function BesselK2(x)
+  elemental real function BesselK2(x)
     real, intent(in) :: x
 
     real :: y
