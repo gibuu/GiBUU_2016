@@ -3,11 +3,11 @@
 ! NAME
 ! module baryonWidthVacuum
 ! NOTES
-! Module which calculates the partial and full widths of the baryon resonances 
+! Module which calculates the partial and full widths of the baryon resonances
 ! in dependence of their mass.
-! Their pole mass is given by their mass in 'particleProperties' and the 
+! Their pole mass is given by their mass in 'particleProperties' and the
 ! widths at this pole mass as well.
-! Everything corresponds to the vacuum situation. The resulting width is 
+! Everything corresponds to the vacuum situation. The resulting width is
 ! therefore always the width in vacuum!
 ! As mass of the resonance we use the four-vector definition: p_mu p^mu= mass**2
 ! Prescription according to Manley et al. Phys. Rev. D45 (1992) 4002.
@@ -32,10 +32,10 @@ module baryonWidthVacuum
   !****g* baryonWidthVacuum/srts_srt_switch
   ! SOURCE
   !
-  logical, parameter, public :: srts_srt_switch=.false.   
+  logical, parameter, public :: srts_srt_switch=.false.
   ! PURPOSE
-  ! Modifies the width according to S. Leupold's definition of the width, 
-  ! one especially has to exchange s against sqrt(s) in the denominator of 
+  ! Modifies the width according to S. Leupold's definition of the width,
+  ! one especially has to exchange s against sqrt(s) in the denominator of
   ! Formula 2.76 of Effenbergers Phd
   !*************************************************************************
 
@@ -65,7 +65,7 @@ module baryonWidthVacuum
   !
   real, save :: baryon_cutoff=2.0
   ! PURPOSE
-  ! * Cut off parameter for the decay of a resonance into an unstable baryon 
+  ! * Cut off parameter for the decay of a resonance into an unstable baryon
   ! and a meson.
   ! * Units of GeV
   !*************************************************************************
@@ -77,7 +77,7 @@ module baryonWidthVacuum
   logical, save :: use_cutoff = .true.
   ! PURPOSE
   ! * Switch on and off the use of cut off parameters.
-  ! * These cut-offs are necessary when working with dispersion relations to 
+  ! * These cut-offs are necessary when working with dispersion relations to
   !   deduce the real part.
   !*************************************************************************
 
@@ -118,23 +118,23 @@ contains
     real,intent(out) :: a,b,c
     logical,intent(out) :: flag
     integer,intent(out) :: delta
-    
+
     if (initFlag) call readinput
-    
+
     a = deltaRho_cutoff
     b = meson_cutoff
     c = baryon_cutoff
     flag = use_cutoff
     delta = Delta_width
   end subroutine getParameters
-  
+
 
   !************************************************************************
   !****s* baryonWidthVacuum/readInput
   ! NAME
   ! subroutine readInput
   ! PURPOSE
-  ! Reads input in jobcard out of namelist "BaryonWidthVacuum". 
+  ! Reads input in jobcard out of namelist "BaryonWidthVacuum".
   !************************************************************************
   subroutine readInput
     use output, only: Write_ReadingInput
@@ -184,7 +184,7 @@ contains
   !************************************************************************
 !   real function monopoleFormfactor (mass, pole, lambda)
 !     real, intent(in) :: mass, pole, lambda
-! 
+!
 !     if (use_cutOff) then
 !        monopoleFormfactor=lambda**4/(lambda**4+(pole**2-mass**2)**2)
 !     else
@@ -239,7 +239,7 @@ contains
        if (dID<=0) cycle ! 2Body: >0, 3Body: <0
 
        partialWidth = hadron(partID)%decays(k) * hadron(partID)%width  !in GeV
-       if (partialWidth < widthCutOff) cycle 
+       if (partialWidth < widthCutOff) cycle
 
        poleMass=hadron(partID)%mass
        mass1=hadron(Decay2BodyBaryon(dID)%ID(1))%mass  !mass of produced meson
@@ -365,7 +365,7 @@ contains
     ! rho_ab(mu)=p_ab/mu * BlattWeisskopf(pab*interactionRadius,L)
     If (srts_srt_switch) then
        rho_ab_mass=p_ab_mass/mass**2*(BlattWeisskopf(p_ab_mass*interactionRadius,L))**2
-       rho_ab_pole=p_ab_pole/polemass**2*(BlattWeisskopf(p_ab_pole*interactionRadius,L))**2 
+       rho_ab_pole=p_ab_pole/polemass**2*(BlattWeisskopf(p_ab_pole*interactionRadius,L))**2
     else
        rho_ab_mass=p_ab_mass/mass*(BlattWeisskopf(p_ab_mass*interactionRadius,L))**2
        rho_ab_pole=p_ab_pole/polemass*(BlattWeisskopf(p_ab_pole*interactionRadius,L))**2
@@ -542,7 +542,7 @@ contains
 
   !************************************************************************
   !****s* baryonWidthVacuum/semistableFinalState
-  ! NAME 
+  ! NAME
   ! subroutine semistableFinalState (mass, polemass, idStable, idUnstable, L, partialWidth_pole, partialWidth_mass, rho_AB_Pole)
   ! PURPOSE
   ! Calculate the partial width for the decay into
@@ -682,22 +682,22 @@ contains
     real, parameter :: radiusRho=5.3
     logical, parameter :: debug=.false.
 
-    ! "srtS" is the mass of mother Resonance. Set in the mother subroutine. 
-    
+    ! "srtS" is the mass of mother Resonance. Set in the mother subroutine.
+
     ! It decays into a stable particle with mass "massstable" and
-    ! an unstable particle with mass "mu". 
+    ! an unstable particle with mass "mu".
     ! p_AB is the momentum of the two decay products in the restframe of the mother resonance.
-    
+
     ! massStable, massUnstable and gammaUnstable are all defined in the mother subroutine.
-    
+
     ! If p_ab imaginary then this kinematical situation is forbidden
     ! Therefore p_ab is then set to 0 which corresponds later to
     ! set rho_AB_integrand to zero.
-    
+
     p_AB=pcm(srtS,mu,massStable)
-    
+
     ! Redefine the gamma of the unstable particle, since the unstable particle is supposed off-shell:
-    
+
     select case (idUnstable_copy)
     case(Delta) ! Delta -> pion + nuclon
        ! this delta has mass mu, so we need gammaUnstable(mu)
@@ -705,8 +705,8 @@ contains
        qcmUnstable_mu=pcm(mu,mN,mPi)
        ! And at the delta's polemass:
        qcmUnstable_pole=pcm(massUnstable,mN,mPi)
-       
-       corrector = qcmUnstable_mu/qcmUnstable_pole * massUnstable/mu & 
+
+       corrector = qcmUnstable_mu/qcmUnstable_pole * massUnstable/mu &
                    * (BlattWeisskopf(qcmUnstable_mu*InteractionRadius,1)/BlattWeisskopf(qcmUnstable_pole*InteractionRadius,1))**2
        If (debug) Print *, "Correcting for delta width:",  gammaUnstable,corrector
        gammaCorrect=gammaUnstable*corrector
@@ -715,7 +715,7 @@ contains
        ! use vacuum width of meson
        gammaCorrect = vacuumWidthMeson (mu, idUnstable_copy)
 
-    case(P11_1440,lambda_1520,lambda_1820) 
+    case(P11_1440,lambda_1520,lambda_1820)
        ! No Correction
        gammaCorrect=gammaUnstable
 
@@ -726,7 +726,7 @@ contains
 
        ! And at the Sigma* polemass:
        qcmUnstable_pole=pcm(massUnstable,hadron(lambda)%mass,mPi)
-       
+
        corrector = qcmUnstable_mu/qcmUnstable_pole * massUnstable/mu &
                    * (BlattWeisskopf(qcmUnstable_mu*InteractionRadius,1)/BlattWeisskopf(qcmUnstable_pole*InteractionRadius,1))**2
        If(debug) Print *, "Correcting for delta width:",  gammaUnstable,corrector
@@ -740,12 +740,12 @@ contains
         gammaCorrect=gammaUnstable*corrector
 
     case DEFAULT
-    
+
        Write(*,*) "Wrong Resonance as unstable Particle in rho_ab_integrand :",idUnstable_copy
        Write(*,*) "This resonance is not yet implemented in subroutine 'semistableFinalState' :",idUnstable_copy
-       
+
     end select
-    
+
     ! Define gamma as function of mu
     If(srts_srt_switch) then
        rho_AB_Integrand = RelBW(mu,massUnStable,gammaCorrect) * p_AB/srtS**2 * BlattWeisskopf(p_AB*interactionRadius,L_copy)**2
@@ -759,7 +759,7 @@ contains
     end if
 
   end function rho_AB_Integrand
-  
+
 
   !************************************************************************
   !****s* baryonWidthVacuum/rhoDeltaFinalState
@@ -794,7 +794,7 @@ contains
     if (mass <= mN + 3*mPi) then
        partialWidth_mass=0.
     else
-       rho_AB_mass = deltarho(mass,L,.true.) 
+       rho_AB_mass = deltarho(mass,L,.true.)
        !partialWidth_mass=partialWidth_pole*rho_AB_mass/rho_AB_atPole*monopoleFormFactor(mass,poleMass,0.5)
        partialWidth_mass = partialWidth_pole * rho_AB_mass / rho_AB_atPole
        if (use_cutOff) partialWidth_mass = partialWidth_mass &
@@ -906,7 +906,7 @@ contains
 
       If (srts_srt_switch) then
          integral=integral/srts**2
-      else  
+      else
          integral=integral/srts
       end if
 
@@ -914,5 +914,5 @@ contains
 
   end subroutine rhoDeltaFinalState
 
-  
+
 end module baryonWidthVacuum

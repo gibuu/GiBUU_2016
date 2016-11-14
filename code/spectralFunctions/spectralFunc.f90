@@ -501,7 +501,7 @@ contains
           scalarPotential=0
           width=0  !hadron(ID)%width
        end if
-    
+
     propagator_nenner=SP(W,W)-(mass+scalarPotential)**2 + ii*invMass*width
 
     if(present(baremass_out)) baremass_out=baremass

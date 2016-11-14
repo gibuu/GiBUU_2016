@@ -5,12 +5,12 @@
 ! PURPOSE
 ! Includes the cross sections for sigma-nucleon scattering in the resonance regime.
 ! Public routines:
-! * sigmaNuc 
+! * sigmaNuc
 !****************************************************************************
 module sigmaNucleon
 
   implicit none
-  Private 
+  Private
 
   ! Debug-flags
   logical,parameter :: debugFlag=.false.
@@ -39,29 +39,29 @@ contains
   ! * real, intent(in) ,dimension(0:3)              :: momentumLRF           ! Total Momentum in LRF
   !
   ! High energy matching:
-  ! * logical,intent(in)                            :: useHiEnergy            
+  ! * logical,intent(in)                            :: useHiEnergy
   ! * .true. if High-Energy cross sections are given by paramBarMesHE
-  ! * real,intent(in)                               :: HiEnergySchwelle      
+  ! * real,intent(in)                               :: HiEnergySchwelle
   ! * threshold sqrt(s) for paramBarMesHE, i.e. at which energy the cross sections of paramBarMesHE are used
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! RESULT
   ! * real, intent(out)                                        :: sigmaTot         ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! colliding particles
-  ! 
-  ! The cross sections are based upon a parametrization by Golubeva. See routine golub in 
+  !
+  ! The cross sections are based upon a parametrization by Golubeva. See routine golub in
   ! parametrizationBarMes.
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   ! * 2-particle : pi N, sigma N
   !**************************************************************************************************
   subroutine sigmaNuc (srts,teilchenIN,mediumATcollision,momentumLRF,teilchenOUT,sigmaTot,sigmaElast,&
@@ -98,9 +98,9 @@ contains
     real, dimension(Delta:nbar) :: massRes     !  Resonance masses
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
-    real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities
                                  ! in the medium compared to the vacuum
-    type(particle) :: sigma_particle, nucleon_particle    
+    type(particle) :: sigma_particle, nucleon_particle
     logical :: antiParticleInput, failFlag
 
     ! Field to store the resonance masses
@@ -127,7 +127,7 @@ contains
     end if
 
     If(nucleon_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        nucleon_particle%Charge        =  -nucleon_particle%Charge
        nucleon_particle%antiparticle  = .false.
        sigma_particle%Charge          =  -sigma_particle%Charge
@@ -163,7 +163,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.nucleon_particle%charge+sigma_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,sigma_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,sigma_particle%Charge, &
             & nucleon_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -249,7 +249,7 @@ contains
       elastic_vacuum=barMes_R_barMes(sigmaMeson,nucleon,sigmaMEson,nucleon,&
            & sigma_particle%Charge,nucleon_particle%Charge,sigma_particle%Charge,nucleon_particle%Charge,  &
            & .false.,.false.,Vacuum,momentum_vacuum,sigma_particle%Mass,nucleon_particle%Mass, &
-           & position,perturbative,srts) 
+           & position,perturbative,srts)
 
       if (srts > mN + hadron(omegaMeson)%minmass) then
         sigmaN=Max(0., sigmaElast_HE - elastic_vacuum)
@@ -259,7 +259,7 @@ contains
 
 
       !*******************************************************************************************
-      ! sigma N -> R 
+      ! sigma N -> R
       !*****************************************************************************************
 
       ! Full resonance contribution in the medium
@@ -272,7 +272,7 @@ contains
       !###################################################################################################
 
       sigmaElast=barMes_R_barMes(sigmaMeson,nucleon,sigmaMeson,nucleon,&
-           & sigma_particle%Charge,nucleon_particle%Charge,sigma_particle%Charge,nucleon_particle%Charge, & 
+           & sigma_particle%Charge,nucleon_particle%Charge,sigma_particle%Charge,nucleon_particle%Charge, &
            & .false.,.false.,MediumAtCollision,momentumLRF,&
            & sigma_particle%Mass,nucleon_particle%Mass,position,perturbative,srts)+sigmaN
 
@@ -295,7 +295,7 @@ contains
       ! Be careful since sigma elast is already included in the partial cross sections, therefore it is not
       ! included in the total cross section
 
-      sigmaTot=sigmaN + sum( piN ) + sum (sigmaRes )  
+      sigmaTot=sigmaN + sum( piN ) + sum (sigmaRes )
 
     end subroutine evaluateXsections
 
@@ -343,7 +343,7 @@ contains
       cut=cut-sigmaN
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piN(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=nucleon
@@ -368,7 +368,7 @@ contains
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV].
     ! Filenames:
-    ! * 'sigmaN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'sigmaN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'sigmaN_resProd.dat'            : Baryon resonance production
     ! * 'sigmaN_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state
     !****************************************************************************

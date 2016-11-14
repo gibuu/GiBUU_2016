@@ -23,7 +23,7 @@ module particlePointerListDefinition
   ! * pointer to type(particle)
   ! * pointer to (next) tParticleListNode
   !
-  ! The data is not stored directly but connected via a "pointer" to some 
+  ! The data is not stored directly but connected via a "pointer" to some
   ! entry elsewhere, typically in some "particle vector".
   !
   ! SOURCE
@@ -39,14 +39,14 @@ module particlePointerListDefinition
   !****t* particlePointerListDefinition/tParticleList
   ! PURPOSE
   ! Store some elements of a (single linked) list of particles.
-  ! 
+  !
   ! The list is build up via a chain of nodes according "tParticleListNode"
   !
   ! NOTES
   ! Keeping the number of entries in a seperate value is not really
   ! necessary for managing the list, but is included in aspect of the
   ! usage of this type: e.g. one maybe wants to remove the fifth entry out
-  ! of nine, while the value "5" was choosen by a random generator. 
+  ! of nine, while the value "5" was choosen by a random generator.
   !
   ! SOURCE
   !

@@ -808,7 +808,7 @@ contains
         allocate(dNdy(0:N))
         do k=0,N
           write(title,'(A,f7.2,A)') "nucleon rapidity distribution dN/dy at time = ", timeForOutput + k*timeSequence, " fm/c"
-          call createHist (dNdy(k),  title, ystart, ystart+2*nrap*dy, dy)  
+          call createHist (dNdy(k),  title, ystart, ystart+2*nrap*dy, dy)
         end do
         RapidityInitFLAG = .false.
       endif

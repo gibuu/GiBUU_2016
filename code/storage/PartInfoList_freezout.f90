@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PIL_freezeout
-! NAME 
+! NAME
 ! module PIL_freezeout
 ! PURPOSE
 ! Provide some storage method for the freeze out position of some particles
@@ -9,7 +9,7 @@
 !
 ! INPUTS
 ! (none)
-! 
+!
 ! NOTES
 ! * "PIL" stands for "PartInfoList"
 !***************************************************************************
@@ -22,7 +22,7 @@ module PIL_freezeout
 
   !*************************************************************************
   !****t* PIL_freezeout/tValueEntry
-  ! NAME 
+  ! NAME
   ! type tValueEntry
   ! PURPOSE
   ! a container of the information to be stored
@@ -68,7 +68,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_freezeout/PIL_freezeout_DeAlloc
-  ! NAME 
+  ! NAME
   ! subroutine PIL_freezeout_DeAlloc
   ! PURPOSE
   ! Deallocate the memory for this list and the corresponding index list.
@@ -81,7 +81,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_freezeout/PIL_freezeout_ZERO
-  ! NAME 
+  ! NAME
   ! subroutine PIL_freezeout_ZERO()
   ! PURPOSE
   ! Reset the list by setting the counter of stored information to 0.
@@ -94,7 +94,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_freezeout/PIL_freezeout_PUT
-  ! NAME 
+  ! NAME
   ! subroutine PIL_freezeout_PUT(number,r)
   ! PURPOSE
   ! Store the information "r" connected with particle "number" in the list.
@@ -117,12 +117,12 @@ contains
     iEntry = PILIndex_PUT(IndexList, number,"freezeout")
 
 !    write(*,*) '###PUT: ',number,r,iEntry
-    
+
     if (iEntry>0) then      ! everything is ok
        ValueList(iEntry)%val = r
        ValueList(iEntry)%history = hist
        ValueList(iEntry)%escaped = escaped
-    else 
+    else
        call PIL_freezeout_Allocate() ! do (re)allocate
        ValueList(-iEntry)%val = r
        ValueList(-iEntry)%history = hist
@@ -133,7 +133,7 @@ contains
 
   !***************************************************************************
   !****f* PIL_freezeout/PIL_freezeout_GET
-  ! NAME 
+  ! NAME
   ! logical function PIL_freezeout_GET(number,r,hist,escaped)
   ! PURPOSE
   ! Get the stored information of particle "number"
@@ -177,7 +177,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_freezeout/PIL_freezeout_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_freezeout_Allocate
   ! PURPOSE
   ! Do the allocation and reallocation of the value vector.
@@ -188,7 +188,7 @@ contains
   !***************************************************************************
   subroutine PIL_freezeout_Allocate
     integer :: n0, n1,i
-    type(tValueEntry), allocatable :: L0(:) 
+    type(tValueEntry), allocatable :: L0(:)
 
     n1 = size(IndexList%PartNumber) ! new size
 
@@ -219,23 +219,23 @@ contains
 
   !***************************************************************************
   !****s* PIL_freezeout/PIL_freezeout_Print
-  ! NAME 
+  ! NAME
   ! subroutine PIL_freezeout_Print(file)
   ! PURPOSE
   ! Print the list to file
   !***************************************************************************
 !   subroutine PIL_freezeout_Print(file)
 !     integer, intent(IN) :: file
-! 
+!
 !     integer :: i
-! 
+!
 !     write(file,*) '****** PIL_freezeout:',IndexList%nEntry
 !     do i=1,IndexList%nEntry
 !        write(file,'(i8.0,i8.0,3g12.5)') i,IndexList%PartNumber(i),ValueList(IndexList%Entry(i))%val
 !     end do
-! 
+!
 !   end subroutine PIL_freezeout_Print
 
-  
+
 
 end module PIL_freezeout

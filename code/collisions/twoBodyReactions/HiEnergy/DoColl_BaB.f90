@@ -16,10 +16,10 @@ module Coll_BaB
   !
   integer, save :: iset = 1
   ! PURPOSE
-  ! Switch to choose an initialization of jets: 
+  ! Switch to choose an initialization of jets:
   ! * 1: phase space distribution, also the charge is conserved (new prescription)
-  ! * 2: first jet along inPart(1) momentum, 3-d jet opposite, 
-  !      others orthogonal, charge is not conserved (old prescription) 
+  ! * 2: first jet along inPart(1) momentum, 3-d jet opposite,
+  !      others orthogonal, charge is not conserved (old prescription)
   !********************************************************************
 
   logical, save :: initFlag=.true.
@@ -78,8 +78,8 @@ contains
   ! return outgoing particles in "outPart".
   !
   ! "pcm" and "beta" are vectors used for Boost and Rotation of the event.
-  ! 
-  ! if "flagOK" is false, no event happened, the output in "outPart" should 
+  !
+  ! if "flagOK" is false, no event happened, the output in "outPart" should
   ! be neglected!
   !
   ! INPUTS
@@ -95,13 +95,13 @@ contains
   ! NOTES
   ! cf. DoColl_Pythia
   !
-  ! in order to understand the meaning of "pcm" and "beta": 
-  ! The (Pythia-)event is done in the restframe of the two given particles. 
-  ! Then a call to PYROBO according 
+  ! in order to understand the meaning of "pcm" and "beta":
+  ! The (Pythia-)event is done in the restframe of the two given particles.
+  ! Then a call to PYROBO according
   !       phi = atan2(pcm(2),pcm(1))
   !       theta = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))
   !       call PYROBO(1,N, theta,phi, beta(1),beta(2),beta(3))
-  ! is performed in order to transform the system into the desired 
+  ! is performed in order to transform the system into the desired
   ! (Lab-) system.
   !*************************************************************************
   subroutine DoColl_BaB (inPart, outPart, flagOK, sqrtS, pcm, beta)
@@ -131,7 +131,7 @@ contains
                                  !     strangeness, charm
     integer :: totAbsS, totAbsC  ! sums of absolute values
     integer :: iQ(2,3)           ! quark contents of inc. hadrons
-    integer :: oQ1,oQ2, oQ3,oQ4  ! kf-codes of outgoing quarks 
+    integer :: oQ1,oQ2, oQ3,oQ4  ! kf-codes of outgoing quarks
     real, dimension(4) :: mass   ! masses of outgoing quarks
     real, dimension(3,4) :: impuls ! three-momenta of outgoing quarks
     real, dimension(4) :: e      ! energies of outgoing quarks
@@ -275,7 +275,7 @@ contains
          end do
        end do i_loop
 
-       if(debugFlag) write(*,*)' i0, j0: ', i0, j0       
+       if(debugFlag) write(*,*)' i0, j0: ', i0, j0
 
        if(i0.eq.0) return  ! Annihilation impossible
 
@@ -289,7 +289,7 @@ contains
              oQ3=iq(1,i)
            end if
          end if
-       end do  
+       end do
 
        oQ2=0
        oQ4=0
@@ -301,7 +301,7 @@ contains
              oQ4=iq(2,j)
            end if
          end if
-       end do   
+       end do
 
        if(debugFlag) write(*,*) 'oQ: ',oq1,oq2,oq3,oq4
 
@@ -317,14 +317,14 @@ contains
        e(1)=sqrt(mass(1)**2+dot_product(impuls(1:3,1),impuls(1:3,1)))
        e(2)=sqrt(mass(2)**2+dot_product(impuls(1:3,2),impuls(1:3,2)))
        e(4)=sqrt(mass(4)**2+dot_product(impuls(1:3,4),impuls(1:3,4)))
-  
+
        x1=2.*e(1)/sqrts
        x2=2.*e(2)/sqrts
        x4=2.*e(4)/sqrts
-  
+
        x12=2.*(e(1)*e(2)-dot_product(impuls(1:3,1),impuls(1:3,2)))/sqrts**2
        x14=2.*(e(1)*e(4)-dot_product(impuls(1:3,1),impuls(1:3,4)))/sqrts**2
-     
+
     case(2)  ! Orthognal jet structure
              !... (the constraint is, that all momenta are the same!)
 
@@ -334,7 +334,7 @@ contains
           oQ1 = int(rn()+1.5)  ! 50%: 1=d-quark, 50%: 2=u-quark
           oQ2 = -oQ1
           oQ3 = int(rn()+1.5)  ! 50%: 1=d-quark, 50%: 2=u-quark
-          oQ4 = -oQ3   
+          oQ4 = -oQ3
        case(1) ! ... one s-quark
           hhh(1) = (4*DeltaMM+5*sqrtS**2-3*sqrt(sqrtS**2*(sqrtS**2+8*DeltaMM)))/32
           hhh(2) = hhh(1)+DeltaMM
@@ -373,7 +373,7 @@ contains
        !    Quark 2: -x direction,   -"-
        !    Quark 3: -z direction,   -"-
        !    Quark 4: +x direction,   -"-
-   
+
        x1 = hhh(1)
        x2 = hhh(1)
        if (abs(oQ4).eq.3) then
@@ -381,7 +381,7 @@ contains
        else
           x4 = hhh(1)
        endif
-   
+
        x12 = x1*x2/2
        x14 = x1*x4/2
 
@@ -417,7 +417,7 @@ contains
        ! Destroy azimuthal correlations due to 4-th jet momentum
        ! lying in xz-plane  (see JETSET manual, subroutine LU4ENT):
        phii=twopi*rn()
-       call PYROBO(1,N,0.,phii,0.,0.,0.) 
+       call PYROBO(1,N,0.,phii,0.,0.,0.)
 
        !...Rotate and boost the whole event to final system:
 
@@ -429,7 +429,7 @@ contains
           theta=acos(cost)
        case(2)
           phii = atan2(pcm(2),pcm(1))
-          theta = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))       
+          theta = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))
        end select
 
        call PYROBO(1,N, theta, phii, beta(1), beta(2), beta(3))
@@ -479,38 +479,38 @@ contains
   ! NAME
   ! subroutine GetBalancedKT(kTsquared, v)
   ! PURPOSE
-  ! Select 3 transverse momenta vec{kT}_i = (kT_x, kT_y)_i randomly 
+  ! Select 3 transverse momenta vec{kT}_i = (kT_x, kT_y)_i randomly
   ! so that for all three |vec{kT}_i| follows a Gauss distribution and
   ! additionally all three vectors sum up to zero.
   ! INPUTS
   ! * real :: kTsquared         -- width of the distribution
   ! OUTPUT
-  ! * real, dimension(3,2) :: v -- the three 2D vectors 
+  ! * real, dimension(3,2) :: v -- the three 2D vectors
   !*************************************************************************
 !   subroutine GetBalancedKT(kTsquared, v)
 !     use random, only: rnGauss
-! 
-!     real, intent(in) :: kTsquared 
+!
+!     real, intent(in) :: kTsquared
 !     real, dimension(3,2), intent(out) :: v
-! 
+!
 !     real :: sigma, sigmaS, sigmaD, Sx, Sy, Dx, Dy
-! 
+!
 !     sigma  = sqrt(3.0/4.0 * kTsquared)
 !     sigmaS = sqrt(2.0/3.0) * sigma
 !     sigmaD = sqrt(2.0)     * sigma
-! 
+!
 !     Sx = rnGauss(sigmaS, 0.0)
 !     Sy = rnGauss(sigmaS, 0.0)
 !     Dx = rnGauss(sigmaD, 0.0)
 !     Dy = rnGauss(sigmaD, 0.0)
-! 
+!
 !     v(1,1) = (Sx+Dx)/2
 !     v(1,2) = (Sy+Dy)/2
 !     v(2,1) = (Sx-Dx)/2
 !     v(2,2) = (Sy-Dy)/2
 !     v(3,1) = -(v(1,1)+v(2,1))
 !     v(3,2) = -(v(1,2)+v(2,2))
-! 
+!
 !   end subroutine GetBalancedKT
 
 

@@ -131,12 +131,12 @@ Module ParticleProperties
   !
   ! possible values:
   ! * if not set, default is '[path_To_Input]/DecayChannels.dat'
-  ! * if given, but does not contain '/': 
+  ! * if given, but does not contain '/':
   !   default is '[path_To_Input]/[FileNameDecayChannels]'
   ! * otherwise: filename is absolute, including path
   !
   ! NOTE
-  ! if you want to use the file 'XXX.dat' in the actual directory, 
+  ! if you want to use the file 'XXX.dat' in the actual directory,
   ! give it as './XXX.dat'
   !
   ! SOURCE
@@ -701,12 +701,12 @@ contains
     logical, parameter :: debug = .false.
 
     Select Case (DecayChannel)
-    Case(1:2,4,14)  ! Nucleon Pion, Nucleon eta , Lambda-Kaon, P11_1440 pion 
+    Case(1:2,4,14)  ! Nucleon Pion, Nucleon eta , Lambda-Kaon, P11_1440 pion
        ! All baryons are Spin=1/2 and parity +
        ! All mesons are Spin=0 and parity -
        ! Therefore angular momentum should always look like in nucleon-pion.
        L = hadron(partID)%AngularMomentum
-    Case(13) !N sigma                  !Nucleon 
+    Case(13) !N sigma                  !Nucleon
        !sigma has parity + , therefore if L(pion Nucleon) =j pm 1/2
        !                             then L(sigma Nucleon)=j mp 1/2
        ! since they must differ by one to conserve parity!
@@ -735,7 +735,7 @@ contains
        else
           write(*,*)' wrong decay channel of resonance: ', partID
           stop
-       end if 
+       end if
     Case(43:45) !s=-2 or charmed decay channels
        ! NEEDS TO BE IMPROVED
        L = 0

@@ -3,7 +3,7 @@
 ! NAME
 ! module NucD
 ! PURPOSE
-! This module includes routines to calculate nuclear radii for 
+! This module includes routines to calculate nuclear radii for
 ! neutrons and protons for all nuclei.
 ! AUTHOR
 ! Horst Lenske
@@ -14,7 +14,7 @@ module NucD
 
   PUBLIC :: DFS, nuclfit
 
-contains 
+contains
   !***************************************************************************
   !****s* NucD/DFS
   ! NAME
@@ -28,9 +28,9 @@ contains
   !
   ! A=Mass Number, AS=(N-Z)/A Asymmetry, \tau=1,2 for p,n
   !
-  ! Convention: 
-  ! * Protons: q = 1, 
-  ! * Neutrons: q = 2, 
+  ! Convention:
+  ! * Protons: q = 1,
+  ! * Neutrons: q = 2,
   ! * weighted Average: q = 3, with  e.g. R_av=(N*R_n+Z*R_p)/A
   ! etc.
   !
@@ -39,18 +39,18 @@ contains
   ! * integer, intent(in) :: Z      ! Charge
   !
   ! OUTPUT
-  ! * real, dimension(1:3),intent(out) :: r  
+  ! * real, dimension(1:3),intent(out) :: r
   !   -- radii
-  ! * real, dimension(1:3),intent(out) :: a  
+  ! * real, dimension(1:3),intent(out) :: a
   !   -- surface parameter
-  ! * real, dimension(1:3),intent(out) :: rho  
+  ! * real, dimension(1:3),intent(out) :: rho
   !   -- contains the central densities (from normalization to Z/N numbers)
-  ! * real, dimension(1:3),intent(out),optional :: RMS    
+  ! * real, dimension(1:3),intent(out),optional :: RMS
   !   -- contains the mass   rms-radii (obtained analytically)
-  ! * real, dimension(1:3),intent(out),optional :: RCHRG  
+  ! * real, dimension(1:3),intent(out),optional :: RCHRG
   !   -- contains the charge rms-radii (obtained analytically)
   !
-  ! Convention for indices: 
+  ! Convention for indices:
   ! * i=1: Protons
   ! * i=2: Neutrons
   ! * i=3: weighted Average with  e.g. R_av=(N*R_n+Z*R_p)/A
@@ -76,10 +76,10 @@ contains
     aMass=aMass_int
     Z=Z_int
 
-    pi=atan(1.d0)*4      
-    fpi=4*pi         
+    pi=atan(1.d0)*4
+    fpi=4*pi
     A1=Amass
-    an=a1-z 
+    an=a1-z
     MM=int(A1)
     NZ=int(Z)
     NN=MM-NZ
@@ -87,8 +87,8 @@ contains
     ad(3)=0.d0
     anz=z
     dnz=(an-z)/a1
-    a3=a1**(1./3.)                                 
-    !* Proton/Neutron Parameters      
+    a3=a1**(1./3.)
+    !* Proton/Neutron Parameters
     do  i=1,2
        rd(i) =a3*rnp(1,i)+rnp(2,i)+rnp(3,i)*dnz
        ad(i) =anp(1,i)+anp(2,i)*dnz
@@ -96,7 +96,7 @@ contains
        rhod(i)=0.75*anz/(rd(I)**3*pi  *(1.+(pi*ad(i)/rd(i))**2))
        !c <r^2>        of a Fermi distrib. (analytical)
        x=(pi*ad(i)/rd(i))**2
-       rms(i)=0.2d0*rd(i)**5*(1.d0+x/(0.3d0)*(1.+0.7d0*x))*  fpi*rhod(i)/anz               
+       rms(i)=0.2d0*rd(i)**5*(1.d0+x/(0.3d0)*(1.+0.7d0*x))*  fpi*rhod(i)/anz
        !c <r^2> NUMERICALLY:
        dx=0.2d0
        RX=5.d0*RD(i)
@@ -106,13 +106,13 @@ contains
        x=0.d0
        do n=1,NX
           x=x+dx
-          xsq=x*x  
+          xsq=x*x
           dd=rhod(i)/(1.d0+exp((x-rd(i))/ad(i)))
           DMSS=DMSS+dd*xsq
           DRMS=DRMS+dd*xsq*xsq
        enddo
-       rms(i)=DRMS/DMSS 
-       !c          
+       rms(i)=DRMS/DMSS
+       !c
        !c charge radius (xmsq are the <r^2> of p/n)
        !c
        if(i.eq.1)then
@@ -123,7 +123,7 @@ contains
           RCHRG(i)=-sqrt(abs(xmsq(i))/6.)
        end if
        rhod(i)=0.75*anz/(rd(i)**3*pi   *(1.+(pi*ad(i)/rd(i))**2))
-       !c                       
+       !c
        !c Prepare averaged R_0 and diffuseness:
        !c
        rd(3)=rd(3)+anz*rd(i)
@@ -131,10 +131,10 @@ contains
        RCHRG(3)=RCHRG(3)+anz*rch
        anz=an
     end do
-    !c                       
+    !c
     !c Averaged R_0 and diffuseness (do averaging):
     !c
-    RCHRG(3)=sqrt(RCHRG(3)/Z)      
+    RCHRG(3)=sqrt(RCHRG(3)/Z)
     rd(3)=rd(3)/a1
     ad(3)=ad(3)/a1
     rhod(3)=0.75*a1/(rd(3)**3*(1.+(pi*ad(3)/rd(3))**2)*pi)
@@ -143,12 +143,12 @@ contains
     rms(i)=0.2d0*rd(i)**5*(1.d0+x/(0.3d0)*(1.+0.7d0*x))*   fpi*rhod(i)/a1
     rms(3)=(Z*rms(i)+AN*rms(2))/Amass
     do i=1,3
-       rms(i)=sqrt(rms(i))    
+       rms(i)=sqrt(rms(i))
     end do
-    !c 
+    !c
     WRITE(6,6005)NZ,NN,MM,  &
          & (rd(I),i=1,3),(rd(i)/a3,i=1,3),(ad(I),i=1,3), &
-         & (RMS(i),i=1,3),(RCHRG(i),i=1,3),(rhod(I),I=1,3)   
+         & (RMS(i),i=1,3),(RCHRG(i),i=1,3),(rhod(I),I=1,3)
 
 6005 FORMAT(/28X,'Density Parameters from Systematics:'/  &
          & 28x,'   Protons','  Neutrons',3x,'Average'/ &
@@ -173,9 +173,9 @@ contains
 !     implicit double precision (a-h,o-z)
 !     !c
 !     dimension rnp(3,2),anp(2,2),xmsq(2)
-!     !c 
+!     !c
 !     data rnp/1.2490,-0.5401,-0.9582,  1.2131,-0.4415, 0.8931/
-!     !c 
+!     !c
 !     data anp/0.4899,-0.1236, 0.4686,0.0741/
 !     data xmsq/0.7429d0,-0.113d0/
 !     !c
@@ -195,9 +195,9 @@ contains
 !!$    implicit double precision (a-h,o-z)
 !!$    !c
 !!$    dimension rnp(3,2),anp(2,2),xmsq(2)
-!!$    !c 
+!!$    !c
 !!$    data rnp/1.2490,-0.5401,-0.9582,  1.2131,-0.4415, 0.8931/
-!!$    !c 
+!!$    !c
 !!$    data anp/0.4899,-0.1236, 0.4686,0.0741/
 !!$    data xmsq/0.7429d0,-0.113d0/
 !!$    !c
@@ -222,7 +222,7 @@ contains
   ! INPUTS
   ! * integer ma :: mass of nucleus in units of nucleon masses
   ! * integer mz :: charge of nucleus in units of e
-  ! RESULT 
+  ! RESULT
   ! * real mradi :: nuclear radius
   ! * real msurf :: nuclear surface parameter
   ! * real mdens :: nuclear maximal density
@@ -299,6 +299,3 @@ contains
 
 
 end module NucD
-
-
-

@@ -3,7 +3,7 @@
 ! NAME
 ! module resProd_lepton
 ! PURPOSE
-! * Evaluates cross sections for gamma N -> R  
+! * Evaluates cross sections for gamma N -> R
 ! * For details see the notes about this in the work of Oliver Buss
 !***************************************************************************
 module resProd_lepton
@@ -39,17 +39,17 @@ contains
   ! * For details see the notes about this in the work of Oliver Buss
   !
   ! INPUTS
-  ! * type(electronNucleon_event)  :: eN          -- underlying electron nucleon event 
+  ! * type(electronNucleon_event)  :: eN          -- underlying electron nucleon event
   ! * integer                      :: resID       -- resonance ID
   ! * integer, optional            :: processID
-  ! 
+  !
   ! OUTPUT
   ! * real                         :: bareMass    -- bare resonance mass
   ! * real, dimension(0:3)         :: pout        -- resonance momentum
   ! * real :: xSection     -- dsigma/dOmega/dE in units of mb/(GeV sr)
   !
   ! NOTES
-  ! * Enhances dSigmadOmega_fdE_f_resProd by allowing arbitrary electron 
+  ! * Enhances dSigmadOmega_fdE_f_resProd by allowing arbitrary electron
   !   momentum directions.
   !*************************************************************************
   function  dSigmadOmega_fdE_f_resProd_eN(eN,resID,pout, bareMass,processID) result(xSection)
@@ -85,10 +85,10 @@ contains
 
     ! ********** Kinematics ******************
 
-    ! Incoming nucleon 
+    ! Incoming nucleon
     pin=eN%nucleon%momentum
 
-    ! Initial lepton: Assume lepton in z-direction 
+    ! Initial lepton: Assume lepton in z-direction
     lin=eN%lepton_in%momentum
 
     !Outgoing lepton
@@ -98,20 +98,20 @@ contains
     pout=pin+q
 
     ! ********** Cross section ******************
-    
+
     process_ID=EM
 
     if(present(processID)) then
        process_ID=processID
        if(processID.eq.CC) process_ID=99   !needed in formfactors
     end if
-    
+
     leptonTens=l_munu_matrix(lin,lout)
     spec=specFunc(resID,en%nucleon%Charge,pout,en%nucleon%position,baremass)
     if(hadronTensor_R(pin,pout,resID,en%nucleon%Charge,process_ID,hadronTensor,baremass) ) then
        matrixElement_Squared=Contract( leptonTens, hadronTensor)
     else
-       matrixElement_Squared=0. 
+       matrixElement_Squared=0.
        xsection=0.
        return
     end if
@@ -143,14 +143,14 @@ contains
   ! function  sigma_pipi_res_vac(targetNuc,q) result(sigma)
   !
   ! PURPOSE
-  ! 
+  !
   ! Evaluates the resonance contribution to double-pion production in
   ! gamma N -> R -> N 2Pi scattering.
-  ! The return value is sigma in [mb]. Converts target nucleon first to 
+  ! The return value is sigma in [mb]. Converts target nucleon first to
   ! vacuum nucleon!!!
   ! dsigma/dOmega_electron/dE_electron/dOmega_pion
-  ! 
-  ! Assumptions: 
+  !
+  ! Assumptions:
   ! * No interferences among resonances.
   !
   ! INPUTS
@@ -172,7 +172,7 @@ contains
     real,dimension(0:3)               :: sigma_pipi
 
     type(particle)                    :: targetNuc_VAC     ! Target nucleon, converted to vacuum
-    
+
     targetNuc_vac=targetNuc
 
     targetNuc_vac%mass=mN
@@ -189,12 +189,12 @@ contains
   ! function  sigma_pipi_res(targetNuc,q) result(sigma)
   !
   ! PURPOSE
-  ! 
-  ! Evaluates the resonance contribution to double-pion production in 
+  !
+  ! Evaluates the resonance contribution to double-pion production in
   ! gamma N -> R -> N 2Pi scattering.
-  ! The return value is sigma in [mb]. 
-  ! 
-  ! Assumptions: 
+  ! The return value is sigma in [mb].
+  !
+  ! Assumptions:
   ! * No interferences among resonances.
   !
   ! INPUTS
@@ -316,8 +316,8 @@ contains
                clebsch(1,2)=clebsch(1,2)+c2
                clebsch(1,3)=clebsch(1,3)+c3
                clebsch(1,4)=clebsch(1,4)+c4
-             else if(((pionCharge_1.eq.1).and.(pionCharge_2.eq.0)).or.((pionCharge_1.eq.0).and.(pionCharge_2.eq.1)) & 
-                  & .or.((pionCharge_1.eq.-1).and.(pionCharge_2.eq.0)).or.((pionCharge_1.eq.0).and.(pionCharge_2.eq.-1))) then 
+             else if(((pionCharge_1.eq.1).and.(pionCharge_2.eq.0)).or.((pionCharge_1.eq.0).and.(pionCharge_2.eq.1)) &
+                  & .or.((pionCharge_1.eq.-1).and.(pionCharge_2.eq.0)).or.((pionCharge_1.eq.0).and.(pionCharge_2.eq.-1))) then
                clebsch(2,1)=clebsch(2,1)+c1
                clebsch(2,2)=clebsch(2,2)+c2
                clebsch(2,3)=clebsch(2,3)+c3
@@ -330,7 +330,7 @@ contains
               end if
            end do loop2
         end do loop1
-       
+
         !write(*,'(5E15.4)') sigma_tot, gamma_Out
        do i=1,4
           sigma(resID,1:3)=sigma(resID,1:3)+sigma_tot*gamma_out(i)*clebsch(1:3,i)
@@ -351,13 +351,13 @@ contains
   ! function  sigma_barMes_res_vac(targetNuc,q,IDbar,IDmes) result (sigma)
   !
   ! PURPOSE
-  ! 
+  !
   ! Evaluates the resonance contribution of gamma N -> R -> B m^0 scattering
   ! (where X may be a nucleon or Delta, while m^0 is a neutral meson).
-  ! The return value is sigma in [mb]. Converts target nucleon first to 
+  ! The return value is sigma in [mb]. Converts target nucleon first to
   ! vacuum nucleon!!!
-  ! 
-  ! Assumptions: 
+  !
+  ! Assumptions:
   ! * No interferences among resonances.
   !
   ! INPUTS
@@ -378,7 +378,7 @@ contains
     real                               :: sigma(lbound(IDMes,dim=1):ubound(IDMes,dim=1))
 
     type(particle)                     :: targetNuc_VAC     ! Target nucleon, converted to vacuum
-    
+
     targetNuc_vac=targetNuc
 
     targetNuc_vac%mass=mN
@@ -397,12 +397,12 @@ contains
   ! function  sigma_barMes_res(targetNuc,q,IDbar,IDmes) result(sigma_VM)
   !
   ! PURPOSE
-  ! 
+  !
   ! Evaluates the resonance contribution of gamma N -> R -> B m^0 scattering
   ! (where B may be a nucleon or Delta, while m^0 is a neutral meson).
   ! The return value is sigma in [mb]. The cross section is calculated separately
   ! for all mesons which are passed in IDmes.
-  ! 
+  !
   ! Assumptions:
   ! * No interferences among resonances.
   !
@@ -457,7 +457,7 @@ contains
         ! Branching ratios into V N
         gamma_Out = partialwidthBaryon(resID,mass,.false.,IDmes(i),IDbar)/fullWidth &
                     * clebschSquared(hadron(IDmes(i))%isospinTimes2/2.,hadron(IDbar)%isospinTimes2/2.,res_I,0.,res_Iz)
-       
+
         sigma(resID,i) = sigma_tot * gamma_out
       end do
 
@@ -474,12 +474,12 @@ contains
   ! function  dSdOmega_k_med_res(targetNuc,q,k,pf) result(sigma_dOmega)
   !
   ! PURPOSE
-  ! 
-  ! Evaluates the resonance contribution to pion production in 
+  !
+  ! Evaluates the resonance contribution to pion production in
   ! gamma R->eNPi scattering. The return value
-  ! is dsigma/dOmega(pion) in [mub/Sr]. 
-  ! 
-  ! Assumptions: 
+  ! is dsigma/dOmega(pion) in [mub/Sr].
+  !
+  ! Assumptions:
   ! * No interferences among resonances.
   ! * Isotropic decay of the resonance in its rest-frame.
   ! * In the vacuum.
@@ -494,7 +494,7 @@ contains
   ! * real,dimension(-1:1)   :: sigma_dOmega  -- dsigma/dOmega_pion; Index: PionCharge
   !*************************************************************************
   function  dSdOmega_k_med_res(targetNuc,q,k,pf,success) result(sigma_dOmega)
-    use constants, only : pi 
+    use constants, only : pi
     use degRad_conversion, only : degrees
     use particleDefinition
     use mediumDefinition, only: vacuum
@@ -552,7 +552,7 @@ contains
        do pionCharge=targetNuc%charge-1,targetNuc%charge
           sigma(pionCharge,resID)=sigma_tot*dOmegaCM_dOmega(pf_res,k(pionCharge,:),pf(pionCharge,:),success) &
                & *clebschSquared(1.,0.5,float(hadron(resId)%isoSpinTimes2)/2.,&
-               & real(pionCharge),real(targetNuc%charge)-1./2.-real(pionCharge)) 
+               & real(pionCharge),real(targetNuc%charge)-1./2.-real(pionCharge))
           if(.not.success) then
              write(*,*)
              write(*,*) "k=",k(pionCharge,:)
@@ -579,12 +579,12 @@ contains
   ! function dSdO_fdE_fdO_k_med_res_EN(eN,k,pf,processID) result(sigma_dOmega)
   !
   ! PURPOSE
-  ! 
-  ! Evaluates the resonance contribution to pion production in 
+  !
+  ! Evaluates the resonance contribution to pion production in
   ! eN->eR->eNPi scattering. The return value
-  ! is dsigma/dOmega(electron)/dE(electron)/dOmega(pion) in [mb/GeV/Sr**2]. 
-  ! 
-  ! Assumptions: 
+  ! is dsigma/dOmega(electron)/dE(electron)/dOmega(pion) in [mb/GeV/Sr**2].
+  !
+  ! Assumptions:
   ! * No interferences among resonances.
   ! * Isotropic decay of the resonance in its rest-frame.
   ! * In the vacuum.
@@ -594,24 +594,24 @@ contains
   ! * type(electronNucleon_event) :: eN  -- electron-nucleon scattering event
   ! * real, dimension (0:3)       :: pf  -- Outgoing nucleon 4-momentum
   ! * real, dimension (0:3)       :: k   -- Outgoing pion 4-momentum
-  ! * integer, optional           :: processID -- See module leptonicID for 
+  ! * integer, optional           :: processID -- See module leptonicID for
   !   usage
   ! * integer, optional           :: pionNucleonSystem --
-  !   If this parameter is set to 1, then we evaluate dOmega_pion in the 
-  !   calculation frame. If it's 2 then it is evaluated 
+  !   If this parameter is set to 1, then we evaluate dOmega_pion in the
+  !   calculation frame. If it's 2 then it is evaluated
   !   in the cm frame of the outgoing pion  and nucleon.
   ! OUTPUT
-  ! * real,dimension(-1:1):: sigma_dOmega -- 
+  ! * real,dimension(-1:1):: sigma_dOmega --
   !   dsigma/dOmega_electron/dE_electron/dOmega_pion; Index: PionCharge
-  ! 
+  !
   ! NOTES
-  ! * Enhances dSdO_fdE_fdO_k_med_res by allowing arbitrary electron 
+  ! * Enhances dSdO_fdE_fdO_k_med_res by allowing arbitrary electron
   !   momentum directions
   !*************************************************************************
   function  dSdO_fdE_fdO_k_med_res_EN(eN,k,pf,processID_IN,pionNucleonSystem) result(sigma_dOmega)
     use particleDefinition
     use particleProperties      , only : hadron
-    use constants               , only : pi 
+    use constants               , only : pi
     use mediumDefinition        , only : vacuum
     use idTable                 , only : nres, nucleon,pion
     use baryonWidthMedium       , only : partialWidthBaryonMedium, WidthBaryonMedium
@@ -640,7 +640,7 @@ contains
     real                  :: sigma_tot
     real                  :: baremass
     logical               :: piN_inCM_frame
-    
+
 
     if(present(pionNucleonSystem)) then
        piN_inCM_frame=(pionNucleonSystem.eq.2)
@@ -649,7 +649,7 @@ contains
     if (sqrt(Dot_Product(eN%nucleon%position,eN%nucleon%position))<=50.) then
        write(*,*) 'In medium not yet implemented in dSdO_fdE_fdO_k_med_res_EN. STOP!'
        write(*,*) 'position=',eN%nucleon%position
-       call write_electronNucleon_event(eN,.FALSE.,.FALSE.) 
+       call write_electronNucleon_event(eN,.FALSE.,.FALSE.)
        call TRACEBACK()
        stop
     end if
@@ -660,7 +660,7 @@ contains
     if(present(processID_IN)) processID=processID_IN
 
     resIDLoop: do resID=nucleon+1,nucleon+nres
-       sigma_tot=dSigmadOmega_fdE_f_resProd_eN(eN,resID,pf_res,baremass,processID) 
+       sigma_tot=dSigmadOmega_fdE_f_resProd_eN(eN,resID,pf_res,baremass,processID)
 
        mass=bareMass
 
@@ -681,7 +681,7 @@ contains
        do pionCharge=eN%nucleon%charge-1,eN%nucleon%charge
           sigma(pionCharge,resID)=sigma_tot *   &
                & clebschSquared(1.,0.5,hadron(resId)%isoSpinTimes2/2.,               &
-               & real(pionCharge),real(eN%nucleon%charge)-1/2.-real(pionCharge)) 
+               & real(pionCharge),real(eN%nucleon%charge)-1/2.-real(pionCharge))
        end do
     end do resIDLoop
 
@@ -708,7 +708,7 @@ contains
     real :: kcm
     real, dimension (0:3),intent(in) :: k,pf,pf_res
     logical, optional :: success
-    
+
     if(present(success)) success=.true.
     kcm= pCM(abs4(pf_res), mN, mPi)
     if (kcm.lt.1E-10) then
@@ -750,19 +750,19 @@ contains
   ! function sigma_resProd(targetNucleon,resID,q,baremass) result(xSection)
   !
   ! PURPOSE
-  ! 
+  !
   ! Evaluates the cross section for gamma N -> R scattering. The return value
-  ! is sigma in [mb]. 
-  ! 
-  ! Assumptions: 
+  ! is sigma in [mb].
+  !
+  ! Assumptions:
   ! * No interferences among resonances.
   !
   ! INPUTS
   ! * type(particle)         :: targetNuc -- Target nucleon
   ! * real, dimension (0:3)  :: q         -- Virtual photon 4-momentum
-  ! * integer                :: resId     -- ID of resonance 
+  ! * integer                :: resId     -- ID of resonance
   ! OUTPUT
-  ! *  real                  :: baremass  -- 
+  ! *  real                  :: baremass  --
   !    bare mass of resonance (mass without scalar potential)
   ! *  real                  :: xSection  -- sigma
   !*************************************************************************
@@ -804,7 +804,7 @@ contains
 
     ! ********** Cross section ******************
 
-    SPEC=specFunc(resID,targetNucleon%Charge,pout,targetNucleon%position,baremass_res)    
+    SPEC=specFunc(resID,targetNucleon%Charge,pout,targetNucleon%position,baremass_res)
 
     if (hadronTensor_R(pin,pout,resID,targetNucleon%Charge,EM,hadronTensor,baremass_res) ) then
        matrixElement_Squared=1./2.*electronChargeSQ*(-hadronTensor(0,0)+hadronTensor(1,1)+hadronTensor(2,2)+hadronTensor(3,3))
@@ -818,7 +818,7 @@ contains
        xsection=0.
        if (debug_this) then
           write(*,'(A,E15.4)') 'Sigma=',xsection
-          write(*,*) 
+          write(*,*)
        end if
        return
     end if
@@ -843,9 +843,9 @@ contains
     end if
 
     if (debug_this) then
-       write(*,'(A,E15.4)') 'Sigma=',xsection 
+       write(*,'(A,E15.4)') 'Sigma=',xsection
        write(77,'(3E15.4)') q(0),xsection,baremass_res
-       write(*,*) 
+       write(*,*)
     end if
   end function sigma_resProd
 

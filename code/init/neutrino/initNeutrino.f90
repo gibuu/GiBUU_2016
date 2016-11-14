@@ -124,7 +124,8 @@ module initNeutrino
   ! * 21 = BNB numu
   ! * 22 = BNB numubar
   ! * 23 = NOvA ND
-  integer, parameter :: numberOfExperiments=23
+  ! * 24 = T2K SK FD
+  integer, parameter :: numberOfExperiments=24
   !***************************************************************************
 
 
@@ -135,25 +136,25 @@ module initNeutrino
         "BNL                    ", "MiniBooNE barnu        ", &
         "MINOS nu numode        ", "MINOS barnu numode     ", &
         "NOvA FD                ", &
-        "T2K OffAxis 2.5deg     ", "uniform distribution   ", &
+        "T2K OffAxis 2.5deg ND  ", "uniform distribution   ", &
         "MINOS nu barnumode     ", "MINOS barnu barnumode  ", &
         "MINERvA nu numode      ", "MINERvA barnu barnumode", &
         "LBNE nu                ", "LBNE barnu             ", &
         "LBNO nu numode         ", "NOMAD                  ", &
         "BNB nue                ", "BNB nuebar             ", &
         "BNB numu               ", "BNB numubar            ", &
-        "NOvA ND                "/)
+        "NOvA ND                ", "T2K SK FD              "/)
 
 
   real, dimension(0:numberOfExperiments), parameter :: osclength = &
-  (/ 0., 0.541, 0., 250., 0., 0.541, 735., 735., 810., 295., 0., 735., 735., &
-     0.5, 0.5, 1300., 1300., 2300., 0.6262,0.,0.,0.,0.,0. /)
+  (/ 0., 0.541, 0., 250., 0., 0.541, 735., 735., 810., 0., 0., 735., 735., &
+     0.5, 0.5, 1300., 1300., 2300., 0.6262,0.,0.,0.,0.,0.,295. /)
   ! oscillation length for various experiments in kilometers
 
   logical, dimension(0:numberOfExperiments), parameter:: OSC = &
   (/ .FALSE.,.FALSE.,.FALSE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,&
-     .TRUE.,.FALSE.,.TRUE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,.TRUE.,&
-     .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE. /)
+     .FALSE.,.FALSE.,.TRUE.,.TRUE.,.FALSE.,.FALSE.,.TRUE.,.TRUE.,.TRUE.,.TRUE.,&
+     .FALSE.,.FALSE.,.FALSE.,.FALSE.,.FALSE.,.TRUE. /)
   ! OSC is true for oscillation experiments, false otherwise
   !
 
@@ -698,9 +699,9 @@ contains
              case (7)
                 flux_enu=MINOSenergyBARNU_fluxNU()
              case (8)
-                flux_enu=NOVAenergyNU_FD(Flavor_ID,Process_ID)
+                flux_enu=NOVAenergy_FD(Flavor_ID,Process_ID)
              case (9)
-                flux_enu=T2K_ND_numu_energy()
+                flux_enu=T2Kenergy_ND(Flavor_ID,Process_ID)
              case (10)
                 flux_enu=uniformFlux()
              case (11)
@@ -728,7 +729,7 @@ contains
              case (22)
                 flux_enu=BNBenergyNUmubar()
              case (23)
-                flux_enu=NOVAenergyNU_ND(Flavor_ID,Process_ID)
+                flux_enu=NOVAenergy_ND(Flavor_ID,Process_ID)
              case default
                 write (*,*) 'Experiment does not exist'
                 stop
@@ -1411,7 +1412,7 @@ contains
            & 30.0, 30.0, 30.0, 30.0, &  ! MINERvA-numu, MINERvA-antinumu,LBNE-nu,LBNE-barnu
            & 30.0, 300.0,      &        ! LBNO-nu, NOMAD
            & 7.5, 7.5, 7.5, 7.5, &      ! BNB-nue,BNB-nuebar,BNBnumu,BNBnumubar
-           & 15.      /)                ! NOvA
+           & 15., 10. /)                ! NOvA, T2K
 
       !    numbers given in array nuMaxArr are upper boundaries for energy-transfer
       !---------------------------------------------------------------------
@@ -1692,6 +1693,16 @@ contains
          call get_xsection_namelist(XsectionMode=nuXsectionMode,Genu=numax)
       end if
 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!
+! In these 2D histograms the last 3 2d arrays determine the binning.
+! For example, in the EprimeCost histogram the input
+! (/0.,-1./),(/numax,1.0/),(/0.01,0.1/) stands for 0 < Eprime < numax with a
+! binwidth of 0.01 and -1 cost < +1 with a bindwidth of 0.1
+!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       write(*,*) 'In initialization of the histograms  for absorption xsec:'
       write(*,*) '    numax=', numax
       numax = max(numax,1e-10)

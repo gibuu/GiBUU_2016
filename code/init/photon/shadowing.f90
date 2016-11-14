@@ -42,7 +42,7 @@ contains
   ! * real,dimension(4)   :: shadfac -- the shadowing factors for
   !   rho0, omega, phi, J/psi
   ! NOTES
-  ! * cf. PyVP[ScaleVMD]:  Pythia stores the inverse of the couplings, 
+  ! * cf. PyVP[ScaleVMD]:  Pythia stores the inverse of the couplings,
   !   therefore f_V^2/4pi -> f_V^2/4pi / shadfac
   ! * cf. Th.Falter, PhD thesis, p.88ff, p117ff
   ! * the underlying assumptions seem not to hold for small A (i.e. He):
@@ -76,7 +76,7 @@ contains
     r=sqrt(position(1)**2+position(2)**2+position(3)**2)
     cost = position(3)/(r+1e-20)
 
-    kgamma=sqrt(qsq2+egamma**2)     
+    kgamma=sqrt(qsq2+egamma**2)
 
     do i=1,nvec
        kvsq=egamma**2-mv(i)**2
@@ -145,7 +145,7 @@ contains
   ! real function pathint(targetNuc,r,cost,zprime)
   !
   ! PURPOSE
-  ! calculates \int_{z'}^z\rho(\vec b,z'')dz'' 
+  ! calculates \int_{z'}^z\rho(\vec b,z'')dz''
   ! with z=r*cos(\theta)
   !
   ! INPUTS
@@ -158,23 +158,23 @@ contains
   real function pathint(targetNuc,r,cost,zprime)
     type(tNucleus), pointer :: targetNuc
     real,intent(in) :: r,cost,zprime
-    
+
     integer,parameter :: nr=101,ncost=51
     real,   parameter :: dr=0.1,dcost=0.02
-    
+
     integer :: ir,izp,icost
-    
+
     real,save :: intes(0:nr,-nr:nr,-ncost:ncost)=0.
     logical,save :: initFlag=.true.
-    
+
     if(initFlag) call inipath()
-    
+
     ir=min(nint(r/dr),nr)
     izp=max(min(nint(zprime/dr),nr),-nr)
     icost=nint(cost/dcost)
-    
+
     pathint=intes(ir,izp,icost)
-    
+
 
   contains
     !***********************************************************************

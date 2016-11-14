@@ -46,13 +46,13 @@ contains
   ! * real :: Q2   -- the Q2 value
   ! * real :: eps  -- the epsilon value of the photon
   ! * logical, dimension(4), OPTIONAL :: useVM -- true, if the corresponding
-  !   meson should be considered; i.e. if false, the XS of the VM is set to 0 
+  !   meson should be considered; i.e. if false, the XS of the VM is set to 0
   !
   ! OUTPUT
-  ! * real, dimension(0:4) :: sigma -- the XS 
+  ! * real, dimension(0:4) :: sigma -- the XS
   !
   ! NOTES
-  ! * Attention, we respect the vacuum thresholds, i.e. W>0.938+m_V. 
+  ! * Attention, we respect the vacuum thresholds, i.e. W>0.938+m_V.
   !   This should be improved!
   ! * Ref: C.Friberg, T.Sjöstrand, JHEP 09 (2000) 010
   !        sigma^{Vp}       : eq. (2.15)
@@ -78,7 +78,7 @@ contains
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     real,dimension(4),parameter :: CXSa = (/ 13.63, 13.63, 10.01, 0.970 /)
     real,dimension(4),parameter :: CXSb = (/ 31.79, 31.79, -1.52,-0.146 /)
 !     real,dimension(4),parameter :: CmV  = (/ 0.76850, 0.78194, 1.01940, 3.09688 /) ! Masses of Mesons
@@ -130,11 +130,11 @@ contains
     do i=1,4
        XS(i,1) = alpha*XS_VP(i)/CfV(i) * Dipole(i)*LongEnh(i) ! m_V
        XS(i,2) = alpha*XS_VP(i)/CfV(i) * Dipole(1)*LongEnh(1) ! m_rho
-       
+
        XS(0,1) = XS(0,1) + XS(i,1)
        XS(0,2) = XS(0,2) + XS(i,2)
     enddo
-    
+
 !...calculate VMD cross sections with PYTHIA formfactor
     sigma(0)=XS(0,2)*(W2/(W2+Q2))**3*1000. !mub
     test=0.
@@ -142,12 +142,12 @@ contains
        sigma(i)=XS(i,2)*(W2/(W2+Q2))**3*1000. !mub
        test=test+sigma(i)
     end do
-    
+
     if(abs(test-sigma(0)).gt.1.e-5) then
-       write(*,*) 'problems in vmd',sigma(0),test 
+       write(*,*) 'problems in vmd',sigma(0),test
        stop
     end if
-    
+
     return
   end subroutine vmd
 
@@ -157,7 +157,7 @@ contains
   ! NAME
   ! subroutine gvmd(srts,Q2,eps,siggvmd)
   ! PURPOSE
-  ! calculate the GVMD cross sections 
+  ! calculate the GVMD cross sections
   !***************************************************************************
   subroutine gvmd(srts,Q2,eps,siggvmd,useVM)
     use parBarMes_HighEnergy
@@ -172,26 +172,26 @@ contains
     real :: ea,formfac,kv,sum
     real,dimension(0:1) :: sum1,k
     real,dimension(4) :: eq2
-    
+
     eq2(1)=0.5*(5./9.) !(u+d)/2
     eq2(2)=0.5*(5./9.) !(u-d)/2
     eq2(3)=1./9. !s
     eq2(4)=4./9. !c
-    
+
     k(0)=0.5
     k(1)=1.9*(srts**2/1e06)**epsilon
     kv=0.4
-    
+
     ea=eps*a
     kv=kv**2
-    
+
     formfac=(srts**2/(Q2+srts**2))**3
-    
+
     do i=0,1
        k(i)=k(i)**2
        sum1(i)=((3+2*ea)*Q2**2+24*(1.+ea)*Q2*k(i)+48*k(i)**2)/(Q2+4*k(i))**3
     end do
-    
+
     sum=alphaQED/pi*4./3.*kv*(sum1(0)-sum1(1))*formfac
     call paramBarMesHE_v(srts,sigvec)
 
@@ -199,13 +199,13 @@ contains
        if (i>1 .and. srts<mN+mV(i)) sigvec(i) = 0.0 ! vacuum thresholds
        if (present(useVM).and.(.not.(useVM(i))))  sigvec(i) = 0.0
     enddo
-    
+
     siggvmd(0)=0.
     do i=1,4
        siggvmd(i)=eq2(i)*sum*sigvec(i)*1000. !mub
        siggvmd(0)=siggvmd(0)+siggvmd(i)
     end do
-    
+
   end subroutine gvmd
 
 
@@ -214,17 +214,17 @@ contains
   ! NAME
   ! subroutine eleformf(srts,Q2,eps,formfac)
   ! PURPOSE
-  ! calculate a Formfactor 
+  ! calculate a Formfactor
   !***************************************************************************
 !   subroutine eleformf(srts,Q2,eps,formfac)
 !     real,             intent(in)  :: srts,Q2,eps
 !     real,dimension(4),intent(out) :: formfac
-!     
+!
 !     real :: s
-!     
+!
 !     s=srts**2
 !     formfac = (1.0 + eps * a*4*mv**2*Q2/(mv**2+Q2)**2) * (mv**2/(Q2+mv**2))**2 * (s/(Q2+s))**n
-! 
+!
 !   end subroutine eleformf
 
 

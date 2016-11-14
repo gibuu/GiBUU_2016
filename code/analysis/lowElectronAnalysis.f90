@@ -315,7 +315,7 @@ contains
     call event_sigma(events,     sigma,     (numberOfCalls.eq.1), numberOfCalls, identifier=energyLabel)
     call event_sigma(events_res, sigma_res, (numberOfCalls.eq.1), numberOfCalls, identifier=energyLabel)
     call event_sigma(events_bg,  sigma_bg,  (numberOfCalls.eq.1), numberOfCalls, identifier=energyLabel)
-    
+
     ! final states with 0 pions and 2 pions  (title 0pions for historical reasons)
     call event_sigma_0pions(events,     sigma_0pions,    (numberOfCalls.eq.1), numberOfCalls, identifier=energyLabel)
     call event_sigma_0pions(events_res, sigma_0pions_res,(numberOfCalls.eq.1), numberOfCalls, identifier=energyLabel)
@@ -397,7 +397,7 @@ contains
        close(111)
 
        call writeOriginXS( 1.0/float(numberOfCalls) )
-       
+
     end if
 
     ! (3) Clear the list "events" to clear the memory

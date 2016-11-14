@@ -7,38 +7,38 @@
 ! every (perturbative) particle from the particle vector
 !
 ! Every collision type is stored in a list of type tPreEvList
-! (In fact 1-Body, 2-Body and 3-Body collisions are stored in three 
-! independent lists). 
+! (In fact 1-Body, 2-Body and 3-Body collisions are stored in three
+! independent lists).
 ! We identify the collision type by its position in the list. Additionally
 ! we encode the "list" by modifying the iEntry value:
 ! * 1-Body: iEntry = iEntry     (range: 1 ... 10000)
 ! * 2-Body: iEntry = -iEntry
-! * 3-Body: iEntry = iEntry + 10000 
+! * 3-Body: iEntry = iEntry + 10000
 ! Therefore for every collision type the (modified) iEntry represents an
-! unique code number. 
+! unique code number.
 !
-! For each particle in the perturbative particle vector we store now in an 
-! additional array the code numbers of the corresponding collition types. 
+! For each particle in the perturbative particle vector we store now in an
+! additional array the code numbers of the corresponding collition types.
 ! This array has the same dimensions as the perturbative particle vector +
 ! one additional dimension -- the subsequent collision type codes.
 !
 ! In a collision we have therefore to delete the array entry of the incoming
-! perturbative particle and to create for every final state particle an 
-! entry in the array which has one more entry in the third dimension than 
+! perturbative particle and to create for every final state particle an
+! entry in the array which has one more entry in the third dimension than
 ! the array of the incoming particle. (We use the information
 ! from insertion/setIntoVector, where the particles were inserted.)
 !
-! Doing a Garbage Collection on the perturbative particle vector also 
+! Doing a Garbage Collection on the perturbative particle vector also
 ! reshuffles the entries. This has to be respected.
 !
-! On could think of enhancing the actual stored information by maybe also 
+! On could think of enhancing the actual stored information by maybe also
 ! storing...:
-! * the HiEnergy type of the collision (this would be an additional 
+! * the HiEnergy type of the collision (this would be an additional
 !   field in the PreEvListEntry)
 ! * the time of the collision (this would be an additional field in
 !   CollHistEntry)
 !
-! 
+!
 !***************************************************************************
 
 module CollHistory
@@ -87,13 +87,13 @@ module CollHistory
 
   logical, parameter :: verb = .false. ! flag for debugging verbosity
 
-  
+
   !*************************************************************************
   !****ig* CollHistory/DoCollHistory
   ! SOURCE
   !
   logical, save :: DoCollHistory = .false.
-  ! 
+  !
   ! PURPOSE
   ! Flag to switch on/off the whole Collision History machinery.
   !
@@ -131,14 +131,14 @@ contains
   logical function CollHist_GetDoCollHistory()
     CollHist_GetDoCollHistory = DoCollHistory
   end function CollHist_GetDoCollHistory
-  
+
 
   !*************************************************************************
   !****is* CollHistory/DoInit
   ! NAME
   ! subroutine DoInit
   ! PURPOSE
-  ! Do the init of this module. 
+  ! Do the init of this module.
   ! INPUTS
   ! * via namelist "collHistory"
   ! OUTPUT
@@ -225,7 +225,7 @@ contains
   ! OUTPUT
   ! * (none)
   !
-  ! NOTES 
+  ! NOTES
   ! The lists of collisions types are unchanged.
   !*************************************************************************
   subroutine CollHist_ClearArray()
@@ -294,7 +294,7 @@ contains
 
     nPartIn = size(preEvIn)
     nPartOut = size(preEvOut)
-    
+
 !    write(*,*) 'nPartIn,nPartOut:',nPartIn,nPartOut
 !    call TRACEBACK(STRING="just write stack:",USER_EXIT_CODE=-1)
 
@@ -306,20 +306,20 @@ contains
     select case(nPartIn)
     case (1)
        call PreEvList_INSERT(CollList1,Entry,iEntry)
-       
+
        if (iEntry.eq.10000) then
           write(*,*) 'Problems in CollHist_UpdateHist: iEntry=10000'
           stop
        endif
-       
+
     case (2)
        call PreEvList_INSERT(CollList2,Entry,iEntry)
        iEntry = -iEntry
-       
+
     case (3)
        call PreEvList_INSERT(CollList3,Entry,iEntry)
        iEntry = iEntry+10000
-       
+
     case default
        write(*,*) 'something fishy'
        stop
@@ -329,7 +329,7 @@ contains
        write(*,*) '...iEntry = ',iEntry
        call PreEvList_PrintEntry(6,Entry,1.0,20,iBreak=nPartIn,sBreak="===>")
     endif
-    
+
 
     ! Update the histories of the final particles:
 
@@ -364,7 +364,7 @@ contains
     end do
 
     Deallocate(DummyEntry%Entries)
-    
+
 
   end subroutine CollHist_UpdateHist
 
@@ -378,7 +378,7 @@ contains
   ! The information of (iEns,iPart2) has to be moved to (iEns,iPart1)
   ! INPUTS
   ! * integer :: iEns,iPart1,iPart2 -- ensemble and particle position of
-  !   enties to move 
+  !   enties to move
   ! OUTPUT
   ! * internal arrays modified.
   !*************************************************************************
@@ -437,14 +437,14 @@ contains
   ! Write the history of a specific particle to a file
   ! INPUTS
   ! * integer :: ifile -- file to be used
-  ! * integer :: iEns, iPart -- coordinates of the particle in the particle 
+  ! * integer :: iEns, iPart -- coordinates of the particle in the particle
   !   vector
   ! OUTPUT
   ! * information written to file
   !*************************************************************************
   subroutine CollHist_WriteHistParticle(iFile,iEns,iPart)
     use PreEvList, only: PreEvList_PrintEntry
-    
+
     integer, intent(in) :: iFile,iEns,iPart
 
     integer :: i, EntrySize, iEntry, nIn
@@ -477,7 +477,7 @@ contains
        endif
 
        call PreEvList_PrintEntry(iFile,V,1.0,20,iBreak=nIn,sBreak="===>",iLN=i)
-       
+
     end do
 
     write(*,*) 'Classify: ',CollHist_ClassifyHist(iEns,iPart)
@@ -493,7 +493,7 @@ contains
   ! INPUTS
   ! * integer :: iEntry -- history code
   ! OUTPUT
-  ! * type(tPreEvListEntry) :: V -- The PreEvList 
+  ! * type(tPreEvListEntry) :: V -- The PreEvList
   ! * integer :: nIn -- number of incoming particles (1-Body,2-Body,3-Body)
   ! * function value: .true. on success
   !*************************************************************************
@@ -527,7 +527,7 @@ contains
   ! PURPOSE
   ! ...
   ! INPUTS
-  ! * integer :: iEns, iPart -- coordinates of the particle in the particle 
+  ! * integer :: iEns, iPart -- coordinates of the particle in the particle
   !   vector
   ! OUTPUT
   ! * function value
@@ -552,7 +552,7 @@ contains
     else
        EntrySize = 0
     endif
-    
+
     select case (EntrySize)
     case (0)
        return
@@ -569,7 +569,7 @@ contains
        end select
 
        CollHist_ClassifyHist = iClass(1)
-       
+
     case DEFAULT
        iEntry = CollHistArray(iEns,iPart)%Entries(1)
        flag = CollHist_GetV(iEntry, V(1), nIn)
@@ -610,7 +610,7 @@ contains
     logical :: isPi
 
     CollHist_Classify1Body = 0 ! not charcterized
-    
+
     isPi = .false.
     do i=2,size(V%preE)
        if (V%preE(i)%ID .eq. 101) isPi = .true.
@@ -642,7 +642,7 @@ contains
     logical :: isPi
 
     CollHist_Classify2Body = 0 ! not charcterized
-    
+
     isPi = .false.
     do i=3,size(V%preE)
        if (V%preE(i)%ID .eq. 101) isPi = .true.

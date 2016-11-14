@@ -66,7 +66,7 @@ module eN_event
   !***************************************************************************
   !****g* eN_event/selectFrame
   ! SOURCE
-  !       
+  !
   integer,  save :: selectFrame = 1
   !
   ! PURPOSE
@@ -82,7 +82,7 @@ module eN_event
   !***************************************************************************
   !****g* eN_event/restingNucleon
   ! SOURCE
-  !    
+  !
   logical, save :: restingNucleon = .true.
   !
   ! PURPOSE
@@ -123,7 +123,7 @@ contains
     if (selectFrame.ne.1) then
        call notInRelease("selectFrame != 1")
     end if
-    
+
     select case (selectFrame)
     case (0)
        write(*,*) 'selectFrame = ',selectFrame,'  = doNOT'
@@ -153,7 +153,7 @@ contains
   !****s* eN_event/eNev_SetProcess
   ! NAME
   ! subroutine eNev_SetProcess(e, idProcess,idFamily)
-  ! 
+  !
   ! PURPOSE
   ! Set the process and the lepton family for the initialisation
   !
@@ -187,10 +187,10 @@ contains
     case(-1,1) !=== EM
 
        call setToDefault(e%lepton_in)
-       
+
        e%lepton_in%ID = arrID1(idFamily)
        e%lepton_in%mass = arrMass(idFamily)
-       
+
        if (idProcess.gt.0) then
           e%lepton_in%charge = -1
        else
@@ -203,7 +203,7 @@ contains
        call setToDefault(e%boson)
        e%boson%ID = photon
 
-    case(-2,2) !=== CC 
+    case(-2,2) !=== CC
 
        call setToDefault(e%lepton_in)
        e%lepton_in%ID = arrID2(idFamily)
@@ -243,7 +243,7 @@ contains
     case default
        write(*,*) 'idProcess=',idProcess
        call TRACEBACK('wrong idProcess!')
-       
+
     end select
 
     ! set the target: (here only for a default free nucleon)
@@ -276,7 +276,7 @@ contains
   !****s* eN_event/eNev_init_sWQ
   ! NAME
   ! subroutine eNev_init_sWQ(e, sqrts,W,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given sqrts,W,Q2.
@@ -297,7 +297,7 @@ contains
   !****s* eN_event/eNev_init_sxQ
   ! NAME
   ! suroutine eNev_init_sxQ(e, sqrts,xB,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given sqrts,xB,Q2.
@@ -318,13 +318,13 @@ contains
   !****s* eN_event/eNev_init_snQ
   ! NAME
   ! suroutine eNev_init_snQ(e, sqrts,nu,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given sqrts,nu,Q2.
   ! The target particle is a free nucleon.
   ! NOTES
-  ! * This is the one routine from all the same ones labeled by "..._s?Q", 
+  ! * This is the one routine from all the same ones labeled by "..._s?Q",
   !   which does the actual work
   ! * The used kinematical relations can be derived via four-momenta squared:
   !     m^2 = (p_out)^2 = (p_in-q)^2 = m^2 - Q^2 - 2 p0 q0 + 2 pZ qZ
@@ -369,16 +369,16 @@ contains
     ! calculate W etc...
     e%QSquared = -abs4Sq(e%boson%momentum)
     e%W = abs4(e%boson%momentum+e%nucleon%momentum)
-    
+
     ! calculate W_free:  inv. mass for nucleon without potential
 
     e%nucleon_free      = e%nucleon
 
-    e%W_free = abs4(e%boson%momentum+e%nucleon_free%momentum)  
-    
+    e%W_free = abs4(e%boson%momentum+e%nucleon_free%momentum)
+
     ! calculate Wrec = inv. Mass for nucleon at rest
     e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)
-    
+
     flagOK = .true.
   end subroutine eNev_init_snQ
 
@@ -386,7 +386,7 @@ contains
   !****s* eN_event/eNev_init_eWQ
   ! NAME
   ! subroutine eNev_init_eWQ(e, eps,W,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given eps,W,Q2.
@@ -407,7 +407,7 @@ contains
   !****s* eN_event/eNev_init_exQ
   ! NAME
   ! subroutine eNev_init_exQ(e, eps,xB,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given eps,xB,Q2.
@@ -428,7 +428,7 @@ contains
   !****s* eN_event/eNev_init_enQ
   ! NAME
   ! subroutine eNev_init_enQ(e, eps,nu,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given eps,nu,Q2.
@@ -450,7 +450,7 @@ contains
   !****s* eN_event/eNev_init_BWQ
   ! NAME
   ! subroutine eNev_init_BWQ(e, Ebeam,W,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given Ebeam,W,Q2.
@@ -473,7 +473,7 @@ contains
   !****s* eN_event/eNev_init_BnQ
   ! NAME
   ! subroutine eNev_init_BnQ(e, Ebeam,nu,Q2, flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! given Ebeam,nu,Q2.
@@ -491,12 +491,12 @@ contains
     s = 2*M(2)*Ebeam +M2(1)+M2(2)
     call eNev_init_snQ(e, sqrt(s),nu,Q2, flagOK)
   end subroutine eNev_init_BnQ
-  
+
   !***************************************************************************
   !****s* eN_event/eNev_init_Target
   ! NAME
   ! subroutine eNev_init_Target(e,pTarget,flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)".
   ! The actual purpose of this routine is to replace the target by the given
@@ -511,7 +511,7 @@ contains
   !
   ! NOTES
   ! You may call this routine, if all momenta are set. If yo do not give a
-  ! new target nucleon, the nucleon as given in e0 is used. 
+  ! new target nucleon, the nucleon as given in e0 is used.
   !***************************************************************************
   subroutine eNev_init_Target(e,pTarget,flagOK)
     use minkowski, only : abs4,abs4Sq
@@ -544,7 +544,7 @@ contains
 
     if (e%W .lt. 0.0) then
        if(verbose) then
-          write(*,*) 
+          write(*,*)
           write(*,*) 'PROBLEM: eNev_init_Target: W^2 < 0'
           write(*,*) e%boson%momentum
           write(*,*) e%nucleon%momentum
@@ -574,7 +574,7 @@ contains
 
     phi = atan2(e%pcm(2),e%pcm(1))
     theta = atan2(sqrt(e%pcm(1)**2+e%pcm(2)**2),e%pcm(3))
-    
+
     pB = e%lepton_in%momentum
 
     call lorentz(e%betacm,pB)
@@ -584,7 +584,7 @@ contains
 
 !    write(*,'(A,1P,4e13.5)') 'pB (init)',pB
 !    write(*,*) 'e%phiLepton = ',e%phiLepton
-    
+
     ! calculate W_free:
 
     Select case(selectFrame)
@@ -613,7 +613,7 @@ contains
   !****s* eN_event/eNev_init_nuStep1
   ! NAME
   ! subroutine eNev_init_nuStep1(e,pTarget)
-  ! 
+  !
   ! PURPOSE
   ! Step 1 of "neutrino init": Set the target nucleon.
   ! In Step 0 we have set the type of incoming and outgoing lepton,
@@ -637,7 +637,7 @@ contains
   !****s* eN_event/eNev_init_nuStep2
   ! NAME
   ! subroutine eNev_init_nuStep2(e,Enu,IP,flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Step 2 of "neutrino init": Set the kinematic of the incoming neutrino.
   ! Additionaly, it is checked whether the energy is above threshold
@@ -668,14 +668,14 @@ contains
 
     if (present(flagOK)) then
        flagOK = .false.
-       
+
        meff=sqrtS(e%nucleon)
        if (IP.eq.nucleon) then
           finalstatemass2=(e%lepton_out%mass+meff)**2
        else
           finalstatemass2=(e%lepton_out%mass+mPi+meff)**2
        end if
-       
+
        EnuThres=(finalstatemass2-meff**2)/(2*(e%nucleon%momentum(0)-e%nucleon%momentum(3)))
        if(Enu.ge.EnuThres) then
           flagOK = .TRUE.
@@ -688,7 +688,7 @@ contains
   !****s* eN_event/eNev_init_nuStep3a
   ! NAME
   ! subroutine eNev_init_nuStep3a(e,Eprime,costheta,flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Step 3 of "neutrino init": Set the kinematic of the outgoing lepton.
   ! Now we have fixed everything (comparable to "eNev_init_Target")
@@ -714,7 +714,7 @@ contains
     type(electronNucleon_event), intent(inout) :: e
     real, intent(in) :: Eprime,costheta
     logical, intent(out) :: flagOK
-    
+
     logical,parameter :: verbose = .false.
 
     real :: phi, pPrime, sintheta
@@ -733,7 +733,7 @@ contains
     e%lepton_out%momentum(1)=pPrime*sintheta*cos(phi)
     e%lepton_out%momentum(2)=pPrime*sintheta*sin(phi)
     e%lepton_out%momentum(3)=pPrime*costheta
-    
+
     e%boson%momentum = e%lepton_in%momentum-e%lepton_out%momentum
 
     call eNev_init_Target(e,flagOK=flagOK)
@@ -745,7 +745,7 @@ contains
   !****s* eN_event/eNev_init_nuStep3b
   ! NAME
   ! subroutine eNev_init_nuStep3b(e,Eprime,Q2,flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Step 3 of "neutrino init": Set the kinematic if the outgoing lepton.
   ! Now we have fixed everything (comparable to "eNev_init_Target")
@@ -782,13 +782,13 @@ contains
     call eNev_init_nuStep3a(e,Eprime,cost,flagOK)
 
   end subroutine eNev_init_nuStep3b
-  
+
 
   !***************************************************************************
   !****s* eN_event/eNev_init_nuStep3c
   ! NAME
   ! subroutine eNev_init_nuStep3c(e,x,y,flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Step 3 of "neutrino init": Set the kinematic if the outgoing lepton.
   ! Now we have fixed everything (comparable to "eNev_init_Target")
@@ -868,20 +868,20 @@ contains
 
 
   end subroutine eNev_init_nuStep3c
-  
+
 
   !***************************************************************************
   !****s* eN_event/init_electronNucleon_event
   ! NAME
   ! subroutine init_electronNucleon_event(e, k_in,k_out,nuc,flagOK)
-  ! 
+  !
   ! PURPOSE
   ! Initialize an instance of "type(electronNucleon_event)". Here via
   ! incoming and outgoing lepton momenta
   ! OUTPUT
   ! * type(electronNucleon_event) :: e -- fully initialized event
   ! * logical, optional :: flagOK -- .true. if all okay
-  ! 
+  !
   ! NOTES
   ! * This is used by Olli for the low energy lepton routines
   ! * This routine is only valid for EM and e-
@@ -919,7 +919,7 @@ contains
   !****is* eN_event/RemovePot_DoNOT
   ! NAME
   ! function RemovePot_DoNOT(e)
-  ! 
+  !
   ! PURPOSE
   ! Calculate the "FREE" kinematics by assuming the same kinematics as in the
   ! InMedium case. I.e., we do not remove the potential at all.
@@ -929,9 +929,9 @@ contains
     type(electronNucleon_event) :: e
     e%nucleon_free               = e%nucleon
     e%nucleon_free%position      =999999999. ! =Vacuum if the nucleus rests at (0,0,0)
-    e%W_free=abs4(e%boson%momentum+e%nucleon%momentum)   
+    e%W_free=abs4(e%boson%momentum+e%nucleon%momentum)
     ! calculate Wrec = inv. Mass for nucleon at rest
-    e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)  
+    e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)
     e%W = abs4(e%boson%momentum+e%nucleon%momentum)
   end subroutine RemovePot_DoNOT
 
@@ -939,7 +939,7 @@ contains
   !****is* eN_event/RemovePot_THRE
   ! NAME
   ! function RemovePot_THRE(e)
-  ! 
+  !
   ! PURPOSE
   ! Calculate the "FREE" kinematics by setting the free W according
   !   W_free = W - m* + m ,
@@ -956,9 +956,9 @@ contains
 
     e%nucleon_free               = e%nucleon
     e%nucleon_free%position      =999999999. ! =Vacuum if the nucleus rests at (0,0,0)
-    e%W_free=abs4(e%boson%momentum+e%nucleon%momentum)-abs4(e%nucleon%momentum)+e%nucleon%mass 
+    e%W_free=abs4(e%boson%momentum+e%nucleon%momentum)-abs4(e%nucleon%momentum)+e%nucleon%mass
     ! calculate Wrec = inv. Mass for nucleon at rest
-    e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared) 
+    e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)
     e%W = abs4(e%boson%momentum+e%nucleon%momentum)
 
     ! nucleon momentum should be consistent with W_free !but this does not work in Pythia
@@ -996,7 +996,7 @@ contains
   !****is* eN_event/RemovePot_THRE2
   ! NAME
   ! function RemovePot_THRE2(e)
-  ! 
+  !
   ! PURPOSE
   ! Calculate the "FREE" kinematics by setting the free W according
   !   W_free^2 = W^2 - m*^2 + m^2 ,
@@ -1015,14 +1015,14 @@ contains
     e%nucleon_free%position      =999999999. ! =Vacuum if the nucleus rests at (0,0,0)
     W2free=abs4Sq(e%boson%momentum+e%nucleon%momentum)-abs4Sq(e%nucleon%momentum)+e%nucleon%mass**2
     if (W2free>0)  then
-                   e%W_free=sqrt(W2free) 
+                   e%W_free=sqrt(W2free)
                    ! calculate Wrec = inv. Mass for nucleon at rest
                    e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)
                    e%W = abs4(e%boson%momentum+e%nucleon%momentum)
     else
             write(*,*) 'problems in removing potential THRE2 W2free=',W2free, '   STOP'
             stop
-    end if        
+    end if
 
     ! nucleon momentum should be consistent with W_free !but this does not work in Pythia
 
@@ -1058,7 +1058,7 @@ contains
   !****is* eN_event/RemovePot_CALC
   ! NAME
   ! function RemovePot_CALC(e)
-  ! 
+  !
   ! PURPOSE
   ! Calculate the "FREE" kinematics, while removing the potential in the CALC
   ! frame
@@ -1072,18 +1072,18 @@ contains
     e%nucleon_free%momentum(1:3) = e%nucleon%momentum(1:3)
     e%nucleon_free%momentum(0)   = FreeEnergy(e%nucleon)
     e%nucleon_free%position      =999999999. ! =Vacuum if the nucleus rests at (0,0,0)
-    e%W_free=abs4(e%boson%momentum+e%nucleon_free%momentum)  
+    e%W_free=abs4(e%boson%momentum+e%nucleon_free%momentum)
     ! calculate Wrec = inv. Mass for nucleon at rest
     e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)
     e%W = abs4(e%boson%momentum+e%nucleon%momentum)
-    
+
   end subroutine RemovePot_CALC
 
   !***************************************************************************
   !****is* eN_event/RemovePot_CM
   ! NAME
   ! function RemovePot_CM(e)
-  ! 
+  !
   ! PURPOSE
   ! Calculate the "FREE" kinematics, while removing the potential in the CM
   ! frame
@@ -1095,7 +1095,7 @@ contains
     use lorentzTrafo
 
     type(electronNucleon_event) :: e
- 
+
     e%nucleon_free               = e%nucleon
     e%nucleon_free%position      =999999999
 
@@ -1104,11 +1104,11 @@ contains
     e%nucleon_free%momentum(0)   = FreeEnergy(e%nucleon_free)
     call lorentz(-e%betacm,e%nucleon_free%momentum)
 
-    e%W_free=abs4(e%boson%momentum+e%nucleon_free%momentum)  
+    e%W_free=abs4(e%boson%momentum+e%nucleon_free%momentum)
     ! calculate Wrec = inv. Mass for nucleon at rest
     e%W_rec = sqrt(mN**2+2.*mN*e%boson%momentum(0)-e%QSquared)
     e%W = abs4(e%boson%momentum+e%nucleon%momentum)
-    
+
   end subroutine RemovePot_CM
 
 
@@ -1116,9 +1116,9 @@ contains
   !****is* eN_event/RemovePot_NucleonRest
   ! NAME
   ! function RemovePot_NucleonRest(e)
-  ! 
+  !
   ! PURPOSE
-  ! Calculate the "FREE" kinematics, while removing the potential 
+  ! Calculate the "FREE" kinematics, while removing the potential
   ! and adjusting the photon 4-momentum in the nucleon rest frame
   ! NOTES
   ! Recipe proposed on a group meeting May 2011
@@ -1130,7 +1130,7 @@ contains
     type(electronNucleon_event) :: e
 
     real, dimension(1:3) :: beta ! velocity of the nucleon
-    real, dimension(0:3) :: qtilde    ! modified momentum of the boson 
+    real, dimension(0:3) :: qtilde    ! modified momentum of the boson
     real                 :: qvectilde_abs, qvec_abs
 
     e%nucleon_free               = e%nucleon
@@ -1169,7 +1169,7 @@ contains
   !****s* eN_event/eNeV_GetKinV
   ! NAME
   ! subroutine eNeV_GetKinV(e, nu,Q2,W, Wfree, eps, fT)
-  ! 
+  !
   ! PURPOSE
   ! return the kinematical variables buried in the event type.
   ! additionally calculate   :
@@ -1178,13 +1178,13 @@ contains
   !
   ! NOTES
   ! the flux calculation was taken from PyVP:
-  ! * the original formulae were implemented by Thomas Falter (PhD, 
+  ! * the original formulae were implemented by Thomas Falter (PhD,
   !   eq.(3.15),(3.16)). We modified and corrected them.
   ! * we are now trying to supersede those by a "low-W/low-Q2" expression.
   ! * The equivalent photon energies are (we use the Hand convention)
   !     K = (W^2-M^2)/2M = (1-x)*nu = (1-x)*y*Ebeam  [Hand]
   !     K = sqrt[nu^2+Q^2] [Gilman]
-  ! * if the global variable "restingNucleon" is true, then we assume a 
+  ! * if the global variable "restingNucleon" is true, then we assume a
   !   resting nucleon for the calculation of fT and eps. Otherwise we use
   !   the target four momentum (the returned value of nu is not influenced
   !   by this)
@@ -1220,7 +1220,7 @@ contains
        K = (1.-x)*nu0 ! Hand convention
        cL = 2.*(1.-y-Q2/(4*Ebeam**2))/(1.+Q2/nu0**2)
        cT = cL + y**2
-       
+
        if(present(fT))  fT  = alphaQED/twopi * K/(Q2*nu0**2) * cT
        if(present(eps)) eps = cL/cT
 
@@ -1240,7 +1240,7 @@ contains
   !****f* eN_event/eNeV_Get_LightX
   ! NAME
   ! real function eNeV_Get_LightX(e)
-  ! 
+  !
   ! PURPOSE
   ! return the lightcone x, not Bjorken x !!
   !***************************************************************************
@@ -1248,7 +1248,7 @@ contains
     use minkowski, only : abs4Sq
 
     type(electronNucleon_event),intent(in) :: e
-    real :: s 
+    real :: s
 
     s  = abs4sq(e%lepton_in%momentum+e%nucleon_free%momentum)
     eNeV_Get_LightX = (e%W_free**2-M2(2))/(s-M2(2)+M2(1))
@@ -1258,7 +1258,7 @@ contains
   !****f* eN_event/eNeV_Get_CostLepton
   ! NAME
   ! real function eNeV_Get_CostLepton(e)
-  ! 
+  !
   ! PURPOSE
   ! return the cosine of the angle between ncoming and outgoing lepton
   !
@@ -1281,7 +1281,7 @@ contains
   !****s* eN_event/eNev_Set_PhiLepton
   ! NAME
   ! real function eNeV_Set_PhiLepton(e,phi)
-  ! 
+  !
   ! PURPOSE
   ! rotate the lepton vectors around z-axis
   ! NOTES
@@ -1294,7 +1294,7 @@ contains
     real, intent(in) :: phi
 
     real :: pT
-    
+
     pT = eNev%lepton_in%momentum(1)
     eNev%lepton_in%momentum(1)=pT*cos(phi)
     eNev%lepton_in%momentum(2)=pT*sin(phi)
@@ -1308,7 +1308,7 @@ contains
   !****f* eN_event/eNev_CheckForDIS
   ! NAME
   ! logical function eNeV_CheckForDIS()
-  ! 
+  !
   ! PURPOSE
   ! Apply cuts, which are also tested in PYGAGA and may leed to infinite loops
   ! or program abortion.
@@ -1338,7 +1338,7 @@ contains
     PCM3 = s-M2(2)-M2(1)
 
 !    write(*,*) 'CheckForDIS:',s,x,PCM1,PCM3,(PCM1*x+e%QSquared)/PCM3
-    
+
 
     if (((PCM1*x+e%QSquared)/PCM3).gt.PythiaCKIN(74)) &
          & eNeV_CheckForDIS = .false.
@@ -1350,9 +1350,9 @@ contains
   !****s* eN_event/eNev_GetLeptonCM
   ! NAME
   ! subroutine eNeV_GetLeptonCM(e, betacm,phi,theta,phiLepton)
-  ! 
+  !
   ! PURPOSE
-  ! 
+  !
   !
   ! NOTES
   ! The pcm stored in the event type is the pcm of the boson-nucleon system.
@@ -1401,7 +1401,7 @@ contains
 
     phi = atan2(pcm(2),pcm(1))
     theta = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))
-    
+
     pB = e%lepton_out%momentum
 
     call lorentz(betacm,pB)
@@ -1416,12 +1416,12 @@ contains
   ! NAME
   ! real function nuclearFluxFactor_correction(p_initial,l_initial)
   ! PURPOSE
-  ! Evaluates the correction factor due to considering the nuclear flux 
+  ! Evaluates the correction factor due to considering the nuclear flux
   ! factor instead of the
   ! ones of the single nucleons. Outputs |v_e-v_n|=l^\mu p_\mu /(l_0 p_0)
   !
   ! INPUTS
-  ! * real, dimension(0:3) :: p_initial, l_initial -- initial nucleon and 
+  ! * real, dimension(0:3) :: p_initial, l_initial -- initial nucleon and
   !   lepton momenta
   !
   ! OUTPUT
@@ -1436,17 +1436,16 @@ contains
     !!  following the Ulrich-Kai-Alexei-Olga  discussion  on 05.04.2012
     withP=.false.
     if (present(withPotential)) withP=withPotential
-    
-    if(.not.withP) then ! redefine  p0_initial using vacuum mass   
+
+    if(.not.withP) then ! redefine  p0_initial using vacuum mass
     p(0)=sqrt(  Dot_Product(p_initial(1:3),p_initial(1:3)) + mN**2  )
     p(1:3)=p_initial(1:3)
     else
     p=p_initial! otherwise use p0_initial  as normally defined including potential (== effective mass)
     end if
-    
+
     nuclearFluxFactor_correction=SP(l_initial,p)/(l_initial(0)*p(0))
 
   end function nuclearFluxFactor_correction
 
 end module eN_event
- 

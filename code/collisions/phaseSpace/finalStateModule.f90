@@ -41,9 +41,9 @@ contains
   !
   ! OUTPUT
   ! * logical :: flagOK -- .true. if mass assignment was successful
-  ! * type(particle), dimension(1:2) :: PartOut -- 
-  !   final state particles with full kinematics in the CM frame. 
-  !   ID, momentum(1:3),charge and mass are now defined. 
+  ! * type(particle), dimension(1:2) :: PartOut --
+  !   final state particles with full kinematics in the CM frame.
+  !   ID, momentum(1:3),charge and mass are now defined.
   !*********************************************************************************
   subroutine massAss(srts,mediumAtColl,PartIn,PartOut,betaToLRF,betaToCM,L,flagOK)
 
@@ -78,9 +78,9 @@ contains
 
   !*************************************************************************
   !****s* finalStateModule/assMass
-  ! NAME 
+  ! NAME
   ! subroutine assMass(srts,mediumAtColl,PartIn,PartOut,spotOut,betaToLRF,betaToCM,flag)
-  ! 
+  !
   ! This routine selects the masses of a 3 particle final state
   ! according to phase space x spectral functions.
   !
@@ -91,7 +91,7 @@ contains
   ! * type(medium)        :: mediumAtColl -- medium information : density, temperature,...
   ! * type(particle), dimension(1:2) :: PartIn     -- incoming particles a and b
   ! * type(particle), dimension(1:3) :: PartOut  -- outgoing particles c,d and e
-  !   (only id's, charges and antiflags are used at input) 
+  !   (only id's, charges and antiflags are used at input)
   ! * real, dimension(1:3)           :: spotOUT    -- scalar potential of produced particles
   ! * real, dimension(1:3)           :: betaToLRF  -- beta for boost to LRF
   ! * real, dimension(1:3)           :: betaToCM   -- beta for boost to CM-Frame
@@ -99,7 +99,7 @@ contains
   ! RESULT
   ! * logical :: flagOK   -- set to .true. is mass assignment was successful
   ! * type(particle), dimension (1:3) ,intent(out) :: PartOut  --
-  !   final state particles with almost full kinematics in CM frame. 
+  !   final state particles with almost full kinematics in CM frame.
   !   ID, momentum(1:3),charge and mass are defined.
   !*************************************************************************
   subroutine assMass(srts,mediumAtColl,PartIn,PartOut,spotOut,betaToLRF,betaToCM,flagOK)
@@ -171,9 +171,9 @@ contains
     partOut(2)%momentum(1:3) = -pscatt*p_cd
 
     partOut(1:2)%momentum(0) = sqrt(partOut(1:2)%mass**2 + p_cd**2)
-    
+
     flagOK = .true.
-    
+
   end subroutine massAss_NN_NDelta
 
 end module finalStateModule

@@ -13,7 +13,7 @@ module Coll_Manni
 
   PUBLIC :: DoColl_ManniProb, DoColl_Manni, DoColl_ManniCheck
 
-  logical, parameter :: flag_Geiss = .false. 
+  logical, parameter :: flag_Geiss = .false.
   ! if .true., use the energy dependent
   ! strangeness suppression factor from
   ! J. Geiss et al., NPA 644, 107 (1998)
@@ -131,7 +131,7 @@ contains
     if (abs(IDBar).gt.55)  return
 
     ! convert BUU to KF and split into quark contents:
-    
+
     KFBar = KFfromBUU (IDBar,inPart(iiB)%charge)
     KFMes = KFfromBUU (IDMes,inPart(iiM)%charge)
 
@@ -141,7 +141,7 @@ contains
     ! SplitMeson liefert immer (/1,-1/) und nie höhere Werte
 
     ! correct quark contents:
-    
+
     x = rn()
 
     if (inPart(iiM)%charge == 0) then
@@ -163,7 +163,7 @@ contains
           iqm = (/1,-1/)
        else if (x<2./6.) then
           iqm = (/2,-2/)
-       else 
+       else
           iqm = (/3,-3/)
        endif
     case(etaPrime)
@@ -171,12 +171,12 @@ contains
           iqm = (/1,-1/)
        else if (x<2./3.) then
           iqm = (/2,-2/)
-       else 
+       else
           iqm = (/3,-3/)
        endif
     end select
 
-    ! find quark antiquark to annihilate if possible   
+    ! find quark antiquark to annihilate if possible
 
     if (iqm(1)<0) then
        aq=-iqm(1)
@@ -198,9 +198,9 @@ contains
        endif
        j=j+1
     enddo
-    
+
     if(.not.manniflag) return  ! no annihilation possible
-    
+
     if(mi.ne.3) then
        hq=iqb(3)
        iqb(3)=iqb(mi)
@@ -214,7 +214,7 @@ contains
 
     ! now the remaining three quarks are stored in q with the baryon quarks first
 
-    ! double the cross-section 
+    ! double the cross-section
     ! if annihilation would have been possible in different ways
 
     fac=1.
@@ -233,9 +233,9 @@ contains
 
     parton(iiB) = mdiq
     parton(iiM) = mq
-    
+
     ! manni-cross-section(fraction):
-    
+
     if( .not.flag_Geiss ) then
       DoColl_ManniProb = fac/2.*max(1.2-0.2*srtS,0.) ! strangeness suppression 0.3
     else
@@ -245,8 +245,8 @@ contains
 !    DoColl_ManniProb = DoColl_ManniProb * fac
 
   end function DoColl_ManniProb
-  
-  
+
+
   !*************************************************************************
   !****s* Coll_Manni/DoColl_Manni
   ! NAME
@@ -301,7 +301,7 @@ contains
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
     integer MSEL,MSELPD,MSUB,KFIN
     double precision CKIN
@@ -369,14 +369,14 @@ contains
 
           call GetJetsetVecPYEDIT
        endif
-       
+
        call GetLeading_PY         ! find leading particles
 
 !!$       call PYLIST(2)
 
        call PYEDIT(1)             ! clean up event list
 
-       !...Boost and rotate(randomly)(lu2ent puts first parton o z-axis) 
+       !...Boost and rotate(randomly)(lu2ent puts first parton o z-axis)
        !...the whole event to final system
 
        if (angDistribution.eq.1) then ! isotropic
@@ -394,7 +394,7 @@ contains
 
        if (useJetSetVec) then
           call GetJetsetVecPYROBO(theta,phi, beta(1),beta(2),beta(3))
-       
+
 !!$       call PYLIST(2)
 !!$       call GetJetSetVec_List(6,1,N)
 !!$       stop
@@ -409,7 +409,7 @@ contains
 
        !...exit the loop
        exit
-       
+
     end do
 
     flagOK = .TRUE.

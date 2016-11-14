@@ -43,7 +43,7 @@ module mesonPotentialModule
   logical,save :: noPerturbativePotential=.false.
   !
   ! PURPOSE
-  ! Switch for potential of perturbative particles. 
+  ! Switch for potential of perturbative particles.
   ! If .true. then perturbative mesons feel no potential.
   ! NOTES
   ! Can be set in namelist mesonPotential.
@@ -66,7 +66,7 @@ module mesonPotentialModule
   !*************************************************************************
 
   logical,save :: initFlag=.true.
-  
+
   Public :: MesonPotential, getNoPertPot_meson, vecMes_massShift
 
 contains
@@ -121,7 +121,7 @@ contains
     call Write_ReadingInput('mesonPotential',1)
 
     initFlag=.false.
-    
+
   end subroutine init
 
 
@@ -157,11 +157,11 @@ contains
 
     case (2) !=== Brown-Rho-Scaling with momentum dependence ===
        ! according to Kondtradyuk (page 162,effenberger dr.-thesis)
-       !( 0.1-pAbs) because potential is assumed to vanish around 0.1 GeV 
+       !( 0.1-pAbs) because potential is assumed to vanish around 0.1 GeV
        ! momentum.
        ! Seems like it is rather 0.1 GeV than 1 GeV.
        ! This is rather crude. Has to be improved!!!
-       ! pot=-mass*brownRho*rho/rhoNull*(0.1-pAbs) 
+       ! pot=-mass*brownRho*rho/rhoNull*(0.1-pAbs)
 
        call TRACEBACK("vectorMesonPot=2 has been deleted")
 
@@ -179,7 +179,7 @@ contains
   ! NAME
   ! real function MesonPotential (teilchen, med)
   ! PURPOSE
-  ! Meson potential is defined as 0th component of a vector potential in 
+  ! Meson potential is defined as 0th component of a vector potential in
   ! the local rest frame (LRF).
   ! INPUTS
   ! * type(particle) :: teilchen  -- particle boosted to LRF
@@ -187,7 +187,7 @@ contains
   ! OUTPUT
   ! * real :: Meson_Potential  -- in GeV
   ! NOTES
-  ! In contrast to the old BUU code, there is no kBar-potential implemented. 
+  ! In contrast to the old BUU code, there is no kBar-potential implemented.
   ! This potential is described in Effenberger's thesis on pages 207-216.
   !*****************************************************************************
   real function MesonPotential (teilchen, med)
@@ -219,8 +219,8 @@ contains
        pAbs=absMom(Teilchen) ! absolute momentum
        MesonPotential=pionPot_Main(mPi,teilchen%momentum(1:3),med%densityProton,med%densityNeutron,teilchen%charge,pionPot_Switch)
 
-    Case Default  ! particle with no potential  
-       return 
+    Case Default  ! particle with no potential
+       return
 
     end select
 

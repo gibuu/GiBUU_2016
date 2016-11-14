@@ -3,8 +3,8 @@
 ! NAME
 ! module antiBarBar_main
 ! PURPOSE
-! Contains the subroutine XsectionAntiBarBar, which computes various cross 
-! sections for antibaryon-baryon collisions in the low-energy mode.   
+! Contains the subroutine XsectionAntiBarBar, which computes various cross
+! sections for antibaryon-baryon collisions in the low-energy mode.
 !*****************************************************************************
 module antiBarBar_main
 
@@ -27,26 +27,25 @@ contains
   ! PURPOSE
   ! The main routine for antibaryon-baryon elastic and inelastic scattering.
   ! Determines Total Xsection, elastic cross section, annihilation cross section
-  ! and makes a Monte-Carlo-Decision for a special reaction channel. For nonannihilation final 
-  ! states ID's and charges of teilchenOut are determined, which is the finalState. 
+  ! and makes a Monte-Carlo-Decision for a special reaction channel. For nonannihilation final
+  ! states ID's and charges of teilchenOut are determined, which is the finalState.
   ! In the case if the annihilation channel is selected, Id's are set to pion just to signal
-  ! that annihilation is chosen (the real setting has to be done by another routine in this case). 
-  ! 
+  ! that annihilation is chosen (the real setting has to be done by another routine in this case).
+  !
   ! INPUTS
-  ! * real, intent(in)                             :: srts               -- sqrt(s) in the process
-  ! * type(particle),dimension(1:2), intent(in)    :: teilchenIn         -- colliding particles
-  ! * type(medium),                  intent(in)    :: mediumATcollision  -- medium information at collision point
-  ! * logical, intent(in),optional                 :: plotFlag           -- Switch on plotting of the  Xsections
+  ! * real                          :: srts               -- sqrt(s) in the process
+  ! * type(particle),dimension(1:2) :: teilchenIn         -- colliding particles
+  ! * type(medium)                  :: mediumATcollision  -- medium information at collision point
+  ! * logical, optional             :: plotFlag           -- Switch on plotting of the  Xsections
   !
   ! OUTPUT
-  ! * type(preEvent),dimension(1:3), intent(out)   :: teilchenOut        -- outgoing particles
-  ! * real, intent(out)                            :: sigmaTot           -- total Xsection
-  ! * real, intent(out)                            :: sigmaElast         -- elastic Xsection
-  ! * real, intent(out)                            :: sigmaCEX           -- charge exchange Xsection
-  ! * real, intent(out)                            :: sigmaAnni          -- annihilation Xsection
-  ! *                                                                       into mesons
-  ! * logical, intent(out)                         :: pauliIncluded      -- true = cross section includes 
-  ! *                                                                       Pauli blocking
+  ! * type(preEvent),dimension(1:3) :: teilchenOut -- outgoing particles
+  ! * real                          :: sigmaTot    -- total Xsection
+  ! * real                          :: sigmaElast  -- elastic Xsection
+  ! * real                          :: sigmaCEX    -- charge exchange Xsection
+  ! * real                          :: sigmaAnni   -- annihilation Xsection into mesons
+  ! * logical                       :: pauliInclud -- true =
+  !   cross section includes Pauli blocking
   !
   ! NOTES
   ! plotFlag=.true. causes to make output to the files:
@@ -68,33 +67,31 @@ contains
     use rmf, only : getRMF_flag
     use twoBodyTools, only : p_lab
 
-    real, intent(in)                             :: srts               !-- sqrt(s) in the process
-    type(particle),dimension(1:2), intent(in)    :: teilchenIn         !-- colliding particles
-    type(medium),                  intent(in)    :: mediumATcollision  !-- medium information at collision point
-    logical, intent(in),optional                 :: plotFlag           !-- Switch on plotting of the  Xsections
+    real, intent(in)                             :: srts
+    type(particle),dimension(1:2), intent(in)    :: teilchenIn
+    type(medium),                  intent(in)    :: mediumATcollision
+    logical, intent(in),optional                 :: plotFlag
 
-    type(preEvent),dimension(1:3), intent(out)   :: teilchenOut        !-- outgoing particles
-    real, intent(out)                            :: sigmaTot           !-- total Xsection
-    real, intent(out)                            :: sigmaElast         !-- elastic Xsection
-    real, intent(out)                            :: sigmaCEX           !-- charge exchange Xsection
-    real, intent(out)                            :: sigmaAnni          !-- annihilation Xsection
-    !   into mesons
-    logical, intent(out)                         :: pauliIncluded      !-- true = cross section includes 
-    !   Pauli blocking
+    type(preEvent),dimension(1:3), intent(out)   :: teilchenOut
+    real, intent(out)                            :: sigmaTot
+    real, intent(out)                            :: sigmaElast
+    real, intent(out)                            :: sigmaCEX
+    real, intent(out)                            :: sigmaAnni
+    logical, intent(out)                         :: pauliIncluded
 
     !*********************************************************************************************
     ! Xsections of all possible outgoing channels summed over charge states of outgoing particles:
     !*********************************************************************************************
-    real                             :: sigmaAntiNucNuc     ! AntiNucleon + Nucleon final state
-    real                             :: sigmaAntiNucDelta   ! AntiNucleon + Delta final state
-    real                             :: sigmaNucAntiDelta   ! Nucleon + AntiDelta final state
+    real :: sigmaAntiNucNuc     ! AntiNucleon + Nucleon final state
+    real :: sigmaAntiNucDelta   ! AntiNucleon + Delta final state
+    real :: sigmaNucAntiDelta   ! Nucleon + AntiDelta final state
 
 
     ! Production cross section pbar+p -> Nbar+N+mesons, hyperon pbar+p -> Y/Ybar+X
     ! and pbar+p -> J/Psi production cross sections  (only for plotting, not for simulations):
-    real                             :: sigmaPROD, sigmaY, sigmaJPsi
+    real :: sigmaPROD, sigmaY, sigmaJPsi
 
-    !exclusive production Xsection pbar + p --> Lambda LambdaBar, Lambda Sigma0Bar+c.c. (uncharged), 
+    !exclusive production Xsection pbar + p --> Lambda LambdaBar, Lambda Sigma0Bar+c.c. (uncharged),
     !Xi+XiBar and Omega+OmegaBar:
     real :: sigmaYYbar, sigmaYSbar, sigmaXiXiBar, sigmaOmegaBar
 
@@ -137,15 +134,18 @@ contains
     sigmaNucAntiDelta=0.
 
     totCharge= sum(teilchenIn(1:2)%charge)
-    totId= sum(teilchenIN(1:2)%ID)   
-    call sigmaBarAntiBar(srts,teilchenIN,mediumATcollision,sigTotal=dummy,&
-         &sigElastic=sigmaElast,sigChEx=sigmaCEX,&
-         &sigAnnihilation=sigmaAnni,sigProduction=sigmaPROD,sigHyperon=sigmaY,&
-         &sigLambdaBar=sigmaYYbar,sigSigmaBar=sigmaYSbar,sigXiBar=sigmaXiXiBar,sigOmegaBar=sigmaOmegaBar,&
-         &sigJPsi=sigmaJPsi)
-    ! Note: sigTotal given by sigmaBarAntiBar is not used here, since the total 
+    totId= sum(teilchenIN(1:2)%ID)
+
+    call sigmaBarAntiBar(srts,teilchenIN,mediumATcollision, &
+         sigTotal=dummy, sigElastic=sigmaElast, &
+         sigChEx=sigmaCEX, sigAnnihilation=sigmaAnni, &
+         sigProduction=sigmaPROD,sigHyperon=sigmaY, &
+         sigLambdaBar=sigmaYYbar,sigSigmaBar=sigmaYSbar,&
+         sigXiBar=sigmaXiXiBar,sigOmegaBar=sigmaOmegaBar,&
+         sigJPsi=sigmaJPsi)
+    ! Note: sigTotal given by sigmaBarAntiBar is not used here, since the total
     ! cross section sigmaTot will be computed by the direct summation over included channels
-    ! later on  
+    ! later on
 
     If( totId.eq.2 ) then    ! nucleon+antinucleon
 
@@ -153,7 +153,7 @@ contains
 
        call NbarN_to_NbarDelta_Integrated(sigma0,srts)
        if( totCharge.eq.0 ) then
-          sigmaAntiNucDelta= 2./3.*sigma0/pInitial 
+          sigmaAntiNucDelta= 2./3.*sigma0/pInitial
        else
           sigmaAntiNucDelta= 4./3.*sigma0/pInitial
        end if
@@ -201,7 +201,7 @@ contains
     !*************************
 
     if(totId <= 3) then
-       sigmaTot= sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + & 
+       sigmaTot= sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + &
             &    sigmaYYbar + sigmaYSbar + sigmaXiXiBar + sigmaOmegaBar
     else
        sigmaTot= sigmaAnni + sigmaElast
@@ -219,9 +219,9 @@ contains
     cut=rn()*sigmaTot
 
     if( sigmaAnni >= cut ) then                         ! annihilation
-       ! This setting is not the final one: it is done only to signal that 
+       ! This setting is not the final one: it is done only to signal that
        ! annihilation happen:
-       teilchenOut(:)%ID=pion 
+       teilchenOut(:)%ID=pion
        teilchenOut(:)%charge=0
        return
     end if
@@ -231,7 +231,7 @@ contains
     teilchenOut(1:2)%antiParticle=teilchenIn(1:2)%antiparticle
     if(totId > 3) then
        teilchenOut(1:2)%ID=teilchenIn(1:2)%Id
-       teilchenOut(1:2)%charge=teilchenIn(1:2)%charge    
+       teilchenOut(1:2)%charge=teilchenIn(1:2)%charge
        return
     end if
 
@@ -260,7 +260,7 @@ contains
              teilchenOut(nAnti)%charge=teilchenIn(nAnti)%charge
           end if
 
-       else 
+       else
 
           ! antinucleon+Delta or antiDelta+nucleon collision:
 
@@ -336,7 +336,7 @@ contains
        else
 
           write(*,*)'In XsectionAntiBarBar 2: wrong outgoing channel'
-          write(*,*)'IdIn1, IdIn2, antiIn1, antiIn2:', teilchenIn%Id, teilchenIn%antiParticle      
+          write(*,*)'IdIn1, IdIn2, antiIn1, antiIn2:', teilchenIn%Id, teilchenIn%antiParticle
           write(*,*)'IdOut1, IdOut2, antiOut1, antiOut2:', teilchenOut%Id, teilchenOut%antiParticle
           stop
 
@@ -403,7 +403,7 @@ contains
        else
 
           write(*,*)'In XsectionAntiBarBar 3: wrong outgoing channel'
-          write(*,*)'IdIn1, IdIn2, antiIn1, antiIn2:', teilchenIn%Id, teilchenIn%antiParticle      
+          write(*,*)'IdIn1, IdIn2, antiIn1, antiIn2:', teilchenIn%Id, teilchenIn%antiParticle
           write(*,*)'IdOut1, IdOut2, antiOut1, antiOut2:', teilchenOut%Id, teilchenOut%antiParticle
 
           stop
@@ -411,12 +411,12 @@ contains
        end if
 
        ! Lambda AntiLambda production
-    else if( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + sigmaYYbar >= cut ) then  
+    else if( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + sigmaYYbar >= cut ) then
 
        if(totCharge /= 0) then
           write(*,*)'In XsectionAntiBarBar: wrong charge of initial state'
           write(*,*)'for Lambda+LambdaBar production : ', totCharge
-          stop 
+          stop
        end if
 
        teilchenOut(1:2)%ID=Lambda
@@ -424,13 +424,13 @@ contains
 
        return
 
-    else if( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + & 
+    else if( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + &
          &   sigmaYYbar + sigmaYSbar >= cut ) then  ! Lambda SigmaBar / LambdaBar Sigma production
 
        if(abs(totCharge) > 1) then
           write(*,*)'In XsectionAntiBarBar: wrong charge of initial state'
           write(*,*)'for  Lambda SigmaBar / LambdaBar Sigma production : ', totCharge
-          stop 
+          stop
        end if
 
        x = rn()
@@ -448,40 +448,40 @@ contains
 
        return
 
-    else if( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + & 
+    else if( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + &
          &   sigmaYYbar + sigmaYSbar  + sigmaXiXiBar >= cut ) then  ! Xi+XiBar production
 
-       teilchenOut(1:2)%ID=Xi 
-       if( totCharge == 0 ) then 
+       teilchenOut(1:2)%ID=Xi
+       if( totCharge == 0 ) then
           x = rn()
-          if (x < 0.5) then                ! Xi^- + XiBar^+  
-             teilchenOut(nAnti)%charge=1 
-          else                             ! Xi^0 + XiBar^0  
+          if (x < 0.5) then                ! Xi^- + XiBar^+
+             teilchenOut(nAnti)%charge=1
+          else                             ! Xi^0 + XiBar^0
              teilchenOut(nAnti)%charge=0
           end if
-       else if( totCharge == -1) then     ! Xi^- + XiBar^0  
+       else if( totCharge == -1) then     ! Xi^- + XiBar^0
           teilchenOut(nAnti)%charge=0
        else if( totCharge == 1) then      ! Xi^0 + XiBar^+
           teilchenOut(nAnti)%charge=1
        else
           write(*,*)'In XsectionAntiBarBar: wrong charge of initial state'
           write(*,*)'for Xi+XiBar production : ', totCharge
-          stop 
+          stop
        end if
 
        teilchenOut(3-nAnti)%charge= totCharge - teilchenOut(nAnti)%charge
        return
 
-    else if ( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + & 
+    else if ( sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta + sigmaNucAntiDelta + &
          &   sigmaYYbar + sigmaYSbar  + sigmaXiXiBar + sigmaOmegaBar >= cut ) then  ! Omega+OmegaBar production
 
        teilchenOut(1:2)%ID=OmegaResonance
-       if( totCharge == 0 ) then 
-          teilchenOut(nAnti)%charge=1 
-       else 
+       if( totCharge == 0 ) then
+          teilchenOut(nAnti)%charge=1
+       else
           write(*,*)'In XsectionAntiBarBar: wrong charge of initial state'
           write(*,*)'for Omega+OmegaBar production : ', totCharge
-          stop 
+          stop
        end if
 
        teilchenOut(3-nAnti)%charge= totCharge - teilchenOut(nAnti)%charge
@@ -492,7 +492,7 @@ contains
 
        write(*,*) 'Problem:  final state can not be chosen in XsectionAntiBarBar'
        write(*,*) 'srts: ', srts
-       write(*,*) 'IdIn1, IdIn2, antiIn1, antiIn2:', teilchenIn%Id, teilchenIn%antiParticle      
+       write(*,*) 'IdIn1, IdIn2, antiIn1, antiIn2:', teilchenIn%Id, teilchenIn%antiParticle
        write(*,*) 'sigmaAnni: ', sigmaAnni
        write(*,*) 'sigmaAntiNucNuc: ', sigmaAntiNucNuc
        write(*,*) 'sigmaAntiNucDelta: ', sigmaAntiNucDelta
@@ -512,7 +512,7 @@ contains
     !****s* XsectionAntiBarBar/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV].
     !
@@ -520,7 +520,7 @@ contains
     ! * 'AntiBarBar_Tot_Elast.dat'  : sigmaTot, sigmaElast
     ! * 'AntiBarBar_Part.dat'  : sigmaAnni, sigmaAntiNucNuc, sigmaAntiNucDelta, sigmaNucAntiDelta, sigmaYYbar
     ! NOTES
-    ! * In the present implementation sigmaTot= sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta 
+    ! * In the present implementation sigmaTot= sigmaAnni + sigmaAntiNucNuc + sigmaAntiNucDelta
     !   + sigmaNucAntiDelta + sigmaYYbar + sigmaYSbar + sigmaXiXiBar + sigmaOmegaBar
     ! * sigmaElast does not include charge exchange.
     !*************************************************************************
@@ -545,8 +545,8 @@ contains
          write (102,*) '# 1    srts'
          write (102,*) '# 2    plab'
          write (102,*) '# 3    sigmaElast'
-         write (102,*) '# 4    sigmaAnni'  
-         write (102,*) '# 5    sigmaAntiNucNuc' 
+         write (102,*) '# 4    sigmaAnni'
+         write (102,*) '# 5    sigmaAntiNucNuc'
          write (102,*) '# 6    sigmaPROD (not used in simulations)'
          write (102,*) '# 7    sigmaY (not used in simulations)'
          write (102,*) '# 8    sigmaAntiNucDelta'

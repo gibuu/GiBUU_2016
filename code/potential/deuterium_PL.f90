@@ -5,7 +5,7 @@
 ! PURPOSE
 ! This module defines a pointerList to store informations of a deuterium initialization.
 ! We must remember which particles belong together and this information is then used in
-! the module "baryonPotential". 
+! the module "baryonPotential".
 !
 ! NOTES
 ! This whole module can not be used in:
@@ -22,7 +22,7 @@ module deuterium_PL
   !***************************************************************************
   !****t* deuterium_PL/type_deuteriumPL
   !
-  ! SOURCE 
+  ! SOURCE
   !
   type, public :: type_deuteriumPL
      type(particle), pointer :: part1 ! first particle
@@ -37,9 +37,9 @@ module deuterium_PL
   ! PURPOSE
   ! List of all pairs of particles.
   !
-  ! SOURCE 
+  ! SOURCE
   !
-  type(type_deuteriumPL), allocatable, dimension(:), public :: deuterium_pointerList  
+  type(type_deuteriumPL), allocatable, dimension(:), public :: deuterium_pointerList
   !
   !***************************************************************************
 
@@ -91,7 +91,7 @@ contains
     use callStack, only: traceback
     type(particle), dimension(:,:),target :: realP
     integer :: i,j,numNucs
-    
+
     if (.not. deuteriumPL_inUse()) return
 
     if (DoPr(1)) write(*,*) 'DEUTERIUM RUN: Assign particles to pointerlist...'
@@ -137,7 +137,7 @@ contains
   ! Generates output based on the pointer list "pl". I.e.:
   ! * Binding energy
   ! * Relative momentum and position spectra
-  ! 
+  !
   ! INPUTS
   ! * type (type_deuteriumPL),dimension(:) :: pl
   ! * integer :: file_mom,file_dist  -- file identifiers for momentum/position histograms
@@ -163,7 +163,7 @@ contains
     real, dimension (0:3) :: totalMom
     real :: time
     logical :: firstFlag=.true.
-    
+
     if (Allocated(deuterium_pointerlist)) then
        if(firstFlag) then
           open(99,file='Binding_deuterium.dat')
@@ -183,9 +183,9 @@ contains
        call CreateHist(momentumHist, 'momentum distribution',0.,0.5,0.002)
        call CreateHist(distanceHist, 'distance distribution',0.,15.,0.05)
        do i= lbound(pl,dim=1),ubound(pl,dim=1)
-          call AddHist(momentumHist,absVec(pl(i)%part1%momentum(1:3)-pl(i)%part2%momentum(1:3)),1.) 
+          call AddHist(momentumHist,absVec(pl(i)%part1%momentum(1:3)-pl(i)%part2%momentum(1:3)),1.)
           absDist=absVec(pl(i)%part1%position(1:3)-pl(i)%part2%position(1:3))
-          call AddHist(distanceHist,absDist,1.) 
+          call AddHist(distanceHist,absDist,1.)
           radius=radius+absDist
           radius_squares=radius_squares+absDist**2
           rms=rms+absDist**2
@@ -235,7 +235,7 @@ contains
   !
   ! PURPOSE
   ! Clears an entry of type type_deuteriumPL
-  ! 
+  !
   ! INPUTS
   ! * type (type_deuteriumPL) :: pl
   !*****************************************************************************
@@ -253,10 +253,10 @@ contains
   !
   ! PURPOSE
   ! Evaluates the potential energy of a pair containing particle p
-  ! 
+  !
   ! INPUTS
   ! type(particle),target :: p
-  ! 
+  !
   ! OUTPUT
   ! real :: pot -- Argonne V18 potential
   !*****************************************************************************
@@ -270,16 +270,16 @@ contains
     integer :: i
     logical :: success
 
-    pot=0.    
+    pot=0.
     success=.false.
-        
+
     if(.not.p%perturbative) then
 
        if(deuterium_pertOrigin_flag.eq.99) then
           ! 2 Body collisions
           r=absVec(deuterium_pointerList(deuteriumPL_ensemble)%part1%position(1:3)&
                & -deuterium_pointerList(deuteriumPL_ensemble)%part2%position(1:3))
-          if(r.lt.0.00000001) then 
+          if(r.lt.0.00000001) then
              write(*,*) 'Real Event'
              write(*,'(A,3F10.4)') 'Partner ',deuterium_pointerList(deuteriumPL_ensemble)%part1%position(1:3)
              write(*,'(A,3F10.4)') 'Original',deuterium_pointerList(deuteriumPL_ensemble)%part2%position(1:3)
@@ -295,31 +295,31 @@ contains
        if(.not.success) then
           !       write(*,*) 'Direct search'
           directSearch: do i=lbound(deuterium_pointerList,dim=1),ubound(deuterium_pointerList,dim=1)
-             if(equalParticles(deuterium_pointerList(i)%part1,p)) then 
+             if(equalParticles(deuterium_pointerList(i)%part1,p)) then
                 r=absVec(deuterium_pointerList(i)%part2%position(1:3)&
                      & -p%position(1:3))
                 pot=argonne_deuteriumPot(r)
                 success=.true.
-                exit directSearch 
-             else if(equalParticles(deuterium_pointerList(i)%part2,p)) then 
+                exit directSearch
+             else if(equalParticles(deuterium_pointerList(i)%part2,p)) then
                 r=absVec(deuterium_pointerList(i)%part1%position(1:3)&
                      & -p%position(1:3))
                 pot=argonne_deuteriumPot(r)
                 success=.true.
-                exit directSearch 
+                exit directSearch
              end if
           end do directSearch
-       else 
+       else
           return
        end if
-       
+
        if(.not.success) then
           if(associated(deuterium_pertOrigin)) then
              realSearch: do i=lbound(deuterium_pointerList,dim=1),ubound(deuterium_pointerList,dim=1)
-                if(equalParticles(deuterium_pointerList(i)%part1,deuterium_pertOrigin)) then 
+                if(equalParticles(deuterium_pointerList(i)%part1,deuterium_pertOrigin)) then
                    r=absVec(deuterium_pointerList(i)%part2%position(1:3)&
                         & -p%position(1:3))
-                   if(r.lt.0.00000001) then 
+                   if(r.lt.0.00000001) then
                       write(*,*) 'Perturbative Event'
                       write(*,'(A,3F10.4)') 'Partner ',deuterium_pointerList(i)%part2%position(1:3)
                       write(*,'(A,3F10.4)') 'Original',deuterium_pointerList(i)%part1%position(1:3)
@@ -331,11 +331,11 @@ contains
                    end if
                    pot=argonne_deuteriumPot(r)
                    success=.true.
-                   exit realSearch 
-                else if(equalParticles(deuterium_pointerList(i)%part2,deuterium_pertOrigin)) then 
+                   exit realSearch
+                else if(equalParticles(deuterium_pointerList(i)%part2,deuterium_pertOrigin)) then
                    r=absVec(deuterium_pointerList(i)%part1%position(1:3)&
                         & -p%position(1:3))
-                   if(r.lt.0.00000001) then 
+                   if(r.lt.0.00000001) then
                       write(*,*) 'Perturbative Event'
                       write(*,'(A,3F10.4)') 'Partner ',deuterium_pointerList(i)%part1%position(1:3)
                       write(*,'(A,3F10.4)') 'Original',deuterium_pointerList(i)%part2%position(1:3)
@@ -346,7 +346,7 @@ contains
                    end if
                    pot=argonne_deuteriumPot(r)
                    success=.true.
-                   exit realSearch 
+                   exit realSearch
                 end if
              end do realSearch
           end if
@@ -363,10 +363,10 @@ contains
 
        if(associated(deuterium_pertOrigin)) then
           pertSearch: do i=lbound(deuterium_pointerList,dim=1),ubound(deuterium_pointerList,dim=1)
-             if(equalParticles(deuterium_pointerList(i)%part1,deuterium_pertOrigin)) then 
+             if(equalParticles(deuterium_pointerList(i)%part1,deuterium_pertOrigin)) then
                 r=absVec(deuterium_pointerList(i)%part2%position(1:3)&
                      & -p%position(1:3))
-                if(r.lt.0.00000001) then 
+                if(r.lt.0.00000001) then
                    write(*,*) 'Perturbative Event'
                    write(*,'(A,3F10.4)') 'Partner ',deuterium_pointerList(i)%part2%position(1:3)
                    write(*,'(A,3F10.4)') 'Original',deuterium_pointerList(i)%part1%position(1:3)
@@ -378,11 +378,11 @@ contains
                 end if
                 pot=argonne_deuteriumPot(r)
                 success=.true.
-                exit pertSearch 
-             else if(equalParticles(deuterium_pointerList(i)%part2,deuterium_pertOrigin)) then 
+                exit pertSearch
+             else if(equalParticles(deuterium_pointerList(i)%part2,deuterium_pertOrigin)) then
                 r=absVec(deuterium_pointerList(i)%part1%position(1:3)&
                      & -p%position(1:3))
-                if(r.lt.0.00000001) then 
+                if(r.lt.0.00000001) then
                    write(*,*) 'Perturbative Event'
                    write(*,'(A,3F10.4)') 'Partner ',deuterium_pointerList(i)%part1%position(1:3)
                    write(*,'(A,3F10.4)') 'Original',deuterium_pointerList(i)%part2%position(1:3)
@@ -393,7 +393,7 @@ contains
                 end if
                 pot=argonne_deuteriumPot(r)
                 success=.true.
-                exit pertSearch 
+                exit pertSearch
              end if
           end do pertSearch
        else
@@ -412,7 +412,7 @@ contains
       ! PURPOSE
       ! Checks whether two particles are equal. Works only if all particles have different
       ! %number entry (i.e. not in fullEnsemble mode)!!!
-      ! 
+      !
       ! INPUTS
       ! type(particle) :: a,b
       !*************************************************************************

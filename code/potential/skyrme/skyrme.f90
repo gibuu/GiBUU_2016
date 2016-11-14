@@ -8,7 +8,7 @@
 !
 ! NOTES
 ! * For documentation see appendix A.4 of Oliver's thesis
-! 
+!
 !***************************************************************************
 module skyrme
   implicit none
@@ -47,7 +47,7 @@ contains
     real, intent(out) :: A,B,C,tau,lambda
     logical,intent(out) :: success
 
-    !integer :: i 
+    !integer :: i
     real :: dummy,lambdaPole,lambda1,lambda2
     logical :: success1,success2
 
@@ -56,7 +56,7 @@ contains
     dummy=lambdaRoot (3.,rhoNull,pNull, uNull,bindingEnergy, compressibility)
     dummy=lambdaRootPole (3.,rhoNull,pNull, uNull,bindingEnergy)
     ! Searching the root of the function:
-    ! Assume lambda > pole of lambdaRoot(x) 
+    ! Assume lambda > pole of lambdaRoot(x)
     ! 1) Search pole
     lambdaPole=bisection_findZero(lambdaRootPole_dummy,0.0001,5.,0.0001,100,success)
     if(success) then
@@ -263,7 +263,7 @@ contains
     pfermi=pf(rho)
 
     ! See Welke PRC 38(5), 2101, Formula 5.6
-    f1=32.*(pi**2)/3.*pfermi**4*lambda**2* (  & 
+    f1=32.*(pi**2)/3.*pfermi**4*lambda**2* (  &
          &   3./8.-lambda/(2.*pfermi)*atan(2.*pfermi/lambda)-lambda**2/(16.*pfermi**2) &
          & + (3./16.*lambda**2/pfermi**2+1./64.*lambda**4/pfermi**4)*log(1.+4.*pfermi**2/lambda**2) &
          &     ) !/(2.*pi)**6
@@ -275,28 +275,28 @@ contains
   ! * Used to check f1 from above.
 !   real function integral_f1(lambda,rho)
 !     use constants, only : pi
-! 
+!
 !     real, intent(in) :: lambda
 !     real, intent(in) :: rho       ! Units GeV^3
-! 
+!
 !     real,parameter :: dp         =0.001
 !     real,parameter :: dp_prime   =0.001
 !     real,parameter :: dcos_theta =0.001
-! 
+!
 !     real :: pfermi, p, p_prime, cos_theta
 !     integer :: i,j,k
 !     integer:: N_steps_p_prime, N_steps_p, N_steps_cos_theta
-! 
+!
 !     pfermi=pf(rho)
-! 
-!     
+!
+!
 !     N_steps_p        =Nint( pfermi/dp       )
 !     N_steps_p_prime  =Nint( pfermi/dp_prime )
 !     N_steps_cos_theta=Nint( 2./dcos_theta   )
-!    
-! 
+!
+!
 !     integral_f1=0.
-! 
+!
 !     do i=0,N_steps_p-1
 !        p=(float(i)+0.5)*dp
 !        do j=0,N_steps_p_prime-1
@@ -338,9 +338,9 @@ contains
 
   end function df1_drho
 
-  
-  
-  
+
+
+
   ! d^2f_1/drho^2
   real function df1_drhoSquared(lambda,rho)
     use derivatives
@@ -400,20 +400,20 @@ contains
        ! So we can make a Taylor expansion in y':
        ! log((1+y')/(1-y'))=2y'+2y'^3/3+2y'^5/5+...
        ! Thus the p-> 0 limit of the first term is given
-       ! 1/p log( ((p+pfermi)**2+lambda**2)/((p-pfermi)**2+lambda**2)    )  for small y = 
+       ! 1/p log( ((p+pfermi)**2+lambda**2)/((p-pfermi)**2+lambda**2)    )  for small y =
        ! = 2/p (y'+y'^3/3+y'^5/5+..)
        logApprox=2.*(y+y**3*p**2+y**5*p**4)
 
        f2=pi*lambda**3*(&
             & (pfermi**2+lambda**2-p**2)/(2.*lambda)*logApprox &
             & +2.*pfermi/lambda-2.*(atan((p+pfermi)/lambda)-atan((p-pfermi)/lambda)) &
-            & ) 
+            & )
     else
        ! See Welke PRC 38(5), 2101, Formula 5.6
        f2=pi*lambda**3*(&
             & (pfermi**2+lambda**2-p**2)/(2.*p*lambda)*log( ((p+pfermi)**2+lambda**2)/((p-pfermi)**2+lambda**2)    ) &
             & +2.*pfermi/lambda-2.*(atan((p+pfermi)/lambda)-atan((p-pfermi)/lambda)) &
-            & ) 
+            & )
     end if
     f2=f2*4./(2.*pi)**3
 
@@ -426,25 +426,25 @@ contains
   ! * Used to check f2 from above.
 !   real function integral_f2(lambda,rho,p)
 !     use constants, only : pi
-! 
+!
 !     real, intent(in) :: lambda
-!     real, intent(in) :: p 
+!     real, intent(in) :: p
 !     real, intent(in) :: rho       ! Units GeV^3
-! 
-! 
+!
+!
 !     real,parameter :: dp_prime   =0.001
 !     real,parameter :: dcos_theta =0.01
-! 
+!
 !     real :: pfermi, p_prime, cos_theta
 !     integer :: j,k
 !     integer:: N_steps_p_prime, N_steps_cos_theta
-! 
+!
 !     pfermi=pf(rho)
 !     N_steps_p_prime  =Nint( pfermi/dp_prime )
 !     N_steps_cos_theta=Nint( 2./dcos_theta   )
-! 
+!
 !     integral_f2=0.
-! 
+!
 !     do j=0,N_steps_p_prime-1
 !        p_prime=(float(j)+0.5)*dp_prime
 !        do k=0,N_steps_cos_theta-1
@@ -452,12 +452,12 @@ contains
 !           integral_f2=integral_f2+p_prime**2 /(1.+(p**2+p_prime**2-2.*p*p_prime*cos_theta)/Lambda**2)
 !        end do
 !     end do
-! 
+!
 !     integral_f2=   integral_f2   * dp_prime * dcos_theta
 !     integral_f2=   integral_f2   * 2.*pi
-! 
+!
 !     integral_f2=integral_f2*4./(2.*pi)**3
-! 
+!
 !   end function integral_f2
 
 
@@ -470,7 +470,7 @@ contains
   !*************************************************************************************************************
 
 
-  ! f3= 2*f1/rhoNull**2 -2/rhoNull*d/drho (f1) +d^2/drho^2 (f1) 
+  ! f3= 2*f1/rhoNull**2 -2/rhoNull*d/drho (f1) +d^2/drho^2 (f1)
   real function f3(lambda,rho,rhoNull)
 
     real, intent(in) :: lambda
@@ -493,7 +493,7 @@ contains
 
 
 
-  ! f4= d/drho (f1) - f1/rhoNull 
+  ! f4= d/drho (f1) - f1/rhoNull
   real function f4(lambda,rho,rhoNull)
 
     real, intent(in) :: lambda
@@ -517,7 +517,7 @@ contains
 
 
 
-  ! f5= f1/rhoNull**2-2*f2(lambda,p=p0)/rhoNull 
+  ! f5= f1/rhoNull**2-2*f2(lambda,p=p0)/rhoNull
   real function f5(lambda,rho,rhoNull,pNull)
 
     real, intent(in) :: lambda
@@ -538,7 +538,7 @@ contains
   !*************************************************************************************************************
 
 
-  ! f6= f4/rhoNull**2-2*f2(lambda,p=p0)/rhoNull 
+  ! f6= f4/rhoNull**2-2*f2(lambda,p=p0)/rhoNull
   real function f6(lambda,rho,rhoNull,pNull)
 
     real, intent(in) :: lambda
@@ -573,7 +573,7 @@ contains
     f7=2./rhoNull*( f2(lambda,rho,0.)-  f2(lambda,rho,pNull))
 
   end function f7
- 
+
 
   !**************************************************************************************************************
   !**************************************************************************************************************
@@ -593,12 +593,12 @@ contains
   end function c1
 
   real function c2(compressibility,rhoNull)
-    real, intent(in) :: compressibility, rhoNull 
+    real, intent(in) :: compressibility, rhoNull
     c2=compressibility/9./rhoNull**2-d_drhoSquared_ekin_div_rho(rhoNull)
   end function c2
 
   real function c3(rhoNull)
-    real, intent(in) :: rhoNull 
+    real, intent(in) :: rhoNull
     c3=ekin(rhoNull)/rhoNull**2-1./rhoNull*d_drho_ekin(rhoNull)
   end function c3
 
@@ -633,7 +633,7 @@ contains
     real :: p_f
 
     p_f=pf(rho)
-    
+
     ekin=4.* 4.*pi*( &
          &  p_f/4.*(p_f**2+mN**2)**(3./2.)  &
          & - mN**2/8.*(p_f*sqrt(p_f**2+mN**2)+mN**2*log( (p_f+sqrt(p_f**2+mN**2))/mN ) )  &
@@ -645,27 +645,27 @@ contains
   ! Only for checking ekin(rho)
 !   real function ekin_integral(rho)
 !     use constants, only: pi, mN
-! 
+!
 !     real, intent(in) :: rho
-! 
+!
 !     real,parameter :: dp         =0.001
 !     real    :: pfermi, p
 !     integer :: i
 !     integer :: N_steps_p
-! 
-! 
+!
+!
 !     pfermi=pf(rho)
 !     N_steps_p        =Nint( pfermi/dp)
-!   
+!
 !     ekin_integral=0.
-! 
+!
 !     do i=0,N_steps_p-1
 !        p=(float(i)+0.5)*dp
 !        ekin_integral= ekin_integral+p**2*sqrt(p**2+mN**2)
 !     end do
-!     
+!
 !     ekin_integral=ekin_integral*2.* 4.*pi*dp /(2.*pi)**3
-!     
+!
 !   end function ekin_integral
 
 
@@ -762,7 +762,7 @@ contains
   !**************************************************************************************************************
   !**************************************************************************************************************
   !**************************************************************************************************************
-  
+
   real function lambdaRoot(lambda,rhoNull_in,pNull_in, uNull_in,bindingEnergy_in, compressibility_in)
 
     real, intent(in) :: lambda
@@ -783,7 +783,7 @@ contains
        write(*,*) 'Variables not initialized in eq! STOP!'
        stop
     end if
-    
+
     rhoNull=rhoNull_save
     pNull  =pNull_save
     uNull  =uNull_save
@@ -791,13 +791,13 @@ contains
     compressibility=compressibility_save
 
     lambdaRoot=1.+1/rhoNull/(c3(rhoNull)-uNull *f6(lambda,rhoNull,rhoNull,pNull)/f7(lambda,rhoNull,rhoNull,pNull)) &
-         &  *(c1(rhoNull,bindingEnergy)-uNull*f5(lambda,rhoNull,rhoNull,pNull)/f7(lambda,rhoNull,rhoNull,pNull)) 
+         &  *(c1(rhoNull,bindingEnergy)-uNull*f5(lambda,rhoNull,rhoNull,pNull)/f7(lambda,rhoNull,rhoNull,pNull))
 
 
     !write(99,'(6E20.5)') lambda, lambdaRoot , c3(rhoNull)-uNull *f6(lambda,rhoNull,rhoNull,pNull)/f7(lambda,rhoNull,rhoNull,pNull), &
     !     &  (c1(rhoNull,bindingEnergy)-uNull*f5(lambda,rhoNull,rhoNull,pNull)/f7(lambda,rhoNull,rhoNull,pNull)) ,lambdaRootPole(lambda,rhoNull,pNull, uNull,bindingEnergy),lambdaRootPole(lambda)
 
-   
+
   end function lambdaRoot
 
 
@@ -819,14 +819,14 @@ contains
        write(*,*) 'Variables not initialized in eq! STOP!'
        stop
     end if
-    
+
     rhoNull=rhoNull_save
     pNull  =pNull_save
     uNull  =uNull_save
     bindingEnergy=bindingEnergy_save
     lambdaRootPole=c3(rhoNull)-uNull *f6(lambda,rhoNull,rhoNull,pNull)/f7(lambda,rhoNull,rhoNull,pNull)
   end function lambdaRootPole
-    
+
 
   ! This dummy function is needed for root searching in the lambda variable
   real function lambdaRoot_dummy(lambda)
@@ -879,21 +879,21 @@ contains
   !***************************************************************************
   !****s* skyrme/check
   ! NAME
-  ! subroutine check(rhoNull, pNull, bindingEnergy, compressibility, A,B,C, tau, lambda) 
+  ! subroutine check(rhoNull, pNull, bindingEnergy, compressibility, A,B,C, tau, lambda)
   ! PURPOSE
-  ! Checks whether  A,B,C, tau, lambda are valid parameters for given input 
+  ! Checks whether  A,B,C, tau, lambda are valid parameters for given input
   ! rhoNull, pNull, bindingEnergy, compressibility
   ! INPUTS
-  ! * real, intent(in) :: rhoNull, pNull, bindingEnergy, compressibility, A,B,C, tau, lambda 
+  ! * real, intent(in) :: rhoNull, pNull, bindingEnergy, compressibility, A,B,C, tau, lambda
   ! * all units in multiples of GeV!
   ! NOTES
   ! See appendix A.4 of Oliver's thesis for details
   !***************************************************************************
-  subroutine check(rhoNull, pNull,bindingEnergy, compressibility, A,B,C, tau, lambda) 
+  subroutine check(rhoNull, pNull,bindingEnergy, compressibility, A,B,C, tau, lambda)
     use constants, only: hbarc
 
     real, intent(in) :: rhoNull, pNull,bindingEnergy, compressibility, A,B,C, tau, lambda
-    
+
     write(*,'(A20,F15.8)') 'A [GeV] =', A
     write(*,'(A20,F15.8)') 'B [GeV] =', B
     write(*,'(A20,F15.8)') 'C [GeV] =', C

@@ -3,11 +3,11 @@
 ! NAME
 ! module mesonWidth
 ! PURPOSE
-! When this module is initialized then all information for the VACUUM width 
+! When this module is initialized then all information for the VACUUM width
 ! is once calculated for all meson resonances and then stored into the
-! field gammaField, which is of type gammaFieldType. This is done by 
-! initWidth. Afterwards this field is used to return full and 
-! partial width of the meson resonances in the vacuum by the subroutine 
+! field gammaField, which is of type gammaFieldType. This is done by
+! initWidth. Afterwards this field is used to return full and
+! partial width of the meson resonances in the vacuum by the subroutine
 ! "partialWidthMeson, fullWidthMeson"
 ! USES
 ! MesonWidthVacuum
@@ -20,7 +20,7 @@ module mesonWidth
   implicit none
   Private
 
-  ! Parameters to store the partial widths depending on mass  in the range 
+  ! Parameters to store the partial widths depending on mass  in the range
   ! (minimalmass, minimalMass+maxIndex*deltaMass)
   integer, parameter :: maxIndexMass=2000
   real, parameter :: deltaMass=0.004
@@ -31,14 +31,14 @@ module mesonWidth
      real, dimension(nDecays) :: ratio ! ratio of different  decay channels
   end type tGammaField
 
-  ! Field which holds all the information for concerning  the vacuum width, 
+  ! Field which holds all the information for concerning  the vacuum width,
   ! initialized in "initWidth"
   ! First Index: ID of Resonance
   ! Second Index: Mass Index in the range (0,maxIndexMass)
   type(tGammaField), dimension(:,:), allocatable, save :: gammaField
 
   ! Flag to check wether this module is initialized by initWidth
-  logical, save :: initFlag = .true.  
+  logical, save :: initFlag = .true.
 
   ! Switching debugging infos off and on
   logical, parameter :: debug=.false.
@@ -63,20 +63,20 @@ contains
   ! NAME
   ! function partialWidthMeson (ID, mass, IDout1, IDout2, IDout3, iQ1, iQ2, iQ3)
   ! PURPOSE
-  ! This function calculates the partial width (energy dependent) of all 
+  ! This function calculates the partial width (energy dependent) of all
   ! meson resonances.
   ! INPUTS
   ! * integer :: ID -- ID of resonance
   ! * real :: mass -- sqrt(p_mu p^mu) = mass of the resonance (offshell)
-  ! * integer :: IDout1, IDout2 -- IDs of decay products 
+  ! * integer :: IDout1, IDout2 -- IDs of decay products
   !   (selecting channel of interest)
   ! * integer, OPTIONAL :: IDout3 -- ID of third decay product
-  ! * integer, OPTIONAL :: iQ1, iQ2, iQ3 -- Charges of decay products 
+  ! * integer, OPTIONAL :: iQ1, iQ2, iQ3 -- Charges of decay products
   !   (only relevant for 3-body decays)
   !*************************************************************************
   real function partialWidthMeson (ID, mass, IDout1, IDout2, IDout3, iQ1, iQ2, iQ3)
     use DecayChannels, only : Decay2bodyMeson
-    use particleProperties, only: hadron, nDecays 
+    use particleProperties, only: hadron, nDecays
     use idTable, only: pion, eta, photon, isMeson
     use CallStack, only: TRACEBACK
 
@@ -88,14 +88,14 @@ contains
     integer, intent(in),optional :: IDout3
     integer, intent(in),optional :: iQ1,iQ2,iQ3
 
-    real  :: Width       
+    real  :: Width
     integer :: massIndex
     integer :: i, dId, dId_wished
 
     If (initFlag) call initWidth
 
     !*****************************************
-    ! (1) Check Input : 
+    ! (1) Check Input :
     if (.not.IsMeson(ID)) call TRACEBACK()
     if (.not.((IsMeson(IDout1).or.(IDout1.eq.photon)))) call TRACEBACK()
     if (.not.((IsMeson(IDout2).or.(IDout2.eq.photon)))) call TRACEBACK()
@@ -132,14 +132,14 @@ contains
              if (dId<=0) cycle !  not 2Body
              If ((Decay2BodyMeson(dId)%ID(1)==IDout1 .and. Decay2BodyMeson(dId)%ID(2)==IDout2) .or. &
                  (Decay2BodyMeson(dId)%ID(2)==IDout1 .and. Decay2BodyMeson(dId)%ID(1)==IDout2)) &
-                Width=width+gammaField(ID,massIndex)%ratio(i)*gammaField(ID,massIndex)%gammaTotal  
+                Width=width+gammaField(ID,massIndex)%ratio(i)*gammaField(ID,massIndex)%gammaTotal
           end do
 
        else   !three body decay
 
           dId_wished = 999
 
-          If  ((IDout1.eq.pion).and.(IDout2.eq.pion).and.(IDout3.eq.pion)) then 
+          If  ((IDout1.eq.pion).and.(IDout2.eq.pion).and.(IDout3.eq.pion)) then
              ! channel 2 or 3 :  pion pion pion channels
              If ((iQ1+iQ2+iQ3).eq.0) then
                 If((iQ1.ne.0).or.(iQ2.ne.0).or.(iQ3.ne.0)) then
@@ -148,13 +148,13 @@ contains
                    dId_wished = -3  ! piNull, piNull, piNull channel
                 end if
              end if
-          else If  ((IDout1.eq.eta).or.(IDout2.eq.eta).or.(IDout3.eq.eta)) then 
+          else If  ((IDout1.eq.eta).or.(IDout2.eq.eta).or.(IDout3.eq.eta)) then
              if ((IDout1+IDout2+IDout3).eq.(2*pion+eta)) then
                 ! eta pion pion channel
                 If((iQ1.eq.0).and.(iQ2.eq.0).and.(iQ3.eq.0)) then
                    dId_wished = -1  ! pi0 pi0 eta
                 else If(iQ1+iQ2+iQ3.eq.0) then
-                   dId_wished = -4  ! pi+ pi- eta 
+                   dId_wished = -4  ! pi+ pi- eta
                 end if
              end if
           end if
@@ -162,7 +162,7 @@ contains
           do i=1,nDecays
              dID = hadron(ID)%decaysID(i) ! 3Body: <0
              if (dId.ne.dId_wished) cycle
-             Width=width+gammaField(ID,massIndex)%ratio(i)*gammaField(ID,massIndex)%gammaTotal 
+             Width=width+gammaField(ID,massIndex)%ratio(i)*gammaField(ID,massIndex)%gammaTotal
           end do
 
        end if
@@ -172,11 +172,11 @@ contains
     else
        write(*,*) 'strange error in partialWidthMeson. STOP!', massIndex, mass,hadron(ID)%minmass,ID
        stop
-       
+
     end if
-    
+
   end function partialWidthMeson
-  
+
 
 
   !*************************************************************************
@@ -184,7 +184,7 @@ contains
   ! NAME
   ! real function FullWidthMeson(ID,mass)
   ! PURPOSE
-  ! This function calculates the full width (energy dependent) of all meson 
+  ! This function calculates the full width (energy dependent) of all meson
   ! resonances.
   ! INPUTS
   ! * integer :: ID -- ID of resonance
@@ -192,7 +192,7 @@ contains
   ! NOTES
   ! We declare this function to be recursive, since there may be a cycle as
   !   FullWidthMeson -> initWidth -> InitializeSpectralIntegral
-  !   -> FullWidthMeson 
+  !   -> FullWidthMeson
   !*************************************************************************
   recursive real function FullWidthMeson(ID,mass)
     use IdTable, only: isMeson
@@ -252,17 +252,17 @@ contains
 
     integer :: massIndex, ID
     real :: mass, gammaTotal
-    real, dimension(nDecays) :: ratio 
+    real, dimension(nDecays) :: ratio
 
     if (.not.initFlag) return ! avoid cyclic init calls
     initFlag=.false.
 
     call Write_InitStatus("widths of the mesons",0)
 
-    ! allocate the field which holds the decay ratio information for each 
-    ! meson, depending on mass, 
+    ! allocate the field which holds the decay ratio information for each
+    ! meson, depending on mass,
     ! first index: meson ID
-    ! second index : mass 
+    ! second index : mass
     Allocate(gammaField(pion:pion+nMes-1,0:maxIndexMass))
 
     ! Initialize the gamma fields for the mesons by calling vacuumWidth
@@ -273,7 +273,7 @@ contains
           gammaTotal = vacuumWidth (mass, ID, ratio)
           gammaField(ID,MassIndex)%gammaTotal=gammaTotal
           gammaField(ID,MassIndex)%ratio=ratio
-          If (debug) Write(100+Id,'(6F14.9)') mass, gammaTotal 
+          If (debug) Write(100+Id,'(6F14.9)') mass, gammaTotal
           if (.not. (ID==rho .and. get_rho_dilep()) .and. (abs(sum(ratio)-1)>1E-6) .and. (abs(sum(ratio))>1E-6)) then
              Write(*,*) 'Problem in mesonWidth/initWidth'
              write(*,*) "Ratios don't add up to 1! ",gammaTotal
@@ -380,7 +380,7 @@ contains
 
   !*****************************************************************************
   !****s* mesonWidth/GetMinMaxMass
-  ! NAME 
+  ! NAME
   ! subroutine GetMinMaxMass(ID,MinMass,MaxMass,InMedium)
   ! PURPOSE
   ! return values of minimal and maximal mass according the mass tabulation
@@ -391,7 +391,7 @@ contains
   ! * real :: MinMass -- minimal mass value
   ! * real :: MaxMass -- maximal mass value
   ! NOTES
-  ! This returns the minimal mass as stored as default value. 
+  ! This returns the minimal mass as stored as default value.
   ! For in-medium vector mesons, the minimal mass is reduced to zero.
   !
   ! The maximal mass is given by the size of the array times the bin width.
@@ -437,7 +437,7 @@ contains
   !
   ! NOTES
   ! * The size of BinMaxQ has to be at least the size of BinM minus 1.
-  ! * It first calculates Q at the boundaries, then it iterates over the 
+  ! * It first calculates Q at the boundaries, then it iterates over the
   !   tabulated width values in order to take into account, that the Q
   !   value may be larger inbetween the boundaries.
   ! * if the Q value is maximal at the upper bound, we store its value as -Q.

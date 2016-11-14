@@ -62,15 +62,15 @@ module LowPhotonAnalysis
   !***************************************************************************
 
 
-  !***************************************************************************
+  !*****************************************************************************
   !****g* lowPhotonAnalysis/TwoPiOutput
   ! SOURCE
   !
-  logical,save :: TwoPiOutput=.true.
+  logical,save :: TwoPiOutput = .false.
   ! PURPOSE
-  ! If .true. then we perform an analysis for 2pi production, including statistics
-  ! for the mass of the pi-pi pair.
-  !***************************************************************************
+  ! If .true. then we perform an analysis for 2pi production,
+  ! including statistics for the mass of the pi-pi pair.
+  !*****************************************************************************
 
 
   !***************************************************************************

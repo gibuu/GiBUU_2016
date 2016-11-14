@@ -7,7 +7,7 @@
 ! ('rho_AB_Integrand') of baryon and meson decays into unstable particles.
 ! It is necessary to NOT declare 'rho_AB_Integrand' as  an internal function,
 ! since we want to have it as an argument in procedure call.
-! Therefore we have to introduce this module as an interface of global 
+! Therefore we have to introduce this module as an interface of global
 ! variables between "semiStableFinalState" and "rho_ab_integrand".
 !***************************************************************************
 module rhoABIntegrandVariables
@@ -20,4 +20,4 @@ module rhoABIntegrandVariables
   real :: massStable, massUnstable, gammaUnstable ! properties of the decay products
   real :: srts
 
-end module rhoABIntegrandVariables 
+end module rhoABIntegrandVariables

@@ -5,12 +5,12 @@
 ! PURPOSE
 ! Gives the in-medium width of a proton or a neutron.
 ! AUTHOR
-! David F. Kalok 
+! David F. Kalok
 !***************************************************************************
 module pn_medium_width
   use inputGeneral, only :  path_to_Input
   use constants
-  
+
   implicit none
   private
 
@@ -23,13 +23,13 @@ module pn_medium_width
   ! * debug
   ! * density_dependent
   ! * pn_medium_switch
-  ! * form_factor  
+  ! * form_factor
   !************************************************************************
 
   !************************************************************************
   !****ig*  pn_medium_width/debug
   ! SOURCE
-  ! 
+  !
   logical, save :: debug=.false.
   ! PURPOSE
   ! If .true. debug infos are produced, if .false. not..
@@ -42,12 +42,12 @@ module pn_medium_width
   logical, save :: density_dependent=.false.
   ! PURPOSE
   ! the density of the spectral function
-  !************************************************************************ 
+  !************************************************************************
 
   !************************************************************************
   !****ig*  pn_medium_width/form_factor
   ! SOURCE
-  ! 
+  !
   logical, save :: form_factor=.true.
   ! PURPOSE
   ! If .true. the form factor for the width is used
@@ -56,7 +56,7 @@ module pn_medium_width
   !************************************************************************
   !****ig*  pn_medium_width/pn_medium_switch
   ! SOURCE
-  ! 
+  !
   logical, save :: pn_medium_switch=.true.
   ! PURPOSE
   ! If .true. medium_modifications will be used
@@ -82,7 +82,7 @@ contains
   ! * pn_medium_switch
   ! Only called once to initialize the module.
   !************************************************************************
-  subroutine readinput 
+  subroutine readinput
 
     use output
     integer :: ios
@@ -92,7 +92,7 @@ contains
     call Write_ReadingInput("pn_medium",0)
     rewind(5)
     read(5,nml=pn_medium,IOSTAT=IOS)
-    call Write_ReadingInput("pn_medium",0,IOS)   
+    call Write_ReadingInput("pn_medium",0,IOS)
 
     write(*,*) 'Set pn_medium_switch       :' ,pn_medium_switch
     call Write_ReadingInput('pn_medium',1)
@@ -102,7 +102,7 @@ contains
   !************************************************************************
   !****f* pn_medium_width/proton_width_medium
   ! NAME
-  ! real function proton_width_medium(momLRF,pdens,ndens,mu_extern) 
+  ! real function proton_width_medium(momLRF,pdens,ndens,mu_extern)
   ! PURPOSE
   ! function for calculation of  the proton width in a medium
   ! INPUTS
@@ -113,7 +113,7 @@ contains
   ! AUTHOR
   ! David F. Kalok
   !************************************************************************
-  real function proton_width_medium(momentumLRF,pdens,ndens,mu_extern)  
+  real function proton_width_medium(momentumLRF,pdens,ndens,mu_extern)
 !    use init_pn_medium
     !   use spline2d
     use constants,only: hbarc, mN
@@ -144,9 +144,9 @@ contains
        teilchen_fermi%id=1
        teilchen_fermi%perturbative=.false.
        ! finalState%productionTime=0.
-       ! finalState%lastCollisionTime=0. 
+       ! finalState%lastCollisionTime=0.
        ! finalState%formationTime=0.
-       ! finalState%scaleCS=1.             
+       ! finalState%scaleCS=1.
        ! finalState%in_Formation=.false.
 
        initflag=.false.
@@ -171,7 +171,7 @@ contains
 
        teilchen_fermi%momentum(0)=sqrt((teilchen_fermi%mass+&
             & BaryonPotential(teilchen_fermi,med,.true.))**2 +k_fermi**2)
-       omega_F=teilchen_fermi%momentum(0)   
+       omega_F=teilchen_fermi%momentum(0)
        proton_width_medium=proton_width_mdd(momentumLRF,pdens,ndens,omega_F)
     end if
 
@@ -193,12 +193,12 @@ contains
   ! It uses the data input files /baryon/0*.34
   ! right now only for z/a =0.5
   !************************************************************************
-  real function proton_width_mdd(momentumLRF,pdens,ndens,mu_extern)  
+  real function proton_width_mdd(momentumLRF,pdens,ndens,mu_extern)
 
-    real,intent(in),dimension(0:3) :: momentumLRF ! momentum of resonance in LRF 
+    real,intent(in),dimension(0:3) :: momentumLRF ! momentum of resonance in LRF
     real, intent(in) :: pdens
     real, intent(in) :: ndens
-    real, optional :: mu_extern 
+    real, optional :: mu_extern
     integer, parameter :: Dateiende=-1
 
     !   real, dimension(1:200),save :: pLabField, sigmaField, derivativeField
@@ -228,9 +228,9 @@ contains
     init:  If(initFlag) then
 
        write(*,*) 'density dependent width for protons and neutrons  is used'
-       call readinput 
+       call readinput
        n_count=1
-       If(debug) then 
+       If(debug) then
           write(*,*) 'Initializing proton_width_medium_density_dependent'
        end if
        densityloop: Do l=1,32
@@ -241,11 +241,11 @@ contains
           INQUIRE(FILE=trim(path_to_Input)//'/baryon/0'//nummern(n_count)//'.34',EXIST=lexist)
           IF (.NOT. lexist) THEN
              write(*,*) 'Error in subroutine proton_width_medium_density_dependent, no file: ', &
-                  & trim(path_to_Input)//'/baryon/0'//nummern(n_count)//'.34', ' exists!!!' 
+                  & trim(path_to_Input)//'/baryon/0'//nummern(n_count)//'.34', ' exists!!!'
              stop
           END IF
           allo: if (allocat) then
-             length: DO 
+             length: DO
 
                 read(100,1002,IOSTAT=ios)  temp1, temp2, temp3, temp4 !, temp5,  temp6 !temp
 
@@ -257,7 +257,7 @@ contains
              !reading datafile input
              REWIND(100)
 
-             i_max= i-1 
+             i_max= i-1
              !write(*,*) 'i_max', i_max
              ALLOCATE( proton_omega(i_max), proton_momentum(i_max), proton_gamma(i_max), proton_spectral(i_max) )
              !& proton_rho(i_max), proton_za(i_max) )
@@ -265,7 +265,7 @@ contains
              allocat=.false.
           end if allo
 
-          do i=lBound(proton_omega,dim=1),uBound(proton_omega,dim=1) 
+          do i=lBound(proton_omega,dim=1),uBound(proton_omega,dim=1)
              read(100,1002,IOSTAT=ios) proton_omega(i), proton_momentum(i), &
                   & proton_gamma(i), proton_spectral(i) !, temp5, proton_za(i) !omega1, p1, Gamma, Spectral, rho, z/a
              !proton_rho(i)=temp5 !input rho is in fm^{-3}
@@ -316,7 +316,7 @@ contains
                 DO i=lbound(proton_omega,dim=1),ubound(proton_omega,dim=1)
                    if ( ( proton_omega(i) .EQ. omega_field(k)  )  .AND.  (proton_momentum(i) .EQ. momentum_field(j)) ) EXIT
                 END DO
-                if (i .gt. ubound(proton_gamma,dim=1)) then 
+                if (i .gt. ubound(proton_gamma,dim=1)) then
                    i=ubound(proton_gamma,dim=1)
                 end if
 
@@ -401,7 +401,7 @@ contains
           n_energy=nint((maximalEnergy-minEnergy)/domega)+1
           gammatmp =gamma_matrix(n_rho,n_momentum,n_energy)
           proton_width_mdd=gammatmp*exp( -( (omegatmp-maximalEnergy)/0.025 )**2)+0.002
-          return 
+          return
        else
           omegatmp=maximalEnergy
        end if
@@ -445,13 +445,13 @@ contains
     real, save :: za=0.5
     real, Dimension(64) ,save:: dens_field, omega_f_field
     integer :: i
-    logical, save :: initflag=.true. 
+    logical, save :: initflag=.true.
     type(tspline),save :: spline
     logical :: successFlag
     integer :: error
 
     if (initflag) then
-       Do i=1,64  
+       Do i=1,64
           dens_field(i)=float(i)*0.005
           omega_f_field(i)=omega_f_width(dens_field(i),za)
        end do
@@ -466,7 +466,3 @@ contains
 
 
 end module pn_medium_width
-
-
-
-

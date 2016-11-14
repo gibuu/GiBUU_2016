@@ -5,17 +5,17 @@
 ! PURPOSE
 ! Includes all information about relativistic mean-field potential for baryons and mesons.
 ! NOTES
-! * When hyperon coupling is scaled by the well known factor of 2/3, the kaons are scaled 
-!   by the factor 1/3 in order to compensate the missing self energy between incoming and 
-!   outgoing channel. This is because the threshold condition, e.g. \pi N->YK 
-!   sqrt(s*)>m*_y+m*_k, in the medium assumes no changes in the self energy between 
-!   initial and final states (see Alexei's paper on three-body collisions). 
-!   This prescription should better not be used at energies 
-!   near the kaon-production threshold, since in this method the kaon potential 
+! * When hyperon coupling is scaled by the well known factor of 2/3, the kaons are scaled
+!   by the factor 1/3 in order to compensate the missing self energy between incoming and
+!   outgoing channel. This is because the threshold condition, e.g. \pi N->YK
+!   sqrt(s*)>m*_y+m*_k, in the medium assumes no changes in the self energy between
+!   initial and final states (see Alexei's paper on three-body collisions).
+!   This prescription should better not be used at energies
+!   near the kaon-production threshold, since in this method the kaon potential
 !   is not consistent within Chiral Perturbation Theory or One-Boson-Exchange models.
-! * The same non-trivial feature appears if the baryon self energies depend on isospin. 
+! * The same non-trivial feature appears if the baryon self energies depend on isospin.
 !   Presently no isospin-dependent part is included in the baryon fields.
-! * Going beyond this simple approximation means to explicitly include different 
+! * Going beyond this simple approximation means to explicitly include different
 !   threshold conditions for all channels considered in the collision term.
 !*******************************************************************************
 module RMF
@@ -175,10 +175,10 @@ contains
   !***************************************************************************
   !****f* RMF/ModificationFactor
   ! NAME
-  ! real function ModificationFactor(Id,antiFlag) 
+  ! real function ModificationFactor(Id,antiFlag)
   ! PURPOSE
   ! Returns the modification factor of the RMF coupling constants for a given particle.
-  ! INPUTS 
+  ! INPUTS
   ! * integer, intent(in) :: Id         ! Id of particle
   ! * logical, intent(in) :: antiFlag   ! if .true. the particle is an antiparticle
   !***************************************************************************
@@ -191,12 +191,12 @@ contains
     if( nucleon <= Id .and. Id <= F37_1950 .and. antiFlag ) then ! Nonstrange antibaryon
       ModificationFactor=fact_pbar
     else if( Lambda  <= Id .and. Id <= sigma_1915 ) then  ! Baryon with s=-1
-      if(.not.antiFlag) then 
+      if(.not.antiFlag) then
          ModificationFactor=fact_hyp
       else
          ModificationFactor=fact_antihyp
       end if
-    else if( Xi  <= Id .and. Id <= XiStar ) then  ! Baryon with s=-2 
+    else if( Xi  <= Id .and. Id <= XiStar ) then  ! Baryon with s=-2
       if(.not.antiFlag) then
          ModificationFactor=fact_Xi
       else
@@ -208,7 +208,7 @@ contains
       ModificationFactor=1.
     end if
   end function ModificationFactor
-    
+
 
   logical function getRMF_flag()
     If (initFlag) call init
@@ -227,7 +227,7 @@ contains
   ! NAME
   ! subroutine init
   ! PURPOSE
-  ! Reads input switches. Initializes the mean field parameters. 
+  ! Reads input switches. Initializes the mean field parameters.
   !***************************************************************************
   subroutine init
 
@@ -287,59 +287,59 @@ contains
             ! (K=211.29 MeV, m*/m=0.57):
             m_nucleon=0.938   ! -- nucleon mass (GeV),
             m_sigma=0.492250  ! -- sigma-meson mass (GeV),
-            m_omega=0.795359  ! -- omega-meson mass (GeV),   
+            m_omega=0.795359  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=10.138    ! -- sigma-nucleon coupling constant,
             g_omega=13.285    ! -- omega-nucleon coupling constant,
             g_rho=4.976       ! -- rho-nucleon coupling constant,
             g_2=-12.172*hbarc ! -- coefficient at sigma^3 in the Lagrangian (GeV),
-            g_3=-36.265 ! -- coefficient at sigma^4 in the Lagrangian 
+            g_3=-36.265 ! -- coefficient at sigma^4 in the Lagrangian
 
          case (2)
             ! NL3 set from G.A. Lalazissis et al., PRC 55, 540 (1997)
             ! (K=271.76 MeV, m*/m=0.60) :
             m_nucleon=0.939   ! -- nucleon mass (GeV),
             m_sigma=0.508194  ! -- sigma-meson mass (GeV),
-            m_omega=0.782501  ! -- omega-meson mass (GeV),   
+            m_omega=0.782501  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=10.217    ! -- sigma-nucleon coupling constant,
             g_omega=12.868    ! -- omega-nucleon coupling constant,
             g_rho=4.474       ! -- rho-nucleon coupling constant,
             g_2=-10.431*hbarc ! -- coefficient at sigma^3 in the Lagrangian (GeV),
-            g_3=-28.885 ! -- coefficient at sigma^4 in the Lagrangian 
+            g_3=-28.885 ! -- coefficient at sigma^4 in the Lagrangian
 
          case (3)
             ! NL2 set from A. Lang et al., NPA 541, 507 (1992)
             ! (K=210 MeV, m*/m=0.83) :
             m_nucleon=0.938   ! -- nucleon mass (GeV),
             m_sigma=0.5505 ! -- sigma-meson mass (GeV),
-            m_omega=0.7833  ! -- omega-meson mass (GeV),   
+            m_omega=0.7833  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=8.50    ! -- sigma-nucleon coupling constant,
             g_omega=7.54    ! -- omega-nucleon coupling constant,
             g_rho=0.      ! -- rho-nucleon coupling constant,
             g_2=-50.37*hbarc ! -- coefficient at sigma^3 in the Lagrangian (GeV),
-            g_3=-6.26 ! -- coefficient at sigma^4 in the Lagrangian 
+            g_3=-6.26 ! -- coefficient at sigma^4 in the Lagrangian
 
          case (4)
             ! NLZ2 set from M. Bender et al., PRC 60, 34304 (1999)
             ! (K=172 MeV, m*/m=0.583) :
             m_nucleon=0.9389   ! -- nucleon mass (GeV),
             m_sigma=0.493150  ! -- sigma-meson mass (GeV),
-            m_omega=0.7800  ! -- omega-meson mass (GeV),   
+            m_omega=0.7800  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=10.1369    ! -- sigma-nucleon coupling constant,
             g_omega=12.9084   ! -- omega-nucleon coupling constant,
             g_rho=4.55627       ! -- rho-nucleon coupling constant,
             g_2=-13.7561*hbarc ! -- coefficient at sigma^3 in the Lagrangian (GeV),
-            g_3=-41.4013 ! -- coefficient at sigma^4 in the Lagrangian 
+            g_3=-41.4013 ! -- coefficient at sigma^4 in the Lagrangian
 
          case (5)
             ! NL3* set from G.A. Lalazissis, private communication.
             ! (K=258.28 MeV, m*/m=0.594) :
             m_nucleon=0.939   ! -- nucleon mass (GeV),
             m_sigma=0.5026  ! -- sigma-meson mass (GeV),
-            m_omega=0.7826  ! -- omega-meson mass (GeV),   
+            m_omega=0.7826  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=10.0944    ! -- sigma-nucleon coupling constant,
             g_omega=12.8065   ! -- omega-nucleon coupling constant,
@@ -351,7 +351,7 @@ contains
             ! Same as N_set=3, but including the rho meson.
             m_nucleon=0.938   ! -- nucleon mass (GeV),
             m_sigma=0.5505 ! -- sigma-meson mass (GeV),
-            m_omega=0.7833  ! -- omega-meson mass (GeV),   
+            m_omega=0.7833  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=8.50    ! -- sigma-nucleon coupling constant,
             g_omega=7.54    ! -- omega-nucleon coupling constant,
@@ -364,7 +364,7 @@ contains
             ! (K=212 MeV, m*/m=0.57) :
             m_nucleon=0.938   ! -- nucleon mass (GeV),
             m_sigma=0.49225   ! -- sigma-meson mass (GeV),
-            m_omega=0.795359  ! -- omega-meson mass (GeV),   
+            m_omega=0.795359  ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=10.138    ! -- sigma-nucleon coupling constant,
             g_omega=13.285    ! -- omega-nucleon coupling constant,
@@ -377,7 +377,7 @@ contains
             ! (K=399 MeV, m*/m=0.67) :
             m_nucleon=0.938   ! -- nucleon mass (GeV),
             m_sigma=0.50489   ! -- sigma-meson mass (GeV),
-            m_omega=0.78000   ! -- omega-meson mass (GeV),   
+            m_omega=0.78000   ! -- omega-meson mass (GeV),
             m_rho=0.763000    ! -- rho-meson mass (GeV),
             g_sigma=9.111     ! -- sigma-nucleon coupling constant,
             g_omega=11.493    ! -- omega-nucleon coupling constant,
@@ -412,7 +412,7 @@ contains
          a_6=(g_omega/m_omega)**2*hbarc**3
          a_7=(g_rho/m_rho)**2*hbarc**3
 
-      end if 
+      end if
 
   end subroutine init
 
@@ -538,7 +538,7 @@ contains
     end if
 
     U_s=g_sigma*sigma
-    U_v=a_6*rhobar   
+    U_v=a_6*rhobar
 
     if(present(S)) S=U_s
     if(present(V)) V=U_v
@@ -584,15 +584,15 @@ contains
   ! NAME
   ! real function f
   ! PURPOSE
-  ! Computes analytically the expression 
-  !  3*a*\int_0^1 dx x^2/\sqrt(x^2+a^2) 
+  ! Computes analytically the expression
+  !  3*a*\int_0^1 dx x^2/\sqrt(x^2+a^2)
   ! INPUTS
   ! * real, intent(in) :: a  -- dimensionless parameter equal to m^*/p_F
   !***************************************************************************
   real function f(a)
 
     real, intent(in) :: a
-    real :: tmp 
+    real :: tmp
 
     tmp = sqrt(1.+a**2)
     f = 1.5*a * ( tmp - 0.5*a**2*log((tmp + 1.)/(tmp - 1.)) )
@@ -613,7 +613,7 @@ contains
   real function fprime(a)
 
     real, intent(in) :: a
-    real :: tmp 
+    real :: tmp
 
     tmp = sqrt(1.+a**2)
     fprime = f(a)/a + 3.*a**2*( 1./tmp - log((tmp+1.)/a) )
@@ -626,15 +626,15 @@ contains
   ! NAME
   ! real function g(a)
   ! PURPOSE
-  ! Computes analytically the expression 
-  !  \int_0^1 dx x^2*\sqrt(x^2+a^2) 
+  ! Computes analytically the expression
+  !  \int_0^1 dx x^2*\sqrt(x^2+a^2)
   ! INPUTS
   ! * real, intent(in) :: a  -- dimensionless parameter equal to m^*/p_F
   !***************************************************************************
   real function g(a)
 
     real, intent(in) :: a
-    real :: tmp 
+    real :: tmp
 
     tmp = sqrt(1.+a**2)
     g = ( tmp**3 + tmp - 0.5*a**4*log((tmp + 1.)/(tmp - 1.)) )/8.

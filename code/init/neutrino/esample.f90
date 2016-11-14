@@ -20,7 +20,7 @@ module esample
   real, save :: Enu_upper_cut=200.
   ! PURPOSE
   ! cut events with neutrino energy above Enu_upper_cut;
-  ! for ANL experiment, for example, Enu_upper_cut=1.5 for ppi0 and npi+ final 
+  ! for ANL experiment, for example, Enu_upper_cut=1.5 for ppi0 and npi+ final
   ! state, but 5.98 for ppi+
   !***************************************************************************
 
@@ -35,7 +35,7 @@ module esample
   !***************************************************************************
 
   !****************************************************************************
-  !****g* esample/energylimit_for_Qsrec 
+  !****g* esample/energylimit_for_Qsrec
   ! SOURCE
   logical ::energylimit_for_Qsrec = .False.
   ! PURPOSE
@@ -78,7 +78,7 @@ contains
 
     integer :: j = 1, NDIM
     integer, intent(out) :: n_E
-    integer :: ios 
+    integer :: ios
     integer :: ierr
 
     real :: sumf,en,fl
@@ -90,25 +90,25 @@ contains
 
 
     NAMELIST /nl_fluxcuts/  Enu_lower_cut, Enu_upper_cut, energylimit_for_Qsrec
-    ! upper and lower energy cuts for flux and for Q^2 reconstruction    
+    ! upper and lower energy cuts for flux and for Q^2 reconstruction
 
     call Write_ReadingInput('nl_fluxcuts',0)
     rewind(5)
     read(5,nml=nl_fluxcuts,IOSTAT=ios)
-    call Write_ReadingInput("nl_fluxcuts",0,ios) 
+    call Write_ReadingInput("nl_fluxcuts",0,ios)
     write(*,*) "Enu_true_lower_cut = ",Enu_lower_cut
     write(*,*) "Enu_true_upper_cut =",Enu_upper_cut
-    write(*,*) "E-Limit for Qs-Reconstruction =",energylimit_for_Qsrec 
+    write(*,*) "E-Limit for Qs-Reconstruction =",energylimit_for_Qsrec
 
     !   Now reading of flux file from buuinput/neutrinos
     fileName=trim(path_to_Input)//'/neutrino/'//trim(fluxfilename)
     call Write_ReadingInput(fileName,0)
-    
+
     open(13,file=filename,status='old',action='read',iostat=ierr)
     if (ierr/=0) call traceback('ERROR: can not open file')
-    
+
     ReadComments: do
-       read(13,'(A)') line 
+       read(13,'(A)') line
        if (line(1:1) /= "#") exit ReadComments
        if (verbose) write(*,*) line
     end do ReadComments
@@ -122,12 +122,12 @@ contains
        flux(j) = fl
        j = j + 1
     end do
-    
+
    if (ierr>0) call traceback('ERROR: reading flux file')
 
-    close(13) 
+    close(13)
     call Write_ReadingInput(fileName,1)
-    
+
     !=== flux reading finished
 
     n_E = j-1  ! number of flux values in flux file
@@ -137,21 +137,19 @@ contains
     sumflux = 0
 
     do j = 1,n_E
-       if(enu(j) < Enu_lower_cut) then
-          sumflux(j) = 0
-          cycle
-       end if
-
-       if(enu(j) > Enu_upper_cut ) then
-          exit
-       end if
-
+       if(enu(j) < Enu_lower_cut .or. enu(j) > Enu_upper_cut)  flux(j) = 0.0
        sumflux(j) = sumflux(j-1) + flux(j)
+   !    write (*,*) sumflux(j)
     end do
 
     !=== now sumflux = normalized cumulative flux
     sumf = sum(flux)
-    if(abs(sumflux(n_E) - sumf) >= 0.0001) write(*,*) 'problem with sumflux'
+    if(abs(sumflux(n_E) - sumf) >= 0.001*sumf)  then
+      write(*,*) 'problem with sumflux'
+      stop
+    end if
+
+    write (*,*) n_E,sumflux(n_E), sumf
 
     sumflux = sumflux/sumf
 
@@ -203,14 +201,10 @@ contains
     end if
 
     eneut = enu(l) - 0.5*bin     &
-         + bin* (v - sumflux(l-1))/(sumflux(l) - sumflux(l-1))  
-    ! Test printout                    
+         + bin* (v - sumflux(l-1))/(sumflux(l) - sumflux(l-1))
+    ! Test printout
     !   write (*,*) "j=  ",j,"   eneut=",eneut
-    ! End of testprintout     
+    ! End of testprintout
   end function eneut
 
 end module esample
-
-
-
-

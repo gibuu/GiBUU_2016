@@ -1,9 +1,9 @@
 
 module neutrino_IDTable
   implicit none
-  
+
   PUBLIC
-  
+
   !values for flavor_ID
   integer, parameter :: electron  = 1
   integer, parameter :: muon      = 2
@@ -42,7 +42,7 @@ module neutrino_IDTable
   integer, parameter :: MiniBooNE = 1
   integer, parameter :: K2K = 2
   integer, parameter :: Minos =3
-  
+
   !values for onePion
   !n for outgoing channels with neutron
   !p for outgoing channels with proton
@@ -57,6 +57,6 @@ module neutrino_IDTable
   integer,parameter :: twoPion = 37
 
 
-  
+
 
 end module neutrino_IDTable

@@ -16,8 +16,8 @@ module inputGeneral
   ! PURPOSE
   ! Switch for generating Povray-Output
   ! SOURCE
-  ! 
-  logical        ,save :: povray_switch=.false.     
+  !
+  logical        ,save :: povray_switch=.false.
   !*************************************************************************
 
   !*************************************************************************
@@ -25,18 +25,18 @@ module inputGeneral
   ! PURPOSE
   ! Switch for not propagating real particles
   ! SOURCE
-  ! 
-  logical        ,save :: freezeRealParticles=.false.     
+  !
+  logical        ,save :: freezeRealParticles=.false.
   !*************************************************************************
 
   !*************************************************************************
   !****g* inputGeneral/FinalCoulombCorrection
   ! PURPOSE
-  ! Switch for Coulomb correction at the end of each run of the 
+  ! Switch for Coulomb correction at the end of each run of the
   ! outgoing particles
   ! SOURCE
-  ! 
-  logical        ,save :: FinalCoulombCorrection=.false.     
+  !
+  logical        ,save :: FinalCoulombCorrection=.false.
   !*************************************************************************
 
   !*************************************************************************
@@ -63,13 +63,13 @@ module inputGeneral
   !*************************************************************************
   !****g* inputGeneral/eventtype
   ! PURPOSE
-  ! Switch for the type of event 
+  ! Switch for the type of event
   !
   ! possible values: see module eventtypes
-  ! 
+  !
   ! SOURCE
-  ! 
-  integer        ,save :: eventtype=3 
+  !
+  integer        ,save :: eventtype=3
   !*************************************************************************
 
   !*************************************************************************
@@ -81,7 +81,7 @@ module inputGeneral
   ! See also "localEnsemble".
   ! SOURCE
   !
-  logical, save :: fullEnsemble = .false.   
+  logical, save :: fullEnsemble = .false.
   !*************************************************************************
 
 
@@ -94,7 +94,7 @@ module inputGeneral
   ! Setting localEnsemble = .true. will implicitly set fullEnsemble = .true. (disregarding its value in the jobcard).
   ! SOURCE
   !
-  logical,save :: localEnsemble = .false.   
+  logical,save :: localEnsemble = .false.
   !*************************************************************************
 
 
@@ -113,7 +113,7 @@ module inputGeneral
   ! Number of time steps
   ! SOURCE
   !
-  integer        ,save :: numTimeSteps=100   
+  integer        ,save :: numTimeSteps=100
   !*************************************************************************
 
   !*************************************************************************
@@ -122,7 +122,7 @@ module inputGeneral
   ! time difference for time stepping
   ! SOURCE
   !
-  real        ,save :: delta_T=0.2   
+  real        ,save :: delta_T=0.2
   !*************************************************************************
 
   !*************************************************************************
@@ -130,12 +130,12 @@ module inputGeneral
   ! PURPOSE
   ! Switch for using of variable time step:
   ! * .false.= use constant time step delta_T (see above).
-  ! * .true.= use time step computed from the frequency of collisions. 
+  ! * .true.= use time step computed from the frequency of collisions.
   !   In this case the input delta_T is used as the maximum
   !   allowed time step.
   ! SOURCE
   !
-  logical        ,save :: variableTimeStep=.false.   
+  logical        ,save :: variableTimeStep=.false.
   !*************************************************************************
 
   !*************************************************************************
@@ -144,12 +144,12 @@ module inputGeneral
   ! Switch for checking if particles escape out of grid.
   ! possible values:
   ! * .false.= no check.
-  ! * .true. = check is performed, and a warning flag is printed out, 
+  ! * .true. = check is performed, and a warning flag is printed out,
   !   in case that particles are outside of the grid.
   ! * check valid only for real particles.
   ! SOURCE
   !
-  logical        ,save :: checkGridSize_Flag=.false.   
+  logical        ,save :: checkGridSize_Flag=.false.
   !*************************************************************************
 
   !*************************************************************************
@@ -196,7 +196,7 @@ module inputGeneral
   !*************************************************************************
   !****g* inputGeneral/printParticleVectors
   ! PURPOSE
-  ! Switch to turn on the printing of the particle vector at 
+  ! Switch to turn on the printing of the particle vector at
   ! the start and end of a run.
   ! SOURCE
   !
@@ -206,7 +206,7 @@ module inputGeneral
   !*************************************************************************
   !****g* inputGeneral/printParticleVectorTime
   ! PURPOSE
-  ! * Switch to turn on the printing of the particle vector 
+  ! * Switch to turn on the printing of the particle vector
   !   as function of time.
   ! * Useful for event classes using real particles (HeavyIon,Hadron).
   ! * See also 'timeForOutput' and 'timeSequence'.
@@ -218,7 +218,7 @@ module inputGeneral
   !*************************************************************************
   !****g* inputGeneral/timeForOutput
   ! PURPOSE
-  ! * Time (fm/c) after which the particle vector 
+  ! * Time (fm/c) after which the particle vector
   !   is printed during run (see also variable "timeSequence").
   ! * valid only if printParticleVectorTime = .true.
   ! SOURCE
@@ -253,16 +253,16 @@ module inputGeneral
   logical, save :: continousBoundaries=.false.
   !
   ! PURPOSE
-  ! * Switch to turn on continous boundary conditions. 
+  ! * Switch to turn on continous boundary conditions.
   ! * Implications for density and propagation.
-  ! * This means that particles are propagated according to continous 
-  !   boundaries. A particle leaving the grid will move back in from the 
+  ! * This means that particles are propagated according to continous
+  !   boundaries. A particle leaving the grid will move back in from the
   !   opposite side. The densities are carefully constructed such that places
   !   at the opposite side contribute to places on the near side.
-  ! * What is still missing is the full implementation in collision criteria, 
-  !   this is not done yet for the two body collisions! 
-  !   Be careful therefore with the 2-Body-collisions at the edges. 
-  !   A particle at one edge does not see its scattering partner at the 
+  ! * What is still missing is the full implementation in collision criteria,
+  !   this is not done yet for the two body collisions!
+  !   Be careful therefore with the 2-Body-collisions at the edges.
+  !   A particle at one edge does not see its scattering partner at the
   !   opposite edge.
   !*************************************************************************
 
@@ -366,7 +366,7 @@ contains
 
     If (localEnsemble) then
        write(*,format1) '"LOCAL ENSEMBLES" (="FULL ENSEMBLE" + local coll.crit.)'
-       write(*,*) 
+       write(*,*)
        if (.not.fullensemble) then
           write(*,'(A)') ' WARNING!!! setting fullEnsemble=.true. (localEnsemble=.true. implies this)'
           write(*,*)

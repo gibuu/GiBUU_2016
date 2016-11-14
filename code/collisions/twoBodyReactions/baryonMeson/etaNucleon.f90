@@ -5,9 +5,9 @@
 !
 ! PURPOSE
 ! Includes the cross sections for eta-nucleon scattering in the resonance regime
-! 
+!
 ! Public routines:
-! * etaNuc 
+! * etaNuc
 !****************************************************************************
 module etaNucleon
   implicit none
@@ -39,31 +39,31 @@ contains
   ! * real, intent(in) ,dimension(0:3)              :: momentumLRF           ! Total Momentum in LRF
   !
   ! High energy matching:
-  ! * logical,intent(in)                            :: useHiEnergy            
+  ! * logical,intent(in)                            :: useHiEnergy
   ! * .true. if High-Energy cross sections are given by paramBarMesHE
-  ! * real,intent(in)                               :: HiEnergySchwelle      
+  ! * real,intent(in)                               :: HiEnergySchwelle
   ! * threshold sqrt(s) for paramBarMesHE, i.e. at which energy the cross sections of paramBarMesHE are used
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   !
   ! RESULT
   ! * real, intent(out)                                        :: sigmaTot         ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! colliding particles
-  ! 
+  !
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   ! * 2-particle : pi N, K Lambda, K Sigma
   !*****************************************************************************************************************************
-  
+
 
   subroutine etaNuc(srts,teilchenIN,mediumATcollision,momentumLRF,teilchenOUT,sigmaTot,sigmaElast,&
        & useHiEnergy,HiEnergySchwelle,plotFlag)
@@ -94,10 +94,10 @@ contains
     real,dimension(-1:1) ::     piN            ! -> pi N, index denotes pion charge
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
-    real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities
                                  ! in the medium compared to the vacuum
     real :: s
-    type(particle) :: eta_particle, nucleon_particle    
+    type(particle) :: eta_particle, nucleon_particle
     logical :: antiParticleInput, failFlag
 
     ! partial cross sections for eta N -> R
@@ -131,7 +131,7 @@ contains
     end if
 
     If(nucleon_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        nucleon_particle%Charge        =  -nucleon_particle%Charge
        nucleon_particle%antiparticle  = .false.
        eta_particle%Charge          =  -eta_particle%Charge
@@ -169,7 +169,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.nucleon_particle%charge+eta_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,eta_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,eta_particle%Charge, &
             & nucleon_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -199,7 +199,7 @@ contains
       real :: p_piN, p_etaN, ratio
       real, dimension(1:4) :: sigmaHuang
       integer :: pionCharge, nucCharge
-      
+
       position=0.5*(teilchenIN(1)%position+teilchenIN(2)%position)
       if(teilchenIN(1)%perturbative.or.teilchenIN(2)%perturbative) then
          perturbative=.true.
@@ -243,7 +243,7 @@ contains
 
 
       !*******************************************************************************************
-      ! eta N -> R 
+      ! eta N -> R
       !*****************************************************************************************
 
       ! Full resonance contribution in the medium
@@ -255,7 +255,7 @@ contains
       !###################################################################################################
 
       sigmaElast=barMes_R_barMes(eta,nucleon,eta,nucleon,&
-           & eta_particle%Charge,nucleon_particle%Charge,eta_particle%Charge,nucleon_particle%Charge, & 
+           & eta_particle%Charge,nucleon_particle%Charge,eta_particle%Charge,nucleon_particle%Charge, &
            & .false.,.false.,MediumAtCollision,momentumLRF,&
            & eta_particle%Mass,nucleon_particle%Mass,position,perturbative,srts)
 
@@ -269,30 +269,30 @@ contains
          ratio=p_piN/p_etaN
       else
          ratio=1.
-      end if 
+      end if
 
       !**************************************************************
-      ! -> Lambda Kaon 
+      ! -> Lambda Kaon
       !**************************************************************
       lambdaKaon=0.
       If (srts > hadron(Lambda)%mass + mK) then
          ! huanglam gives : pi^{-} p -> Lambda Kaon^{0}
          lambdaKaon = 0.5 * huangLam(srts) * ratio  ! assume that sigma(eta p -> Lambda K^+) = sigma(pi^0 p -> Lambda K^+) * p_piN/p_etaN
-         ! No resonance contribution 
+         ! No resonance contribution
       end if
 
       !**************************************************************
       ! -> Sigma Kaon
       !**************************************************************
       ! sigmaKaon(0:1) : Index is charge of final state kaon
-      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      ! 
+      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      !
       ! sigmaHuang(2) = pi^{0}  p  ->   K^{+}  Sigma0       !
-      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !           
+      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !
       ! sigmaHuang(4) = pi^{-}  p  ->   K^{+}   Sigma-     !
       sigmaKaon(:)=0.
       If (srts > hadron(SigmaResonance)%mass + mK) then
          sigmaHuang = huang(srts) * ratio     ! correction due to detailed balance
-         If(nucleon_particle%Charge.eq.1) then 
+         If(nucleon_particle%Charge.eq.1) then
             sigmaKaon(1)=sigmaHuang(2)     ! assume that sigma(eta p -> K^+ Sigma^0) = sigma(pi^0 p -> K^+ Sigma^0)
             sigmaKaon(0)=2.*sigmaKaon(1)  ! by isospin consideration
          else                              ! neutron Xsections by charge conjugation
@@ -356,7 +356,7 @@ contains
       !############################################################
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piN(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=nucleon
@@ -399,8 +399,8 @@ contains
 
     end subroutine makeDecision
 
-    
-    
+
+
     !**************************************************************************************
     !****s* etaNuc/makeOutput
     ! NAME
@@ -408,7 +408,7 @@ contains
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV].
     ! Filenames:
-    ! * 'etaN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'etaN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'etaN_resProd.dat'            : Baryon resonance production
     ! * 'etaN_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state
     ! * 'etaN_strangeProd.dat'        : Kaon and hyperon in final state

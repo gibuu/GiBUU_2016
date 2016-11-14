@@ -18,11 +18,11 @@ module PauliBlockingModule
   ! SOURCE
   !
   integer, save :: pauliSwitch=1
-  ! 
+  !
   ! PURPOSE
   ! * 0 : No Pauli blocking
   ! * 1 : dynamic Pauli blocking (use actual phase space densities)
-  ! * 2 : analytic Pauli blocking (use ground state assumption) 
+  ! * 2 : analytic Pauli blocking (use ground state assumption)
   !   (not possible for Heavy Ions!)
   !***************************************************************************
 
@@ -35,7 +35,7 @@ module PauliBlockingModule
   ! if .true. - the radius in momentum space for selecting nucleons around
   ! given nucleon will depend on local Fermi momentum
   ! NOTES
-  ! Used only for dynamic pauli blocking. 
+  ! Used only for dynamic pauli blocking.
   !***************************************************************************
 
   !***************************************************************************
@@ -62,9 +62,9 @@ module PauliBlockingModule
   !
   real, save :: cutMom=0.08
   ! PURPOSE
-  ! * for densDepMomCutFlag=.false. --- 
+  ! * for densDepMomCutFlag=.false. ---
   !   radius of phase space box in momentum space
-  ! * for densDepMomCutFlag=.true. --- 
+  ! * for densDepMomCutFlag=.true. ---
   !   minimum radius of phase space box in momentum space
   !***************************************************************************
 
@@ -92,7 +92,7 @@ module PauliBlockingModule
   !
   integer, save :: ensembleJump=5
   ! PURPOSE
-  ! Parameter for speedup. Only every "ensemblejump"th ensemble is considered 
+  ! Parameter for speedup. Only every "ensemblejump"th ensemble is considered
   ! to evaluate the probability for pauli blocking.
   !***************************************************************************
 
@@ -123,7 +123,7 @@ contains
   !
   ! PURPOSE
   ! * evaluates Pauli blocking for neutrons or protons
-  ! * returns .true. if position and momentum are blocked by Pauli principle 
+  ! * returns .true. if position and momentum are blocked by Pauli principle
   ! * returns .false. if no Pauli blocking
   !
   ! INPUTS
@@ -143,7 +143,7 @@ contains
     use CallStack, only: Traceback
 
     real, dimension(0:3), intent(in)           :: momentum
-    real, dimension(1:3), intent(in)           :: position  
+    real, dimension(1:3), intent(in)           :: position
     integer, intent(in)                        :: Nukcharge
     type(particle), dimension(:,:), intent(in), optional :: Teilchen
     real, intent(out), optional :: probabilityOut
@@ -256,7 +256,7 @@ contains
       real, dimension(0:3) :: momSave
       integer :: k,index,j
       logical, save :: initWeightsFlag=.true.
-      type(dichte) :: density      
+      type(dichte) :: density
 
       if (initWeightsFlag) then
          call Write_InitStatus('Dynamic Pauli Blocking',0)
@@ -318,8 +318,8 @@ contains
             index=NINT(Sqrt(distPosSQR)/deltaPos)
             !linear interpolation of weights
             !probability=probability&
-            !&+weights(index)+(weights(index+1)-weights(index))/deltaPos*(distPos-index*deltaPos)   
-            probability=probability+weights(index)   
+            !&+weights(index)+(weights(index+1)-weights(index))/deltaPos*(distPos-index*deltaPos)
+            probability=probability+weights(index)
          End do
       End do
       probability=probability/float(size(Teilchen,dim=1)/ensembleJump) !divide by number ensembles
@@ -339,7 +339,7 @@ contains
     subroutine initWeights
 
       integer :: k,m,n
-      real :: rdist, integral 
+      real :: rdist, integral
       integer, parameter :: stepsR=2000        !integration steps for radial integration
       integer, parameter :: stepsTheta=2000    !integration steps for theta integration
       real :: distance !distance between vec(rdist) and vec(r)
@@ -426,7 +426,7 @@ contains
     ! * cutGauss
     ! * cutMom
     ! * cutPos
-    ! * nGridPos 
+    ! * nGridPos
     ! * ensembleJump
     ! * DoHistogram
     !***************************************************************************
@@ -481,9 +481,9 @@ contains
   ! INPUTS
   ! * type(particle),dimension(:)   :: teilchen      -- outgoing particles
   ! * type(particle),dimension(:,:) :: realParticles -- real particle vector
-  ! 
+  !
   ! OUTPUT
-  ! * .true. = momentum of particle "teilchen" IS NOT pauli blocked, 
+  ! * .true. = momentum of particle "teilchen" IS NOT pauli blocked,
   !   .false.= momentum of particle "teilchen" IS pauli blocked
   !
   ! NOTE

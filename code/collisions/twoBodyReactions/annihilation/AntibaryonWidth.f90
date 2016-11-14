@@ -3,7 +3,7 @@
 ! NAME
 ! module AntibaryonWidth
 ! PURPOSE
-! Includes the routines administrating the simultaneous annihilation 
+! Includes the routines administrating the simultaneous annihilation
 ! and calculation of annihilation and total widths of an antibaryon.
 !***************************************************************************
 
@@ -103,7 +103,7 @@ contains
           baryonDensityAverage= baryonDensityAverage + baryonDensity
           sigmaAnniAverage= sigmaAnniAverage + baryonDensity*sigmaAnni
           vRelAverage= vRelAverage + baryonDensity*vRel
-          srtS_vacuumAverage= srtS_vacuumAverage + baryonDensity*srtS_vacuum 
+          srtS_vacuumAverage= srtS_vacuumAverage + baryonDensity*srtS_vacuum
 
        end do index_loop
 
@@ -162,7 +162,7 @@ contains
     ! * real :: widthTotal              ! total width (c/fm)
     ! * real, optional :: baryonDensityOut ! density of baryons (fm**-3)
     ! * real, optional :: sigmaAnniOut     ! annihilation cross section (mb)
-    ! * real, optional :: vRelOut          ! relative velocity (c)  
+    ! * real, optional :: vRelOut          ! relative velocity (c)
     ! * real, optional :: srtS_vacuumOut   ! c.m. energy (GeV) used in calculation
     !   of annihilation cross section
     !*************************************************************************
@@ -192,7 +192,7 @@ contains
       real, intent(out) :: widthTotal              ! total width (c/fm)
       real, optional, intent(out) :: baryonDensityOut ! density of baryons (fm**-3)
       real, optional, intent(out) :: sigmaAnniOut     ! annihilation cross section (mb)
-      real, optional, intent(out) :: vRelOut          ! relative velocity (c)  
+      real, optional, intent(out) :: vRelOut          ! relative velocity (c)
       real, optional, intent(out) :: srtS_vacuumOut   ! c.m. energy (GeV) used in calculation
       ! of annihilation cross section
 
@@ -212,7 +212,7 @@ contains
       type(medium) :: mediumAtCollision
       type(particle) :: Baryon
       type(particle), dimension(:), allocatable :: BaryonsFound
-      type(preEvent), dimension(1:4) :: chosenEvent 
+      type(preEvent), dimension(1:4) :: chosenEvent
       type(dichte) :: density
       integer :: ensemble, index, nSuccess, n, nloop, HiEnergyType
       integer :: baryonNumber, maxBaryonNumber, i, i_max, maxId
@@ -268,13 +268,13 @@ contains
       end if
 
       select case(imode)
-      case (1) 
+      case (1)
          baryonDensity=float(baryonNumber)/float(numberEnsembles)/V
          !baryonDensity=float(baryonNumber)/V
       case(2)
          baryonDensity = getBaryonDensity(antiBaryon%position)
       case(3)
-         density=staticDensity(antiBaryon%position,getTarget())          
+         density=staticDensity(antiBaryon%position,getTarget())
          baryonDensity=density%baryon(0)
       case default
          write(*,*)' In gamma (width of the antiproton): wrong imode '
@@ -303,20 +303,20 @@ contains
          mstar_antibar = sqrtS(antiBaryon,'width, mstar_antibar')
          mstar_bar = sqrtS(Baryon,'width, mstar_bar')
          srtS_star = srtS
-         srtS_vacuum = srtS_star - mstar_antibar - mstar_bar  + antiBaryon%mass + Baryon%mass 
+         srtS_vacuum = srtS_star - mstar_antibar - mstar_bar  + antiBaryon%mass + Baryon%mass
       end if
 
       mediumAtCollision%useMedium=.true.
       mediumAtCollision%density=baryonDensity
 
       ! Dummy settings: *************************
-      momentum_LRF=0.                    
+      momentum_LRF=0.
       betaToLRF=0.
       ! *****************************************
 
       ! Simulate annnihilation:
 
-      call XsectionMaster(srtS_vacuum,(/antiBaryon,Baryon/),mediumATcollision,momentum_LRF, & 
+      call XsectionMaster(srtS_vacuum,(/antiBaryon,Baryon/),mediumATcollision,momentum_LRF, &
            & chosenEvent,sigmaTotal,sigmaElast,sigmaCEX,sigmaAnni,sigmaLbar,&
            &sigmaSbar,sigmaXiBar,sigmaJPsi,HiEnergyFlag)
       if(sigmaTotal .lt. sigmaAnni) then
@@ -329,25 +329,25 @@ contains
       loop_over_trials_anni : do n=1,nTrials
          call setToDefault(finalState)
          call annihilate(antiBaryon,Baryon,time,finalState,collisionFlag,HiEnergyType)
-         if(.not.collisionFlag) cycle loop_over_trials_anni             
+         if(.not.collisionFlag) cycle loop_over_trials_anni
          if( .not.accept_event((/antiBaryon,Baryon/),finalState) ) then
-            write(*,*)'In width: event not accepted, annihilation'                
+            write(*,*)'In width: event not accepted, annihilation'
             cycle loop_over_trials_anni
          end if
          nSuccess=nSuccess+1
       end do loop_over_trials_anni
       ! In-medium reduction:
       sigmaAnniRed=sigmaAnni*float(nSuccess)/float(nTrials)
-      !write(*,*)'nTrials, nSuccess, sigmaAnniRed: ', nTrials, nSuccess, sigmaAnniRed    
+      !write(*,*)'nTrials, nSuccess, sigmaAnniRed: ', nTrials, nSuccess, sigmaAnniRed
 
       ! Simulate scattering, CEX or inelastic production:
       nSuccess=0
-      n=0        
-      loop_over_trials : do nloop=1,10 ! Upper limit must be set more than nTrials 
+      n=0
+      loop_over_trials : do nloop=1,10 ! Upper limit must be set more than nTrials
 
          call setToDefault(finalState)
 
-         call XsectionMaster(srtS_vacuum,(/antiBaryon,Baryon/),mediumATcollision,momentum_LRF, & 
+         call XsectionMaster(srtS_vacuum,(/antiBaryon,Baryon/),mediumATcollision,momentum_LRF, &
               & chosenEvent,sigmaTotal,sigmaElast,sigmaCEX,sigmaAnni,sigmaLbar,&
               & sigmaSbar,sigmaXiBar,sigmaJPsi,HiEnergyFlag)
          if(sigmaTotal .lt. sigmaAnni) then
@@ -379,7 +379,7 @@ contains
             call setKinematicsHiEnergy(srtS,srtS_vacuum,&
                  & sigmaTotal, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar,&
                  & sigmaSbar, sigmaXiBar, sigmaJPsi, betaToCM,&
-                 & (/antiBaryon,Baryon/),& 
+                 & (/antiBaryon,Baryon/),&
                  & time, finalState, collisionFlag, HiEnergyType)
 
             if(HiEnergyType.eq.-3) cycle loop_over_trials ! Exclude annihilation
@@ -390,10 +390,10 @@ contains
 
          end if
 
-         if(.not.collisionFlag) cycle loop_over_trials             
+         if(.not.collisionFlag) cycle loop_over_trials
 
          if( .not.accept_event((/antiBaryon,Baryon/),finalState) ) then
-            write(*,*)'In width: event not accepted, nonannihilation'                
+            write(*,*)'In width: event not accepted, nonannihilation'
             cycle loop_over_trials
          end if
 
@@ -419,7 +419,7 @@ contains
       ! Determine relative velocity:
       if( .not.getRMF_flag() ) then
          vRel= get_pInitial((/antiBaryon,Baryon/),0) * sqrtS(antiBaryon,Baryon) &
-              &/antiBaryon%momentum(0)/Baryon%momentum(0) 
+              &/antiBaryon%momentum(0)/Baryon%momentum(0)
       else
          vRel= pcm(srtS_star,mstar_antibar,mstar_bar) * srtS_star &
               &/antiBaryon%momentum(0)/Baryon%momentum(0)
@@ -432,7 +432,7 @@ contains
 
       if(present(baryonDensityOut)) baryonDensityOut=baryonDensity
       if(present(VrelOut)) vRelOut=vRel
-      if(present(sigmaAnniOut)) sigmaAnniOut=sigmaAnniRed           
+      if(present(sigmaAnniOut)) sigmaAnniOut=sigmaAnniRed
       if(present(srtS_vacuumOut)) srtS_vacuumOut=srtS_vacuum
 
     end subroutine gamma
@@ -505,7 +505,7 @@ contains
     ! * type(particle), intent(in) :: antiBaryon     ! antibaryon particle
     ! * real, intent(in)           :: time           ! actual time step
     ! OUTPUT
-    ! * real, intent(out) :: width                   ! width w/r to annihilation (c/fm)  
+    ! * real, intent(out) :: width                   ! width w/r to annihilation (c/fm)
     !*************************************************************************
     subroutine gamma_exact(antiBaryon,time,width)
 
@@ -526,7 +526,7 @@ contains
       ! to look for annihilation partners.
       real, parameter ::    V=4./3.*pi*R**3  ! Volume of the sphere.
       integer, parameter :: nTrials=1   ! Number of the tried annihilations to determine
-      ! in-medium reduction of the annihilation 
+      ! in-medium reduction of the annihilation
       ! cross section.
       integer, parameter :: nFinal=20                     ! Size of the final state array
 
@@ -562,7 +562,7 @@ contains
                mstar_antibar = sqrtS(antiBaryon,'width, mstar_antibar')
                mstar_bar = sqrtS(Baryon,'width, mstar_bar')
                srtS_star = sqrtS((/antiBaryon,Baryon/),"width, srtS_star")
-               srtS_vacuum = srtS_star - mstar_antibar - mstar_bar  + antiBaryon%mass + Baryon%mass 
+               srtS_vacuum = srtS_star - mstar_antibar - mstar_bar  + antiBaryon%mass + Baryon%mass
             end if
 
             mediumATcollision%useMedium=.false.  ! Dummy setting
@@ -580,7 +580,7 @@ contains
                if(.not.collisionFlag) cycle loop_over_trials
 
                if( .not.accept_event((/antiBaryon,Baryon/),finalState) ) then
-                  write(*,*)'In width: event not accepted'                
+                  write(*,*)'In width: event not accepted'
                   cycle loop_over_trials
                end if
 
@@ -588,14 +588,14 @@ contains
 
             end do loop_over_trials
 
-            ! In-medium reduction of the annihilation cross section: 
+            ! In-medium reduction of the annihilation cross section:
             sigmaAnni=sigmaAnni*float(nSuccess)/float(nTrials)
 
             if(sigmaAnni.gt.0.) then
                ! Determine relative velocity:
                if( .not.getRMF_flag() ) then
                   vRel= get_pInitial((/antiBaryon,Baryon/),0) * sqrtS(antiBaryon,Baryon) &
-                       &/antiBaryon%momentum(0)/Baryon%momentum(0) 
+                       &/antiBaryon%momentum(0)/Baryon%momentum(0)
                else
                   vRel= pcm(srtS_star,mstar_antibar,mstar_bar) * srtS_star &
                        &/antiBaryon%momentum(0)/Baryon%momentum(0)
@@ -654,14 +654,14 @@ contains
     type(particle), dimension(1:nFinal) :: finalState   ! Array of the final state particles
 
     integer :: numberEnsembles, numberParticles
-    integer :: ensemble, index, index1, index_min    
+    integer :: ensemble, index, index1, index_min
 
-    real :: d2_min, d2, width, widthTotal, baryonDensity, sigmaAnni, vRel, srtS_vacuum 
+    real :: d2_min, d2, width, widthTotal, baryonDensity, sigmaAnni, vRel, srtS_vacuum
     integer :: n, i, number
     integer :: HiEnergyType
     logical :: numbersAlreadySet, setFlag, collisionFlag, flag1
 
-    logical, parameter :: flagStochastic=.false.       ! if .true. --- decide by Monte Carlo, 
+    logical, parameter :: flagStochastic=.false.       ! if .true. --- decide by Monte Carlo,
     ! whether annihilation will happen according
     ! to the antibaryon annihilation width
     logical, save :: flagAnni=.false.
@@ -689,7 +689,7 @@ contains
 
     if(.not.flagStochastic) then
        if(time.gt.annihilationTime-1.e-06) then
-          flagAnni=.true. 
+          flagAnni=.true.
        else
           flagAnni=.false.
        end if
@@ -750,12 +750,12 @@ contains
           end if
 
           n=0
-          Loop_over_annihilation_events : do 
+          Loop_over_annihilation_events : do
 
              n=n+1
 
              if(n.gt.100) then
-                write(*,*)' In DoAnnihilation: no annihilation after ',n-1,' trials' 
+                write(*,*)' In DoAnnihilation: no annihilation after ',n-1,' trials'
                 write(*,*)' antibar%Id, antibar%charge: ', antibar%Id, antibar%charge
                 write(*,*)' bar%Id, bar%charge: ', bar%Id, bar%charge
                 write(*,*)' srtS_star: ', sqrtS((/antibar,bar/),"DoAnnihilation, srtS_star")
@@ -768,7 +768,7 @@ contains
              if(.not.collisionFlag) cycle Loop_over_annihilation_events
 
              if( .not.accept_event((/antibar,bar/),finalState) ) then
-                write(*,*)' Event not accepted'                
+                write(*,*)' Event not accepted'
                 collisionFlag=.false.
                 cycle Loop_over_annihilation_events
              end if
@@ -794,7 +794,7 @@ contains
           do i=1,nFinal
              if(finalState(i)%id <= 0) exit
              If(particlePropagated(finalState(i))) then
-                ! Find empty space in the particle vector: 
+                ! Find empty space in the particle vector:
                 call setIntoVector( finalState(i:i), &
                      & teilchenReal(ensemble:ensemble,:), setFlag, NumbersAlreadySet )
                 ! Check that setting into real particle vector worked out :
@@ -810,7 +810,7 @@ contains
 
           ! Destroy the baryon and antibaryon test particles:
           antibar%Id=0
-          bar%Id=0 
+          bar%Id=0
 
        end do index_loop
 
@@ -834,7 +834,7 @@ contains
 
       use IdTable
 
-      integer, parameter :: Npion_max=20             ! Maximum number of pions produced in an event 
+      integer, parameter :: Npion_max=20             ! Maximum number of pions produced in an event
       real, save :: sigma_Npion(0:Npion_max)
 
       integer :: Npion
@@ -848,7 +848,7 @@ contains
          open(2,file='annihilation_analyse.dat',status='unknown')
       end if
 
-      sigma_Npion=0. 
+      sigma_Npion=0.
       Npion_aver=0.
 
       do ensemble=1,numberEnsembles
@@ -865,7 +865,7 @@ contains
          end do index_loop
 
          Npion_aver=Npion_aver+float(Npion)
-         if( Npion.le.Npion_max ) sigma_Npion(Npion)=sigma_Npion(Npion)+1. 
+         if( Npion.le.Npion_max ) sigma_Npion(Npion)=sigma_Npion(Npion)+1.
 
       end do
 

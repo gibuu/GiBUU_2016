@@ -10,7 +10,7 @@ module sorting
 
   implicit none
   private
-  
+
   public :: indexx
 
 contains
@@ -19,10 +19,10 @@ contains
   !****s* sorting/indexx
   ! NAME
   ! SUBROUTINE indexx(arr,index)
-  ! 
+  !
   ! PURPOSE
   ! Indexes an array arr, i.e., outputs the array index of length N such that
-  ! arr(index(j)) is in ascending order for j = 1, 2, . . . ,N. 
+  ! arr(index(j)) is in ascending order for j = 1, 2, . . . ,N.
   ! The input quantity arr is not changed.
   !
   ! (Uses SORTTF from CernLib; cf. SORTZV)
@@ -32,16 +32,16 @@ contains
   !
   ! OUTPUT
   ! * integer, dimension(:) :: index
-  ! 
+  !
   ! NOTES
   ! the integer array "index" has to be provided as input. The size may not
   ! be smaller than the size of "arr"
   !
   ! USAGE
-  ! Assume you have to arrays A and B and you want to access the information 
-  ! first in an unsorted way and secondly sorted according the values of 
+  ! Assume you have to arrays A and B and you want to access the information
+  ! first in an unsorted way and secondly sorted according the values of
   ! array A.
-  ! 
+  !
   ! Example:
   !
   !    do i=1,n
@@ -84,7 +84,7 @@ contains
       real AI
       integer N, I1,I2,I22,I222,I3,I33
 
-     
+
       N = N1
       DO 3 I1=2,N
       I3 = I1

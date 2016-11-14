@@ -4,7 +4,7 @@
 ! module hadronTensor_ResProd
 !
 ! PURPOSE
-! This module defines the hadronic tensors for resonance production 
+! This module defines the hadronic tensors for resonance production
 ! by EM- and weak currents
 !
 !****************************************************************************
@@ -32,7 +32,7 @@ module hadronTensor_ResProd
   !*************************************************************************
 
   logical,save      :: initFlag=.true.
-  
+
 contains
 
   subroutine initInput
@@ -70,7 +70,7 @@ contains
   ! PURPOSE
   ! This function returns the hadronic tensor for resonance production of the resonance "resID"
   ! by a current type defined by "process" (e.g. Gamma* N -> R).
-  ! 
+  !
   ! INPUTS
   ! * real, dimension(0:3),intent(in) :: pi            -- 4-momentum of incoming nucleon
   ! * real, dimension(0:3),intent(in) :: pf            -- 4-momentum of outgoing resonance
@@ -97,19 +97,19 @@ contains
     real                       , intent(in)      :: bare_mass
 
 
-    logical              :: success 
+    logical              :: success
     integer              :: processID
     real, dimension(1:8) :: formfactor
     integer              :: parity,spinTimes2
 
     success=.false.
-    matrix=0.  
+    matrix=0.
 
     if(initFlag) then
        call initInput
        initFlag=.false.
     end if
- 
+
 
     If( debugflag ) then
        write(*,*) -SP(pf-pi,pf-pi)
@@ -119,19 +119,19 @@ contains
        return
     end if
 
-    
+
     processID=process
 
     if(process.eq.99) processID=CC      !workaround needed for background contribution
- 
+
     formfactor=getFormfactor_Res(-SP(pf-pi,pf-pi),bare_mass,resID,targetCharge,processID,success)
     if(.not.success) then
        matrix=0.
        return
     end if
-    
+
     if(process.eq.99) processID=EM  !workaround needed for background contribution
-       
+
 
     parity=(-1)**(1+hadron(resID)%AngularMomentum)
     spinTimes2=NINT(hadron(resID)%spin*2.)
@@ -158,7 +158,7 @@ contains
     end select
 
     success=.true.
-  contains 
+  contains
     !*************************************************************************
     !****is* hadronTensor_R/writeError
     ! PURPOSE
@@ -181,7 +181,7 @@ contains
   !
   !  SSSSSSS    PPPPPPP    II   NN    NN                11          /     22222
   !  SSS        P     P    II   NNNN  NN    =====      111         /          22
-  !  SSSSSSS    PPPPPPP    II   NN NN NN    =====     1111        /         22 
+  !  SSSSSSS    PPPPPPP    II   NN NN NN    =====     1111        /         22
   !     SSSS    P          II   NN  NNNN                11       /        22
   !  SSSSSSS    P          II   NN    NN               111      /         222222
   !
@@ -195,8 +195,8 @@ contains
   ! function hadronTensor_1_2(pi,pf,parity,G,GA,resID) result(matrix)
   !
   ! PURPOSE
-  ! This function returns the hadronic tensor for spin=1/2 resonances. 
-  ! 
+  ! This function returns the hadronic tensor for spin=1/2 resonances.
+  !
   ! INPUTS
   ! *  real, dimension(1:2),intent(in) :: F             -- Vector or EM-Form factors
   ! *  real, dimension(1:2),intent(in) :: FA            -- Axial form factors
@@ -258,7 +258,7 @@ contains
                 j_nu=j_pos(nu)
              end if
           Case(-1)
-             if(speedup) then 
+             if(speedup) then
                 j_dagger_nu=j_dagger(nu)
              else
                 j_mu=j_neg(mu)
@@ -288,7 +288,7 @@ contains
     !
     ! PURPOSE
     ! This function the hadronic flux "J^mu" for resonances of positive parity
-    ! 
+    !
     ! INPUTS
     ! integer, intent(in) :: mu
     !
@@ -312,7 +312,7 @@ contains
     !
     ! PURPOSE
     ! This function the hadronic flux "J^mu" for resonances of negative parity
-    ! 
+    !
     ! INPUTS
     ! integer, intent(in) :: mu
     !
@@ -376,7 +376,7 @@ contains
     !
     ! PURPOSE
     ! This function returns "gamma_0 (J^mu)^dagger gamma_0" for resonances of negative parity
-    ! 
+    !
     ! INPUTS
     ! integer, intent(in) :: mu
     !
@@ -405,7 +405,7 @@ contains
             sigma4_q=sigma4_q+sigma4(mu,rho)*q(alpha)*metricTensor(rho,alpha)
          end do
       end do
-      
+
       matrix= MatMul(gamma5, - G(1)/mass_mu**2           * (QSquared*gamma(:,:,mu)+q(mu)*slashed(q)) &
            & +  G(2)/mass_mu              * ii* sigma4_q        )
 
@@ -427,7 +427,7 @@ contains
   !
   !  SSSSSSS    PPPPPPP    II   NN    NN            333333          /     22222
   !  SSS        P     P    II   NNNN  NN    =====       33         /          22
-  !  SSSSSSS    PPPPPPP    II   NN NN NN    =====   333333        /         22 
+  !  SSSSSSS    PPPPPPP    II   NN NN NN    =====   333333        /         22
   !     SSSS    P          II   NN  NNNN                33       /        22
   !  SSSSSSS    P          II   NN    NN            333333      /         222222
   !
@@ -441,8 +441,8 @@ contains
   ! function   hadronTensor_3_2(pi,pf,parity,formfactor,resID) result(matrix)
   !
   ! PURPOSE
-  ! This function returns the hadronic tensor for spin=3/2 resonances. 
-  ! 
+  ! This function returns the hadronic tensor for spin=3/2 resonances.
+  !
   ! INPUTS
   !
   ! *  real, dimension(0:3),intent(in) :: pi            -- 4-momentum of incoming nucleon
@@ -500,17 +500,17 @@ contains
     do mu=0,3
        do nu=0,3
           Matrix_toTrace=0.
-          alphaSum : do alpha=0,3  
-             betaSum : do beta=0,3  
+          alphaSum : do alpha=0,3
+             betaSum : do beta=0,3
                 if(speedup) then
                    projector_out=spin_proj_3_2(alpha,beta,:,:)
                 else
                    projector_out=spin32proj(resID,alpha,beta,pf)
                 end if
-                kappaSum : do kappa=0,3  
+                kappaSum : do kappa=0,3
                    if(kappa.ne.alpha) cycle
                    if(speedup) j_nu_dagger=j_dagger(kappa,nu)
-                   deltaSum : do delta=0,3  
+                   deltaSum : do delta=0,3
                       if(delta.ne.beta) cycle
                       if(speedup) then
                          j_mu=j_neg(delta,mu)
@@ -558,7 +558,7 @@ contains
     !**************************************************************************
     function j_pos(lambda,nu) result(matrix)
       use minkowski, only          : gamma5
-      
+
       integer, intent(in)         :: lambda,nu
       complex, dimension(0:3,0:3) :: matrix
 
@@ -574,7 +574,7 @@ contains
     ! PURPOSE
     ! * This function evaluates the hadronic flux "J^lambda nu" for resonances of negative parity
     ! * See Phys Rev D74, 014009 (2006), eq. 4.3
-    ! 
+    !
     ! INPUTS
     ! * integer, intent(in) :: alpha,nu -- lambda is the lorentz index which is contracted with the 3/2 spinor
     !
@@ -594,7 +594,7 @@ contains
 
       real ,save :: F1_mN,F2_mN2,F3_mN2,F5_mN,F6_mN2,F8_mN2
 
-      
+
 
       if(do_once2.or.(.not.speedup)) then
          q= pf-pi
@@ -608,23 +608,23 @@ contains
             if(process.ne.EM) then
                F5_mN=F(5)/mN
                F6_mN2=F(6)/mN**2
-               F8_mN2=F(8)/mN**2   
+               F8_mN2=F(8)/mN**2
                matrix_2= F(5)/mN * MatMul(slashed(q),gamma5) + F(6)/mN**2* SP(pf,q) * gamma5
             end if
          end if
-         do_Once2=.false. 
+         do_Once2=.false.
       end if
 
       if(speedup) then
          matrix=  metricTensor(lambda,nu)* matrix_1 &
-              & - q(lambda)*                ( F1_mN * gamma(:,:,nu)  + (F2_mN2 * pf(nu)  + F3_mN2 * pi(nu)       )* unit4 ) 
+              & - q(lambda)*                ( F1_mN * gamma(:,:,nu)  + (F2_mN2 * pf(nu)  + F3_mN2 * pi(nu)       )* unit4 )
       else
          matrix=  metricTensor(lambda,nu)* ( F(1)/mN * slashed(q) + (F(2)/mN**2 * SP(pf,q)&
               & + F(3)/mN**2 * SP(pi,q) + F(4))* unit4 ) &
               & - q(lambda)*               ( F(1)/mN * gamma(:,:,nu)  + (F(2)/mN**2 * pf(nu)  &
-              & + F(3)/mN**2 * pi(nu)         )* unit4 ) 
+              & + F(3)/mN**2 * pi(nu)         )* unit4 )
       end if
- 
+
      if(process.ne.EM) then
         if(speedup) then
            matrix=matrix &
@@ -649,7 +649,7 @@ contains
     ! PURPOSE
     ! * This function evaluates "gamma_o (J^lambda nu)^dagger gamm_o" for resonances of negative parity
     ! * See Phys Rev D74, 014009 (2006), eq. 4.3
-    ! 
+    !
     ! INPUTS
     ! * integer, intent(in) :: alpha,nu -- lambda is the lorentz index which is contracted with the 3/2 spinor
     !
@@ -668,7 +668,7 @@ contains
       complex, dimension(0:3,0:3),save :: matrix_1,matrix_2
 
       real ,save :: F1_mN,F2_mN2,F3_mN2,F5_mN,F6_mN2,F8_mN2
-      
+
 
       if(do_once.or.(.not.speedup)) then
          q= pf-pi
@@ -686,17 +686,17 @@ contains
                matrix_2= -F(5)/mN * MatMul(gamma5,slashed(q)) - F(6)/mN**2* SP(pf,q) * gamma5
             end if
          end if
-         do_Once=.false. 
+         do_Once=.false.
       end if
 
       if(speedup) then
          matrix=  metricTensor(lambda,nu)* matrix_1 &
-              & - q(lambda)*                ( F1_mN * gamma(:,:,nu)  + (F2_mN2 * pf(nu)  + F3_mN2 * pi(nu)       )* unit4 ) 
+              & - q(lambda)*                ( F1_mN * gamma(:,:,nu)  + (F2_mN2 * pf(nu)  + F3_mN2 * pi(nu)       )* unit4 )
       else
          write(*,*) 'only used with speedup'
          stop
       end if
- 
+
      if(process.ne.EM) then
            matrix=matrix &
                 & + metricTensor(lambda,nu)* matrix_2  &

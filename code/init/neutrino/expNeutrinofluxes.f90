@@ -20,7 +20,7 @@ module expNeutrinofluxes
   public ::  CCQE_recQs, CCQE_recQs_Delta, CCQE_recEnergy, CCQE_recEnergy_Delta
   public ::  ANLenergy,BNLenergy
   public ::  K2Kenergy, K2K_recEnergy, K2K_recQs
-  public ::  NOVAenergyNU_FD, NOVAenergyNU_ND, T2K_ND_numu_energy !T2Kenergy
+  public ::  NOVAenergy_FD, NOVAenergy_ND, T2Kenergy_ND
   public ::  MINOSenergyNU_fluxNU, MINOSenergyBARNU_fluxNU, &
              & MINOSenergyNU_fluxBARNU, MINOSenergyBARNU_fluxBARNU
   public ::  uniformFlux
@@ -79,7 +79,7 @@ module expNeutrinofluxes
   !***************************************************************************
 
 
-  
+
 contains
 
   !************************************************************
@@ -679,81 +679,155 @@ contains
 
   end function K2K_recQs
 
-
-
-
-
   !*************************************************************************
-  !****f* expNeutrinofluxes/T2K_ND_numu_energy
+  !****f* expNeutrinofluxes/T2Kenergy_ND
   ! NAME
-  ! real function T2K_ND_numu_energy()
+  ! real function T2Kenergy_ND(Flavor_ID,Process_ID)
   !
   ! PURPOSE
   ! This function gives back the neutrino energy for the T2K ND280  experiment.
   ! Flux is 2.5 degrees off-axis flux for the ND280 detector
   ! implemented is ND280_horn_250kA taken from http://t2k-experiment.org/results/
   !*************************************************************************
-   real function T2K_ND_numu_energy()
-    use random, only: rn
+ real function T2Kenergy_ND(Flavor_ID,Process_ID)
     use inputGeneral, only : path_To_Input
+    use esample
 
-    real :: v,w,y,x
-    real,parameter :: enumax=22.5
-    real,parameter :: enumin=0.0
-    real,parameter :: ymax=1.52e12
-    character(100) :: fileName
-    integer :: status
-  ! dimension= max number of energy values in flux file
-    real, dimension(221),save :: enu, flux
-    integer :: j,jmax
+    integer,parameter :: NDIM = 225          !maximal dimension of fluxfile
+    real, dimension (NDIM), save :: enu,flux
+    real, dimension (0:NDIM), save :: sumflux
+    character(100) :: fluxfilename
+    integer, save :: jmax
+    integer :: nswitch,flavor_id,process_id
 
-   
+!   Now reading of flux file from buuinput/neutrinos
+!   First, set filename for desired neutrino flavor
+
+     nswitch = sign(1,Process_ID)
+
+     select case(nswitch)
+
+      case (+1)
+         select case (Flavor_ID)
+
+           case (1)
+           fluxfileName= 'T2K_ND280_250kA-nue.dat'   ! electron
+
+           case (2)
+           fluxfileName= 'T2K_ND280_250kA-numu.dat'  ! muon
+
+           case default
+           write (*,*) 'flavor and process IDs not compatible:1'
+           stop
+
+         end select
+
+      case (-1)
+          write(*,*) 'antineutrino fluxes for T2K ND not yet implemented'
+          stop
+
+         select case (Flavor_ID)
+
+           case (1)
+           fluxfileName= 'T2K_ND280_250kA-anue.dat'    ! anti-electron
+
+           case (2)
+           fluxfileName= 'T2K_ND280_250kA-anumu.dat'   ! anti-muon
+
+           case default
+           write (*,*) 'flavor and process IDs not compatible:2'
+           stop
+
+         end select
+      case default
+           write (*,*) 'flavor and process IDs not compatible:3'
+     end select
+
+
     if(firsttime) then
-
-       j=1
-       fileName=trim(path_to_Input)//'/neutrino/T2K_ND280_250kA-numu.dat'
-       open(13,file=filename ,status='old',action='read',iostat=status)
-       if(status==0) then
-          do
-             read(13,*,iostat=status) enu(j),flux(j)
-             if(status/=0) exit
-             j=j+1
-          end do
-          jmax=j-1
-          if(status>0) then
-             write(*,*)'error reading file'
-             stop
-          else
-             write(*,*)'file read sucessful, jmax=',jmax
-          end if
-       else
-          write(*,*)'problems with file'
-       end if
-       close(13)
-
-       firsttime=.false.
+        call read_fluxfile(NDIM,fluxfilename,jmax,enu,flux,sumflux)
+        firsttime=.false.
     end if
 
-    do
-       v=rn()
-       w=rn()
-       x=enumin+v*(enumax-enumin)
+!   Now call of sampling routine
+
+     T2Kenergy_ND = eneut(NDIM,jmax,sumflux,enu)
+
+ end function T2Kenergy_ND
 
 
-       j=2 ! avoid interpolation problems!
-       do
-          if(x.lt.enu(j)) exit
-          j=j+1
-       end do
-       y = flux(j-1) + (x - enu(j-1))*(flux(j)-flux(j-1))/(enu(j)-enu(j-1))
 
-       if(w.lt.y/ymax) exit
-    end do
-    T2K_ND_numu_energy=x
-
-  end function T2K_ND_numu_energy
-
-
+!  !*************************************************************************
+!  !****f* expNeutrinofluxes/T2K_ND_numu_energy
+!  ! NAME
+!  ! real function T2K_ND_numu_energy()
+!  !
+!  ! PURPOSE
+!  ! This function gives back the neutrino energy for the T2K ND280  experiment.
+!  ! Flux is 2.5 degrees off-axis flux for the ND280 detector
+!  ! implemented is ND280_horn_250kA taken from http://t2k-experiment.org/results/
+!  !*************************************************************************
+!   real function T2K_ND_numu_energy()
+!    use random, only: rn
+!    use inputGeneral, only : path_To_Input
+!
+!    real :: v,w,y,x
+!    real,parameter :: enumax=22.5
+!    real,parameter :: enumin=0.0
+!    real,parameter :: ymax=1.52e12
+!    character(100) :: fileName
+!    integer :: status
+!  ! dimension= max number of energy values in flux file
+!    real, dimension(221),save :: enu, flux
+!    integer :: j,jmax
+!
+!
+!     if(firsttime) then
+!
+!       j=1
+!       fileName=trim(path_to_Input)//'/neutrino/T2K_ND280_250kA-numu.dat'
+!       open(13,file=filename ,status='old',action='read',iostat=status)
+!       if(status==0) then
+!          do
+!             read(13,*,iostat=status) enu(j),flux(j)
+!             if(status/=0) exit
+!             j=j+1
+!          end do
+!          jmax=j-1
+!          if(status>0) then
+!             write(*,*)'error reading file'
+!             stop
+!          else
+!             write(*,*)'file read sucessful, jmax=',jmax
+!          end if
+!       else
+!          write(*,*)'problems with file'
+!       end if
+!       close(13)
+!
+!       firsttime=.false.
+!    end if
+!
+!    do
+!       v=rn()
+!       w=rn()
+!       x=enumin+v*(enumax-enumin)
+!
+!
+!       j=2 ! avoid interpolation problems!
+!       do
+!          if(x.lt.enu(j)) exit
+!          j=j+1
+!       end do
+!       y = flux(j-1) + (x - enu(j-1))*(flux(j)-flux(j-1))/(enu(j)-enu(j-1))
+!
+!       if(w.lt.y/ymax) exit
+!    end do
+!    T2K_ND_numu_energy=x
+!
+!  end function T2K_ND_numu_energy
+!
+!
 
 
   !*************************************************************************
@@ -1461,9 +1535,9 @@ contains
 
 
 !*************************************************************************
- !****f* expNeutrinofluxes/NOVAenergyNU_ND
+ !****f* expNeutrinofluxes/NOVAenergy_ND
  ! NAME
- ! real function NOVAenergyNU_ND(flavor_id,process_id)
+ ! real function NOVAenergy_ND(flavor_id,process_id)
  !
  ! PURPOSE
  ! This function returns the sampled neutrino energy for the NOvA experiment
@@ -1471,87 +1545,10 @@ contains
  ! antineutrinos
  ! Flux is obtained from Jonathan Paley, March 2016
  !*************************************************************************
- real function NOVAenergyNU_ND(Flavor_ID,Process_ID)
+ real function NOVAenergy_ND(Flavor_ID,Process_ID)
     use inputGeneral, only : path_To_Input
     use esample
 
-    integer,parameter :: NDIM = 601          !maximal dimension of fluxfile
-    real, dimension (NDIM), save :: enu,flux
-    real, dimension (0:NDIM), save :: sumflux
-    character(100) :: fluxfilename
-    integer, save :: jmax 
-    integer :: nswitch,flavor_id,process_id
-
-
-
-!   Now reading of flux file from buuinput/neutrinos
-!   First, set filename for desired neutrino flavor
-
-     nswitch = sign(1,Process_ID)
-     
-     select case(nswitch)
-     
-      case (+1)
-         select case (Flavor_ID)   
-           
-           case (1) 
-           fluxfileName= 'NOvA-ND-FHC-nue.dat'   ! electron
-           
-           case (2)
-           fluxfileName= 'NOvA-ND-FHC-numu.dat'  ! muon 
-           
-           case default
-           write (*,*) 'flavor and process IDs not compatible:1'
-           stop
-         
-         end select
-           
-      case (-1)
-         
-         select case (Flavor_ID)
-         
-           case (1)                                         
-           fluxfileName= 'NOvA-ND-RHC-anue.dat'    ! anti-electron
-         
-           case (2)
-           fluxfileName= 'NOvA-ND-RHC-anumu.dat'   ! anti-muon   
-           
-           case default
-           write (*,*) 'flavor and process IDs not compatible:2'
-           stop
-         
-         end select
-      case default
-           write (*,*) 'flavor and process IDs not compatible:3'   
-     end select         
-             
-
-    if(firsttime) then
-        call read_fluxfile(NDIM,fluxfilename,jmax,enu,flux,sumflux)
-        firsttime=.false.
-    end if
-
-!   Now call of sampling routine
-
-      NOVAenergyNU_ND = eneut(NDIM,jmax,sumflux,enu)
-
- end function NOVAenergyNU_ND 
- 
- !*************************************************************************
- !****f* expNeutrinofluxes/NOVAenergyNU_FD
- ! NAME
- ! real function NOVAenergyNU_FD(flavor_id,process_id)
- !
- ! PURPOSE
- ! This function returns the sampled neutrino energy for the NOvA experiment
- ! at the Far Detector, using the FHC files for neutrinos and RHC files for
- ! antineutrinos
- ! Flux is obtained from Jonathan Paley, March 2016
- !*************************************************************************
- real function NOVAenergyNU_FD(Flavor_ID,Process_ID)
-    use inputGeneral, only : path_To_Input
-    use esample 
-   
     integer,parameter :: NDIM = 601          !maximal dimension of fluxfile
     real, dimension (NDIM), save :: enu,flux
     real, dimension (0:NDIM), save :: sumflux
@@ -1565,43 +1562,43 @@ contains
 !   First, set filename for desired neutrino flavor
 
      nswitch = sign(1,Process_ID)
-     
+
      select case(nswitch)
-     
+
       case (+1)
-         select case (Flavor_ID)   
-           
-           case (1) 
-           fluxfileName= 'NOvA-FD-FHC-nue.dat'   ! electron
-           
+         select case (Flavor_ID)
+
+           case (1)
+           fluxfileName= 'NOvA-ND-FHC-nue.dat'   ! electron
+
            case (2)
-           fluxfileName= 'NOvA-FD-FHC-numu.dat'  ! muon 
-           
+           fluxfileName= 'NOvA-ND-FHC-numu.dat'  ! muon
+
            case default
            write (*,*) 'flavor and process IDs not compatible:1'
            stop
-         
+
          end select
-           
+
       case (-1)
-         
+
          select case (Flavor_ID)
-         
-           case (1)                                         
-           fluxfileName= 'NOvA-FD-RHC-anue.dat'    ! anti-electron
-         
+
+           case (1)
+           fluxfileName= 'NOvA-ND-RHC-anue.dat'    ! anti-electron
+
            case (2)
-           fluxfileName= 'NOvA-FD-RHC-anumu.dat'   ! anti-muon   
-           
+           fluxfileName= 'NOvA-ND-RHC-anumu.dat'   ! anti-muon
+
            case default
            write (*,*) 'flavor and process IDs not compatible:2'
            stop
-         
+
          end select
       case default
-           write (*,*) 'flavor and process IDs not compatible:3'   
-     end select         
-             
+           write (*,*) 'flavor and process IDs not compatible:3'
+     end select
+
 
     if(firsttime) then
         call read_fluxfile(NDIM,fluxfilename,jmax,enu,flux,sumflux)
@@ -1610,9 +1607,86 @@ contains
 
 !   Now call of sampling routine
 
-      NOVAenergyNU_FD = eneut(NDIM,jmax,sumflux,enu)
+      NOVAenergy_ND = eneut(NDIM,jmax,sumflux,enu)
 
- end function NOVAenergyNU_FD
+ end function NOVAenergy_ND
+
+ !*************************************************************************
+ !****f* expNeutrinofluxes/NOVAenergyNU_FD
+ ! NAME
+ ! real function NOVAenergyNU_FD(flavor_id,process_id)
+ !
+ ! PURPOSE
+ ! This function returns the sampled neutrino energy for the NOvA experiment
+ ! at the Far Detector, using the FHC files for neutrinos and RHC files for
+ ! antineutrinos
+ ! Flux is obtained from Jonathan Paley, March 2016
+ !*************************************************************************
+ real function NOVAenergy_FD(Flavor_ID,Process_ID)
+    use inputGeneral, only : path_To_Input
+    use esample
+
+    integer,parameter :: NDIM = 601          !maximal dimension of fluxfile
+    real, dimension (NDIM), save :: enu,flux
+    real, dimension (0:NDIM), save :: sumflux
+    character(100) :: fluxfilename
+    integer, save :: jmax
+    integer :: nswitch,flavor_id,process_id
+
+
+
+!   Now reading of flux file from buuinput/neutrinos
+!   First, set filename for desired neutrino flavor
+
+     nswitch = sign(1,Process_ID)
+
+     select case(nswitch)
+
+      case (+1)
+         select case (Flavor_ID)
+
+           case (1)
+           fluxfileName= 'NOvA-FD-FHC-nue.dat'   ! electron
+
+           case (2)
+           fluxfileName= 'NOvA-FD-FHC-numu.dat'  ! muon
+
+           case default
+           write (*,*) 'flavor and process IDs not compatible:1'
+           stop
+
+         end select
+
+      case (-1)
+
+         select case (Flavor_ID)
+
+           case (1)
+           fluxfileName= 'NOvA-FD-RHC-anue.dat'    ! anti-electron
+
+           case (2)
+           fluxfileName= 'NOvA-FD-RHC-anumu.dat'   ! anti-muon
+
+           case default
+           write (*,*) 'flavor and process IDs not compatible:2'
+           stop
+
+         end select
+      case default
+           write (*,*) 'flavor and process IDs not compatible:3'
+     end select
+
+
+    if(firsttime) then
+        call read_fluxfile(NDIM,fluxfilename,jmax,enu,flux,sumflux)
+        firsttime=.false.
+    end if
+
+!   Now call of sampling routine
+
+      NOVAenergy_FD = eneut(NDIM,jmax,sumflux,enu)
+
+ end function NOVAenergy_FD
 
 
 

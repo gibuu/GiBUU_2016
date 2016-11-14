@@ -1,15 +1,16 @@
+!****************************************************************************
 !****m* /antiKaonNucleon
 ! NAME
 ! module antiKaonNucleon
 ! PURPOSE
 ! Includes the cross sections for Kbar(Kbar^*)-nucleon and K(K^*)-antinucleon elastic and inelastic scattering
 ! Public routines:
-! * kaonBarNuc 
+! * kaonBarNuc
 !****************************************************************************
 module antiKaonNucleon
 
   implicit none
-  Private 
+  Private
 
   ! To decide wether we use the flux correction for the incoming particle velocities
   logical, parameter :: fluxCorrector_flag=.true.
@@ -24,9 +25,9 @@ contains
   ! subroutine kaonBarNuc(srts,teilchenIN,mediumATcollision,momentumLRF,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
   !
   ! PURPOSE
-  ! Evaluates Kbar(Kbar^*) N -> Y^*, Kbar N -> Kbar N, Kbar N -> Y pi and  
-  ! Kbar N -> Y^* pi                 as well as 
-  ! K(K^*) Nbar -> Ybar^*, K Nbar -> K Nbar, K Nbar -> Ybar pi, 
+  ! Evaluates Kbar(Kbar^*) N -> Y^*, Kbar N -> Kbar N, Kbar N -> Y pi and
+  ! Kbar N -> Y^* pi                 as well as
+  ! K(K^*) Nbar -> Ybar^*, K Nbar -> K Nbar, K Nbar -> Ybar pi,
   ! K Nbar -> Ybar^* pi cross sections
   ! and returns also a "preevent"
   !
@@ -37,19 +38,19 @@ contains
   ! * real, intent(in) ,dimension(0:3)              :: momentumLRF           ! Total Momentum in LRF
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! OUTPUT
   ! * real, intent(out)                                        :: sigmaTot       ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast     ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 2 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut    !   outgoing particles
-  ! 
-  ! The cross sections are based on parameterization by M. Effenberger. 
+  !
+  ! The cross sections are based on parameterization by M. Effenberger.
   ! NOTES
   ! Possible final states are :
   ! * 1-particle : Y^*, Ybar^*
@@ -90,19 +91,19 @@ contains
 
   integer, parameter :: nchnka=4 !*number of channels for kbar n
   real, dimension(0:nchnka) :: sigbg ! background cross sections summed
-                                     ! over final isospins: 
+                                     ! over final isospins:
                                      ! 1 --- Kbar N -> Kbar N,
                                      ! 2 --- Kbar N -> Lambda pi,
                                      ! 3 --- Kbar N -> Sigma pi,
-                                     ! 4 --- Kbar N -> Y^* pi  
+                                     ! 4 --- Kbar N -> Y^* pi
                                      ! 0 --- sum of all above channels
 
 
   ! Local variables
-  real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities 
+  real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
 !   real :: s
-  type(particle) :: kbar_particle, nucleon_particle    
+  type(particle) :: kbar_particle, nucleon_particle
   integer :: qkaon,isrts
   logical :: antiParticleInput
   integer :: totalCharge   ! total charge of colliding particles
@@ -114,20 +115,20 @@ contains
 
   ! Fields to store discretised background cross sections on a proton
   ! (same as in Effe's code) and respective resonance contributions
-  ! to the given channels: 
+  ! to the given channels:
 
   !     Kbar N -> Kbar N:
   !     first index --- charge of incoming Kbar,
-  !     second index = -1 --- outgoing K^-, 0 --- outgoing Kbar^0, 
+  !     second index = -1 --- outgoing K^-, 0 --- outgoing Kbar^0,
   !                     1 --- sum over final isospins
   real, dimension(-1:0,-1:1,0:nssmmax), save :: skaka,skaka_res
 
   !     K^- p -> Lambda pi^0:
-  real, dimension(0:nssmmax), save :: skapi,skapi_res 
+  real, dimension(0:nssmmax), save :: skapi,skapi_res
 
   !     Kbar N -> Sigma pi:
   !     first index --- charge of incoming Kbar,
-  !     second index = -1 --- outgoing pi^-, 0 --- outgoing pi^0, 
+  !     second index = -1 --- outgoing pi^-, 0 --- outgoing pi^0,
   !                    +1 --- outgoing pi^+, 2 --- sum over final isospins
   real, dimension(-1:0,-1:2,0:nssmmax), save :: skaspi2,skaspi2_res
 
@@ -135,18 +136,18 @@ contains
   !     first index --- charge of incoming Kbar,
   !     third index = j, j=1-nsres --- partial cross section for Y^* with
   !                                    ID=1+nres+j summed over final isospins
-  !                 = 0 --- sum of all partial Y^* cross sections 
-  real, dimension(-1:0,0:nssmmax,0:nsres), save :: skastar 
+  !                 = 0 --- sum of all partial Y^* cross sections
+  real, dimension(-1:0,0:nssmmax,0:nsres), save :: skastar
 
 
   !kBar N --> Xi K:
   real, dimension(1:5) :: sigXi
- 
+
   logical, save :: debug=.false.
   logical, save :: flagini=.true.
 
   ! partial cross sections for Kbar(Kbar^*) N -> R
-  real, dimension(Delta:nbar) :: sigmaRes      
+  real, dimension(Delta:nbar) :: sigmaRes
   ! Field to store the resonance masses
   real, dimension(Delta:nbar) :: massRes      ! Resonance masses
 
@@ -159,7 +160,7 @@ contains
   ! Initialize output
   teilchenOut(:)%ID=0                    ! ID of produced particles
   teilchenOut(:)%charge=0                ! Charge of produced particles
-  teilchenOut(:)%antiParticle=.false.    ! Whether produced particles are 
+  teilchenOut(:)%antiParticle=.false.    ! Whether produced particles are
                                          ! particles or antiparticles
   teilchenOut(:)%mass=0.                 ! Mass of produced particles
 
@@ -250,23 +251,23 @@ contains
     ! subroutine evaluateXsections
     !
     ! PURPOSE
-    ! Evaluates Kbar(Kbar^*) N -> Y^*, Kbar N -> Kbar N, Kbar N -> Y pi and  
+    ! Evaluates Kbar(Kbar^*) N -> Y^*, Kbar N -> Kbar N, Kbar N -> Y pi and
     ! Kbar N -> Y^* pi cross sections
     !
     ! NOTES
     ! There is a resonance contribution to Kbar(Kbar^*) N scattering.
     !**************************************************************
-    
+
     subroutine evaluateXsections
     use parametrizationsBarMes, only : sigma_KbarToXi, kaonbg
     use resonanceCrossSections, only : barMes2resonance
     use constants, only: mPi, mK
     use twoBodyTools, only: pCM
 
-    real, dimension(1:3) :: position 
+    real, dimension(1:3) :: position
     logical :: perturbative
     integer :: i
-    real :: p_KN, p_KstarN, ratio 
+    real :: p_KN, p_KstarN, ratio
 
     position=0.5*(teilchenIN(1)%position+teilchenIN(2)%position)
     if(teilchenIN(1)%perturbative.or.teilchenIN(2)%perturbative) then
@@ -309,7 +310,7 @@ contains
 
     sigbg(:)=0.
 
-    !*Kbar N -> Kbar N:            
+    !*Kbar N -> Kbar N:
     if(isrts.eq.2) then
        if(qkaon.eq.-1) then
           skaka(-1,-1,isrts)=kaonbg(srts,1,1,0)
@@ -319,10 +320,10 @@ contains
           skaka(0,0,isrts)=kaonbg(srts,1,1,1)
           skaka(0,-1,isrts)=0.
           skaka(0,1,isrts)=skaka(0,-1,isrts)+skaka(0,0,isrts)
-       end if         
+       end if
     end if
     sigbg(1)=skaka(qkaon,1,isrts)
- 
+
     !*Kbar N -> Lambda pi:
     if(isrts.eq.2) skapi(isrts)=kaonbg(srts,1,3,0)
     if(qkaon.eq.-1) then
@@ -344,7 +345,7 @@ contains
               !*sum:
           skaspi2(-1,2,isrts)=skaspi2(-1,-1,isrts)+skaspi2(-1,1,isrts)+skaspi2(-1,0,isrts)
        else
-              !*K0 p -> Sigma+ pi0:         
+              !*K0 p -> Sigma+ pi0:
           skaspi2(0,0,isrts)=kaonbg(srts,1,4,1)
               !*K0 p -> Sigma0 pi+:
           skaspi2(0,1,isrts)=skaspi2(0,0,isrts)
@@ -380,7 +381,7 @@ contains
     if(kbar_particle%Id.eq.kaonBar) then
       sigmaElast=skaka(qkaon,qkaon,isrts)+skaka_res(qkaon,qkaon,isrts)
     else
-      ! NOTE: the Kbar^* N -> Kbar^* N elastic Xsection is only due to 
+      ! NOTE: the Kbar^* N -> Kbar^* N elastic Xsection is only due to
       ! the resonance contribution.
       ! Since it is not needed we put it to zero to save CPU time.
       sigmaElast=0.
@@ -413,7 +414,7 @@ contains
     ! PURPOSE
     ! Discretises the backgrond cross sections for Kbar-nucleon scattering.
     !**************************************************************
-    
+
     subroutine init
 
     use baryonWidth, only : partialWidthBaryon, fullWidthBaryon
@@ -424,7 +425,7 @@ contains
     use twoBodyTools, only: pCM
 
     real, parameter :: m2yst_km=22., m2yst_k0=15. ! (mb GeV^2) matrix element squared for the Kbar N -> Y^* pi (see Effe's PhD, p. 239)
-                       
+
     real :: srts,s,momCM,gamma_tot,gamma_in,SpinFactor,sigma_res
     real :: iso_res,isoFactor,gamma_out
     real, dimension(1:5) :: ps
@@ -444,18 +445,18 @@ contains
       if (srts <= mN + mK) cycle
       s=srts**2
 
-!*K- p -> K- p:         
+!*K- p -> K- p:
       skaka(-1,-1,i)=kaonbg(srts,1,1,0)
 !*K- p -> K0 n:
       skaka(-1,0,i)=kaonbg(srts,1,2,0)
 !*sum:
       skaka(-1,1,i)=skaka(-1,-1,i)+skaka(-1,0,i)
-         
+
 !*K0 p -> K0 p:
       skaka(0,0,i)=kaonbg(srts,1,1,1)
       skaka(0,-1,i)=0.
       skaka(0,1,i)=skaka(0,-1,i)+skaka(0,0,i)
-    
+
 !*K- p -> Lambda pi0:
       skapi(i)=kaonbg(srts,1,3,0)
 
@@ -468,7 +469,7 @@ contains
 !*sum:
       skaspi2(-1,2,i)=skaspi2(-1,-1,i)+skaspi2(-1,1,i)+skaspi2(-1,0,i)
 
-!*K0 p -> Sigma+ pi0:         
+!*K0 p -> Sigma+ pi0:
       skaspi2(0,0,i)=kaonbg(srts,1,4,1)
 !*K0 p -> Sigma0 pi+:
       skaspi2(0,1,i)=skaspi2(0,0,i)
@@ -490,19 +491,19 @@ contains
 
         ! Total width in vacuum:
         gamma_tot=FullWidthBaryon(resID,srts)
-        
+
         ! In-width:
         gamma_in=partialwidthBaryon(resID,srts,.true.,kaonBar,nucleon)
-  
+
         SpinFactor=(2.*hadron(resId)%spin+1.)/2.
-      
+
         sigma_res=SpinFactor*4.*pi/momCM**2*s*gamma_in &
                 &/((s-hadron(resID)%mass**2)**2+gamma_tot**2*s)*0.389
 
         ! Isospin of the resonance:
         iso_res=float(hadron(resID)%isoSpinTimes2)/2.
 
-        !*K- p -> K- p:         
+        !*K- p -> K- p:
         isoFactor=ClebschSquared(0.5,0.5,iso_res,-0.5,0.5)**2
         gamma_out=partialwidthBaryon(resID,srts,.false.,kaonBar,nucleon)
         If(hadron(resId)%propagated) then
@@ -510,14 +511,14 @@ contains
         else
           skaka(-1,-1,i)=skaka(-1,-1,i)+isoFactor*sigma_res*gamma_out
         end if
-  
+
         !*K- p -> K0 n:
         If(hadron(resId)%propagated) then
           skaka_res(-1,0,i)=skaka_res(-1,0,i)+isoFactor*sigma_res*gamma_out
         else
           skaka(-1,0,i)=skaka(-1,0,i)+isoFactor*sigma_res*gamma_out
         end if
-  
+
         !*K0 p -> K0 p:
         if(abs(iso_res-1.).lt.0.00001) then
           isoFactor=1.
@@ -539,10 +540,10 @@ contains
             skapi(i)=skapi(i)+isoFactor*sigma_res*gamma_out
           end if
         end if
-  
+
         !*K- p -> Sigma+ pi-:
         isoFactor=ClebschSquared(0.5,0.5,iso_res,-0.5,0.5) &
-                &*ClebschSquared(1.,1.,iso_res,1.,-1.)      
+                &*ClebschSquared(1.,1.,iso_res,1.,-1.)
         gamma_out=partialwidthBaryon(resID,srts,.false.,pion,SigmaResonance)
         If(hadron(resId)%propagated) then
           skaspi2_res(-1,-1,i)=skaspi2_res(-1,-1,i) &
@@ -550,27 +551,27 @@ contains
         else
           skaspi2(-1,-1,i)=skaspi2(-1,-1,i)+isoFactor*sigma_res*gamma_out
         end if
-  
+
         !*K- p -> Sigma- pi+:
         If(hadron(resId)%propagated) then
           skaspi2_res(-1,1,i)=skaspi2_res(-1,1,i)+isoFactor*sigma_res*gamma_out
         else
           skaspi2(-1,1,i)=skaspi2(-1,1,i)+isoFactor*sigma_res*gamma_out
         end if
-  
-  
+
+
         !*K- p -> Sigma0 pi0:
         isoFactor=ClebschSquared(0.5,0.5,iso_res,-0.5,0.5) &
-                &*ClebschSquared(1.,1.,iso_res,0.,0.)           
+                &*ClebschSquared(1.,1.,iso_res,0.,0.)
         If(hadron(resId)%propagated) then
           skaspi2_res(-1,0,i)=skaspi2_res(-1,0,i)+isoFactor*sigma_res*gamma_out
         else
           skaspi2(-1,0,i)=skaspi2(-1,0,i)+isoFactor*sigma_res*gamma_out
         end if
 
-  
-        if(abs(iso_res-1.).lt.0.00001) then         
-  
+
+        if(abs(iso_res-1.).lt.0.00001) then
+
           !*K0 p -> Sigma+ pi0:
           isoFactor=ClebschSquared(1.,1.,iso_res,1.,0.)
           If(hadron(resId)%propagated) then
@@ -578,17 +579,17 @@ contains
           else
             skaspi2(0,0,i)=skaspi2(0,0,i)+isoFactor*sigma_res*gamma_out
           end if
-  
+
           !*K0 p -> Sigma0 pi+:
           If(hadron(resId)%propagated) then
             skaspi2_res(0,1,i)=skaspi2_res(0,1,i)+isoFactor*sigma_res*gamma_out
           else
             skaspi2(0,1,i)=skaspi2(0,1,i)+isoFactor*sigma_res*gamma_out
           end if
-  
+
         end if
 
-      end do 
+      end do
       ! End of loop over S=-1 resonances
 
       !*isospin sums:
@@ -615,7 +616,7 @@ contains
         if(j < 1 .or. j > nsres) then
           write(*,*)'In antiKaonNucleon, init: j out of bounds', j, nsres
           stop
-        end if         
+        end if
 
         if(abs(iso_res).lt.0.00001) then
           skastar(-1,i,j)=0.5*m2yst_km*ps(1)/momCM/s
@@ -640,8 +641,8 @@ contains
     ! subroutine makeDecision
     ! PURPOSE
     ! Chooses randomly one of possible outgoing channels in antikaon-nucleon
-    ! collision. Outgoing channels are: Y^*, Kbar N, Y pi, Y^* pi. 
-    ! Also the charges of outgoing particles are selected. 
+    ! collision. Outgoing channels are: Y^*, Kbar N, Y pi, Y^* pi.
+    ! Also the charges of outgoing particles are selected.
     !**************************************************************
     subroutine makeDecision
 
@@ -691,7 +692,7 @@ contains
         teilchenOut(2)%Charge=0
 
       else if(sigmaRes_tot+sigbg(1)+sigbg(2)+sigbg(3) >= cut) then
-      
+
         ! Sigma pi production:
         sum=0.
         cut2=rn()*skaspi2(qkaon,2,isrts)
@@ -718,7 +719,7 @@ contains
           if(sum >= cut2) exit
         end do
         teilchenOut(1)%Id=pion
-        teilchenOut(2)%Id=j+nres+1                 
+        teilchenOut(2)%Id=j+nres+1
 
         !*determine charges:
         if(hadron(teilchenOut(2)%Id)%isoSpinTimes2==0) then
@@ -809,12 +810,12 @@ contains
     !****s* kaonBarNuc/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV]
-    ! . 
+    ! .
     ! Filenames:
-    ! * 'KbarN_sigTotElast.dat'  : sigmaTot, sigmaElast 
+    ! * 'KbarN_sigTotElast.dat'  : sigmaTot, sigmaElast
     ! * 'KbarN_KmN.dat'          : K^- Nucleon outgoing channel
     ! * 'KbarN_Kbar0N.dat'       : Kbar^0 Nucleon outgoing channel
     ! * 'KbarN_LambdaPi.dat'     : Lambda pion outgoing channel
@@ -822,11 +823,11 @@ contains
     ! * 'KbarN_SigmaPi0.dat'     : Sigma pi^0 outgoing channel
     ! * 'KbarN_SigmaPim.dat'     : Sigma pi^- outgoing channel
     ! * 'KbarN_YstPi.dat'        : Y^* pion outgoing channel summed
-    ! *                          : over all final hyperon resonances 
+    ! *                          : over all final hyperon resonances
     ! *                          : with M >= 1600 MeV
     ! NOTES
     ! for the Kbar^* N input channel only total resonance X section
-    ! is printed out 
+    ! is printed out
     !**********************************************************************
     subroutine makeOutPut
 

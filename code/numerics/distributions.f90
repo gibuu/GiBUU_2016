@@ -123,7 +123,7 @@ contains
 !!$  ! NAME
 !!$  ! real function bW_norm(pole,width,a,b)
 !!$  ! PURPOSE
-!!$  ! Returns the Integral of the non-relativistic Breit-Wigner distribution 
+!!$  ! Returns the Integral of the non-relativistic Breit-Wigner distribution
 !!$  ! with a given pole and width in the interval (a,b).
 !!$  ! INPUTS
 !!$  ! * real :: pole, width, a,b
@@ -167,7 +167,7 @@ contains
 
     if (x>epsilon) then
        RelBW=2./pi*(x**2*width)/((x**2-pole**2)**2+x**2*width**2)
-    else if (x<-epsilon) then 
+    else if (x<-epsilon) then
        write(*,*) 'x in RelBW less than zero: ',x
        write(*,*) width, pole
        stop
@@ -183,13 +183,13 @@ contains
   ! NAME
   ! real function BlattWeisskopf(x,l)
   ! NOTES
-  ! Returns the function value of the Blatt-Weisskopf-Functions, 
-  ! which govern the momentum dependence of the width of a resonance 
+  ! Returns the function value of the Blatt-Weisskopf-Functions,
+  ! which govern the momentum dependence of the width of a resonance
   ! decaying into AB.
   ! See e.g. Effenberger Dr. thesis, page 28
   ! INPUTS
-  ! * real :: x -- = p_ab *R  with 
-  !   p_ab = Relative Momentum of outgoing particles AB and  
+  ! * real :: x -- = p_ab *R  with
+  !   p_ab = Relative Momentum of outgoing particles AB and
   !   R    = Interaction-Radius
   ! * integer :: l -- angular Momentum of outgoing particles AB
   !***************************************************************************

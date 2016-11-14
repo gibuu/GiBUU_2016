@@ -69,8 +69,8 @@ contains
   ! logical function ParticleList_getParticle(L, ID, n, P, antiparticle)
   !
   ! PURPOSE
-  ! Loop over the List "L" and find the "n"-th particle in the list with 
-  ! %ID="ID", "%antiparticle=antiparticle" and 
+  ! Loop over the List "L" and find the "n"-th particle in the list with
+  ! %ID="ID", "%antiparticle=antiparticle" and
   ! %charge="charge".  This particle "P" is then returned.
   !
   ! INPUTS
@@ -83,7 +83,7 @@ contains
   !
   ! OUTPUT
   ! * type(particle) :: P -- n-th particle with wished ID
-  ! * logical        :: success -- True if it was possible to find n-Particles 
+  ! * logical        :: success -- True if it was possible to find n-Particles
   !   with the wished ID, False otherwise
   !*************************************************************************
   function ParticleList_getParticle(L, ID, charge, n, P, antiparticle, weightNonZero) result (success)
@@ -145,7 +145,7 @@ contains
   ! subroutine ParticleList_INIT(L)
   !
   ! PURPOSE
-  ! Initialize the List 
+  ! Initialize the List
   ! (call only at start; to reset the list please call ParticleList_CLEAR)
   !
   ! INPUTS
@@ -157,7 +157,7 @@ contains
   subroutine ParticleList_INIT (L)
 
     type(tParticleList) :: L
-    
+
     NULLIFY(L%first,L%last)
     L%nEntries=0
 
@@ -171,8 +171,8 @@ contains
   ! subroutine ParticleList_CLEAR(L,all)
   !
   ! PURPOSE
-  ! Reset the List: Delete all Nodes and re-init the pointers 
-  ! 
+  ! Reset the List: Delete all Nodes and re-init the pointers
+  !
   !
   ! INPUTS
   ! * type(tParticleList) :: L -- The List
@@ -213,7 +213,7 @@ contains
   !
   ! PURPOSE
   ! Append the particle (which V points at) at the end of the list.
-  ! 
+  !
   !
   ! INPUTS
   ! * type(tParticleList)     :: L -- The List
@@ -252,7 +252,7 @@ contains
   !
   ! PURPOSE
   ! Prepend the particle (which V points at) at the beginning of the list.
-  ! 
+  !
   !
   ! INPUTS
   ! * type(tParticleList)     :: L -- The List
@@ -292,7 +292,7 @@ contains
   ! PURPOSE
   ! Remove the iEntry-th particle from the List.
   ! The pointer to this particle is returned, the memory of the node is
-  ! freed. 
+  ! freed.
   !
   ! NOTES
   ! This routine is fastest if one removes the first particle. For all
@@ -310,23 +310,23 @@ contains
   ! * return value -- TRUE at success (index was in allowed range)
   !*************************************************************************
 !   logical function ParticleList_REMOVE(L,iEntry, V)
-! 
+!
 !     type(tParticleList)              :: L
 !     type(particle)         , POINTER :: V
 !     integer                          :: iEntry
-! 
+!
 !     type(tParticleListNode), POINTER :: pNode,pNodeP
 !     integer :: i
-! 
+!
 !     NULLIFY(V)
 !     ParticleList_REMOVE = .FALSE.
-! 
+!
 !     if (iEntry < 1) return
 !     if (iEntry > L%nEntries) return
-! 
+!
 !     pNode => L%first
 !     i = 2
-! 
+!
 !     if (L%nEntries == 1) then
 !        V => pNode%V
 !        DEALLOCATE(pNode)
@@ -335,7 +335,7 @@ contains
 !        ParticleList_REMOVE = .TRUE.
 !        return
 !     end if
-! 
+!
 !     if (iEntry == 1) then
 !        V => pNode%V
 !        L%first => pNode%next
@@ -344,25 +344,25 @@ contains
 !        ParticleList_REMOVE = .TRUE.
 !        return
 !     end if
-! 
+!
 !     do
 !        if (i == iEntry) exit ! now pNode point to the precessor
 !        i = i+1
 !        pNode => pNode%next
 !     end do
-! 
+!
 !     pNodeP => pNode
 !     pNode => pNode%next
-! 
+!
 !     V => pNode%V
 !     pNodeP%next => pNode%next
-! 
+!
 !     DEALLOCATE(pNode)
 !     if (iEntry == L%nEntries) L%last => pNodeP
 !     L%nEntries = L%nEntries-1
 !     ParticleList_REMOVE = .TRUE.
 !     return
-! 
+!
 !   end function ParticleList_REMOVE
 
 end module particlePointerList

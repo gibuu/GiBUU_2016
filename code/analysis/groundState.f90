@@ -1,9 +1,16 @@
+!*******************************************************************************
+!****m* /groundStateAnalysis
+! NAME
+! module groundStateAnalysis
+! PURPOSE
+! ...
+!*******************************************************************************
 module groundStateAnalysis
 
 
 contains
 
-  
+
   subroutine countMass(teilchen)
     use particleDefinition
     use histf90
@@ -36,9 +43,9 @@ contains
        end do
     end do
     Open(11,file='masses.dat')
-    Open(12,file='momentum.dat')    
-    Open(13,file='momentum_n.dat')    
-    Open(14,file='momentum_p.dat')    
+    Open(12,file='momentum.dat')
+    Open(13,file='momentum_n.dat')
+    Open(14,file='momentum_p.dat')
     call WriteHist(histMass,11)
     call WriteHist(histMomentum,12)
     call WriteHist(histMomentum_n,13)

@@ -59,7 +59,7 @@ module initHadron
   !
   integer, save :: nRunsPerB=1
   ! PURPOSE
-  ! number of subsequent runs per impact parameter 
+  ! number of subsequent runs per impact parameter
   ! (relevant if bRaiseFlag=.true.)
   !*************************************************************************
 
@@ -80,7 +80,7 @@ module initHadron
   integer,save   :: numberParticles = 200
   !
   ! PURPOSE
-  ! Number of projectile testparticles per ensemble 
+  ! Number of projectile testparticles per ensemble
   ! in the case of a perturbative treatment
   !*************************************************************************
 
@@ -117,7 +117,7 @@ module initHadron
   !****g* initHadron/ekin_lab
   ! SOURCE
   !
-  real,    save :: ekin_lab=1.  
+  real,    save :: ekin_lab=1.
   ! PURPOSE
   ! kinetic energy of the hadron in the rest frame of the target nucleus (GeV)
   ! NOTES
@@ -128,7 +128,7 @@ module initHadron
   !****g* initHadron/E_bind
   ! SOURCE
   !
-  real,    save :: E_bind=0.  
+  real,    save :: E_bind=0.
   ! PURPOSE
   ! binding energy of initialized hadron (GeV)
   ! NOTES
@@ -223,14 +223,14 @@ contains
   ! PURPOSE
   ! Provides initial conditions for a hadron.
   ! INPUTS
-  ! * type(particle),dimension(:,:),intent(inout) ::  teilchenReal --- 
+  ! * type(particle),dimension(:,:),intent(inout) ::  teilchenReal ---
   !   array of real particles to store the hadron if it is real
-  ! * type(particle),dimension(:,:),intent(inout) ::  teilchenPert --- 
+  ! * type(particle),dimension(:,:),intent(inout) ::  teilchenPert ---
   !   array of perturbative particles to store the hadron if it is perturbative
   ! NOTES
-  ! * The user has to provide the namelist 'hadron', which contains 
-  !   the impact parameter, lab. energy, id, charge and antiparticle- 
-  !   parameters of the hadron. 
+  ! * The user has to provide the namelist 'hadron', which contains
+  !   the impact parameter, lab. energy, id, charge and antiparticle-
+  !   parameters of the hadron.
   !   If the input impact parameter is negative, then
   !   the actual impact parameter is chosen by Monte-Carlo between
   !   0 and abs(input impact parameter).
@@ -246,9 +246,9 @@ contains
   use collisionNumbering, only : pert_Numbering
 
   type(particle), dimension(:,:), intent(inout) :: teilchenReal, teilchenPert
- 
+
   type(tNucleus),pointer :: targetNuc                      ! Target nucleus
-  type(tNucleus),pointer :: proj                           ! projectile (for storing velocity only) 
+  type(tNucleus),pointer :: proj                           ! projectile (for storing velocity only)
 
   ! Working variables:
   type(particle) :: teilchen
@@ -259,7 +259,7 @@ contains
 
   write(*,*)
   write(*,*) '**Initializing  hadron'
-    
+
   If (initFlag) call initInput
 
   targetNuc => getTarget()
@@ -268,11 +268,11 @@ contains
   nRun=nRun+1
 
   if(iniType.eq.0 .or.iniType.eq.2) call setGeometry(.true.)
-    
+
   if(.not.perturbative) then
 
       Do j=1,size(teilchenReal,dim=1) ! Loop over all Ensembles
-      
+
            index=1
            Do !Search for empty space in particle vector
               if (index.gt.size(teilchenReal,dim=2)) then
@@ -286,7 +286,7 @@ contains
            end do
 
            if(debug) write(*,*)' In initHadronInduced real, index=', index
-    
+
            call setToDefault(teilchen) !set teilchen to its default values
            call setPosition
            call setKinematics
@@ -294,7 +294,7 @@ contains
               teilchen%event=teilchenReal(j,index-1)%event + 1
            else
               teilchen%event=1
-           end if 
+           end if
 
            ! Give the particle its unique number
            call setNumber(teilchen)
@@ -306,7 +306,7 @@ contains
   else
 
       Do j=1,size(teilchenPert,dim=1) ! Loop over all Ensembles
-      
+
            index=1
            do i=1,numberParticles
                Do !Search for empty space in particle vector
@@ -321,7 +321,7 @@ contains
                end do
 
                if(debug) write(*,*)' In initHadronInduced pert, index=', index
-    
+
                call setToDefault(teilchen) !set teilchen to its default values
                if(impactParameter.lt.0.) call setGeometry(.false.)
                call setPosition
@@ -341,7 +341,7 @@ contains
 
   proj%velocity=beta
 
-  contains 
+  contains
 
     !***********************************************************************
     !****s* initHadronInduced/initInput
@@ -361,7 +361,7 @@ contains
       ! NAME
       ! NAMELIST hadron
       ! PURPOSE
-      ! Includes parameters for initialization of a hadron in the case of 
+      ! Includes parameters for initialization of a hadron in the case of
       ! the hadron-nucleus collision:
       ! * impactParameter
       ! * bRaiseFlag
@@ -385,7 +385,7 @@ contains
                         perturbative, numberParticles,                  &
                         particleId, antiparticle, particleCharge,       &
                         ekin_lab, E_bind, iniType, zChoice, delta,      &
-                        deltaZ, width, debug 
+                        deltaZ, width, debug
 
       integer :: ios
 
@@ -449,11 +449,11 @@ contains
       teilchen%ID=particleId
       teilchen%antiparticle=antiparticle
       teilchen%charge=particleCharge
-      teilchen%mass=hadron(particleId)%mass        
+      teilchen%mass=hadron(particleId)%mass
 
       Select Case(iniType)
 
-      case(0,2)    ! Usual initialisation in momentum space:          
+      case(0,2)    ! Usual initialisation in momentum space:
 
          mstar = teilchen%mass
          V0 = 0.
@@ -470,16 +470,16 @@ contains
             if(       abs(I1).le.gridPoints(1) &
               & .and. abs(I2).le.gridPoints(2) &
               & .and. abs(I3).le.gridPoints(3)  ) then
-          
+
                mstar = teilchen%mass &
                     &+ fact*g_sigma*sigmaField(I1,I2,I3)
                if(mstar.le.0.) then
                  write(*,*)' problems in initHadron, mstar: ', mstar
                  stop
                end if
-              
+
                if (teilchen%ID==nucleon) then
-                  if (teilchen%charge==0) then 
+                  if (teilchen%charge==0) then
                      isofact=-1.
                   else
                      isofact=1.
@@ -504,13 +504,13 @@ contains
          if(ekin_lab.ge.0.) then
 
             p_lab=Sqrt( (ekin_lab+teilchen%mass)**2 &
-                      &-teilchen%mass**2) 
+                      &-teilchen%mass**2)
             Estar=sqrt(p_lab**2+mstar**2)
             E=Estar+V0
             E_bind=teilchen%mass-E
 
          else ! Determine particle momentum according to the binding energy
-            
+
             if( .not.getRMF_flag() ) then
               write(*,*)' ekin_lab < 0 is possible only in RMF mode currently'
               stop
@@ -518,16 +518,16 @@ contains
             Estar=teilchen%mass-E_bind-V0
             if(Estar.le.mstar) then
                write(*,*)' problems in initHadron: too strong binding'
-               write(*,*)' Estar, mstar: ', Estar, mstar  
+               write(*,*)' Estar, mstar: ', Estar, mstar
                stop
             end if
-            p_lab=sqrt( Estar**2 - mstar**2 ) 
+            p_lab=sqrt( Estar**2 - mstar**2 )
             E=sqrt(p_lab**2+mstar**2)+V0
 
          end if
 
-         !write(*,*) 'initHadronInduced/setKinematics p_lab:', p_lab 
-         !write(*,*) 'initHadronInduced/setKinematics E_bind:', E_bind 
+         !write(*,*) 'initHadronInduced/setKinematics p_lab:', p_lab
+         !write(*,*) 'initHadronInduced/setKinematics E_bind:', E_bind
 
          if(Estar.le.0.) then
              write(*,*)' Problem in initHadron/setKinematics, Estar=',Estar
@@ -541,7 +541,7 @@ contains
          if(abs(beta(3)).gt.1.) then
             write(*,*)' Problem in initHadron/setKinematics, beta(3)=',beta(3)
             stop
-         end if   
+         end if
 
          if (iniType==2) &  ! Lorentz-contracted Gaussian wave packet:
            teilchen%position(3) = (teilchen%position(3)-z)*sqrt(1.-beta(3)**2) + z
@@ -552,7 +552,7 @@ contains
          width_p=0.5*hbarc/width
          P_cut=5.*width_p
          do
-           do 
+           do
              teilchen%momentum(1)=(1.-2.*rn())*P_cut
              teilchen%momentum(2)=(1.-2.*rn())*P_cut
              teilchen%momentum(3)=(1.-2.*rn())*P_cut
@@ -560,7 +560,7 @@ contains
              If (pAbs.le.P_cut) exit
            End do
            if( rn() <= exp(-(pAbs/width_p)**2/2.) ) exit
-         end do 
+         end do
 
          teilchen%momentum(0)=sqrt(teilchen%mass**2+pAbs**2)
          beta=0.
@@ -595,9 +595,9 @@ contains
     ! PURPOSE
     ! Sets position of the hadron.
     ! NOTES
-    ! In the case of usual initialisation (initype=0), 
+    ! In the case of usual initialisation (initype=0),
     ! the actual impact parameter b and the coordinate z has to be defined
-    ! before by  calling the subroutine setGeometry. 
+    ! before by  calling the subroutine setGeometry.
     !***********************************************************************
     subroutine setPosition
 
@@ -611,7 +611,7 @@ contains
 
       case(0)  ! Usual initialisation in coordinate space:
 
-          teilchen%position=(/b*cos(phi),b*sin(phi),z/)       
+          teilchen%position=(/b*cos(phi),b*sin(phi),z/)
 
           if (debug) write(*,*) 'Position of hadron:',teilchen%position
 
@@ -620,7 +620,7 @@ contains
           ! Monte Carlo distribution according to the gaussian density profile:
           R_cut=5.*width
           do
-            do 
+            do
               teilchen%position(1)=(1.-2.*rn())*R_cut
               teilchen%position(2)=(1.-2.*rn())*R_cut
               teilchen%position(3)=(1.-2.*rn())*R_cut
@@ -629,15 +629,15 @@ contains
             End do
             if( rn() <= exp(-(rAbs/width)**2/2.) ) exit
           end do
-         
+
           if(iniType.eq.2) then
              teilchen%position(3)=teilchen%position(3)+z
              teilchen%position(1)=teilchen%position(1)+b
-             place=teilchen%position             
+             place=teilchen%position
              teilchen%position(1)=place(1)*cos(phi)-place(2)*sin(phi)
              teilchen%position(2)=place(1)*sin(phi)+place(2)*cos(phi)
           end if
-               
+
       case default
 
          Write(*,*) 'Not valid initialisation type:',iniType,'STOP'
@@ -656,9 +656,9 @@ contains
     ! Sets the impact parameter b and coordinate z of the hadron.
     ! INPUTS
     ! * logical, intent(in) :: flagPrint --  if .true., then print output parameters
-    !   to standard output file  
+    !   to standard output file
     ! NOTES
-    ! If the input impactParameter is less than zero, than the 
+    ! If the input impactParameter is less than zero, than the
     ! actual impact parameter is choosen by a Monte-Carlo-decision.
     !***********************************************************************
     subroutine setGeometry (flagPrint)
@@ -667,7 +667,7 @@ contains
       use constants, only: pi
 
       logical, intent(in) :: flagPrint     !  if .true., then print output parameters
-                                           !  into standart output file 
+                                           !  into standart output file
 
       real :: Radial_distance
 
@@ -705,8 +705,8 @@ contains
       end select
 
       if(flagPrint) then
-          write(*,*) 'initHadronInduced/setGeometry Radial_distance [fm]:', Radial_distance 
-          write(*,*) 'initHadronInduced/setGeometry b, z [fm]:', b, z 
+          write(*,*) 'initHadronInduced/setGeometry Radial_distance [fm]:', Radial_distance
+          write(*,*) 'initHadronInduced/setGeometry b, z [fm]:', b, z
       end if
 
     end subroutine setGeometry

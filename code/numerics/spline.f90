@@ -47,7 +47,7 @@ contains
   ! * real, intent(in) :: XA(:),YA(:) -- data set
   ! * real, intent(in) :: Y2A(:)      -- Derivative at data set points
   ! * real, intent(in) :: x           -- value where spline shall be evaluated
-  ! * logical, intent(in) :: SkipCalc -- if true then use given Ind and Pref values [OPTIONAL] 
+  ! * logical, intent(in) :: SkipCalc -- if true then use given Ind and Pref values [OPTIONAL]
   ! RESULT
   ! * real,    intent(out):: y           -- y value of spline at x
   ! * integer, intent(inout):: Ind(-1:2)   -- indizes of values [OPTIONAL]
@@ -127,7 +127,7 @@ contains
     if (klo .gt. N-1) then
        write(*,*) "Error:",klo,ubound(xA)
        stop
-    else if (klo .gt. N-2) then 
+    else if (klo .gt. N-2) then
        aInd(2) = aInd(1)
        if(6.0*t .ge. 5.0) then
 !          write(*,*) 'linear (2)'

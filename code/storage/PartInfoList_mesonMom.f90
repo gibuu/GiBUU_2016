@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PIL_mesonMom
-! NAME 
+! NAME
 ! module PIL_mesonMom
 ! PURPOSE
 ! Provide some storage method for a real valued information connected
@@ -9,20 +9,20 @@
 ! This is closely connected to the module PILIndex
 !
 ! This module has a doubled purpose:
-! * It should do a practical work: 
-!   It stores information connected to the cross section evolution 
-!   in the hadronization process. 
+! * It should do a practical work:
+!   It stores information connected to the cross section evolution
+!   in the hadronization process.
 ! * By copy'n'paste you can transfer this module to other information
-!   storage tasks. The necessary changes are on a query'n'replace 
+!   storage tasks. The necessary changes are on a query'n'replace
 !   level.
 !
-! The routines ...PUT and ...GET could be overwritten by routines using 
+! The routines ...PUT and ...GET could be overwritten by routines using
 ! the explicit type definition of tValueEntry, which would make sense
-! for more complicated informations. 
+! for more complicated informations.
 !
 ! INPUTS
 ! (none)
-! 
+!
 ! NOTES
 ! * "PIL" stands for "PartInfoList"
 !***************************************************************************
@@ -35,7 +35,7 @@ module PIL_mesonMom
 
   !*************************************************************************
   !****t* PIL_mesonMom/tValueEntry
-  ! NAME 
+  ! NAME
   ! type tValueEntry
   ! PURPOSE
   ! a container of the information to be stored
@@ -79,7 +79,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_mesonMom/PIL_mesonMom_DeAlloc
-  ! NAME 
+  ! NAME
   ! subroutine PIL_mesonMom_DeAlloc
   ! PURPOSE
   ! Deallocate the memory for this list and the corresponding index list.
@@ -92,7 +92,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_mesonMom/PIL_mesonMom_ZERO
-  ! NAME 
+  ! NAME
   ! subroutine PIL_mesonMom_ZERO()
   ! PURPOSE
   ! Reset the list by setting the counter of stored information to 0.
@@ -105,7 +105,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_mesonMom/PIL_mesonMom_PUT
-  ! NAME 
+  ! NAME
   ! subroutine PIL_mesonMom_PUT(number,r)
   ! PURPOSE
   ! Store the information "r" connected with particle "number" in the list.
@@ -124,10 +124,10 @@ contains
     iEntry = PILIndex_PUT(IndexList, number,"mesonMom")
 
 !    write(*,*) '###PUT: ',number,r,iEntry
-    
+
     if (iEntry>0) then      ! everything is ok
        ValueList(iEntry)%val = r
-    else 
+    else
        call PIL_mesonMom_Allocate() ! do (re)allocate
        ValueList(-iEntry)%val = r
     endif
@@ -136,7 +136,7 @@ contains
 
   !***************************************************************************
   !****f* PIL_mesonMom/PIL_mesonMom_GET
-  ! NAME 
+  ! NAME
   ! logical function PIL_mesonMom_GET(number,r)
   ! PURPOSE
   ! Get the stored information of particle "number"
@@ -172,7 +172,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_mesonMom/PIL_mesonMom_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_mesonMom_Allocate
   ! PURPOSE
   ! Do the allocation and reallocation of the value vector.
@@ -183,7 +183,7 @@ contains
   !***************************************************************************
   subroutine PIL_mesonMom_Allocate
     integer :: n0, n1,i
-    type(tValueEntry), allocatable :: L0(:) 
+    type(tValueEntry), allocatable :: L0(:)
 
     n1 = size(IndexList%PartNumber) ! new size
 
@@ -210,23 +210,23 @@ contains
 
   !***************************************************************************
   !****s* PIL_mesonMom/PIL_mesonMom_Print
-  ! NAME 
+  ! NAME
   ! subroutine PIL_mesonMom_Print(file)
   ! PURPOSE
   ! Print the list to file
   !***************************************************************************
 !   subroutine PIL_mesonMom_Print(file)
 !     integer, intent(IN) :: file
-! 
+!
 !     integer :: i
-! 
+!
 !     write(file,*) '****** PIL_mesonMom:',IndexList%nEntry
 !     do i=1,IndexList%nEntry
 !        write(file,'(i8.0,i8.0,3g12.5)') i,IndexList%PartNumber(i),ValueList(IndexList%Entry(i))%val
 !     end do
-! 
+!
 !   end subroutine PIL_mesonMom_Print
 
-  
+
 
 end module PIL_mesonMom

@@ -25,10 +25,10 @@ module  electronPionProduction_kine
   !****g* electronPionProduction_kine/pionPot
   ! SOURCE
   !
-  logical ,save :: pionPot=.true. 
+  logical ,save :: pionPot=.true.
   !
   ! PURPOSE
-  ! * Switch pion potential explicitly on and off in this module. 
+  ! * Switch pion potential explicitly on and off in this module.
   ! * Only for debugging.
   !**************************************************************************
   public :: pionPot
@@ -38,38 +38,38 @@ contains
   !**************************************************************************
   !****s* electronPionProduction_kine/getKinematics_eN
   ! NAME
-  ! subroutine getKinematics_eN(eN, pionCharge, nucleon_out_charge, 
+  ! subroutine getKinematics_eN(eN, pionCharge, nucleon_out_charge,
   ! phi_k, theta_k, k, pf, twoRoots, success, pionNucleonSystem, bothSolutions)
   !
   ! PURPOSE
-  ! Evaluates the full kinematics for a 
-  ! electron nucleon -> electron pion nucleon reaction. 
-  ! 
-  ! The angles of the outgoing pion are measured relative to the momentum 
+  ! Evaluates the full kinematics for a
+  ! electron nucleon -> electron pion nucleon reaction.
+  !
+  ! The angles of the outgoing pion are measured relative to the momentum
   ! transfer "q". All angles in degree.
   !
   ! INPUTS
   ! * type(electronNucleon_event) :: eN  -- underlying electron nucleon event
   ! * integer                     :: pionCharge --
-  ! * integer                     :: nucleon_out_charge --    
+  ! * integer                     :: nucleon_out_charge --
   ! * real                        :: phi_k,theta_k -- Pion angles [degrees]
-  ! * integer           , OPTIONAL:: pionNucleonSystem -- 
+  ! * integer           , OPTIONAL:: pionNucleonSystem --
   !   1 = pion angles phi_k and theta_k are defined in lab,
   !   2 = they are defined in the CM frame of the incoming nucleon and photon
   !
   ! RESULT
   ! * real, dimension(0:3) :: k    -- Momentum of outgoing pion
   ! * real, dimension(0:3) :: pf   -- Momentum of outgoing nucleon
-  ! * logical              :: twoRoots -- 
+  ! * logical              :: twoRoots --
   !   true if there were two possible kinematics
-  ! * logical              :: success -- 
-  !   Flag shows whether the kinematics could be established. 
+  ! * logical              :: success --
+  !   Flag shows whether the kinematics could be established.
   ! * real, dimension(1:2,0:3), OPTIONAL :: bothSolutions --
   !   if two roots are found then this variable returns both solutions
   !
   ! NOTES
   ! Especially if the pionNucleonSystem is not chosen to be the CM-frame (=2),
-  ! then two solutions for a given pair (phi_k,theta_k) may exist. If this is 
+  ! then two solutions for a given pair (phi_k,theta_k) may exist. If this is
   ! the case, then we choose randomly one of them and set twoRoots=.true.!
   !**************************************************************************
   subroutine getKinematics_eN(eN,pionCharge,nucleon_out_charge,phi_k,theta_k,&
@@ -86,13 +86,13 @@ contains
     type(electronNucleon_event) , intent(in) :: eN
     integer                     , intent(in) :: pionCharge,nucleon_out_charge
     real                        , intent(in) :: phi_k,theta_k
-    integer           , optional, intent(in) :: pionNucleonSystem     
-    real, dimension(0:3)        , intent(out):: k,pf       
+    integer           , optional, intent(in) :: pionNucleonSystem
+    real, dimension(0:3)        , intent(out):: k,pf
     logical                     , intent(out):: success
     logical                     , intent(out):: twoRoots
     real, dimension(1:2,0:3)    , intent(out), optional :: bothSolutions
 
-    real :: k_abs  
+    real :: k_abs
     real, dimension(1:3) :: k_unit
     real, dimension(0:3) :: q
     real, dimension(1:3) :: betaTOCM
@@ -148,7 +148,7 @@ contains
        ! Construct pion unit vector in CM system
        k_unit(1:3)=(/sin(radian(theta_k))*cos(radian(phi_k)),&
             &        sin(radian(theta_k))*sin(radian(phi_k)),&
-            &        cos(radian(theta_k))/)    
+            &        cos(radian(theta_k))/)
 
        ! Rotate this pion vector to a system where the CM q is defining the z-axis
        k_unit = rotateTo (qCM(1:3), k_unit)
@@ -164,7 +164,7 @@ contains
     else
        k_unit(1:3)=(/sin(radian(theta_k))*cos(radian(phi_k)),&
             &        sin(radian(theta_k))*sin(radian(phi_k)),&
-            &        cos(radian(theta_k))/)    
+            &        cos(radian(theta_k))/)
        ! Rotate this pion vector to a system where q is defining the z-axis
        k_unit = rotateTo (q(1:3), k_unit)
        if(debug) write(*,'(A,F9.5)') 'theta_pion=',degrees(acos(Dot_product(k_unit,q(1:3)) &
@@ -220,32 +220,32 @@ contains
   ! nucleon_out_charge, success, kout, betaToCF)
   !
   ! PURPOSE
-  ! Evaluates for gamma nucleon -> pion nucleon the absolute value of the 
-  ! pion momentum, when given a unit vector (ak,bk,ck) in its direction. 
-  ! The value of gamma momentum "q", the intial nucleus "initNuc" and the 
+  ! Evaluates for gamma nucleon -> pion nucleon the absolute value of the
+  ! pion momentum, when given a unit vector (ak,bk,ck) in its direction.
+  ! The value of gamma momentum "q", the intial nucleus "initNuc" and the
   ! charge of the pion "pionCharge" are input.
-  ! 
-  ! The input momenta are given in the calculation system, and also the 
+  !
+  ! The input momenta are given in the calculation system, and also the
   ! output k is given in this system.
   !
   ! INPUTS
-  ! * real,intent(in) :: ak,bk,ck -- unit-vector (ak,bk,ck) 
+  ! * real,intent(in) :: ak,bk,ck -- unit-vector (ak,bk,ck)
   !   in direction of pion momentum
   ! * real, dimension(0:3) :: q --
   ! * type(particle)  :: initNuc --
   ! * integer         :: pionCharge --
   ! * integer         :: nucleon_out_charge --
-  ! * real, dimension(1:3), OPTIONAL  :: betaToCF -- 
-  !   Velocity of CF frame in the frame where initNuc, q and ak,bk,ck are 
+  ! * real, dimension(1:3), OPTIONAL  :: betaToCF --
+  !   Velocity of CF frame in the frame where initNuc, q and ak,bk,ck are
   !   defined
   !
   ! OUTPUT
   ! * integer :: numRoots  -- Number of roots
-  ! * logical :: success   -- Flag if the kinematics could be established. 
+  ! * logical :: success   -- Flag if the kinematics could be established.
   ! * real, dimension(1:2,0:3) :: kout -- found roots
   !
   ! NOTES
-  ! We use a Newton-Algorithm to solve the energy and momentum conservation 
+  ! We use a Newton-Algorithm to solve the energy and momentum conservation
   ! condition. Searches also for two roots!!
   !
   ! Solves q(0)+pi(0)=pf(0)+k(0) at the position "position".
@@ -308,26 +308,26 @@ contains
   !**************************************************************************
   !****s* electronPionProduction_kine/get_k_abs
   ! NAME
-  ! real function get_k_abs(ak, bk, ck, q, initNuc, pionCharge, 
+  ! real function get_k_abs(ak, bk, ck, q, initNuc, pionCharge,
   ! nucleon_out_charge, success, kout, betaToCF, low, high)
   !
   ! PURPOSE
-  ! Evaluates for gamma nucleon -> pion nucleon the absolute value of the 
-  ! pion momentum, when given a unit vector (ak,bk,ck) in its direction. 
-  ! The value of gamma momentum "q", the intial nucleus "initNuc" and the 
+  ! Evaluates for gamma nucleon -> pion nucleon the absolute value of the
+  ! pion momentum, when given a unit vector (ak,bk,ck) in its direction.
+  ! The value of gamma momentum "q", the intial nucleus "initNuc" and the
   ! charge of the pion "pionCharge" are input.
   !
   ! The input (and output) momenta are given in the calculation system.
   !
   ! INPUTS
-  ! * real,intent(in) :: ak,bk,ck -- unit-vector (ak,bk,ck) 
+  ! * real,intent(in) :: ak,bk,ck -- unit-vector (ak,bk,ck)
   !   in direction of pion momentum
   ! * real, dimension(0:3) :: q --
   ! * type(particle)  :: initNuc --
   ! * integer         :: pionCharge --
   ! * integer         :: nucleon_out_charge --
-  ! * real, dimension(1:3), OPTIONAL  :: betaToCF -- 
-  !   Velocity of CF frame in the frame where initNuc, q and ak,bk,ck are 
+  ! * real, dimension(1:3), OPTIONAL  :: betaToCF --
+  !   Velocity of CF frame in the frame where initNuc, q and ak,bk,ck are
   !   defined
   ! * real   ,OPTIONAL:: low,high --
   !
@@ -336,9 +336,9 @@ contains
   ! * real, dimension(0:3), OPTIONAL  :: kout --
   !
   ! NOTES
-  ! * We use a Newton-Algorithm to solve the energy and momentum conservation 
+  ! * We use a Newton-Algorithm to solve the energy and momentum conservation
   !   condition.
-  ! * DOES NOT WORK IF THERE IS MORE THAN ONE SOLUTION, which happens if 
+  ! * DOES NOT WORK IF THERE IS MORE THAN ONE SOLUTION, which happens if
   !   there are large boosts involved, i.e. if |q| and |q_0| are large.
   ! * Solves q(0)+pi(0)=pf(0)+k(0) at the position "position".
   !**************************************************************************
@@ -422,9 +422,9 @@ contains
     ! Begin Iteration
 
     counter=0
-    
+
     numRestarts=0
-    do 
+    do
        if(Abs(f(2)-f(1)).eq.0) then
           ! Make new start guesses: This case usually occurs if the solution for k_abs is negative.
           k_abs(1)=rn()*10.
@@ -551,13 +551,13 @@ contains
   ! nucleon_out_charge, betaToCF, kabs, low_in, high_in)
   !
   ! PURPOSE
-  ! Evaluates the errror in the energy conservation condition, after using 
+  ! Evaluates the errror in the energy conservation condition, after using
   ! momentum conservation :
   !   error= [E(pion)+E(final nucleon) ] - [ E(virtual photon)+E(initial nucleon) ]
-  ! 
+  !
   ! INPUTS
   ! * real, dimension(0:3),intent(in) :: k
-  ! * real, dimension(0:3),intent(in) :: q 
+  ! * real, dimension(0:3),intent(in) :: q
   ! * type(particle),intent(in) :: initial_nucleon
   ! * integer, intent(in) :: pionCharge
   ! * integer, intent(in) :: nucleon_out_charge
@@ -704,4 +704,3 @@ contains
 
 
 end module electronPionProduction_kine
-

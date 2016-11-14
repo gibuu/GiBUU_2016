@@ -23,7 +23,7 @@ contains
   ! PURPOSE
   ! Loop over the whole particle vector and perform some (additional)
   ! decays, as e.g. kaon to pions.
-  ! This is intended to be used with some "reconstruction" routines 
+  ! This is intended to be used with some "reconstruction" routines
   ! as used by experimentalists.
   !
   ! Here we use the JETSET part of PYTHIA, which is totally independend
@@ -41,8 +41,8 @@ contains
   ! * type(particle),dimension(:,:) :: PartVec -- particle vector
   !
   ! NOTES
-  ! At the moment we are just decaying kaon and kaonBar (ID=110,111). 
-  ! It can be easily expanded to all other particles, if one sets 
+  ! At the moment we are just decaying kaon and kaonBar (ID=110,111).
+  ! It can be easily expanded to all other particles, if one sets
   ! the corresponding "stability flag" in array MDCY correctly.
   !*************************************************************************
   subroutine PerformAddDecay(PartVec,time)
@@ -55,7 +55,7 @@ contains
 
     type(particle),intent(INOUT),dimension(:,:) :: PartVec
     real, intent(in) :: time
-    
+
     integer :: iEns,iPart, ID
     type(particle),dimension(10) :: outPart
     logical :: setFlag, NumbersAlreadySet
@@ -72,7 +72,7 @@ contains
           if (iand(hadron(ID)%stability,4) .eq. 0) cycle
 
           call DoDecay(PartVec(iEns,iPart))
-          
+
           NumbersAlreadySet = AcceptGuessedNumbers()
           if (particlePropagated(outPart(1))) then
              PartVec(iEns,iPart) = outPart(1)
@@ -121,7 +121,7 @@ contains
       integer N,NPAD,K
       double precision P,V
       SAVE /PYJETS/
-      
+
       COMMON/PYINT1/MINT(400),VINT(400)
       integer MINT
       double precision VINT
@@ -143,7 +143,7 @@ contains
 
       K(1,1)   = 1
       K(1,2)   = KFfromBUU (Part)
-      
+
       P(1,5)   = Part%mass
       P(1,4)   = Part%momentum(0)
       P(1,1:3) = Part%momentum(1:3)
@@ -173,7 +173,7 @@ contains
 
       dummy = useJetSetVec
       useJetSetVec = .false. ! in order to avoid possible problems;
-                             ! now we can do this, but not before PYEXEC   
+                             ! now we can do this, but not before PYEXEC
       call SetVectorFromPYJETS(outPart,0.0)
       useJetSetVec = dummy
 
@@ -192,7 +192,7 @@ contains
 
 !       write (*,'(20A)') "AddDecay ",partName(Part),(partName(outPart(i)),i=1,N)
 
-!!$      write(*,*) 
+!!$      write(*,*)
 !!$      call  WriteParticle(6,0,0,Part)
 !!$      do i=1,N
 !!$         if (outPart(i)%ID.ne.0) call  WriteParticle(6,99,i,outPart(i))
@@ -204,7 +204,7 @@ contains
           return ! -> FAILURE
        endif
 
-      !...reset PYTHIA parameters: 
+      !...reset PYTHIA parameters:
 
       MSTJ(21) = 0              ! particle decay on/off
 !!$      MDCY(113,1)=0             ! decay: K0

@@ -4,8 +4,8 @@
 ! module hist2Df90
 ! PURPOSE
 ! Encapsulate all routines and datas for 2D Histograms.
-! 
-! Features of Histograms provided by this module: 
+!
+! Features of Histograms provided by this module:
 ! - store paramaters of the (x1,x2)-binning
 ! - enable two y-values (y and y2)
 ! - track keeping of under-/over-score the given extreme values of x.
@@ -15,9 +15,9 @@
 !
 ! NOTES
 ! Programming is fairly similar to "module histf90"
-! 
+!
 ! INPUTS
-! ...(This module needs no input) 
+! ...(This module needs no input)
 !***************************************************************************
 module hist2Df90
 
@@ -94,15 +94,15 @@ contains
   ! subroutine CreateHist2D(H, HName,x1,x2,bin,verbose)
   ! PURPOSE
   ! This is the Constructor of a 2D-Histogram!
-  ! Allocate Memory for the entries and put additional variables to 
+  ! Allocate Memory for the entries and put additional variables to
   ! their default.
-  
+
   ! INPUTS
   ! * type(histogram2D) :: H         -- Histogram to be created
   ! * character*(*)     :: HName     -- Name of Histogram
-  ! * real,dimension(2) :: x1,x2,bin -- Minimal/maximal values for 
-  !                                   x-coordinates to be considered, 
-  !                                   bin-width 
+  ! * real,dimension(2) :: x1,x2,bin -- Minimal/maximal values for
+  !                                   x-coordinates to be considered,
+  !                                   bin-width
   ! * logical            :: verbose  -- switch for verbosity [OPTIONAL]
   ! OUTPUT
   ! H is changed
@@ -250,12 +250,12 @@ contains
     do i=1,2
 
        !...extremes (counted):
-       
+
        if (x(i)<H%xExtreme(i,1)) H%xExtreme(i,1)=x(i)
        if (x(i)>H%xExtreme(i,2)) H%xExtreme(i,2)=x(i)
-       
+
        !...extremes (measured):
-       
+
        if (x(i) >= H%xMin(i) .and. x(i) <= H%xMax(i)) then
           iBin(i) = int( (x(i)-H%xMin(i))/H%xBin(i) )+1
        else if (x(i) < H%xMin(i)) then
@@ -395,7 +395,7 @@ contains
           write(*,*) ubound(H2%yVal,dim=1),iBinMax(1)
           stop
        endif
-      
+
        do iBin1=-1,iBinMax(1)
           if (H2%yVal(iBin1,1) .eq. 0.0) then
              do iBin2=-1,iBinMax(2)
@@ -410,7 +410,7 @@ contains
           endif
        end do
     end if
-   
+
     if (SwapXY_) then
 
        do iBin2=1,iBinMax(2)
@@ -426,7 +426,7 @@ contains
                    Z = maxZ
                 endif
              endif
-             
+
              if (present(iColumn)) then
                 if (writeZ) then
                    write(iFile,1000) xMin+((/iBin2,iBin1/)*1.0-0.5)*xBin, Z, &
@@ -463,7 +463,7 @@ contains
                    Z = maxZ
                 endif
              endif
-             
+
              if (present(iColumn)) then
                 if (writeZ) then
                    write(iFile,1000) xMin+((/iBin1,iBin2/)*1.0-0.5)*xBin, Z, &
@@ -484,13 +484,13 @@ contains
           end do
           write(iFile,*)
        end do
-       
+
     endif
 
     if (present(file)) then
        close(iFile)
     end if
-    
+
     if (present(dump)) then
        if(dump) then
           if (present(file)) then
@@ -501,8 +501,8 @@ contains
        end if
     end if
 
-1000 FORMAT(1X,' ',1P,2E12.4,4E12.4)   
-    
+1000 FORMAT(1X,' ',1P,2E12.4,4E12.4)
+
   end subroutine WriteHist2D_Gnuplot
 
   !***************************************************************************
@@ -582,7 +582,7 @@ contains
     allocate(YY(iBinMax(2)))
     allocate(ZZy(iBinMax(2)))
     allocate(ratio(iBinMax(1),iBinMax(2)))
-    
+
     do iBin1=1,iBinMax(1)
        XX(iBin1) = H%xMin(1)+(iBin1*1.0-0.5)*H%xBin(1)
     enddo
@@ -662,7 +662,7 @@ contains
 
     deallocate(xx,yy,ZZx,ZZy,ratio)
 
-1000 FORMAT(1X,' ',1P,2E12.4,4E12.4)   
+1000 FORMAT(1X,' ',1P,2E12.4,4E12.4)
 
   end subroutine WriteHist2D_Gnuplot_Bspline
 
@@ -689,62 +689,62 @@ contains
   ! This Dividing-Routine ignores all EXTREME values etc. !
   !
   ! The "MulWithBin=.TRUE." feature is provided, because during output the
-  ! bin entry values are divided by the bin-width (as usual). Therefore if 
+  ! bin entry values are divided by the bin-width (as usual). Therefore if
   ! you divide a histogram by itself and writ it out, you would not get the
   ! bin-Values "1" but "1/bin-width". This flag here corrects for this.
   !***************************************************************************
 !   subroutine DivideHist2D(H1,H2, maxVal, MulWithBin)
-! 
+!
 !     type(histogram2D),intent(inout)       :: H1
 !     type(histogram2D),intent(in)          :: H2
-!     real,             intent(in),optional :: maxVal  
+!     real,             intent(in),optional :: maxVal
 !     logical,          intent(in),optional :: MulWithBin
-! 
+!
 !     real :: maxZ
 !     real :: BinFak
-! 
+!
 !     integer, dimension(2) :: iBinMax
 !     integer :: iBin1,iBin2,i
-! 
+!
 !     maxZ = 99.0
 !     BinFak = 1.0
-! 
-! 
+!
+!
 !     if (present(maxVal)) maxZ = maxVal
-! 
+!
 !     if (present(MulWithBin)) then
 !        if (MulWithBin) BinFak = (H1%xBin(1)*H1%xBin(2))
 !     else
 !        BinFak = (H1%xBin(1)*H1%xBin(2))
 !     endif
-! 
+!
 !     iBinMax(1) = uBound(H1%yVal,dim=1)
 !     iBinMax(2) = uBound(H1%yVal,dim=2)
-! 
+!
 !     if ((iBinMax(1).ne.uBound(H2%yVal,dim=1)).or.(iBinMax(2).ne.uBound(H2%yVal,dim=2))) then
 !        write(*,*) '!!! DivideHist2D: bounds are different!'
 !        write(*,*) iBinMax(1),iBinMax(2),uBound(H2%yVal,dim=1),uBound(H2%yVal,dim=1)
 !        stop
 !     endif
-! 
+!
 ! !    H%yVal(iBin1,iBin2,1) = H%yVal(iBin1,iBin2,1)+y
 ! !    H%yVal(iBin1,iBin2,2) = H%yVal(iBin1,iBin2,2)+1.
 ! !    H%yVal(iBin1,iBin2,3) = H%yVal(iBin1,iBin2,3)+yy
-! 
+!
 !     do iBin1=1,iBinMax(1)
 !        do iBin2=1,iBinMax(2)
 !           do i=1,3
 !              if (H2%yVal(iBin1,iBin2,i).eq.0.0) then
-!                 if (H1%yVal(iBin1,iBin2,i).ne.0.0) H1%yVal(iBin1,iBin2,i) = maxZ 
+!                 if (H1%yVal(iBin1,iBin2,i).ne.0.0) H1%yVal(iBin1,iBin2,i) = maxZ
 !              else
 !                 H1%yVal(iBin1,iBin2,i)=H1%yVal(iBin1,iBin2,i)/H2%yVal(iBin1,iBin2,i)
 !              endif
 !           end do
 !        end do
 !     end do
-! 
+!
 !     H1%yVal = H1%yVal * BinFak
-! 
+!
 !   end subroutine DivideHist2D
 
 
@@ -755,7 +755,7 @@ contains
   ! PURPOSE
   ! Read in a 2D-histogram from a file, which has been written in a gnuplot
   ! format.
-  ! 
+  !
   !***************************************************************************
   subroutine ReadHist2D_Gnuplot(H,iFile,add,mul, iColumn, DoAve)
 
@@ -788,7 +788,7 @@ contains
 
     iBinMax(1) = uBound(H%yVal,dim=1)
     iBinMax(2) = uBound(H%yVal,dim=2)
-    
+
     do iBin1=1,iBinMax(1)
        do iBin2=1,iBinMax(2)
           if (present(iColumn)) then
@@ -809,7 +809,7 @@ contains
        end do
        read(iFile,'(A)') Buf
     end do
-    
+
 
   end subroutine ReadHist2D_Gnuplot
 
@@ -864,7 +864,7 @@ contains
        addFak = add
        WriteFaks = .true.
     endif
-    
+
     if (WriteFaks) write(iF) addFak,mulFak
 
     close(iF)
@@ -877,7 +877,7 @@ contains
   ! NAME
   ! subroutine FetchHist2D(H,file,iFile, add,mul, flagOK)
   ! PURPOSE
-  ! Read in all the histogram information previously dumped unformatted 
+  ! Read in all the histogram information previously dumped unformatted
   ! (i.e. binary) to a file
   !
   ! INPUTS
@@ -887,7 +887,7 @@ contains
   ! * type(histogram2D) :: H     -- Histogram to be used
   ! * logical           :: flagOK -- flag, if reading was okay [OPTIONAL]
   !
-  ! H is read UNFORMATTED from the given file. Sizes are calculated as in 
+  ! H is read UNFORMATTED from the given file. Sizes are calculated as in
   ! CreateHist, also memory is allocated.
   !
   ! NOTES
@@ -899,7 +899,7 @@ contains
     character*(*),    intent(in)          :: file
     integer,          intent(in),optional :: iFile
     real,             intent(out),optional:: add,mul
-    logical,          intent(out),optional:: flagOK 
+    logical,          intent(out),optional:: flagOK
 
     integer :: iF
     integer,dimension(2) :: L

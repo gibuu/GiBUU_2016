@@ -7,20 +7,20 @@
 ! * Encapsulate routines and datas for 1D Histogramms, in which you want to store the results of several sequentiell runs.
 ! * Superior to hist_multipleRuns since it offers the possibility to have multiple columns in the histograms
 !
-! Features of Histograms provided by this module: 
+! Features of Histograms provided by this module:
 ! - store paramaters of the x-binning
-! - enable  multiple y-values 
+! - enable  multiple y-values
 ! - track keeping of under-/over-score the given extreme values of x.
 ! - provide simple-to-understand output routines (cf. WriteHist)
 ! - provide simple histogram arithmetic (not yet implemented)
 ! - many others...
 !
-! Every Histogram prints his own multicolumn output. 
+! Every Histogram prints his own multicolumn output.
 ! A multicolumn output of many different histograms for the same x-value
 ! is not implemented. This is done by the module "histMPf90".
-! 
+!
 ! INPUTS
-! ...(This module needs no input) 
+! ...(This module needs no input)
 !***************************************************************************
 module hist_multipleRuns_MC
   use histMC, only : histogramMC
@@ -54,13 +54,13 @@ contains
   ! subroutine CreateHist_mr_mc(H, HName,x1,x2,bin,nCH)
   ! PURPOSE
   ! This is the Constructor of a 1D-Histogram!
-  ! Allocate Memory for the entries and put additional variables to their 
+  ! Allocate Memory for the entries and put additional variables to their
   ! default.
   ! INPUTS
   ! * type(histogram_mr_mc) :: H         -- Histogramm to be created
   ! * character*(*)      :: HName     -- Name of Histogram
   ! * real               :: x1,x2,bin -- Minimal/maximal value for x-coordinate
-  !                                      to be considered, bin-width 
+  !                                      to be considered, bin-width
   ! * integer, intent(in) :: nCH      -- number of channels
   ! OUTPUT
   ! H is changed
@@ -73,7 +73,7 @@ contains
     real,intent(in) :: x1
     real,intent(in) :: x2
     real,intent(in) :: bin
-    integer, intent(in) :: nCH 
+    integer, intent(in) :: nCH
 
     call createHistMC(H%total  , HName,x1,x2,bin,nCH)
     call createHistMC(H%thisRun, HName,x1,x2,bin,nCH)
@@ -125,7 +125,7 @@ contains
     type(histogram_mr_mc),intent(inout) :: H
     real,intent(in)          :: x
     real,intent(in)          :: y
-    integer, intent(in)      :: nCH  
+    integer, intent(in)      :: nCH
 
     call AddHistMC(H%thisRun,x,nCH,y)
     call AddHistMC(H%total  ,x,nCH,y)
@@ -175,8 +175,8 @@ contains
   ! NAME
   ! subroutine WriteHist_mr_mc(H,iFile,file)
   ! PURPOSE
-  ! Write out the histogram including error analysis. 
-  ! INPUTS 
+  ! Write out the histogram including error analysis.
+  ! INPUTS
   ! * type(histogram_mr_mc),intent(in)          :: H
   ! * integer,              intent(in)          :: iFile
   ! * character(*),         intent(in),optional :: file

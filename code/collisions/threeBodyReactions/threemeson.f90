@@ -284,7 +284,7 @@ contains
     use collisionNumbering, only: real_numbering, real_firstnumbering, ReportEventNumber
     use history, only: setHistory
     use particleDefinition
-    use ParticleProperties, only: hadron
+    use twoBodyStatistics, only : rate
 
     type(particle), POINTER, intent(inout) :: Part1, Part2, Part3
     integer, intent(in) :: ID
@@ -299,14 +299,15 @@ contains
 
     call setNumber(PartNew) ! we give it a new number
 
-    PartNew%mass = hadron(ID)%mass ! pole mass
     PartNew%charge = Part1%charge + Part2%charge + Part3%charge
-
-    call setHistory(Part1,Part2,Part3, (/PartNew/) )
 
     PartNew%position = (Part1%position+Part2%position+Part3%position)/3
     PartNew%momentum = (Part1%momentum+Part2%momentum+Part3%momentum)
     PartNew%velocity = Part1%momentum(1:3)/Part1%momentum(0)
+
+    PartNew%mass = sqrtS(Part1, Part2, Part3)
+
+    call setHistory(Part1,Part2,Part3, (/PartNew/) )
 
     ! no formation time effects:
     PartNew%lastCollisionTime = time
@@ -329,6 +330,8 @@ contains
     !===== Set some global counters =====
 
     call reportEventNumber( (/Part1,Part2,Part3/), (/PartNew/), PartNew%event, time, 3111)
+
+    call rate( (/Part1,Part2,Part3/), (/PartNew/), time)
 
     !===== Set particle 1, Delete particle 2 & 3 =====
 

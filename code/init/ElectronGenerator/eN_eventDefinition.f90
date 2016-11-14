@@ -4,7 +4,7 @@
 ! module eN_eventDefinition
 !
 ! PURPOSE
-! This module includes a type definition which deals with kinematics of 
+! This module includes a type definition which deals with kinematics of
 ! lepton-nucleon scattering.
 !
 ! NOTES
@@ -41,19 +41,19 @@ module eN_eventDefinition
 
      real                  :: QSquared      ! Q^2=-q^2
      real                  :: W             ! W at the hadronic vertex
-     real                  :: W_free        ! Free W   (potentials removed, momentum kept) 
+     real                  :: W_free        ! Free W   (potentials removed, momentum kept)
      real                  :: W_rec         ! Free W for nucleon at rest
      real, dimension(0:3)  :: pcm           ! Lorentz-Trafo into cm-frame
      real, dimension(3)    :: betacm        ! Lorentz-Trafo into cm-frame
      real                  :: phiLepton     ! additional angle of lepton plane
 
-     integer               :: idProcess = 0 ! = (+-)EM,(+-)CC,(+-)NC 
+     integer               :: idProcess = 0 ! = (+-)EM,(+-)CC,(+-)NC
      integer               :: idFamily  = 0 ! Abbrev. for: e,mu,tau
 
   end Type electronNucleon_event
   !
   ! NOTES
-  ! 1) The integers 'idProcess' and 'idFamily' keep redundant information, 
+  ! 1) The integers 'idProcess' and 'idFamily' keep redundant information,
   ! but are useful as abbreviations in if-statements. (cf.module leptonicID)
   !
   !*************************************************************************
@@ -83,11 +83,11 @@ contains
   !****s* eN_eventDefinition/write_electronNucleon_event
   ! NAME
   ! subroutine write_electronNucleon_event(e,DoDebug,DoShort)
-  ! 
+  !
   ! PURPOSE
   ! Dump the given instance to stdout
   !***************************************************************************
-  subroutine write_electronNucleon_event(e,DoDebug_,DoShort_) 
+  subroutine write_electronNucleon_event(e,DoDebug_,DoShort_)
     use output, only : line, writeParticle_debug,writeParticle
     use minkowski, only : sp,abs4
     use particleProperties, only : PartName
@@ -97,9 +97,9 @@ contains
     character(50) :: format4,format1  ! ,format3
     character*(*), dimension(3), parameter :: sProcess = (/"EM","CC","NC"/)
     character*(*), dimension(3), parameter :: sFamily  = (/"e  ","mu ","tau"/)
-     
+
     logical :: DoDebug, DoShort
-    
+
     DoShort  = .false.
     if (present(DoShort_)) DoShort=DoShort_
 
@@ -118,9 +118,9 @@ contains
     format1='(A,1P,E15.4)'
 !     format3='(A,1P,4E15.4)'
 
-    
 
-    write(*,*) 
+
+    write(*,*)
     write(*,'(A)') line
     write(*,'(A)') line
     write(*,'(A)') '**** Lepton-Nucleon Event : ****'
@@ -154,7 +154,7 @@ contains
        write(*,'(A,A)') '* Exchanged Boson: ',PartName(e%boson)
        call WriteParticle(6,1,1,e%boson)
     end if
-    write(*,*) 
+    write(*,*)
     write(*,'(A,F15.5)') '* Nucleon:           m_eff =',abs4(e%nucleon%momentum)
     if (DoDebug) then
        call writeParticle_Debug(e%nucleon)
@@ -163,7 +163,7 @@ contains
     endif
 
     if (.not.DoShort) then
-       write(*,*) 
+       write(*,*)
        write(*,'(A,F15.5)') '* Nucleon free:      m_eff =',abs4(e%nucleon_free%momentum)
        if (DoDebug) then
           call writeParticle_Debug(e%nucleon_free)
@@ -173,7 +173,7 @@ contains
     end if
 
     if (e%nucleon2%ID.gt.0) then
-       write(*,*) 
+       write(*,*)
        write(*,'(A,F15.5)') '* Nucleon 2:         m_eff =',abs4(e%nucleon2%momentum)
        if (DoDebug) then
           call writeParticle_Debug(e%nucleon2)
@@ -182,13 +182,13 @@ contains
        endif
     end if
 
-    write(*,*) 
+    write(*,*)
     write(*,format1) '* QSquared    =', e%QSquared
     write(*,format1) '* W           =' ,e%W
 
     if (.not.DoShort) then
        write(*,format1) '* W_free      =' , e%W_free
-       write(*,*) 
+       write(*,*)
        write(*,format4) '* Boost: pcm            ',e%pcm
        write(*,format4) '* Boost: betacm         ',e%betacm
        write(*,format1) '* Boost: phi_lepton     ',e%phiLepton
@@ -196,7 +196,7 @@ contains
 
     write(*,'(A)') line
     write(*,'(A)') line
-    write(*,*) 
+    write(*,*)
 
   end subroutine  write_electronNucleon_event
 
@@ -204,7 +204,7 @@ contains
   !****f* eN_eventDefinition/setVacuum
   ! NAME
   ! function setVacuum(eN) result(eN_vac)
-  ! 
+  !
   ! PURPOSE
   ! Return the electron-nucleon event transformed to vacuum kinematics
   !***************************************************************************
@@ -217,5 +217,5 @@ contains
     en_Vac%W            =  en_Vac%W_free
     return
   end function setVacuum
-    
+
 end module eN_eventDefinition

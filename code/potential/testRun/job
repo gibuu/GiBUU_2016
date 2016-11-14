@@ -2,7 +2,7 @@
 ! General Input :
 !***************************************************
 $input
-path_to_input="~/GiBUU/buuinput/"
+path_to_input='~/GiBUU/buuinput/'
 $end
 
 $initDatabase

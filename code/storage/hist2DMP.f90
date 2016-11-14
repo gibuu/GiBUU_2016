@@ -3,7 +3,7 @@
 ! NAME
 ! module hist2DMPf90
 ! PURPOSE
-! Provide an array of 2D histogramms (module hist2Df90) according the 
+! Provide an array of 2D histogramms (module hist2Df90) according the
 ! multi particle scheme (module histMPf90)
 ! NOTES
 ! This is histogram2D with one additional dimension (=particle, encoded)
@@ -51,15 +51,15 @@ contains
   ! subroutine CreateHist2DMP(H, HName,x1,x2,bin, iPartSet,verbose)
   ! PURPOSE
   ! This is the Constructor of a multi-particle 2D-Histogram!
-  ! Allocate Memory for the entries and put additional variables to their 
-  ! default. 
-  ! The parameter iPartSet specifies, which particles should be included. 
+  ! Allocate Memory for the entries and put additional variables to their
+  ! default.
+  ! The parameter iPartSet specifies, which particles should be included.
   !
   ! INPUTS
   ! * type(histogram2DMP) :: H         -- 2D-Histogramm-Array to be created
   ! * character*(*)       :: HName     -- Name of Histogram
   ! * real,dimension(2)   :: x1,x2,bin -- Minimal/maximal value for x-coordinate
-  !                                     to be considered, bin-width 
+  !                                     to be considered, bin-width
   ! * integer             :: iPartSet  -- particle set to consider
   ! * logical             :: verbose   -- switch for verbosity [OPTIONAL]
   !
@@ -68,7 +68,7 @@ contains
   ! * 2: all mesons (except charm), nucleons, Deltas
   ! * ... to be continued
   !
-  ! 
+  !
   ! OUTPUT
   ! ---
   !***************************************************************************
@@ -85,7 +85,7 @@ contains
 
     integer,dimension(2) :: L
     integer :: nHist
-    
+
 
     if (initFlag) then
        call histMPf90_Init
@@ -206,7 +206,7 @@ contains
     integer,dimension(2) :: iBin
     real :: yy
     integer :: i
-    
+
     if (iH < 1) return
 
     yy = 0.
@@ -216,12 +216,12 @@ contains
     do i=1,2
 
        !...extremes (counted):
-       
+
        if(x(i).lt.H%xExtreme(iH,i,1)) H%xExtreme(iH,i,1)=x(i)
        if(x(i).gt.H%xExtreme(iH,i,2)) H%xExtreme(iH,i,2)=x(i)
 
        !...extremes (measured):
-       
+
        if (x(i) < H%xMin(i)) then
           iBin(i) = -1
        else if (x(i) > H%xMax(i)) then
@@ -337,7 +337,7 @@ contains
              write(*,*) '  histogram=',H%Name
              stop
           endif
-      
+
           do iBin1=-1,iBinMax(1)
              if (H2%yVal(iBin1,1) .eq. 0.0) then
                 do iBin2=-1,iBinMax(2)
@@ -352,7 +352,7 @@ contains
              endif
           end do
        end if
-   
+
        do iBin1=1,iBinMax(1)
           do iBin2=1,iBinMax(2)
              if (writeZ) then
@@ -395,7 +395,7 @@ contains
     if (present(file)) then
        close(iFile)
     end if
-    
+
     if (present(dump)) then
        if(dump) then
           if (present(file)) then
@@ -406,8 +406,8 @@ contains
        end if
     end if
 
-1000 FORMAT(1X,' ',1P,2E12.4,4E12.4)   
-    
+1000 FORMAT(1X,' ',1P,2E12.4,4E12.4)
+
   end subroutine WriteHist2DMP_Gnuplot
 
   !***************************************************************************
@@ -454,7 +454,7 @@ contains
   ! NAME
   ! subroutine FetchHist2DMP(H,file,iFile)
   ! PURPOSE
-  ! Read in all the histogram information previously dumped unformatted 
+  ! Read in all the histogram information previously dumped unformatted
   ! (i.e. binary) to a file
   !
   ! INPUTS
@@ -463,7 +463,7 @@ contains
   ! OUTPUT
   ! * type(histogram2DMP) :: H     -- Histogramm to be used
   !
-  ! H is read UNFORMATTED from the given file. Sizes are calculated as in 
+  ! H is read UNFORMATTED from the given file. Sizes are calculated as in
   ! CreateHist, also memory is allocated.
   !
   ! NOTES
@@ -471,50 +471,50 @@ contains
   !***************************************************************************
 !   subroutine FetchHist2DMP(H,file,iFile)
 !     use histMPf90
-! 
+!
 !     type(histogram2DMP),intent(inout)       :: H
 !     character*(*),  intent(in)          :: file
 !     integer,        intent(in),optional :: iFile
-! 
+!
 !     integer :: iF
 !     integer,dimension(2) :: L
 !     integer :: nHist
-! 
+!
 !     if (initFlag) then
 !        call histMPf90_Init
 !        initFlag = .false.
 !     end if
-! 
+!
 !     iF=121
 !     if (present(iFile)) iF = iFile
-! 
+!
 !     open(iF,file=file,status='UNKNOWN',form='UNFORMATTED')
 !     rewind(iF)
-! 
+!
 !     read(iF) H%iSet
-! 
+!
 !     nHist = Map2HistMP_getN(H%iSet)
 !     if (nHist==0) then
 !        write(*,*) 'FetchHist2DMP: H%iSet invalid:',H%iSet
 !        stop
 !     endif
-! 
-! 
+!
+!
 !     if(ALLOCATED(H%xExtreme)) deallocate(H%xExtreme)
 !     if(ALLOCATED(H%yVal)) deallocate(H%yVal)
-! 
+!
 !     allocate(H%xExtreme(nHist,2,2))
-! 
+!
 !     read(iF) H%xMin,H%xMax,H%xBin,H%xExtreme
 !     read(iF) H%Name
-! 
+!
 !     L = nint( (H%xMax-H%xMin)/H%xBin )+1
 !     allocate(H%yVal(nHist,-1:L(1),-1:L(2),3))
-! 
+!
 !     read(iF) H%yVal
-! 
+!
 !     close(iF)
-! 
+!
 !   end subroutine FetchHist2DMP
 
 

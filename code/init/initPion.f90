@@ -20,7 +20,7 @@ module initPion
   ! SOURCE
   logical,save   :: UseCoulomb=.false.
   ! PURPOSE
-  ! if .true. then a Coulomb propagation from CoulombDistance to distance is 
+  ! if .true. then a Coulomb propagation from CoulombDistance to distance is
   ! performed
   !***************************************************************************
 
@@ -45,7 +45,7 @@ module initPion
   ! SOURCE
   real,save      :: impact_parameter=0. ! [fm]
   ! PURPOSE
-  ! impact parameter. 
+  ! impact parameter.
   ! If less than 0, than an impact parameter integration is performed
   !***************************************************************************
 
@@ -100,7 +100,7 @@ contains
   ! NAME
   ! real function getEkin
   ! PURPOSE
-  ! This function returns the kinetic energy of the pions as they were 
+  ! This function returns the kinetic energy of the pions as they were
   ! initialized at the last call of initPionInduced.
   !***********************************************************************
   real function getEkin()
@@ -113,10 +113,10 @@ contains
   ! NAME
   ! real function getTotalPerweight
   ! PURPOSE
-  ! This function returns the total perweight of the pions as they were 
+  ! This function returns the total perweight of the pions as they were
   ! initialized at the last call of initPionInduced.
   !***********************************************************************
-  real function getTotalPerweight()        
+  real function getTotalPerweight()
     getTotalPerweight=totalPerweight
   end function getTotalPerweight
 
@@ -127,9 +127,9 @@ contains
   ! PURPOSE
   ! This routine initializes pions in pion-nucleus scattering.
   ! INPUTS
-  ! * type(particle), intent(inout), dimension(:,:) :: teilchen 
+  ! * type(particle), intent(inout), dimension(:,:) :: teilchen
   !   -- vector to store pions in
-  ! * logical, intent(in) :: raiseEnergyFlag   
+  ! * logical, intent(in) :: raiseEnergyFlag
   !   -- if .true. energy of initialized pions is raised by delta_ekin_lab
   ! * type(tNucleus),pointer,optional :: targetNuc -- Target nucleus
   !***************************************************************************
@@ -140,7 +140,7 @@ contains
     use collisionNumbering, only :pert_Numbering ! Numbering of %event of the perturbative particles
     use output
 
-    type(particle), intent(inout), dimension(:,:) :: teilchen 
+    type(particle), intent(inout), dimension(:,:) :: teilchen
     logical, intent(in) :: raiseEnergyFlag
     type(tNucleus),pointer,optional :: targetNuc
 
@@ -160,7 +160,7 @@ contains
 
     If(initFlag)then
        !Read input and check whether pion is initialized in- or outside nucleus
-       call initInput(outside) 
+       call initInput(outside)
        initFlag=.false.
     end if
 
@@ -172,7 +172,7 @@ contains
     Do j=1,size(teilchen,dim=1) ! Loop over all Ensembles
        index=1
        i=0
-       Do 
+       Do
           Do while(teilchen(j,index)%Id > 0) !Find free place in particle vector
              index=index+1
              if (index.gt.size(teilchen,dim=2)) then
@@ -191,7 +191,7 @@ contains
           call setNumber(teilchen(j,index))
 
           !Do correction of kinematics if pion is initialized outside the nucleus:
-          If (outside.and.UseCoulomb) call CoulombCorrect  
+          If (outside.and.UseCoulomb) call CoulombCorrect
 
           !Do correction of momentum if pion is initialized inside the nucleus:
           if (.not.outside) then
@@ -213,7 +213,7 @@ contains
 
     write(*,*)
 
-  contains 
+  contains
 
     !********************************************************************
     !****s* initPionInduced/initInput
@@ -269,7 +269,7 @@ contains
          If(Sqrt(distance**2+impact_parameter**2).lt.(targetNuc%radius+targetNuc%surface)) then
             outside=.false.
             Write(*,*) 'Pions are initialized inside the nucleus'
-         else 
+         else
             outside=.true.
             Write(*,*) 'Pions are initialized outside the nucleus'
          end if
@@ -315,21 +315,21 @@ contains
     ! PURPOSE
     ! Sets positions of the pions.
     ! NOTES
-    ! If Impact_Parameter is choosen to be less than zero, than the impact 
-    ! parameter is choosen by a Monte-Carlo-decision. This is made such that 
-    ! the pion is initialized on a disk of radius "bmax_Innerdisk" or on a 
+    ! If Impact_Parameter is choosen to be less than zero, than the impact
+    ! parameter is choosen by a Monte-Carlo-decision. This is made such that
+    ! the pion is initialized on a disk of radius "bmax_Innerdisk" or on a
     ! ring which surrounds the inner disk and has an outer radius of
-    ! "bmaxOuterRing".  
-    ! The probability to be on the inner disk is given by "pInnerDisk". 
+    ! "bmaxOuterRing".
+    ! The probability to be on the inner disk is given by "pInnerDisk".
     ! The inner disk and the outer ring are separetely populated by a constant
     ! number density of pions.
-    ! One distinguishes between inner disk and outer ring to have the 
-    ! possibility to have different 
-    ! population densities. Assumed one would only have one disk, then most of 
+    ! One distinguishes between inner disk and outer ring to have the
+    ! possibility to have different
+    ! population densities. Assumed one would only have one disk, then most of
     ! the particles would be
     ! initialized with high impact-parameter where only few reactions take
-    ! place. 
-    ! 
+    ! place.
+    !
     ! The perweight is given in units of mb for impact parameter integration.
     !********************************************************************
     subroutine setPosition
@@ -361,7 +361,7 @@ contains
 
          !         if(fullensemble) then
          !            teilchen(j,index)%perweight=1./float(numberPions)
-         !         else 
+         !         else
          teilchen(j,index)%perweight=1./float(totalNumPions)
          !         end if
       else  !Monte Carlo decision to have impact parameter integration in the end
@@ -471,7 +471,7 @@ contains
 
 
       if (debug) then
-         write(*,*) 'Correct for in medium potentials' 
+         write(*,*) 'Correct for in medium potentials'
          write(*,*) 'Vacuum kinetic energy:', ekin_lab
       end if
 
@@ -572,14 +572,3 @@ contains
 
 
 end module initPion
-
-
-
-
-
-
-
-
-
-
-

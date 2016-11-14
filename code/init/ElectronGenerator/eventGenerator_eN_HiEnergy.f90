@@ -4,7 +4,7 @@
 ! module eventGenerator_eN_HiEnergy
 !
 ! PURPOSE
-! This module includes initilization routines for high energetic electron 
+! This module includes initilization routines for high energetic electron
 ! induced events
 !
 !***************************************************************************
@@ -60,7 +60,7 @@ module eventGenerator_eN_HiEnergy
   logical,save :: DoTransEv=.false.
   !
   ! PURPOSE
-  ! flag: use transitionEvent in order to replace PYTHIA events by 
+  ! flag: use transitionEvent in order to replace PYTHIA events by
   ! events where we give the cross section explicitely and do the remaining
   ! stuff by FRITIOF
   ! NOTES
@@ -85,7 +85,7 @@ module eventGenerator_eN_HiEnergy
   real,   save :: PYTHIAthresh=2.0
   ! PURPOSE
   ! Below this value for W, PYTHIA is not used to generate (G)VMD events
-  ! 
+  !
   ! NOTES
   ! This value is transferred to PyVP.f.
   ! you can access this value by the function "GetPYTHIAthresh()".
@@ -98,7 +98,7 @@ module eventGenerator_eN_HiEnergy
   logical,save :: DoToyModel_pi=.false.
   !
   ! PURPOSE
-  ! flag: Use a Toy model instead of realistic event generation. 
+  ! flag: Use a Toy model instead of realistic event generation.
   ! Only a single pion is generated
   !*************************************************************************
 
@@ -130,7 +130,7 @@ module eventGenerator_eN_HiEnergy
   ! PURPOSE
   ! flag: if .true., we set the formation times of the particles produced
   ! in the ToyModel_rho equals to the energy of the particle (t_f/fm=E/GeV)
-  ! representing the assumption tau_f/fm = m/GeV plus a boost according E/m. 
+  ! representing the assumption tau_f/fm = m/GeV plus a boost according E/m.
   ! (Otherwise the formation time is set to zero.)
   !*************************************************************************
 
@@ -160,7 +160,7 @@ module eventGenerator_eN_HiEnergy
   !
   ! PURPOSE
   ! Switch for including/excluding resonance contribution.
-  ! 
+  !
   ! If this is set to .true., 1pion events will just be generated as for the
   ! background, but according the full MAID cross section (if at all)
   !*************************************************************************
@@ -172,8 +172,8 @@ module eventGenerator_eN_HiEnergy
   !
   ! PURPOSE
   ! Switch for including/excluding 1pion contribution.
-  ! 
-  ! Depending on the switch allowRes, 1 pion events will be done 
+  !
+  ! Depending on the switch allowRes, 1 pion events will be done
   ! according the full cross section or just as a background.
   !*************************************************************************
 
@@ -247,7 +247,7 @@ module eventGenerator_eN_HiEnergy
 
 
   logical,save :: initFlag=.true.
-  
+
 
 contains
 
@@ -349,7 +349,7 @@ contains
        write(*,*) '  !!!            charge of pion: ',ExclPiCharge
        write(*,*)
     endif
-    
+
     call SetPYTHIAthresh(PYTHIAthresh)
     call SetSwitchPythiaHermes(useHermesPythiaPars)
 
@@ -366,7 +366,7 @@ contains
   ! subroutine eventGen_eN_HiEnergy(eNev,firstevent,scaleVMD,
   ! DoPauli,realparticles,
   ! OutPart,channel,FlagOK,XS_tot,XS_Arr,XS_Arr_low)
-  ! 
+  !
   ! PURPOSE
   ! This is the main routine for generating a high energy electron nucleon event.
   !
@@ -388,14 +388,14 @@ contains
   ! * real                          :: XS_tot  -- total cross section (in mb)
   ! * real, dimension(0:4),OPTIONAL :: XS_Arr  -- cross sections of different channels
   ! * real, dimension(nc),OPTIONAL  :: XS_Arr_low -- cross sections of different low energy channels
-  ! 
+  !
   ! NOTES
   ! * The returned Cross Section is (x is lightcone-x, not Bjorken-x!)
   !      dsigma/(fT dx dQ2 dphi)|_(phi=0) = dsigma/(2 pi fT dx dQ2)
   !   and the units are mb
   ! * Comparison with Bosted parametrisation shows, that the values
   !   correspond to their definition of the flux,
-  !       \sigma^* = \sigma_T+\epsilon\sigma_L 
+  !       \sigma^* = \sigma_T+\epsilon\sigma_L
   !                = \frac{1}{\Gamma} \frac{d\sigma}{dE' d\Omega}
   !    with
   !       \gamma = \frac{\alpha E (W^2-M^2)}{(2\pi)^2 Q^2 M E (1-\epsilon)}
@@ -417,7 +417,7 @@ contains
 
     implicit none
 
-    type(electronNucleon_event), intent(inout):: eNev    ! The incoming electron and nucleon 
+    type(electronNucleon_event), intent(inout):: eNev    ! The incoming electron and nucleon
     integer,                      intent(in)  :: firstevent ! number to give
     integer,                      intent(out) :: channel ! Chosen Channel
     type(particle), dimension(:), intent(out) :: OutPart ! FinalState particles
@@ -435,7 +435,7 @@ contains
     real, dimension(8)    :: Cross_low
     integer               :: EventClass
     logical, dimension(8) :: doC
-    
+
 
     XS_tot = 0
     flagOK = .false.
@@ -453,9 +453,9 @@ contains
        return
     endif
 
-    
+
     call eNeV_GetKinV(eNev, nu,Q2,W,Wfree,fT=fT)
-    ! for the low energy part (and also for excl. pi) we have to convert 
+    ! for the low energy part (and also for excl. pi) we have to convert
     ! dsigma/dE'dOmega (in mub/sr MeV = mb/sr GeV) to
     ! dsigma/dnudQ2 (in mub/GeV^3)
     ! and to divide by the flux in order to get sigma^{gamma*} (in mub)
@@ -487,11 +487,11 @@ contains
        ! since the above routine again relies on intent(out) of the outpart
        ! vector, we are setting again the vector to our 'defaults':
        call SetOutPartDefaults
-       
+
        ! We have to cheat and claim, that the numbers were guessed:
-       call resetNumberGuess(.TRUE.) 
-       
-       ! Setting formation time, if wished: 
+       call resetNumberGuess(.TRUE.)
+
+       ! Setting formation time, if wished:
        if (UseFormTime_ToyModel_rho) then
           outPart%formationTime = outPart%momentum(0)
           outPart%In_Formation = (outPart%momentum(0).gt.0)
@@ -518,7 +518,7 @@ contains
           call SetOutPartDefaults
 
           ! We have to cheat and claim, that the numbers were guessed:
-          call resetNumberGuess(.TRUE.) 
+          call resetNumberGuess(.TRUE.)
 
           ! transfor cross section to sigma*:
           outPart%perWeight = outPart%perWeight / fT
@@ -553,7 +553,7 @@ contains
     XS_tot      = 1000 * Cross(0) ! in muBarn
 
     if (PRESENT(XS_Arr)) XS_Arr = Cross
-    
+
     !...if we are above the Pythia threshold: all done
     !   (attention flagOK may be set to false!)
 
@@ -598,20 +598,20 @@ contains
 !!$  ! given the kinematics of a electron nucleon event, this
 !!$  ! routine generates a particle vector of outgoing particles.
 !!$  ! Additionaly the total cros section is determined.
-!!$  ! 
+!!$  !
 !!$  ! 1) If W<2GeV, everything fails!
 !!$  !
 !!$  ! 2) If W>"PYTHIAthresh" (e.g. 3GeV) everything is done by PYTHIA
 !!$  !
 !!$  ! 3) "Transition region":
-!!$  ! First it tries to generate an event using PYTHIA. (Below 
+!!$  ! First it tries to generate an event using PYTHIA. (Below
 !!$  ! "PYTHIAthresh" only DIS events are generated.)
 !!$  ! Then we have to calculate the (relative) VMD and GVMD cross sections
 !!$  ! and add them in order to get XS_tot right.
 !!$  ! If we return now, the total XS is okay, but all events are of DIS-shape.
 !!$  ! If "DoTransEv" is set, VMD events are generated by FRITIOF according
 !!$  ! to their relative XS (or the original PYTHIA DIS event is kept).
-!!$  !  
+!!$  !
 !!$  ! Events of the kind:
 !!$  ! * gamma N -> V N
 !!$  ! * gamma N -> V N pi
@@ -629,15 +629,15 @@ contains
 !!$  ! * logical                     :: flagOK   -- .FALSE. on failure
 !!$  ! * real                        :: XS_Tot   -- total cross section for this
 !!$  !   event, i.e. for these kinematical variables
-!!$  ! * real, dimension(0:4),OPTIONAL :: XS_Arr   -- array of cross sections, 
+!!$  ! * real, dimension(0:4),OPTIONAL :: XS_Arr   -- array of cross sections,
 !!$  !   cf. DoColl_gammaN_Py
 !!$  !
 !!$  ! NOTES
 !!$  ! * This is one of the main HiEnergy Photon or Lepton routines.
 !!$  ! * we replaced the argument "DoDifr" by the module parameter "DoDiffr";
-!!$  !   If set .TRUE., PYTHIA tries to generate diffractive events also. 
+!!$  !   If set .TRUE., PYTHIA tries to generate diffractive events also.
 !!$  !   Here the relative cross sections of the different channels (direct,
-!!$  !   VMD,GVMD,DIS) are not given by their parametrisations, but PYTHIA 
+!!$  !   VMD,GVMD,DIS) are not given by their parametrisations, but PYTHIA
 !!$  !   is somehow in a "learning mode": The values evolve in time...
 !!$  ! * The returned Cross Section is (x not Bjorken x!)
 !!$  !      dsigma/(fT dx dQ2 dphi)|_(phi=0) = dsigma/(2 pi fT dx dQ2)
@@ -655,14 +655,14 @@ contains
 !!$    use eN_event
 !!$
 !!$    implicit none
-!!$    
+!!$
 !!$    type(electronNucleon_event),intent(in)   :: eNev
 !!$    type(particle),dimension(:),intent(inout):: outPart
 !!$    logical,                    intent(out)  :: flagOK
 !!$    real, dimension(1:4),       intent(in)   :: scaleVMD
 !!$    real,                       intent(out)  :: XS_Tot
 !!$    real, dimension(0:4),OPTIONAL,intent(out):: XS_Arr
-!!$    
+!!$
 !!$    ! for PYTHIA events:
 !!$
 !!$    real, dimension(0:4)        :: Cross
@@ -703,7 +703,7 @@ contains
 !!$
 !!$       call TRACEBACK("DoColl_gammaN_low not yet reimplemented.")
 !!$!       call DoColl_gammaN_low(inPart,outPart,flagOK, W,Wfree,Q2,eps, pcm,beta, XS_tot)
-!!$       
+!!$
 !!$       OutPart%perturbative=.true.
 !!$       OutPart%productionTime= 0
 !!$       OutPart%formationTime = -999
@@ -712,7 +712,7 @@ contains
 !!$
 !!$       return
 !!$    end if
-!!$    
+!!$
 !!$    !...get Pythia output (this sets also the cross sections)
 !!$
 !!$    outPart(:)%number = 0
@@ -730,15 +730,15 @@ contains
 !!$
 !!$    XS_Resolved = 1000 * (Cross(1)+Cross(3))
 !!$    XS_tot      = 1000 * Cross(0) ! in muBarn
-!!$    
+!!$
 !!$    !...if we are above the Pythia threshold: all done
 !!$    !   (attention flagOK may be set to false!)
 !!$
 !!$    if(Wfree > GetPYTHIAthresh()) return ! ==> ALL DONE
 !!$
-!!$    !...we are below the Pythia threshold: 
+!!$    !...we are below the Pythia threshold:
 !!$    !...Pythia did only a DIS event; VMD was switched off by hand.
-!!$    !...Cross(1) and Cross(3) have to be calculated by hand: 
+!!$    !...Cross(1) and Cross(3) have to be calculated by hand:
 !!$
 !!$    call eNeV_GetKinV(eNev, nu,Q2,W,Wfree,eps) ! get 'eps' right
 !!$
@@ -748,15 +748,15 @@ contains
 !!$    XS_Resolved = XS_Typ(0)
 !!$    XS_tot      = 1000*(Cross(2)+Cross(4)) + XS_Resolved
 !!$
-!!$    !...If we DO NOT produce the VMD event with Fritiof/Exclusive, 
-!!$    !...the relative weight of the Pythia DIS event is set to 100%, 
+!!$    !...If we DO NOT produce the VMD event with Fritiof/Exclusive,
+!!$    !...the relative weight of the Pythia DIS event is set to 100%,
 !!$    !...i.e. all event types are "simulated" by DIS events.
-!!$    !...(A DIS event looks very similar to all the other stuff and 
+!!$    !...(A DIS event looks very similar to all the other stuff and
 !!$    !...is a good approx.)
-!!$   
+!!$
 !!$    if (.not.DoTransEv) return ! ==> ALL DONE
 !!$
-!!$    !...We want to replace the Pythia-DIS-event by a (resolved)Fritiof 
+!!$    !...We want to replace the Pythia-DIS-event by a (resolved)Fritiof
 !!$    !...or by a Exclusive event:
 !!$    !...calculate the corresponding cross sections:
 !!$
@@ -812,9 +812,9 @@ contains
 !!$! !!$    write(*,'(A,1P,50g12.5)') '~~~~ XS : ', Wfree,Q2, 0.0, XS_Elast
 !!$! !!$    write(*,'(A,1P,50g12.5)') '~~~~ XS : ', Wfree,Q2, 0.0, XS_ElastDelta
 !!$! !!$    write(*,'(A,1P,50g12.5)') '~~~~ XS : ', Wfree,Q2, XS_Strange
-!!$    
 !!$
-!!$       
+!!$
+!!$
 !!$
 !!$!...now replace this event with a Fritiof/exclusive event --- if desired...
 !!$
@@ -829,15 +829,15 @@ contains
 !!$
 !!$    endif
 !!$
-!!$    
-!!$    
+!!$
+!!$
 !!$  end subroutine genHiPhotonEvent
 !!$
 !!$  !*************************************************************************
 !!$  !****s* initHiPhoton/transitionEvent
 !!$  ! NAME
 !!$  ! subroutine transitionEvent(inPart,outPart, flagOK, W,Q2,eps, XS_tot, pcm,beta,media)
-!!$  ! 
+!!$  !
 !!$  ! PURPOSE
 !!$  ! This routine is called by genHiPhotonEvent and creates non-PYTHIA
 !!$  ! events in the transition region W= ??? ... PYTHIAthresh.
@@ -862,7 +862,7 @@ contains
 !!$
 !!$
 !!$    implicit none
-!!$    
+!!$
 !!$    type(particle),             intent(in)   :: inPart   ! incoming nucleon
 !!$    type(particle),dimension(:),intent(inout):: outPart  ! outgoing particles
 !!$    logical,                    intent(out)  :: flagOK
@@ -951,7 +951,7 @@ contains
 !!$
 !!$    else
 !!$       pVMD=rn()*XS_Typ(iTyp)
-!!$       
+!!$
 !!$       if (pVMD.le.XS_Elast(iTyp)) then
 !!$          iEvTyp=1 ! gamma N -> V N
 !!$       else if (pVMD.le.XS_Elast(iTyp)+XS_ElastDelta(iTyp)) then
@@ -964,25 +964,25 @@ contains
 !!$
 !!$    if (iEvTyp.gt.0) then
 !!$       ! (0a) Setting incoming particles
-!!$       
+!!$
 !!$       pair(2)%ID     = 101+2*iTyp ! MESON
 !!$       pair(2)%charge = 0
-!!$       
+!!$
 !!$       pair(2)%momentum(3) = (W**2-pair(1)%mass**2)/(2*W)
 !!$       pair(2)%momentum(0) = pair(2)%momentum(3)
 !!$
 !!$       pair(1) = inPart            ! BARYON
-!!$       
+!!$
 !!$       pair(1)%momentum(1:3) = -pair(2)%momentum(1:3)
 !!$       pair(1)%momentum(0)   = sqrt(pair(1)%mass**2 + pair(1)%momentum(3)**2)
-!!$       
+!!$
 !!$
 !!$       ! (1) Evaluate Sqrt(s)
 !!$       srtS = W
-!!$       
+!!$
 !!$       ! (2) Define Sqrt(s) in the vacuum
 !!$       srtS_vacuum=sqrtS_free(pair)
-!!$       
+!!$
 !!$       betaToLRF=0.
 !!$
 !!$       OutPart%perturbative=.true.
@@ -991,7 +991,7 @@ contains
 !!$       OutPart%antiparticle = .false.
 !!$
 !!$       ! (0b) Store Q2 in mass of vector meson
-!!$       pair(2)%mass = -Q2 ! ATTENTION 
+!!$       pair(2)%mass = -Q2 ! ATTENTION
 !!$
 !!$       HiPhotonEventType = iEvTyp*100
 !!$
@@ -1005,31 +1005,31 @@ contains
 !!$       do
 !!$          iTry = iTry+1
 !!$          eventOK = .false.
-!!$          
+!!$
 !!$          if (iTry >= 100) then
 !!$             if (DoPR(3)) write(*,*) 'transitionEvent: iTry=100!  iTyp,W = ',iTyp,W,InPart%number
 !!$             call QYLIST(2)
 !!$             call writeFritiofCommons(9001)
 !!$             exit
 !!$          end if
-!!$          
+!!$
 !!$          call DoColl_gammaN_Fr(inPart,outPart,eventOK, W,Q2,eps, pcm,beta, iTyp)
-!!$          if (.not.eventOK) cycle 
-!!$          
+!!$          if (.not.eventOK) cycle
+!!$
 !!$          nOut = 0
 !!$          do i=1,size(outPart)
 !!$             if (outPart(i)%ID > 0) nOut = nOut+1
 !!$          enddo
-!!$          
+!!$
 !!$          ! the following exclusive events are treated seperately:
-!!$          
+!!$
 !!$          select case(nOut)
 !!$          case (2)
 !!$             select case (min(outPart(1)%ID,outPart(2)%ID))
 !!$             case (-1:0)
 !!$                write(*,*) 'Ooops in transitionEvent (2)'
 !!$                stop
-!!$                
+!!$
 !!$             case(1)
 !!$                sumID = SUM(outPart(1:2)%ID) - IDbaryon
 !!$                iRho = 1
@@ -1042,7 +1042,7 @@ contains
 !!$                endif
 !!$                if ((iRho.eq.0) .or. sumID.eq.6 .or. sumID.eq.8 .or. sumID.eq.10) &
 !!$                     & cycle !---> no V+N,pi0+N
-!!$                
+!!$
 !!$             case (2)
 !!$                sumID = SUM(outPart(1:2)%ID) - IDbaryon
 !!$                iRho = 1
@@ -1056,21 +1056,21 @@ contains
 !!$                if ((iRho.eq.0) .or. sumID.eq.7 .or. sumID.eq.9 .or. sumID.eq.11) &
 !!$                   &  cycle !---> no V+Delta,pi0+Delta
 !!$             end select ! min(ID)
-!!$             
+!!$
 !!$          case (3)
 !!$             select case (min(outPart(1)%ID,outPart(2)%ID,outPart(3)%ID))
 !!$             case (0)
 !!$                write(*,*) 'Ooops in transitionEvent (3)'
 !!$                stop
-!!$                
+!!$
 !!$             case (1)
 !!$                sumID = SUM(outPart(1:3)%ID) - 2*IDbaryon
 !!$                if(sumID.eq.22.and.(outPart(1)%ID.eq.110 .or. outPart(2)%ID.eq.110 .or. outPart(3)%ID.eq.110)) &
 !!$                     cycle !---> no excl. K+Kbar+N
 !!$             end select
-!!$             
+!!$
 !!$          end select
-!!$          
+!!$
 !!$          ! leave the loop:
 !!$          exit
 !!$       end do
@@ -1153,7 +1153,7 @@ contains
 !!$          P(i,1:3) = OutPart(i)%momentum(1:3)
 !!$          P(i,4)   = OutPart(i)%momentum(0)
 !!$          P(i,5)   = OutPart(i)%mass
-!!$          EArr(1,i) = 1 ! ok 
+!!$          EArr(1,i) = 1 ! ok
 !!$          EArr(3,i) = 6 ! "from Doku"
 !!$       enddo
 !!$

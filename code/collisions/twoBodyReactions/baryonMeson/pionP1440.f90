@@ -7,11 +7,11 @@
 ! Implemented are the following reactions:
 ! * pion P11_1440 -> X
 ! Public routines:
-! * pionNuc 
+! * pionNuc
 !****************************************************************************
 module pionP11_1440_resonance
   implicit none
-  Private 
+  Private
 
   ! Debug-flags
   logical,parameter :: debugFlag=.false.
@@ -36,18 +36,18 @@ contains
   ! RESULT
   ! * real, intent(out)                                        :: sigmaTot         ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! colliding particles
-  ! 
+  !
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   !************************************************************************************************************************
-  
+
   subroutine pionP11_1440 (srts,teilchenIN,mediumATcollision,momentumLRF,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
 
     use idTable
@@ -78,9 +78,9 @@ contains
     real, dimension(Delta:nbar) :: massRes       !  Resonance masses
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
-    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
-    type(particle) :: pion_particle, P11_1440_particle    
+    type(particle) :: pion_particle, P11_1440_particle
     logical :: antiParticleInput, failFlag
 
 
@@ -107,7 +107,7 @@ contains
     end if
 
     If(P11_1440_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        P11_1440_particle%Charge        =  -P11_1440_particle%Charge
        P11_1440_particle%antiparticle  = .false.
        pion_particle%Charge          =  -pion_particle%Charge
@@ -144,7 +144,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.P11_1440_particle%charge+pion_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,pion_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,pion_particle%Charge, &
             & P11_1440_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -178,7 +178,7 @@ contains
       !######################################################################
 
      !*******************************************************************************************
-      ! pion P11-1440 -> R 
+      ! pion P11-1440 -> R
       !*****************************************************************************************
 
       ! Full resonance contribution in the medium
@@ -191,7 +191,7 @@ contains
       !###################################################################################################
 
       sigmaElast=barMes_R_barMes(pion,P11_1440,pion,P11_1440,&
-           & pion_particle%Charge,P11_1440_particle%Charge,pion_particle%Charge,P11_1440_particle%Charge, & 
+           & pion_particle%Charge,P11_1440_particle%Charge,pion_particle%Charge,P11_1440_particle%Charge, &
            & .false.,.false.,MediumAtCollision,momentumLRF,&
            & pion_particle%Mass,P11_1440_particle%Mass,position,perturbative,srts)
 
@@ -212,7 +212,7 @@ contains
       ! Be careful since sigma elast is already included in the partial cross sections, therefore it is not
       ! included in the total cross section
 
-      sigmaTot=sum (sigmaRes )  
+      sigmaTot=sum (sigmaRes )
 
     end subroutine evaluateXsections
 
@@ -258,7 +258,7 @@ contains
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV].
     ! Filenames:
-    ! * 'pionP11_1440_sigTotElast.dat'    : sigmaTot, sigmaElast 
+    ! * 'pionP11_1440_sigTotElast.dat'    : sigmaTot, sigmaElast
     ! * 'pionP11_1440_resProd.dat'        : Baryon resonance production
     !**********************************************************************************************
     subroutine makeOutPut

@@ -1,4 +1,3 @@
-
 !***************************************************************************
 !****m* /degRad_conversion
 ! NAME
@@ -6,7 +5,7 @@
 !
 ! PURPOSE
 ! This module defines functions to convert degrees to radians and vice versa
-! 
+!
 !***************************************************************************
 
 

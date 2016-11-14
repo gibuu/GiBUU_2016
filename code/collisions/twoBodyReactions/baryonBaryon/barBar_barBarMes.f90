@@ -105,9 +105,9 @@ contains
   ! PURPOSE
   ! Returns the background contributions to NN-> NN pion (via non-propagated resonances, plus non-resonant part).
   ! The pion cross sections contain the following channels:
-  ! * 1: p p -> p p pi^0 ; which is equivalent to n n -> n n pi^0 
+  ! * 1: p p -> p p pi^0 ; which is equivalent to n n -> n n pi^0
   ! * 2: p n -> n n pi^+ ; which is equivalent to  p n -> p p pi^-
-  ! * 3: p n -> p n pi^0 ; 
+  ! * 3: p n -> p n pi^0 ;
   ! * 4: p p -> p n pi^+ ; which is equivalent to n n -> p n pi^-
   ! INPUTS
   ! * real, intent(in) :: srtfree             --- sqrt(s) in GeV
@@ -118,9 +118,9 @@ contains
     use constants, only: mN, mPi
 
     real, intent(in) :: srtfree
-    real, dimension (1:4) :: Sigma_NNPion  ! 1: p p -> p p pi^0 ; which is equivalent to n n -> n n pi^0 
+    real, dimension (1:4) :: Sigma_NNPion  ! 1: p p -> p p pi^0 ; which is equivalent to n n -> n n pi^0
                                            ! 2: p n -> n n pi^+ ; which is equivalent to  p n -> p p pi^-
-                                           ! 3: p n -> p n pi^0 ; 
+                                           ! 3: p n -> p n pi^0 ;
                                            ! 4: p p -> p n pi^+ ; which is equivalent to n n -> p n pi^-
 
     real :: sigmaDelta, sigma1_2, sigma3_2, sigmaAdd(4)
@@ -208,7 +208,7 @@ contains
        If (hadron(resID)%IsoSpinTimes2 == 1) then ! Isospin 1/2 resonances
           sigma1_2 = sigma1_2 + NN_NRes(srts,p_cm,(/nucleon,resID/),(/1,1/),(/1,ch/),2)
        else if (hadron(resID)%IsoSpinTimes2 == 3) then ! Isospin 3/2 resonances
-          ! factor 1/4 because the NN_NRES gives the result summed over all final states. And Clebsch(N p->N R+)=1/4 for resonance R with I=3/2. 
+          ! factor 1/4 because the NN_NRES gives the result summed over all final states. And Clebsch(N p->N R+)=1/4 for resonance R with I=3/2.
           sigma3_2 = sigma3_2 + NN_NRes(srts,p_cm,(/nucleon,resID/),(/1,1/),(/1,ch/),2) / 4.
        end if
     end do
@@ -273,8 +273,8 @@ contains
           sigma(2) = exp(par2(6)*xfit+par2(7)*xfit**2) * (xfit*par2(1)+xfit**2*par2(2)+xfit**3*par2(3) &
                      + xfit**4*par2(4)+xfit**5*par2(5))
           sigma(3) = exp(par3(6)*xfit+par3(7)*xfit**1.2) * (par3(1)+xfit*par3(2)+xfit**2*par3(3)) / (par3(5)+(xfit-par3(4))**2)
-          sigma(4) = exp(par4(6)*xfit+par4(7)*xfit**1.2) * (par4(1)+xfit*par4(2)+xfit**2*par4(3) & 
-                     +xfit**3*par4(4)+xfit**4*par4(5)) / (par4(9)*xfit**par4(10)+(xfit-par4(8))**2)    
+          sigma(4) = exp(par4(6)*xfit+par4(7)*xfit**1.2) * (par4(1)+xfit*par4(2)+xfit**2*par4(3) &
+                     +xfit**3*par4(4)+xfit**4*par4(5)) / (par4(9)*xfit**par4(10)+(xfit-par4(8))**2)
        else
           sigma(1:4) = 0.
        end if

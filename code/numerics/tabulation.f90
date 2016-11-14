@@ -1,12 +1,13 @@
-!******************************************************************************************
+!******************************************************************************
 !****m* /tabulation
 ! NAME
 ! module tabulation
 !
 ! PURPOSE
-! Implements multi-dimensional tabulation with constant grid size, single precision (4 byte)
-! and linear interpolation. Tabulation routines for 1-4 dimensions are available.
-!******************************************************************************************
+! Implements multi-dimensional tabulation with constant grid size, single
+! precision (4 byte) and linear interpolation.
+! Tabulation routines for 1-4 dimensions are available.
+!******************************************************************************
 module tabulation
 
   implicit none

@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PIL_FormInfo
-! NAME 
+! NAME
 ! module PIL_FormInfo
 ! PURPOSE
 ! cf. module PIL_nLead
@@ -52,7 +52,7 @@ module PIL_FormInfo
 
   !***************************************************************************
   !****t* PIL_FormInfo/FormationVals
-  ! NAME 
+  ! NAME
   ! type FormationVals
   ! PURPOSE
   ! a container of the information to be stored
@@ -96,7 +96,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_FormInfo/PIL_FormInfo_DeAlloc
-  ! NAME 
+  ! NAME
   ! subroutine PIL_FormInfo_DeAlloc
   ! PURPOSE
   ! Deallocate the memory for this list and the corresponding index list.
@@ -108,7 +108,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_FormInfo/PIL_FormInfo_ZERO
-  ! NAME 
+  ! NAME
   ! subroutine PIL_FormInfo_ZERO()
   ! PURPOSE
   ! Reset the list by setting the counter of stored information to 0.
@@ -121,7 +121,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_FormInfo/PIL_FormInfo_PUT
-  ! NAME 
+  ! NAME
   ! subroutine PIL_FormInfo_PUT(number,r)
   ! PURPOSE
   ! Store the information "r" connected with particle "number" in the list.
@@ -140,10 +140,10 @@ contains
     iEntry = PILIndex_PUT(IndexList, number,"FormInfo")
 
 !    write(*,*) '###PUT: ',number,r,iEntry
-    
+
     if (iEntry>0) then      ! everything is ok
        ValueList(iEntry)%val = r
-    else 
+    else
        call PIL_FormInfo_Allocate() ! do (re)allocate
        ValueList(-iEntry)%val = r
     endif
@@ -152,7 +152,7 @@ contains
 
   !***************************************************************************
   !****f* PIL_FormInfo/PIL_FormInfo_GET
-  ! NAME 
+  ! NAME
   ! logical function PIL_FormInfo_GET(number,r)
   ! PURPOSE
   ! Get the stored information of particle "number"
@@ -189,7 +189,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_FormInfo/PIL_FormInfo_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_FormInfo_Allocate
   ! PURPOSE
   ! Do the allocation and reallocation of the value vector.
@@ -202,7 +202,7 @@ contains
     implicit none
 
     integer :: n0, n1
-    type(FormationVals), allocatable :: L0(:) 
+    type(FormationVals), allocatable :: L0(:)
 
     n1 = size(IndexList%PartNumber) ! new size
 
@@ -225,7 +225,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_FormInfo/PIL_FormInfo_Print
-  ! NAME 
+  ! NAME
   ! subroutine PIL_FormInfo_Print(file)
   ! PURPOSE
   ! Print the list to file
@@ -233,14 +233,14 @@ contains
 !   subroutine PIL_FormInfo_Print(file)
 !     implicit none
 !     integer, intent(IN) :: file
-! 
+!
 !     integer :: i
-! 
+!
 !     write(file,*) '****** PIL_FormInfo:',IndexList%nEntry
 !     do i=1,IndexList%nEntry
 !        write(file,'(i8.0,i8.0,g12.5)') i,IndexList%PartNumber(i),ValueList(IndexList%Entry(i))%val
 !     end do
-! 
+!
 !   end subroutine PIL_FormInfo_Print
 
 end module PIL_FormInfo

@@ -85,18 +85,18 @@ contains
   ! PURPOSE
   ! calculate the cross-sections for the KKbar incoming channel
   !
-  ! INPUTS 
+  ! INPUTS
   ! * integer:: iQ -- total charge of K and Kbar
   ! * real   :: srts -- c.m. energy (GeV)
   ! * real   :: pinitial2 -- c.m. momentum squared of incoming particles (GeV/c)**2
   ! * real   :: const -- cross section of nonstrange+nonstrange --> K Kbar
-  !   or --> Kstar Kbar, K Kbarstar (mbarn)  
+  !   or --> Kstar Kbar, K Kbarstar (mbarn)
   ! * logical:: useWidth -- flag whether to use the width or just pole masses
   ! OUTPUT
   ! * real, dimension(21) :: msigbg(i), i=1,2,..,21 --- partial cross sections for different outgoing channels (mbarn)
   !*************************************************************************
   subroutine kkbar_cross(iQ,srts,pinitial2,const,msigbg,useWidth)
-      
+
     use constants, only: mPi, mK
 
     integer, intent(in) :: iQ
@@ -130,14 +130,14 @@ contains
        0.0, &              ! 20: omegaMeson, etaPrime
        0.5 * 1.0 * 0.5 /)  ! 21: etaPrime, etaPrime --> iQ==0: 0.5, else: 0.0 !!!
 
-         
+
 
     real :: srts0,pfinal2
-    
+
     if(debug) write(*,*) 'In kkbar_cross:', srts
-    
+
     !     fritiof might produce lower mass kaons
-    if(srts.lt.2.*mK) then 
+    if(srts.lt.2.*mK) then
        srts0 = 2.*0.493
     else
        srts0 = 2.*mK
@@ -154,9 +154,9 @@ contains
     ! === KKbar -> pipi:
     pfinal2 = pcm2( srts, 1, useWidth )
     msigbg(1) = fak(1)*9./4.*sig_pipi2kkbar(srts,srts0)*pfinal2/pinitial2
-      
+
     ! === KKbar -> rhorho:
-    ! (same isofac as before but additional spinfactor) 
+    ! (same isofac as before but additional spinfactor)
     pfinal2 = pcm2( srts, 2, useWidth )
     msigbg(2) = fak(2)*9./4.*sig_pipi2kkbar(srts,srts0)*pfinal2/pinitial2
 
@@ -173,11 +173,11 @@ contains
 
     ! === KKbar -> pi omega, because of p-wave:
     !    msigbg(6) = 0.
-    
+
     ! === KKbar -> pi etap:
     pfinal2 = pcm2( srts, 7, useWidth )
     msigbg(7) = fak(7)*const*pfinal2/pinitial2
-    
+
     ! === KKbar -> eta eta:
     pfinal2 = pcm2( srts, 8, useWidth )
     msigbg(8) = fak(8)*const*pfinal2/pinitial2
@@ -194,45 +194,45 @@ contains
     ! === KKbar -> eta etap:
     pfinal2 = pcm2( srts, 12, useWidth )
     msigbg(12) = fak(12)*const*pfinal2/pinitial2
-    
+
     ! === KKbar -> rho sigma (p-wave):
     !    msigbg(13) = 0.
-    
+
     ! === KKbar -> rho omega:
     pfinal2 = pcm2( srts, 14, useWidth )
     msigbg(14) = fak(14)*const*pfinal2/pinitial2
 
     ! === KKbar -> rho etap (p-wave):
     !    msigbg(15) = 0.
-    
+
     ! === KKbar -> sigma sigma:
     pfinal2 = pcm2( srts, 16, useWidth )
     msigbg(16) = fak(16)*const*pfinal2/pinitial2
 
     ! === KKbar -> sigma omega (p-wave):
     !    msigbg(17) = 0.
-    
+
     ! === KKbar -> sigma etap (parity):
     !    msigbg(18) = 0.
-    
+
     ! === KKbar -> omega omega:
     pfinal2 = pcm2( srts, 19, useWidth )
     msigbg(19) = fak(19)*const*pfinal2/pinitial2
-    
+
     ! === KKbar -> omega etap (p-wave):
     !    msigbg(20) = 0.
 
     ! === KKbar -> etap etap:
     pfinal2 = pcm2( srts, 21, useWidth )
     msigbg(21) = fak(21)*const*pfinal2/pinitial2
-    
+
 
     ! now we are doing a charge-correction to many channels.
 
     if (iQ.ne.0) then
        msigbg( 4) = msigbg( 4) * 2
        msigbg( 7) = msigbg( 7) * 2
-       msigbg( 8) = 0.0 
+       msigbg( 8) = 0.0
        msigbg(12) = 0.0
        msigbg(14) = msigbg(14) * 2
        msigbg(16) = 0.0
@@ -241,7 +241,7 @@ contains
     end if
 
   end subroutine kkbar_cross
-  
+
 
   !*************************************************************************
   !****s* mesonMeson_Xsections/kstarkbar_cross
@@ -250,14 +250,14 @@ contains
   ! PURPOSE
   ! calculate cross-sections for Kstar Kbar or K Kstarbar incoming channels
   !
-  ! INPUTS 
+  ! INPUTS
   ! * integer :: iQ --- total charge of Kstar and Kbar,
   ! * real :: srts --- c.m. energy (GeV),
   ! * real :: pinitial2 --- c.m. momentum squared of incoming particles (GeV/c)**2,
   ! * real :: const --- cross section of nonstrange+nonstrange --> K Kbar
-  !   or --> Kstar Kbar, K Kbarstar (mbarn),  
+  !   or --> Kstar Kbar, K Kbarstar (mbarn),
   ! * logical:: useWidth -- flag whether to use the width or just pole masses
-  ! OUTPUT 
+  ! OUTPUT
   ! * real, dimension(:) :: msigbg(i), i=1,2,..,21 --- partial cross sections
   !   for different outgoing channels (mbarn)
   !*************************************************************************
@@ -265,6 +265,8 @@ contains
 
     use constants, only: mPi, mK
     use twoBodyTools, only: pCM_sqr
+    use IdTable, only: kaonStar
+    use particleProperties, only: hadron
 
     integer, intent(in) :: iQ
     real, intent(in) :: srts,pinitial2,const
@@ -298,16 +300,11 @@ contains
        0.25 * 1.0 * 1.0, &  ! 20: omegaMeson, etaPrime --> iQ==0: 0.25, else: 0.0 !!!!
        0.0 /)               ! 21: etaPrime, etaPrime
 
-         
+
 
     if(debug) write(*,*) 'In kstarkbar_cross:', srts
 
-    !     fritiof might produce lower mass kaons
-    if(srts.lt.2.*mK) then 
-       srts0 = 2.*0.493
-    else
-       srts0 = 2.*mK
-    endif
+    srts0 = mK+hadron(kaonStar)%minmass
 
     if(srts0.gt.srts) then
        write(*,*)'srts0 gt srts in mesmes',srts0,srts
@@ -359,6 +356,9 @@ contains
        msigbg(15) = msigbg(15) * 2
        msigbg(20) = 0.0
     end if
+
+    msigbg = msigbg * 2.0
+
   end subroutine kstarkbar_cross
 
   !*************************************************************************
@@ -367,12 +367,12 @@ contains
   ! subroutine kkbar_out(iQ,msigbg,sigbgt,teilchenOut)
   ! PURPOSE
   ! choose outgoing state for the K Kbar annihilation
-  ! INPUTS 
+  ! INPUTS
   ! * integer :: iQ --- total charge of K and Kbar,
   ! * real, dimension(:) ::msigbg(i), i=1,2,...,21 --- partial cross sections
   !   for different outgoing channels (mbarn),
   ! * real ::sigbgt --- total background cross section (mbarn)
-  ! OUTPUT 
+  ! OUTPUT
   ! * type(preEvent),dimension(21) :: teilchenOut   ---   outgoing particles
   !
   ! NOTE
@@ -391,7 +391,7 @@ contains
     logical :: flag
     real :: msig,x
     integer :: mch,n1,n2
-    
+
     !     determine outgoing channel
     flag = .true.
     mch = 0
@@ -422,7 +422,7 @@ contains
           n2 = 1
           n1 = 2
        endif
-       
+
        if(iQ.eq.0) then
           if(rn().lt.5./6.) then
              teilchenOut(n1)%charge = 1
@@ -433,9 +433,9 @@ contains
           endif
        else
           teilchenOut(n1)%charge = iQ
-          teilchenOut(n2)%charge = 0           
+          teilchenOut(n2)%charge = 0
        endif
-       
+
     case (9)
        teilchenOut(1)%charge = 0
        teilchenOut(2)%charge = iQ
@@ -443,22 +443,22 @@ contains
     case default
        teilchenOut(1)%charge = iQ
        teilchenOut(2)%charge = 0
-       
+
     end select
-    
+
   end subroutine kkbar_out
-  
+
   !*************************************************************************
   !****if* mesonMeson_Xsections/pcm2Integrated
   ! NAME
   ! real function pcm2Integrated( srts, iCh )
   ! PURPOSE
-  ! calculate the phase space (squared) by integrating over the spectral 
+  ! calculate the phase space (squared) by integrating over the spectral
   ! functions of the particles of the given channel.
   !
   ! Threshold is treated correctly by using the minimal masses.
   !
-  ! INPUTS 
+  ! INPUTS
   ! * real :: srts -- c.m. energy (GeV)
   ! * integer :: iCh -- number of channel to consider
   ! OUTPUT
@@ -493,7 +493,7 @@ contains
     if (iSrts >= nSrts) then
        ! this is beyond the tabulation, do the calculation
        call traceback("(iSrts >= nSrts)")
-    else 
+    else
        ! here we are now in the tabulated region
        ! do a linear look-up
        h = (srts-2*mK)/dSrts-iSrts !(srts-2*mK)-iSrts*dSrts
@@ -508,12 +508,12 @@ contains
   ! NAME
   ! real function pcm2Pole( srts, iCh )
   ! PURPOSE
-  ! calculate the phase space (squared) by calculating the pCM assuming 
+  ! calculate the phase space (squared) by calculating the pCM assuming
   ! pole masses of the particles in the given channel.
   !
   ! Threshold is treated correctly by using the pole masses.
   !
-  ! INPUTS 
+  ! INPUTS
   ! * real :: srts -- c.m. energy (GeV)
   ! * integer :: iCh -- number of channel to consider
   ! OUTPUT
@@ -544,7 +544,7 @@ contains
     real, intent(in) :: srts
     integer, intent(in) :: iCh
     logical, intent(in) :: useWidth
-    
+
     if (useWidth) then
        pcm2 = pcm2Integrated(srts, iCh )
     else
@@ -573,10 +573,10 @@ contains
     logical,dimension(1:2) :: stable
 
     call Write_InitStatus("mesonMeson_Xsections/mesMes_Tabulate",0)
-    
+
     do iCh=1,21
        stable(1:2) = (hadron(channelID(1:2,iCh))%width < 1e-3)
-       srts0 = hadron(channelID(1,iCh))%minmass + hadron(channelID(2,iCh))%minmass 
+       srts0 = hadron(channelID(1,iCh))%minmass + hadron(channelID(2,iCh))%minmass
        fakInt = 1.0/(GetSpectralIntegral(channelID(1,iCh))*GetSpectralIntegral(channelID(2,iCh)))
 
        arrSrts0(iCh) = srts0
@@ -587,7 +587,7 @@ contains
        do iSrts=0,nSrts
           srts= iSrts*dSrts + 2*mK
           if (srts < srts0) cycle
-          
+
           if (stable(1).and.stable(2)) then
              valI = pCM( srts, &
                   hadron(channelID(1,iCh))%mass, &
@@ -619,7 +619,7 @@ contains
   !*************************************************************************
   function calculate1(srts, id1, id2) result(integral)
 
-    use constants, only: pi    
+    use constants, only: pi
     use mesonWidth, only: fullWidthMeson
     use particleProperties, only: hadron
     use twoBodyTools, only: pCM
@@ -683,7 +683,7 @@ contains
   !*************************************************************************
   function calculate2(srts, id1, id2) result(integral)
 
-    use constants, only: pi    
+    use constants, only: pi
     use mesonWidth, only: fullWidthMeson
     use particleProperties, only: hadron
     use twoBodyTools, only: pCM
@@ -751,8 +751,7 @@ contains
     end do
 
   end function calculate2
-  
+
 
 
 end module mesonMeson_Xsections
-

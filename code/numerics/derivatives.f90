@@ -9,7 +9,7 @@ module derivatives
 
   implicit none
   private
-  
+
   public :: finiteDifference, derivative
 
 contains
@@ -34,7 +34,7 @@ contains
     real   ,intent(in) :: dx
     integer,intent(in) :: order
     integer,intent(in) :: scheme
-    
+
     Select Case(order)
     case(1)
        ! First order derivative

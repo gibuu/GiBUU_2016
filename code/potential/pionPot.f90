@@ -37,11 +37,11 @@ contains
     real, parameter :: maxMom = 0.25   ! maximum momentum in GeV
 
     ! initialize
-    rho=rhoProton+rhoNeutron 
+    rho=rhoProton+rhoNeutron
     absMomentum=SQRT(momentum(1)**2+momentum(2)**2+momentum(3)**2)
 
 
-    Select Case(potentialSwitch) 
+    Select Case(potentialSwitch)
     Case(1)
        If (absMomentum>maxMom) then
           !        write(*,*) 'Problem in file pionPot_Main.f90 subroutine pionPot_Main'
@@ -81,7 +81,7 @@ contains
        else
           pionPot_Main = pionPot_Smooth (momentum, rhoProton, rhoNeutron, masse, charge)
        end if
-    Case default                     
+    Case default
        pionPot_Main=0.
     End Select
 
@@ -146,7 +146,7 @@ contains
       Edelta=SQRT(mDelta**2+q**2)-mN
       C=8./9.*rhoGEV*(fDelta/mapion)**2 !units: GEV
       ENukDel=SQRT(Edelta*(Edelta+gprime*C))
-      Ergebnis=SQRT(0.5*(ENukDel**2+Epion**2+SQRT((ENukDel**2-Epion**2)**2+4*q**2*C*Edelta)))  
+      Ergebnis=SQRT(0.5*(ENukDel**2+Epion**2+SQRT((ENukDel**2-Epion**2)**2+4*q**2*C*Edelta)))
     end function loch
 
     Function Zpion(q,rho) Result (Ergebnis)   !Ergebnis einheitenlos
@@ -217,7 +217,7 @@ contains
   ! (around Ekin=0) and a simple Delta-hole potential. Valid up to Ekin=130MeV.
   ! INPUTS
   ! * real   ::  rhop,rhon !proton and neutron density
-  ! * real, dimension(1:3),intent(in) :: momentum  ! in GeV 
+  ! * real, dimension(1:3),intent(in) :: momentum  ! in GeV
   ! * real, intent(in)    ::  masse                ! mass of pion in GEV
   ! RESULT
   ! * real, intent(out)   :: Vopt                  ! potential in GEV
@@ -352,7 +352,7 @@ contains
     real                        :: VOpt     ! Potential
 
     !local
-    real, parameter :: maPion=138.               
+    real, parameter :: maPion=138.
     real, parameter :: mNukleon=938.5
     real, parameter :: mDelta=1232.
     real, parameter :: mRes=mDelta-mNukleon
@@ -362,7 +362,7 @@ contains
     real            :: kF,s                            !kinematics
     real            :: ImSwave, ImPwave                !absorbtive Part of Potential
     complex         :: PwavePart,SwavePart             !P and S wave of potential
-    real            :: pD,nD                           !Proton and neutron Density 
+    real            :: pD,nD                           !Proton and neutron Density
     real            :: dummy,Edummy
     real            :: T                               !kinematics
     logical         :: bigFlag,toobigflag
@@ -389,14 +389,14 @@ contains
     V=0.                               !Don't consider Coulomb Potential to evaluate strong potential
     epsilon=E/mNukleon
     kF=(3./2.*pi**2.*(pd+nd))**(1./3.)                              !Fermi momentum
-    s=mNukleon**2+maPion**2+2*E*(mNukleon+3./5.*kF**2/2./mNukleon)  ! meanvalue of s  
+    s=mNukleon**2+maPion**2+2*E*(mNukleon+3./5.*kF**2/2./mNukleon)  ! meanvalue of s
 
     ! Meanvalue of Center of Mass Momentum:
     qcm=((((s-mNukleon**2-maPion**2)/2.)**2-mNukleon**2*maPion**2)/s)**(1./2.)
 
     T=(E-maPion-V)/maPion
 
-    !Call routines, which evaluate s- and p-wave 
+    !Call routines, which evaluate s- and p-wave
 
     select case (charge)
     case(-1)  ! pi-
@@ -405,7 +405,7 @@ contains
        VOpt=Real(PwavePart+SwavePart)/2./E/1000.
        if (present(Decay)) Decay=(ImPwave+ImSwave)/E/(-1000.)
        !VOpt=Real(PwavePart)/2./E/1000.
-       !Decay=(ImPwave)/E/(-1000.)  
+       !Decay=(ImPwave)/E/(-1000.)
 
     case(1)  ! pi+
        !Rotating Isospin, because Oset's paper is made for PiMinus
@@ -434,7 +434,7 @@ contains
 
     case default ! ERROR ERROR
        Print *,"Problems with charges in oset.f"
-       stop 
+       stop
     end select
 
     ! RE[Pot] stetig gegen Null gehen lassen an Grenze des Gueltigkeitsbereichs
@@ -454,7 +454,7 @@ contains
 
     subroutine swave(ImSwave,SwavePart)
 
-      !**************************************************************        
+      !**************************************************************
       !Evaluates Swave part of selfenergy of pion
       !The names of the variabels are according to NPA 554, pages 554ff
       !***************************************************************
@@ -482,7 +482,7 @@ contains
            &          (bNull**2+2.*bOne**2))*(pD+nD)*(1.+T*maPion/100.)  &
            &           +(1.+epsilon)*bOne*(nD-pD))
       V1=CMPLX(V1Real,V1Abs+V1Quasi)
-      ! Evaluate V2   
+      ! Evaluate V2
 
       bNullQ(1)= 6.0
       bNullQ(2)= 13.0
@@ -512,13 +512,13 @@ contains
       bOneQ(11)= 8.0
       bOneQ(12)= 13.0
       bOneQ(13)= 18.0
-      bOneQ(14)= 25.0 
+      bOneQ(14)= 25.0
       Do k=1,14
          bNullQ(k)=bNullQ(k)/maPion/10000.
          bOneQ(k)=bOneQ(k)/maPion/10000.
       end do
 !!$    *        k=ANINT(T*maPion/5.)
-!!$    *        if(k.le.0) then 
+!!$    *        if(k.le.0) then
 !!$    *          k=1
 !!$    *        end if
 !!$    *        if(k.ge.14) then
@@ -528,7 +528,7 @@ contains
 !!$    *     &     *(nD-pD))
 
       k=INT(T*maPion/5.)
-      if(k.le.0) then 
+      if(k.le.0) then
          k=1
       end if
       if(k.gt.13) then
@@ -557,7 +557,7 @@ contains
 
     subroutine pwave(ImPwave,PwavePart)
 
-      !**************************************************************        
+      !**************************************************************
       !Evaluates Pwave part of selfenergy of pion
       !The names of the variabels are according to NPA 554, pages 554ff
       !***************************************************************
@@ -565,7 +565,7 @@ contains
       !output
       real, intent(out)   ::ImPwave
       complex, intent(out) ::PwavePart
-      !local  
+      !local
       real, parameter :: fStarSquare=0.36*4.*pi
       real, parameter :: fSquare=0.08*4.*pi
       real, parameter :: ReCoNR=0.498*maPion**(-6)
@@ -587,13 +587,13 @@ contains
       SigmaDelN=CMPLX(-53.*x,ImSigmaDelta(x,T))
       x=(pD+nD)/rhoNull
       !SigmaDelRho=CMPLX(-53.*x,ImSigmaDelta(x,T))
-      SigmaQA3Rho=CMPLX(0,ImQA3Delta(x,T))         
+      SigmaQA3Rho=CMPLX(0,ImQA3Delta(x,T))
       SigmaA3=CMPLX(0,-ca3(T)*x**alphaa3(T))
 
       alphaD=CMPLX(nD,0.)*(CMPLX(SQRT(s)                                         &
            &          -mDelta,0.)-SigmaDelP+CMPLX(0.,GammaDelta(qcm,kF,s)/2.)         &
-           &          -SigmaQA3Rho)**(-1.)                                            & 
-           &          +CMPLX(pD/3.,0.)                                                & 
+           &          -SigmaQA3Rho)**(-1.)                                            &
+           &          +CMPLX(pD/3.,0.)                                                &
            &          *(CMPLX(SQRT(s)-mDelta,0.)-2./3.*SigmaDelP                      &
            &            -1./3.*SigmaDelN+CMPLX(0.,GammaDelta(qcm,kF,s)                &
            &            /2.)-SigmaQA3Rho)**(-1.)
@@ -636,7 +636,7 @@ contains
       else
          renormP=AIMAG(alphaT)/(1+16*pi**2*gPrime**2                               &
               &           *(Abs(p1+p2+p3))**2                                           &
-              &           +4.*pi*gPrime*2.*Real(p1+p2+p3)) !nonresonant absorbtive part   
+              &           +4.*pi*gPrime*2.*Real(p1+p2+p3)) !nonresonant absorbtive part
       end if
 
       renormpFull=(P1+P2+P3)/(CMPLX(1.,0)+4.*pi*gPrime*(p1+p2+p3)) !full expression
@@ -651,7 +651,7 @@ contains
 
     subroutine PwaveRest(p2,p3)
 
-      !**************************************************************        
+      !**************************************************************
       !Evaluates quasielastic part of the pwave and real part of pwave
       !The names of the variabels are according to NPA 554, pages 554ff
       !***************************************************************
@@ -707,7 +707,7 @@ contains
 
 !!$    *      i=ANINT(T*maPion/deltaT)
 !!$
-!!$    *      if(i.le.0) then 
+!!$    *      if(i.le.0) then
 !!$    *         i=1
 !!$    *      end if
 !!$    *      if(i.ge.14) then
@@ -716,7 +716,7 @@ contains
 
       i=INT(T*maPion/deltaT)
 
-      if(i.le.0) then 
+      if(i.le.0) then
          i=1
       end if
       if(i.gt.13) then

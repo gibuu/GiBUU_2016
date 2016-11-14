@@ -35,7 +35,7 @@ contains
   !
   ! OUTPUT
   ! * real    :: wf --momentum space wave function**2 in units of [GeV^-3]
-  ! 
+  !
   ! NOTES
   ! * Normalization : integral(wf(k)*k**2 dk)=1
   !
@@ -117,7 +117,7 @@ contains
   !
   ! OUTPUT
   ! * real    :: wf -- position space wave function**2 in units of [fm^-1]
-  ! 
+  !
   ! NOTES
   ! * Normalization : integral(wf(r) dr)=1
   !
@@ -184,7 +184,7 @@ contains
   ! real function argonne_deuteriumPot(r)
   !
   ! PURPOSE
-  ! * This function returns the AV18 potential for deuterium. 
+  ! * This function returns the AV18 potential for deuterium.
   !
   ! INPUTS
   ! * real,intent(in) :: r        ! distance berween of proton and neutron  [fm]
@@ -200,10 +200,10 @@ contains
 
     integer,parameter :: lpot=1 ! =av18
     integer,parameter :: l=0    ! S-Wave l=0
-    integer,parameter :: s=1    ! Spin=1 
-    integer,parameter :: j=1    ! total angular momentum J=1 
-    integer,parameter :: t=0    ! total isospin 
-    integer,parameter :: t1z=1  ! z-Isospin of proton 
+    integer,parameter :: s=1    ! Spin=1
+    integer,parameter :: j=1    ! total angular momentum J=1
+    integer,parameter :: t=0    ! total isospin
+    integer,parameter :: t1z=1  ! z-Isospin of proton
     integer,parameter :: t2z=-1 ! z-Isospin of neutron
     real(8),dimension(2,2) :: vpw
 
@@ -216,5 +216,3 @@ contains
 
 
 end module argonnev18
-
-

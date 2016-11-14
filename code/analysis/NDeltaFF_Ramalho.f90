@@ -130,8 +130,8 @@ contains
     ax = 1d0  ! bare contribution       (1=use it, 0=don't)
     bx = 1d0  ! pion cloud contribution (1=use it, 0=don't)
 
-    if (q2t > 0d0) then 
-      write(*,*) 
+    if (q2t > 0d0) then
+      write(*,*)
       write(*,*) 'wrong sign for q2t'
       stop
     end if
@@ -200,7 +200,7 @@ contains
     mdel=mD/mN        ! Delta mass (nucleon unities)
     mdel2=mdel*mdel
 
-    dm2=mdel*mdel-1d0   ! md**2-mn**2 
+    dm2=mdel*mdel-1d0   ! md**2-mn**2
     sm2=mdel*mdel+1d0   ! md**2+mn**2
 
     dmp=mdel-1d0
@@ -326,7 +326,7 @@ contains
     mdel=mD/mN        ! Delta mass (nucleon unities)
     mdel2=mdel*mdel
 
-    dm2=mdel*mdel-1d0   ! md**2-mn**2 
+    dm2=mdel*mdel-1d0   ! md**2-mn**2
     sm2=mdel*mdel+1d0   ! md**2+mn**2
 
     dmp=mdel-1d0
@@ -531,7 +531,7 @@ contains
     mdel=mD0/mN        ! Delta mass (nucleon unities)
     mdel2=mdel*mdel
 
-    dm2=mdel2-1d0   ! md**2-mn**2 
+    dm2=mdel2-1d0   ! md**2-mn**2
     sm2=mdel2+1d0   ! md**2+mn**2
 
     dm=mdel-1d0
@@ -579,7 +579,7 @@ contains
 
           intS=intS+(psiD*psiD)*k2*dk*dz/Es
 
-        end do   ! End of iz cicle  
+        end do   ! End of iz cicle
     end do      ! End of ik cicle
 
     intS= intfac*intS

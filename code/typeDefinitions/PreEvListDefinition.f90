@@ -9,7 +9,7 @@
 ! * type tPreEvList
 ! are given.
 !
-! Routines to work with these type are defined elsewhere, as e.g. in 
+! Routines to work with these type are defined elsewhere, as e.g. in
 ! module PreEvList
 !***************************************************************************
 module PreEvListDefinition

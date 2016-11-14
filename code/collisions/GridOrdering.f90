@@ -49,9 +49,9 @@ module GridOrdering
   !
   integer, dimension(nR), PUBLIC   :: iDeltaV
   ! PURPOSE
-  ! The index to access the information stored in "DeltaV": 
+  ! The index to access the information stored in "DeltaV":
   ! access via DeltaV(iDeltaV(i)) returns a sorted list
-  ! 
+  !
   !*************************************************************************
 
   !*************************************************************************
@@ -67,7 +67,7 @@ module GridOrdering
 
   PUBLIC :: GridOrdering_Init
   PUBLIC :: GridOrdering_RandomizeRadius
-  
+
 
 contains
   !*************************************************************************
@@ -99,7 +99,7 @@ contains
                   & + max(abs(iy)-1,0)**2 &
                   & + max(abs(iz)-1,0)**2
              if (ix.ne.0.or.iy.ne.0.or.iz.ne.0) r(ii) = r(ii)+1
-             
+
 
              DeltaV(ii,1:3) = (/ix,iy,iz/)
           end do
@@ -150,7 +150,7 @@ contains
   !*************************************************************************
   subroutine GridOrdering_RandomizeRadius(iRadius)
     use random
-    
+
     implicit none
 
     integer, intent(IN) :: iRadius
@@ -172,10 +172,10 @@ contains
        h = iDeltaV(i)
        iDeltaV(i) = iDeltaV(j)
        iDeltaV(j) = h
-       
+
 
     end do
-    
+
 
 
 !!$    write(*,*) '===='

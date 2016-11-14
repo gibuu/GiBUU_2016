@@ -21,14 +21,14 @@ module dichteDefinition
 
   !Interfaces:
   Interface operator(+)! "+" for type(density)
-     module procedure plus  
+     module procedure plus
   end Interface
 
-  Interface operator(*)! "*" for type(density) and a real 
+  Interface operator(*)! "*" for type(density) and a real
      module procedure times1
 !      module procedure times2
   end Interface
-  
+
   public :: operator(+), operator(*)
 
 contains

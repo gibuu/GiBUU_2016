@@ -27,7 +27,7 @@ contains
   ! PURPOSE
   ! See notes in the header of this module.
   ! NOTES
-  ! RTF-code gives also selfenergies (coupling*field) in units of 
+  ! RTF-code gives also selfenergies (coupling*field) in units of
   ! [MeV] in file "fields.d".
   !*************************************************************************
   subroutine NucExRTF_Main(A_nuc,Z_nuc,RTF_dens)
@@ -64,18 +64,18 @@ contains
 
     if (.not.getRMF_flag()) then
        write(*,*) 'Module NucExRTF / routine NucExRTF_Main:'
-       write(*,*) & 
+       write(*,*) &
             & 'Wrong parameter set for Relativistic Thomas-Fermi'
-       write(*,*) & 
+       write(*,*) &
             & 'ExRTF works only for relativistic mean-field!'
        write(*,*) 'STOP'
        STOP
     end if
 
-    if (getRMF_parSet() == 3 .or. getRMF_parSet() == 6) then ! ExRTF does not run for the NL-Parameter set 
+    if (getRMF_parSet() == 3 .or. getRMF_parSet() == 6) then ! ExRTF does not run for the NL-Parameter set
                               ! from Lang et al.!
        write(*,*) 'Module NucExRTF / routine NucExRTF_Main:'
-       write(*,*) & 
+       write(*,*) &
             & 'Do not use Lang et al. parameters for ExRTF!!!'
        write(*,*) 'STOP'
        STOP
@@ -83,14 +83,14 @@ contains
     !-----------------------------------------------------------------------
     ! Set variables for ExRTF code
     ! Meson-Baryon coupling constants: g_i**2/(4\pi) (dimensionless units)
-    ! Non-linearities of isoscalar, scalar sigma field: 
+    ! Non-linearities of isoscalar, scalar sigma field:
     ! -g_2/(g_sigma**3*M) (dimensionless units)
     !  g_3/(g_sigma**4) (dimensionless units)
     !-----------------------------------------------------------------------
     gs_rtf = g_sigma**2/fourpi
     gv_rtf = g_omega**2/fourpi
     gr_rtf = g_rho**2/fourpi
-    ms_rtf = m_sigma*1000. !in units of MeV for ExRTF   
+    ms_rtf = m_sigma*1000. !in units of MeV for ExRTF
     mv_rtf = m_omega*1000. !in units of MeV for ExRTF
     if (g_rho /= 0.0) then
        mr_rtf = m_rho*1000. !in units of MeV for ExRTF
@@ -111,39 +111,39 @@ contains
     write(1,'(e12.4)') epst
 
     !vector - isovector (omega meson field)
-    write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') & 
-         & mv_rtf,1,0,gv_rtf,0   
+    write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') &
+         & mv_rtf,1,0,gv_rtf,0
 
-    write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') & 
+    write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') &
 !                                !          & 980.000,0,1,2.49,0   !scalar - isovector
          & 980.000,0,1,0.00001,0   !vector - isovector !dummy line for ExRTF
 
     !scalar - isovector (sigma meson field)
-    write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') & 
-         & ms_rtf,0,0,gs_rtf,2   
+    write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') &
+         & ms_rtf,0,0,gs_rtf,2
 
     ! non-linearities (power 3)
-    write(1,'(i1,1x,e12.5)') & 
-         & 3,g2_rtf        
-      
+    write(1,'(i1,1x,e12.5)') &
+         & 3,g2_rtf
+
     ! non-linearities (power 4)
-    write(1,'(i1,1x,e12.5)') & 
-         & 4,g3_rtf              
+    write(1,'(i1,1x,e12.5)') &
+         & 4,g3_rtf
 
     !vector - isovector (rho meson field)
     if (g_rho .ne. 0.0) then
-       write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') & 
-            & mr_rtf,1,1,gr_rtf,0 
+       write(1,'(f7.3,1x,i1,1x,i1,f8.4,1x,i1)') &
+            & mr_rtf,1,1,gr_rtf,0
     end if
 
     !Photon field
-    write(1,'(f7.2,1x,i1,1x,i2,f7.2,1x,i1)') & 
-         & 0.0,1,-1,1.0,0        
-    write(1,'(f7.3,1x,i1,1x,i1,f7.2,1x,i1)') & 
+    write(1,'(f7.2,1x,i1,1x,i2,f7.2,1x,i1)') &
+         & 0.0,1,-1,1.0,0
+    write(1,'(f7.3,1x,i1,1x,i1,f7.2,1x,i1)') &
          & -1.00,0,0,0.00,0        !Terminates Bosons
     !-----------------------------------------------------------------------
     ! Call ExRTF code.
-    ! Relevant output: file "gsd.d", which contains density profiles for 
+    ! Relevant output: file "gsd.d", which contains density profiles for
     ! protons, neutrons separately.
     !-----------------------------------------------------------------------
     close(1)
@@ -191,9 +191,9 @@ contains
     !-----------------------------------------------------------------------
     open(10,file='Fields_RTF.dat')
     write(10,1001)
-1001 format('# RTF-Densities and RTF-fields'/ & 
-          & '#', 5x,'r',5x,'Pf_p',5x,'Pf_n',5x,'rhov_p',5x,'rhov_n', & 
-          & 5x,'Sigma',5x,'Omega',5x,'Rho',5x,'Coulomb', & 
+1001 format('# RTF-Densities and RTF-fields'/ &
+          & '#', 5x,'r',5x,'Pf_p',5x,'Pf_n',5x,'rhov_p',5x,'rhov_n', &
+          & 5x,'Sigma',5x,'Omega',5x,'Rho',5x,'Coulomb', &
           & 5x,'Ef_p',5x,'Ef_n')
     do j=0,2000
        pf    = (1.5*pi**2*(RTF_dens(j,1)+RTF_dens(j,2)))**0.333333*197.33
@@ -204,9 +204,9 @@ contains
        Ef_p  = sqrt(pf_p**2+mstar**2)+omegaPot(j)+rhoPot(j)
        Ef_n  = sqrt(pf_n**2+mstar**2)+omegaPot(j)-rhoPot(j)
 
-       write(10,1000) x_new(j),pf_p,pf_n,RTF_dens(j,:), & 
-            & sigmaPot(j)/1000.,omegaPot(j)/1000., & 
-            & rhoPot(j)/1000.,coulombPot(j)/1000., & 
+       write(10,1000) x_new(j),pf_p,pf_n,RTF_dens(j,:), &
+            & sigmaPot(j)/1000.,omegaPot(j)/1000., &
+            & rhoPot(j)/1000.,coulombPot(j)/1000., &
             & (Ef_p+coulombPot(j)-938.)/1000., (Ef_n-938.)/1000.
     end do
 

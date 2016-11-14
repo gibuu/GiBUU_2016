@@ -40,14 +40,14 @@ module CollTools
   !
   ! Case 2:
   ! * type(particle) :: partNEW
-  !   (The input values are not modified; all information is transfered to 
+  !   (The input values are not modified; all information is transfered to
   !   a new copy and this copy is modified)
   !
   ! Case 3:
   ! * type(particle), dimension(:) :: parts
   !   (For every particle in the vector, Case 1) is called)
   !
-  ! NOTES 
+  ! NOTES
   ! This function is overloaded.
   !*************************************************************************
   Interface ConvertToAnti
@@ -87,7 +87,7 @@ contains
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
     integer MSEL,MSELPD,MSUB,KFIN
     double precision CKIN
@@ -144,8 +144,8 @@ contains
 ! COMMENTS ON CKIN(5):
 ! the minimal W in gamma*N is calculated as max(CKIN(77),2*CKIN(3),2*CKIN(5)).
 ! unfortunately changing CKIN(5) may change the overall yields.
-! We just want to allow DIS events for W<2GeV, but W>CKIN(77) 
-! without changing the B+B and B+M behaviour. 
+! We just want to allow DIS events for W<2GeV, but W>CKIN(77)
+! without changing the B+B and B+M behaviour.
 
 
     if (GetSwitchPythiaHermes()) call SetSomeDefaults_PY_Hermes
@@ -179,12 +179,12 @@ contains
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
     integer MSTU,MSTJ
     double precision PARU,PARJ
     SAVE /PYDAT1/
-    
+
     COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
     integer MSEL,MSELPD,MSUB,KFIN
     double precision CKIN
@@ -198,11 +198,11 @@ contains
                               ! make sure to link the right routines
     MSTP( 20)=0               ! suppression of resolved XS
     MSTP( 41)=1               ! handling Resonance Decays (???)
-      
+
     MSTP( 61)=0               ! master: ISR (QCD/QED)
     MSTP( 71)=0               ! master: FSR (QCD/QED)
     MSTP( 81)=0               ! master: multiple interactions
-    
+
     MSTP( 92)=4               ! energy splitting in remnant
     MSTP(101)=1               ! structure of diffr. system
 
@@ -214,15 +214,15 @@ contains
 
     PARP( 91)=0.44            ! width intrinsic kT
     PARP( 93)=2.00            ! cut-off intrinsic kT
-    
+
     PARP( 99)=0.44            ! width intrinsic kT (photon)
     PARP(100)=2.00            ! cut-off intrinsic kT (photon)
-    
+
     PARP(102)=0.50            ! start of diffr.states mass spectrum
     PARP(103)=0.50            ! (cf. diffr.states mass spectrum)
-    
+
     PARP(104)=0.30            ! Min.energy for XS definition
-    
+
     PARP(161)=2.69            ! VMD-Coupling: rho
     PARP(162)=24.6            ! VMD-Coupling: omega
     PARP(163)=18.8            ! VMD-Coupling: phi
@@ -235,27 +235,27 @@ contains
     PARJ(  1)=0.03            ! Prob(qq)/Prob(q)
     PARJ(  2)=0.12            ! Prob(s)/Prob(u)
     PARJ(  3)=0.25            ! (P(us)/P(ud))/(P(s)/P(d))
-    
+
     PARJ( 11)=0.25            ! Prob(Spin=1) of light meson
     PARJ( 12)=0.30            ! Prob(Spin=1) of strange meson
-    
+
     PARJ( 21)=0.38            ! pT of Hadron in Fragm.: width
     PARJ( 23)=0.03            !    -"-                : (1)
     PARJ( 24)=2.50            !    -"-                : (2)
-    
+
     PARJ( 33)=0.20            ! cut-off: String-Fragm <-> Cluster-Decay
-    
+
     PARJ( 41)=1.13            ! LUND-FF: Parameter a
     PARJ( 42)=0.37            !   -"-  : Parameter b
     PARJ( 45)=0.80            !   -"-  : change Par. a for qq
-    
+
     MSTJ( 12)=1               ! Switch baryon prod model
-    
+
     MSTJ( 45)=4               ! #flavour in shower
     MSTJ(112)=4               ! #flavour in alphaS (nominal)
     MSTJ(113)=4               !     -"-            (min)
     MSTJ(114)=4               !     -"-            (max)
-    
+
     CKIN(  1)=1.00            ! sqrt(s^hat): min
 
   end subroutine SetSomeDefaults_PY_Hermes
@@ -339,8 +339,8 @@ contains
   !
   ! INPUTS
   ! * type(particle),dimension(:) :: Part -- particle vector
-  ! * real,                       :: HardScaleQ2 -- 
-  !   Q2 of the production process 
+  ! * real,                       :: HardScaleQ2 --
+  !   Q2 of the production process
   !
   ! OUTPUT
   ! * integer, OPTIONAL :: iDiffrRho -- if given and a diffractive rho
@@ -354,7 +354,7 @@ contains
     use propagation, only: checkVelo
     use CALLSTACK, only: TRACEBACK
     use ID_translation, only: KFtoBUU
-    
+
     type(particle), dimension(:), intent(inout) :: Part
     real, intent(in)                            :: HardScaleQ2
     integer, intent(OUT), OPTIONAL              :: iDiffrRho
@@ -385,7 +385,7 @@ contains
        call KFtoBUU (K(i1,2), ID0, IZ0)
        if (ID0.eq.0) cycle ! "unknown particles wont be propagated"
        i2 = i2+1
-       
+
        Part(i2)%ID            = abs(ID0)
        Part(i2)%antiparticle  = (ID0.lt.0)
        Part(i2)%charge        = IZ0
@@ -406,7 +406,7 @@ contains
           if ((Part(i2)%ID.eq.103).and.(Part(i2)%charge.eq.0)&
                &.and.(K(i1,4).eq.2)) iDiffrRho = i2
        endif
-       
+
        Part(i2)%scaleCS=1.
        Part(i2)%formationTime = -999
 
@@ -416,10 +416,10 @@ contains
 !!$      real    :: lastCollisionTime=0.
 !!$      real    :: offshellParameter=0.
 !!$      real, dimension(1:2) :: formationTime=0.
-!!$      real    :: perWeight=0. 
+!!$      real    :: perWeight=0.
 !!$      real    :: coulombPotential=0.
-!!$      integer   ::  number 
-!!$      integer,dimension(1:2) :: event=0 
+!!$      integer   ::  number
+!!$      integer,dimension(1:2) :: event=0
 !!$      integer :: firstEvent=0
 !!$      logical :: perturbative=.false.
 
@@ -438,7 +438,7 @@ contains
   ! (special for Pythia).
   !*****************************************************************************
   function ConvertInPartPythia (ID) result (IDc)
-    
+
     integer, intent(in) :: ID
     integer :: IDc
 
@@ -579,7 +579,7 @@ contains
 
     type(particle),dimension(:),intent(inout)   :: Part   ! particles
     integer, intent(inout)                      :: DeltaQ
-    
+
     integer :: i,Q,dQMax, ID
     integer, ALLOCATABLE :: dQArray(:)
 
@@ -655,7 +655,7 @@ contains
     integer MSTP_D,MSTI_D
     double precision PARP_D,PARI_D
     SAVE /PYPARS/
-    
+
     COMMON/PYSUBS/MSEL_D,MSELPD,MSUB_D(500),KFIN_D(2,-40:40),CKIN_D(200)
     integer MSEL_D,MSELPD,MSUB_D,KFIN_D
     double precision CKIN_D
@@ -793,7 +793,7 @@ contains
       !***********************************************************************
       !****n* CollTools/pythia
       ! NAME
-      ! NAMELIST /pythia/ 
+      ! NAMELIST /pythia/
       ! PURPOSE
       ! In addition to the default changes done by GiBUU, you can set additional
       ! parameters from the arrays:
@@ -812,8 +812,8 @@ contains
       ! cf. PYTHIA documentation for details.
       !
       ! NOTES
-      ! Only changes to the default values (i.e. values at the stage, when the 
-      ! namelist is read in) will be stored and replayed every time when 
+      ! Only changes to the default values (i.e. values at the stage, when the
+      ! namelist is read in) will be stored and replayed every time when
       ! necessary.
       !***********************************************************************
       NAMELIST /pythia/ MSTU,MSTJ,MSTP,MSTI,PARU,PARJ,PARP,PARI,CKIN,MSEL,PMAS,MDCY
@@ -832,7 +832,7 @@ contains
       MSEL = MSEL_D
       PMAS = PMAS_D
       MDCY = MDCY_D
-      
+
       ! (2) read in namelist:
 
       call Write_ReadingInput('pythia',0)
@@ -856,7 +856,7 @@ contains
       nMDCY = 0
 
       do i=1,200
-         if (MSTU(i).ne.MSTU_D(i)) then 
+         if (MSTU(i).ne.MSTU_D(i)) then
             if (i.eq.12) then
                write(*,*) 'Changes of MSTU(12) are ignored'
             else
@@ -865,42 +865,42 @@ contains
             endif
          endif
 
-         if (MSTJ(i).ne.MSTJ_D(i)) then 
+         if (MSTJ(i).ne.MSTJ_D(i)) then
             nMSTJ = nMSTJ+1
             iMSTJ(nMSTJ) = i
          endif
 
-         if (MSTP(i).ne.MSTP_D(i)) then 
+         if (MSTP(i).ne.MSTP_D(i)) then
             nMSTP = nMSTP+1
             iMSTP(nMSTP) = i
          endif
 
-         if (MSTI(i).ne.MSTI_D(i)) then 
+         if (MSTI(i).ne.MSTI_D(i)) then
             nMSTI = nMSTI+1
             iMSTI(nMSTI) = i
          endif
-         
-         if (PARU(i).ne.PARU_D(i)) then 
+
+         if (PARU(i).ne.PARU_D(i)) then
             nPARU = nPARU+1
             iPARU(nPARU) = i
          endif
 
-         if (PARJ(i).ne.PARJ_D(i)) then 
+         if (PARJ(i).ne.PARJ_D(i)) then
             nPARJ = nPARJ+1
             iPARJ(nPARJ) = i
          endif
 
-         if (PARP(i).ne.PARP_D(i)) then 
+         if (PARP(i).ne.PARP_D(i)) then
             nPARP = nPARP+1
             iPARP(nPARP) = i
          endif
 
-         if (PARI(i).ne.PARI_D(i)) then 
+         if (PARI(i).ne.PARI_D(i)) then
             nPARI = nPARI+1
             iPARI(nPARI) = i
          endif
 
-         if (CKIN(i).ne.CKIN_D(i)) then 
+         if (CKIN(i).ne.CKIN_D(i)) then
             nCKIN = nCKIN+1
             iCKIN(nCKIN) = i
          endif
@@ -911,21 +911,21 @@ contains
       endif
 
       do i=1,500
-         if (SUM(PMAS(i,:)-PMAS_D(i,:))/=0) then 
+         if (SUM(PMAS(i,:)-PMAS_D(i,:))/=0) then
             nPMAS = nPMAS+1
             iPMAS(nPMAS) = i
          endif
       end do
 
       do i=1,500
-         if (MDCY(i,1).ne.MDCY_D(i,1)) then 
+         if (MDCY(i,1).ne.MDCY_D(i,1)) then
             nMDCY = nMDCY+1
             iMDCY(nMDCY) = i
          endif
-         if ((MDCY(i,2).ne.MDCY_D(i,2)).or.((MDCY(i,3).ne.MDCY_D(i,3)))) then 
+         if ((MDCY(i,2).ne.MDCY_D(i,2)).or.((MDCY(i,3).ne.MDCY_D(i,3)))) then
             write(*,*) 'Entries MDCY(:,2) or MDCY(:,3) will be ignored!'
          endif
-         
+
       end do
 
       noChanges= MAX(nMSTU,nMSTJ,nMSTP,nMSTI,nPARU,nPARJ,nPARP,nPARI,nCKIN,nMSEL,nPMAS,nMDCY)==0
@@ -956,8 +956,8 @@ contains
     ! Write the changes to stdout.
     !***********************************************************************
     subroutine WriteChanges
-      
-      integer :: i 
+
+      integer :: i
 
 !      call WriteValues()
 
@@ -1005,7 +1005,7 @@ contains
 
 1001  FORMAT ("  ",A,"       "," : ",i14," -> ",i14)
 1002  FORMAT ("  ",A,"(",i3,")  "," : ",i14," -> ",i14)
-1003  FORMAT ("  ",A,"(",i3,")  "," : ",f14.5," -> ",f14.5)    
+1003  FORMAT ("  ",A,"(",i3,")  "," : ",f14.5," -> ",f14.5)
 1004  FORMAT ("  ",A,"(",i3,")  "," : ",4f14.5," -> ",4f14.5)
 1005  FORMAT ("  ",A,"(",i3,",1)"," : ",i14," -> ",i14)
 
@@ -1021,8 +1021,8 @@ contains
     ! Play the changes.
     !***********************************************************************
     subroutine PlayChanges
-      
-      integer :: i 
+
+      integer :: i
 
 !!$      write(*,*) 'Play Changes:'
 !!$      call WriteChanges
@@ -1080,8 +1080,8 @@ contains
     ! Write all the values to stdout.
     !***********************************************************************
     subroutine WriteValues
-      
-      integer :: i 
+
+      integer :: i
 
       write(*,1001) 'MSEL',MSEL
 
@@ -1233,7 +1233,7 @@ contains
   ! subroutine CheckUndecayedString()
   ! PURPOSE
   ! Check whether some undecayed quark etc survived in the JETSET output.
-  ! Should not happen, but occurs sometimes. 
+  ! Should not happen, but occurs sometimes.
   ! OUTPUT
   ! * MINT(51) = 2, if problem occured
   !*************************************************************************
@@ -1271,6 +1271,6 @@ contains
     end if
 
   end subroutine CheckUndecayedString
-  
+
 
 end module CollTools

@@ -3,7 +3,7 @@
 ! NAME
 ! module mesonWidthMedium
 ! PURPOSE
-! Basically this module calls the subroutines of the module "mesonWidth" 
+! Basically this module calls the subroutines of the module "mesonWidth"
 ! and adds medium modifications to it.
 ! USES
 ! module mesonWidth
@@ -19,21 +19,21 @@ module mesonWidthMedium
   !************************************************************************
   !****g* mesonWidthMedium/mediumSwitch
   ! SOURCE
-  ! 
+  !
   integer, save :: mediumSwitch = 0
   ! PURPOSE
   ! Treatment of In-Medium Widths for mesons:
   ! * 0: Only vacuum widths are used.
-  ! * 1: The collisional width is assumed to be constant 
+  ! * 1: The collisional width is assumed to be constant
   !   (only density-dependent).
-  ! * 2: The full tabulated in-medium width is used, as 
+  ! * 2: The full tabulated in-medium width is used, as
   !   calculated via the collision term.
   !************************************************************************
 
   !************************************************************************
   !****g* mesonWidthMedium/Gamma_coll_rho
   ! SOURCE
-  ! 
+  !
   real, save :: Gamma_coll_rho   = 0.150
   ! PURPOSE
   ! Collisional width for the rho meson in GeV.
@@ -43,7 +43,7 @@ module mesonWidthMedium
   !************************************************************************
   !****g* mesonWidthMedium/Gamma_coll_omega
   ! SOURCE
-  ! 
+  !
   real, save :: Gamma_coll_omega = 0.150
   ! PURPOSE
   ! Collisional width for the omega meson in GeV.
@@ -53,7 +53,7 @@ module mesonWidthMedium
   !************************************************************************
   !****g* mesonWidthMedium/Gamma_coll_phi
   ! SOURCE
-  ! 
+  !
   real, save :: Gamma_coll_phi   = 0.030
   ! PURPOSE
   ! Collisional width for the phi meson in GeV.
@@ -99,7 +99,7 @@ module mesonWidthMedium
 !!$  ! real function partialWidthMesonMedium(ID, mass, IDout1,IDout2, momLRF, mediumAtPos)
 !!$  !
 !!$  ! PURPOSE
-!!$  ! Calculate the (partial) width energy dependent of all meson resonances 
+!!$  ! Calculate the (partial) width energy dependent of all meson resonances
 !!$  ! for a 2-body or a 3-body channel.
 !!$  !
 !!$  ! INPUTS
@@ -109,19 +109,19 @@ module mesonWidthMedium
 !!$  ! * type(medium)         :: mediumAtPos -- medium information
 !!$  !
 !!$  ! with:
-!!$  ! * integer :: IDout1, IDout2,IDout3 -- 
+!!$  ! * integer :: IDout1, IDout2,IDout3 --
 !!$  !   ID's of the decay products which one is interested in
-!!$  ! * integer :: charge1, charge2, charge3  -- 
+!!$  ! * integer :: charge1, charge2, charge3  --
 !!$  !   charges of the decay products which one is interested in
 !!$  ! or:
-!!$  ! * integer :: IDout1, IDout2 -- 
+!!$  ! * integer :: IDout1, IDout2 --
 !!$  !   ID's of the decay products which one is interested in
 !!$  !
 !!$  ! USAGE
 !!$  ! * 1.) first line if you are interested in a three-body process.
 !!$  ! * 2.) second line if you are interested in a two-body process.
 !!$  ! USES
-!!$  ! Uses as an interface the module procedures partialWidthMesonMedium2body 
+!!$  ! Uses as an interface the module procedures partialWidthMesonMedium2body
 !!$  ! and partialWidthMesonMedium3body
 !!$  !************************************************************************
 !!$  Interface partialWidthMesonMedium
@@ -192,7 +192,7 @@ contains
 
     case DEFAULT
        call TRACEBACK()
-       
+
     end select
 
     call InitMassAssInfo_Meson()
@@ -220,7 +220,7 @@ contains
 !!$  ! c.f. interface 'partialWidthMesonMedium'
 !!$  !************************************************************************
 !!$  real function partialWidthMesonMedium3Body(ID,mass, &
-!!$       & IDout1,IDout2,IDout3,charge1,charge2,charge3,& 
+!!$       & IDout1,IDout2,IDout3,charge1,charge2,charge3,&
 !!$       & momLRF,mediumAtPos)
 !!$
 !!$    use particleProperties
@@ -239,7 +239,7 @@ contains
 !!$
 !!$    ! (1) Check Input
 !!$    if (.not.IsMeson(ID)) call TRACEBACK()
-!!$    
+!!$
 !!$    ! Since no medium modifications yet implemented :
 !!$    partialwidthMesonMedium3Body=partialwidthMeson(ID,mass,IDout1,IDout2,IDout3,charge1,charge2,charge3)
 !!$
@@ -263,7 +263,7 @@ contains
 !!$
 !!$    ! (1) Check Input
 !!$    if (.not.IsMeson(ID)) call TRACEBACK()
-!!$    
+!!$
 !!$    ! Since no medium modifications yet implemented :
 !!$    partialwidthMesonMedium2Body=partialwidthMeson(ID,mass,IDout1,IDout2)
 !!$
@@ -284,9 +284,9 @@ contains
   ! * real                 :: mass  -- baremass of the resonance (offshell)
   ! * integer              :: ch    -- charge of resonance
   ! OUTPUT
-  ! * real, dimension(:)   :: decayWidth  --  
+  ! * real, dimension(:)   :: decayWidth  --
   !   array of ecay widths for all decay channels
-  ! * logical :: pauliFlag    -- .true. if pauli-Blocking is already 
+  ! * logical :: pauliFlag    -- .true. if pauli-Blocking is already
   !   considered in the decay width description
   !*******************************************************************
   function decayWidthMesonMedium (ID, mass, ch, pauliFlag) result (decayWidth)
@@ -318,12 +318,12 @@ contains
   ! NAME
   ! real function WidthMesonMedium(ID,mass,momLRF,mediumAtPos)
   ! PURPOSE
-  ! This function calculates the (partial) width energy dependent of 
+  ! This function calculates the (partial) width energy dependent of
   ! all meson resonances with medium modifications.
   ! INPUTS
   ! * integer :: ID   -- id of resonance
   ! * real    :: mass -- p_mu p^mu = mass of the resonance (offshell)
-  ! * real,dimension(0:3)  :: momLRF -- 
+  ! * real,dimension(0:3)  :: momLRF --
   ! * type(medium)         :: mediumAtPos --
   !*******************************************************************
   real function WidthMesonMedium(ID,mass,momLRF,mediumAtPos)
@@ -374,12 +374,12 @@ contains
   ! NAME
   ! real function WidthMesonMedium_GammaColl(ID,mass,momLRF,mediumAtPos)
   ! PURPOSE
-  ! This function calculates the collisional width energy dependent of 
+  ! This function calculates the collisional width energy dependent of
   ! all meson resonances, density dependend.
   ! INPUTS
   ! * integer :: ID   -- id of resonance
   ! * real    :: mass -- p_mu p^mu = mass of the resonance (offshell)
-  ! * real,dimension(0:3)  :: momLRF -- 
+  ! * real,dimension(0:3)  :: momLRF --
   ! * type(medium)         :: mediumAtPos --
   !*******************************************************************
   real function WidthMesonMedium_GammaColl (ID, mass, momLRF, mediumAtPos)
@@ -460,7 +460,7 @@ contains
 
     MassAssInfo%Mass0 = hadron(ID)%mass
     MassAssInfo%Gamma0 = WidthMesonMedium(ID,hadron(ID)%mass,momLRF,mediumAtPos)
-    
+
     if (MassAssInfo%Gamma0 .lt. 1e-3) then
        call SetMassAssInfo_Stable(MassAssInfo)
        return
@@ -499,7 +499,7 @@ contains
   !****s* mesonWidthMedium/InitMassAssInfo_Meson
   ! NAME
   ! subroutine InitMassAssInfo_Meson
-  ! This routine initializes the array of information used by the 
+  ! This routine initializes the array of information used by the
   ! improved massass routines.
   ! NOTES
   ! * TO BE DONE: at the moment only implemented for vacuum width and
@@ -530,7 +530,7 @@ contains
       use mesonWidth, only: GetMinMaxMass, GetMaxQ
       use ParticleProperties, only: hadron
       use mesonWidth, only: FullWidthMeson
-      
+
       integer, intent(in) :: ID
 
       integer, parameter :: nB = 10
@@ -552,7 +552,7 @@ contains
 
       nG = 0
       if (Gcoll>0.) nG=nG2
-      
+
       call GetMinMaxMass(ID,MinMass,MaxMass, (mediumSwitch.ne.0) )
 
       ! We allocate memory in the global array:
@@ -581,7 +581,7 @@ contains
 
          if (verboseInit) write(*,'(A10,10f13.4)') 'BinM',BinM
 
-         BinY = 2*atan2(2*(BinM-mass0),gamma) 
+         BinY = 2*atan2(2*(BinM-mass0),gamma)
 
 
          do iB=1,nB-1
@@ -597,27 +597,27 @@ contains
             nB2 = iB
             if (BinW(iB) > 0.0) exit
          end do
-            
-         
+
+
          if (verboseInit) write(*,'(A10,7(" "),10f13.4)') &
               & 'BinW',BinW(1:nb-1)/sum(BinW(1:nb-1))
-      
+
          call GetMaxQ(ID,mass0,gamma0,dGamma, BinM,BinQ)
 
          if (verboseInit) write(*,'(A10,7(" "),10f13.4)') 'BinQ',BinQ(1:nb-1)
          if (verboseInit) write(*,*) 'nBin: ',nB1,nB2
 
          ! Now we store the information in the global array:
-      
+
          MassAssInfo_meson(ID)%W(iG,1:nB-1) = BinW(1:nB-1)
          MassAssInfo_meson(ID)%Q(iG,1:nB-1) = BinQ(1:nB-1)
          MassAssInfo_meson(ID)%M(iG,1:nB)   = BinM(1:nB)
          MassAssInfo_meson(ID)%Y(iG,1:nB)   = BinY(1:nB)
          MassAssInfo_meson(ID)%n1(iG)       = nB1
          MassAssInfo_meson(ID)%n2(iG)       = nB2
-         
+
       end do
-      
+
 
     end subroutine Init_ConstGammaColl
 
@@ -625,5 +625,3 @@ contains
 
 
 end module mesonWidthMedium
-
-

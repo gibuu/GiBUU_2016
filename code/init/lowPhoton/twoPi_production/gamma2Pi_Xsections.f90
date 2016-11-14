@@ -26,7 +26,7 @@ module gamma2Pi_Xsections
   !****g* gamma2Pi_Xsections/experimentalXsections
   ! SOURCE
   !
-  logical , save :: experimentalXsections=.true.     
+  logical , save :: experimentalXsections=.true.
   !
   ! PURPOSE
   ! * If .true. then the Xsections are taken from the experiment
@@ -36,7 +36,7 @@ module gamma2Pi_Xsections
   logical , save :: initFlag=.true.
 
   public :: gamma2pi, cleanUp
-  
+
   integer, save :: counter_CLerror=0
 
   type(tspline),save :: s1,s2,s3,s4,s5,s6
@@ -87,7 +87,7 @@ contains
   !
   ! PURPOSE
   ! Calculation of 2 pion cross sections
-  ! INPUTS 
+  ! INPUTS
   ! * integer :: qnuk      -- charge of nucleon
   ! * real    :: srts      -- SQRT(s)
   ! OUTPUT
@@ -122,12 +122,12 @@ contains
     real, dimension(1:3) :: sigma
     logical, dimension(1:3) :: flags
     real :: sigma_doublecharged,sigma_singlecharged,sigma_Uncharged
-    logical , parameter :: improvedThreshold=.true.     
+    logical , parameter :: improvedThreshold=.true.
 !   real, external :: gP_ProtonPiPlusPiMinus , gP_NeutronPiPlusPiNull
-!   real, external :: gP_ProtonPiNullPiNull 
+!   real, external :: gP_ProtonPiNullPiNull
 !   real, external :: gN_NeutronPiPlusPiMinus
-!   real, external :: gN_ProtonPiMinusPiNull 
-!   real, external :: gN_NeutronPiNullPiNull 
+!   real, external :: gN_ProtonPiMinusPiNull
+!   real, external :: gN_NeutronPiNullPiNull
 
 
     if(initFlag) then
@@ -138,7 +138,7 @@ contains
     sig2pi=0.
 
     if(srts.gt.mN+2.*mPi) then
-       plab=(srts**2-mN**2)/2./mN  
+       plab=(srts**2-mN**2)/2./mN
        ! Experimental 2 pion cross sections:
        ! Double charged : two charged pions
        ! Single charged : one charged pion
@@ -218,7 +218,7 @@ contains
     real, intent(in) :: plab
     real :: sigma
     integer, parameter :: Dateiende=-1
-    
+
     real, dimension(1:200),save :: pLabField, sigmaField!, derivativeField
 
     logical, save :: initFlag=.true.
@@ -227,9 +227,9 @@ contains
     integer, save :: i
     logical, parameter :: debug=.false.
     logical            :: success
-    integer            :: error 
+    integer            :: error
     real, optional,intent(out)     :: minPlab,minSig
-    
+
     If(initFlag) then
        If(debug) write(*,*) 'Initializing gP_ProtonPiPlusPiMinus'
        open(100,file=trim(path_to_Input)//'/photo_twoPi/gamp-ppipm.dat',status='old')
@@ -248,13 +248,13 @@ contains
        s1=cl_initSpline(plabField(lBound(plabField,dim=1):i),sigmaField(lBound(plabField,dim=1):i))
        initFlag=.false.
     end if
-    
+
 
     sigma=cl_spline(s1,plab,success,error)
     if(.not.success.and.error.gt.0.and.counter_CLerror.lt.100) then
        call cl_error(error,' gP_ProtonPiPlusPiMinus',plab)
        counter_CLerror=counter_CLerror+1
-       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!' 
+       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!'
     end if
 
 
@@ -283,7 +283,7 @@ contains
     real, intent(in) :: plab
     real  :: sigma
     integer, parameter :: Dateiende=-1
-    
+
     real, dimension(1:200),save :: pLabField, sigmaField!, derivativeField
 
     logical, save :: initFlag=.true.
@@ -291,7 +291,7 @@ contains
     real,save :: maximalMomentum,maximalCrossSection
     integer, save :: i
     logical            :: success
-    integer            :: error 
+    integer            :: error
     real, optional     :: minPlab,minSig
 
 
@@ -318,7 +318,7 @@ contains
     if(.not.success.and.error.gt.0.and.counter_CLerror.lt.100) then
        call cl_error(error,' gP_NeutronPiPlusPiNull',plab)
        counter_CLerror=counter_CLerror+1
-       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!' 
+       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!'
     end if
 
 
@@ -347,7 +347,7 @@ contains
     real, intent(in) :: plab
     real  :: sigma
     integer, parameter :: Dateiende=-1
-    
+
     real, dimension(1:200),save :: pLabField, sigmaField!, derivativeField
 
     logical, save :: initFlag=.true.
@@ -355,7 +355,7 @@ contains
     real,save :: maximalMomentum,maximalCrossSection
     integer, save :: i
     logical            :: success
-    integer            :: error 
+    integer            :: error
     real, optional     :: minPlab,minSig
 
 
@@ -383,7 +383,7 @@ contains
     if(.not.success.and.error.gt.0.and.counter_CLerror.lt.100) then
        call cl_error(error,' gP_ProtonPiNullPiNull',plab)
        counter_CLerror=counter_CLerror+1
-       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!' 
+       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!'
     end if
 
     If(plab.gt.maximalMomentum) then
@@ -400,7 +400,7 @@ contains
   !***************************************************************************************
   !*2 pion off the neutron
   !***************************************************************************************
-  
+
   function gN_NeutronPiPlusPiMinus(plab,minPlab,minSig) Result (sigma)
     !****f* gamma2Pi_Xsections/gN_NeutronPiPlusPiMinus
     ! Subroutine for calculation of gamma n -> n pi+ pi-  cross section
@@ -413,7 +413,7 @@ contains
     real, intent(in) :: plab
     real  :: sigma
     integer, parameter :: Dateiende=-1
-    
+
     real, dimension(1:200),save :: pLabField, sigmaField!, derivativeField
 
     logical, save :: initFlag=.true.
@@ -421,7 +421,7 @@ contains
     real,save :: maximalMomentum,maximalCrossSection
     integer, save :: i
     logical            :: success
-    integer            :: error 
+    integer            :: error
     real, optional     :: minPlab,minSig
 
 
@@ -447,7 +447,7 @@ contains
     if(.not.success.and.error.gt.0.and.counter_CLerror.lt.100) then
        call cl_error(error,' gN_NeutronPiPlusPiMinus',plab)
        counter_CLerror=counter_CLerror+1
-       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!' 
+       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!'
     end if
 
     If(plab.gt.maximalMomentum) then
@@ -475,7 +475,7 @@ contains
     real, intent(in) :: plab
     real  :: sigma
     integer, parameter :: Dateiende=-1
-    
+
     real, dimension(1:200),save :: pLabField, sigmaField!, derivativeField
 
     logical, save :: initFlag=.true.
@@ -483,7 +483,7 @@ contains
     real,save :: maximalMomentum,maximalCrossSection
     integer, save :: i
     logical            :: success
-    integer            :: error 
+    integer            :: error
     real, optional     :: minPlab,minSig
 
 
@@ -509,7 +509,7 @@ contains
     if(.not.success.and.error.gt.0.and.counter_CLerror.lt.100) then
        call cl_error(error,' gN_ProtonPiMinusPiNull',plab)
        counter_CLerror=counter_CLerror+1
-       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!' 
+       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!'
     end if
 
     If(plab.gt.maximalMomentum) then
@@ -538,7 +538,7 @@ contains
     real, intent(in) :: plab
     real  :: sigma
     integer, parameter :: Dateiende=-1
-    
+
     real, dimension(1:200),save :: pLabField, sigmaField!, derivativeField
 
     logical, save :: initFlag=.true.
@@ -546,7 +546,7 @@ contains
     real,save :: maximalMomentum,maximalCrossSection
     integer, save :: i
     logical            :: success
-    integer            :: error 
+    integer            :: error
     real, optional     :: minPlab,minSig
 
 
@@ -570,7 +570,7 @@ contains
     if(.not.success.and.error.gt.0.and.counter_CLerror.lt.100) then
        call cl_error(error,' gN_NeutronPiNullPiNull',plab)
        counter_CLerror=counter_CLerror+1
-       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!' 
+       if(counter_clerror.eq.100) write(*,*) 'Now I STOP outputting this error!!!!'
     end if
 
     If(plab.gt.maximalMomentum) then
@@ -594,7 +594,7 @@ contains
   !   the two pion photoproduction cross sections. gamma nucleon -> nucleon+2pi
   !
   ! * Retrieves the lowest data point of all the parametrizations and fits a phase space curve to it.
-  ! 
+  !
   ! AUTHOR
   ! * Oliver Buss
   !
@@ -603,10 +603,10 @@ contains
   ! * srts : sqrt(s)
   !
   ! OUTPUT
-  ! * real :: sigma(1:3) 
+  ! * real :: sigma(1:3)
   !   cross sections (1=double charged, 2= single charged, 3= pi^0 pi^0)
   !
-  ! * logical, dimension(1:3), intent (out) :: inThresholdRegion   
+  ! * logical, dimension(1:3), intent (out) :: inThresholdRegion
   !   .true. if sqrt(s) is smaller than lowest data point in the channel (1=double charged, 2= single charged, 3= pi^0 pi^0)
   !*******************************************************************************************************
   subroutine thres2pi(srts,sigma,qnuk,inThresholdRegion)

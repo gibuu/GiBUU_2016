@@ -24,12 +24,12 @@ module thermoDynamics
   ! * 2=the full procedure
   !***********************************************************************
 
-  
+
   !***********************************************************************
-  !****g*  thermoDynamics/linearExtrapolation               
+  !****g*  thermoDynamics/linearExtrapolation
   ! SOURCE
   !
-  logical,save :: linearExtrapolation=.true. 
+  logical,save :: linearExtrapolation=.true.
   !
   ! PURPOSE
   ! * .true.= Use linear extrapolation for temperature between gridPoints
@@ -45,7 +45,7 @@ module thermoDynamics
 Contains
 
   subroutine init
-    
+
     use output, only: Write_ReadingInput
     use densityModule, only: getGridPoints
 
@@ -188,7 +188,7 @@ Contains
                   end do !loop over Index1
                end do !loop over Index2
             end do !!loop over Index3
-         end do !"End do" over all particles in one ensemble 
+         end do !"End do" over all particles in one ensemble
       end do !"End do" over ensembles
 
     end subroutine evaluatePSquared
@@ -298,10 +298,10 @@ Contains
       real :: factor
 
       !The point "r" where the temperature should be calculated
-      !is sitting in a 3D-box with lowest corner "LowIndex" on the 
+      !is sitting in a 3D-box with lowest corner "LowIndex" on the
       !density grid. We first construct this point. Then all other corners of the 3D-box
       !are constructed.
-      !In the end a simple linear extrapolation is used to make the density smooth 
+      !In the end a simple linear extrapolation is used to make the density smooth
       !inside the box.
 
       ! (1.) Construct Lowest lying point (most negative point!)
@@ -324,9 +324,9 @@ Contains
       ! (3.) Do linear extrapolation
       extrapolate=0.
       Do i=0,7
-         gridPos(1:3)=grid(i,1:3)*gridSpacing(1:3) !position of grid point 
+         gridPos(1:3)=grid(i,1:3)*gridSpacing(1:3) !position of grid point
          factor=1.  !evaluate weight for linear extrapolation for each grid point
-         Do j=1,3                            
+         Do j=1,3
             factor=factor*Abs(gridSpacing(j)-Abs(r(j)-gridPos(j)))/gridspacing(j)
          End do
          If ((Abs(grid(i,1)).le.gridPoints(1)).and.(Abs(grid(i,2)).le.gridPoints(2))&
@@ -426,14 +426,14 @@ Contains
       If (debugFlag) then
          Open(10,File='Temperature.dat')
          Write(10,*) '# rho[fm^-3],<p^2>/rho,temperature[GeV]'
-         Do i=1,maxIndex_Rho 
-            Do j=0,maxIndex_p2av 
-               Write(10,*) i*delta_Rho*rhoNull,j*delta_p2av,temsave(i,j) 
+         Do i=1,maxIndex_Rho
+            Do j=0,maxIndex_p2av
+               Write(10,*) i*delta_Rho*rhoNull,j*delta_p2av,temsave(i,j)
             End do
          End do
          close(10)
       end if
-      
+
       init=.false.
 
     end subroutine initTempe
@@ -492,7 +492,7 @@ Contains
   ! real function integral(temperature,mu,Switch)
   ! PURPOSE
   ! Evaluates for a gas of degenerate neutrons and protons of given "temperature" and
-  ! given chemical potential "mu" the following: 
+  ! given chemical potential "mu" the following:
   ! Switch=1 : rho=<1>=4*Integral(1/1+exp((E(p)-mu)/T) (dp)**3)/(2pi)**3   over the full p-space.
   ! Switch=2 : <p**2>=4*Integral(p**2/1+exp((E(p)-mu)/T) (dp)**3)/(2pi)**3  over the full p-space.
   ! The first Factor of 4 is due to spin&isospin degeneracy.
@@ -510,7 +510,7 @@ Contains
     real :: eps              ! energy
 
     integer np !number of points for integral
-    integer i  
+    integer i
     real :: p, value
 
     ! Cut-off for integral

@@ -5,7 +5,7 @@
 !
 ! PURPOSE
 ! Includes the spectral functions of the mesons.
-! 
+!
 ! NOTES
 ! Public routines: specFuncMes.
 !*****************************************************************************

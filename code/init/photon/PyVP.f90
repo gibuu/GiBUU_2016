@@ -4,12 +4,12 @@
 ! module PyVP
 !
 ! PURPOSE
-! [Py]thia and [V]irtual [P]hotons: 
+! [Py]thia and [V]irtual [P]hotons:
 ! some routines for gamma* p with PYTHIA 6.x
-! 
+!
 ! NOTES
 ! * KG, 12.12.07:
-!   The lines concerning fT and eps marked with "!######" should be 
+!   The lines concerning fT and eps marked with "!######" should be
 !   checked and be consistent with the definitions in initHiLepton.f90
 ! * This was originally PyVP.F, 18.10.2001...25.4.2005, and is now
 !   rewritten in F90
@@ -92,7 +92,7 @@ contains
   ! PURPOSE
   ! STEP (4) of the initialization: Initialize Pythia
   !
-  ! Some default parameters and CKIN-parameters are set 
+  ! Some default parameters and CKIN-parameters are set
   ! and PYINIT will be called.
   !
   ! After calling this function, you are able to call PYEVNT without any
@@ -104,7 +104,7 @@ contains
   ! * logical :: DoFrag -- ???
   ! * integer :: Print1 -- ???
   ! * logical :: DoDifr -- ???
-  ! 
+  !
   ! NOTES
   ! * BEWARE: the cuts on the PYTHIA-values x and Q2 cannot be exact.
   !***************************************************************************
@@ -124,22 +124,22 @@ contains
     integer MSTU,MSTJ
     double precision PARU,PARJ
     SAVE /PYDAT1/
-    
+
     COMMON/PYDAT3/MDCY(500,3),MDME(8000,2),BRAT(8000),KFDP(8000,5)
     integer MDCY,MDME,KFDP
     double precision BRAT
     SAVE /PYDAT3/
-    
+
     COMMON/PYJETS/N,NPAD,K(4000,5),P(4000,5),V(4000,5)
     integer N,NPAD,K
     double precision P,V
     SAVE /PYJETS/
-    
+
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
     integer MSEL,MSELPD,MSUB,KFIN
     double precision CKIN
@@ -165,7 +165,7 @@ contains
     endif
     call PYNAME(KFi,Buf)
     write(cTarget,102) Buf(1:10)
-102 FORMAT (A)      
+102 FORMAT (A)
 
     ! set some default
 
@@ -196,7 +196,7 @@ contains
 
     CKIN(61) = x
     CKIN(62) = x * 1.001d0
-    
+
     CKIN(65) = Q2
     CKIN(66) = Q2 * 1.001d0
 
@@ -233,7 +233,7 @@ contains
     ! Initialize Pythia
 
     call PYINIT('3MOM', cBeam, cTarget, eNev%lepton_in%momentum(0))
-    
+
   end subroutine InitPythia
 
 
@@ -246,7 +246,7 @@ contains
   ! PURPOSE
   ! Collect the cross sections for single processes
   !
-  ! The array XS will be filled with the cross sections of 
+  ! The array XS will be filled with the cross sections of
   ! the processes listed in iXS. N is the maximal number of listable
   ! processes (as input), but also the number of processes as output.
   ! If file!=0 also output is written to file.
@@ -260,54 +260,54 @@ contains
   !
   ! OUTPUT
   ! * real :: XS(*) -- ???
-  ! 
+  !
   !***************************************************************************
   subroutine CollectXS_process(N,iXS,XS, file)
     integer file, N, iXS(*)
     double precision XS(*)
-      
-    
+
+
     COMMON/PYINT1/MINT(400),VINT(400)
     integer MINT
     double precision VINT
     SAVE /PYINT1/
-    
+
     COMMON/PYINT5/NGENPD,NGEN(0:500,3),XSEC(0:500,3)
     integer NGENPD,NGEN
     double precision XSEC
     SAVE /PYINT5/
-    
+
     COMMON/PYINT6/PROC(0:500)
     CHARACTER PROC*28
     SAVE /PYINT6/
-    
+
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
     integer MSEL,MSELPD,MSUB,KFIN
     double precision CKIN
     SAVE /PYSUBS/
-    
+
     integer i,i1
 
     IF(MINT(121).GT.1) CALL PYSAVE(5,0) ! ?????
-    
+
     do i=0,500
        if (i.eq.0 .or. MSUB(i).eq.1) then
           i1=i1+1
           if (i1.gt.N) stop
           iXS(i1) = i
           XS(i1)  = XSEC(i,3)
-          
+
           if (file.gt.0) write(file,5200) iXS(i1),PROC(iXS(i1)),XS(i1)
-          
+
        endif
     enddo
     N = i1
-    
+
 5200 FORMAT (I3,1X,A28,': ',1P,D10.3,' mb')
 
   end subroutine CollectXS_process
@@ -321,8 +321,8 @@ contains
   ! PURPOSE
   ! Collect the cross sections for classes
   !
-  ! The array XS will be filled with the cross sections of 
-  ! VMD, direct, anomalous, DIS. 
+  ! The array XS will be filled with the cross sections of
+  ! VMD, direct, anomalous, DIS.
   ! If file!=0 also output is written to file.
   !
   ! This routine returns
@@ -354,24 +354,24 @@ contains
   ! The cross section is calculated with Hand convention.
   !***************************************************************************
   subroutine CollectXS_class(XS, file)
-    integer, intent(in) :: file 
+    integer, intent(in) :: file
     real ::  XS(0:4)
 
     COMMON/PYINT1/MINT(400),VINT(400)
     integer MINT
     double precision VINT
     SAVE /PYINT1/
-    
+
     COMMON/PYINT5/NGENPD,NGEN(0:500,3),XSEC(0:500,3)
     integer NGENPD,NGEN
     double precision XSEC
     SAVE /PYINT5/
-    
+
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
     integer MSEL,MSELPD,MSUB,KFIN
     double precision CKIN
@@ -387,9 +387,9 @@ contains
          &'direct * hadron             ',&
          &'anomalous * hadron          ',&
          &'DIS * hadron                '/
-    
+
     if (file.gt.0) write(file,*) '=== xSect === (corrected for cuts)'
-    
+
     fT_h = 2*Par1*VINT(319)/(VINT(320)*VINT(307))
     if (MSTP(16).EQ.0) then
        fT_h = fT_h/VINT(309)
@@ -416,22 +416,22 @@ contains
        enddo
        XS(4) = XSEC(0,3)*fac/fT_h
        XS(0) = XS(4)
-       
+
        if (file.gt.0) then
           do i=1,4
              write(file,5200) PROGP4(i),XS(i),ft_h
           enddo
           write(file,5200) PROGP4(0),XS(0),ft_h
        endif
-       
+
     else
        write (*,*) 'Ooops! Stop.'
        stop
-       
+
     endif
-    
+
 5200 FORMAT (A28,': ',1P,D10.3,' mb  ',0P,e13.4)
-    
+
   end subroutine CollectXS_class
 
 !!$  !***************************************************************************
@@ -443,7 +443,7 @@ contains
 !!$  ! Collect the cross sections for classes
 !!$  !
 !!$  ! The array NG will be filled with the number of gen. events of
-!!$  ! VMD, direct, anomalous, DIS. 
+!!$  ! VMD, direct, anomalous, DIS.
 !!$  ! If file!=0 also output is written to file.
 !!$  !
 !!$  ! cf. "CollectXS_class"
@@ -457,24 +457,24 @@ contains
 !!$  ! * see above
 !!$  !***************************************************************************
 !!$  subroutine CollectNG_class(NG, file)
-!!$    integer file 
+!!$    integer file
 !!$    double precision NG(0:4,0:2)
 !!$
 !!$    COMMON/PYINT1/MINT(400),VINT(400)
 !!$    integer MINT
 !!$    double precision VINT
 !!$    SAVE /PYINT1/
-!!$    
+!!$
 !!$    COMMON/PYINT5/NGENPD,NGEN(0:500,3),XSEC(0:500,3)
 !!$    integer NGENPD,NGEN
 !!$    double precision XSEC
 !!$    SAVE /PYINT5/
-!!$    
+!!$
 !!$    COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
 !!$    integer MSTP,MSTI
 !!$    double precision PARP,PARI
 !!$    SAVE /PYPARS/
-!!$    
+!!$
 !!$    integer i,j
 !!$
 !!$    CHARACTER PROGP4(0:4)*28
@@ -489,18 +489,18 @@ contains
 !!$       NG(0,0) = 0d0
 !!$       NG(0,1) = 0d0
 !!$       NG(0,2) = 0d0
-!!$       
+!!$
 !!$       do i=1,4
 !!$          call PYSAVE(3,i)
 !!$          NG(i,0) = NGEN(0,3) + 1d-20
 !!$          NG(0,0) = NG(0,0)+NG(i,0)
 !!$       enddo
-!!$       
+!!$
 !!$       do i=1,4
 !!$          call CalcMCError(NG(0,0),NG(i,0),NG(i,1),NG(i,2))
 !!$       enddo
-!!$       
-!!$       
+!!$
+!!$
 !!$       if (file.gt.0) then
 !!$          write(file,*) '=== NGEN === (with stat. errors)'
 !!$          do i=1,4
@@ -512,9 +512,9 @@ contains
 !!$       write (*,*) 'CollectNG_class:Ooops! Stop.'
 !!$       stop
 !!$    endif
-!!$    
+!!$
 !!$5200 FORMAT (A28,': ',1P,D10.3,' [+ ',D10.3,',- ',D10.3,']')
-!!$    
+!!$
 !!$  end subroutine CollectNG_class
 
 
@@ -522,11 +522,11 @@ contains
   !****s* PyVP/ScaleVMD
   ! NAME
   ! subroutine ScaleVMD(xVMD)
-  ! 
+  !
   ! PURPOSE
-  ! Scale the VMD coupling constants: 
+  ! Scale the VMD coupling constants:
   ! f_V^2/4pi -> f_V^2/4pi / x
-  ! 
+  !
   ! INPUTS
   ! * real :: xVMD(4) -- ???
   ! OUTPUT
@@ -534,20 +534,20 @@ contains
   !***************************************************************************
   subroutine ScaleVMD(xVMD)
     real, intent(in) :: xVMD(4)
-      
-    
+
+
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
-    
+
     double precision PARP0(4)
     save PARP0
     logical Init
     data Init /.TRUE./
     save Init
-    
-    
+
+
     integer i
 
     !      data PARP0 /2.20d0, 23.6d0, 18.4d0, 11.5d0/
@@ -573,24 +573,24 @@ contains
   ! PURPOSE
   ! Mark lepton in PYTHIA output as "DOCUMENTATION LINE"
   ! This ensures, that the initial electron will be removed by PYEDIT
-  ! 
+  !
   !***************************************************************************
   subroutine MarkLepton
-    
+
     COMMON/PYJETS/N,NPAD,K(4000,5),P(4000,5),V(4000,5)
     integer N,NPAD,K
     double precision P,V
     SAVE /PYJETS/
-    
+
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
     integer MSTP,MSTI
     double precision PARP,PARI
     SAVE /PYPARS/
 
     integer KF0,i
-    
+
     KF0 = K(1,2)               ! the incoming lepton
-    
+
     do i=MSTI(4)+1,N          ! skip documentation
        if (K(i,3).eq.3) then
           if (K(i,2).ne.KF0 .or. K(K(i,3),2).ne.KF0) then
@@ -639,7 +639,7 @@ contains
 !!$      integer N,NPAD,K
 !!$      double precision P,V
 !!$      SAVE /PYJETS/
-!!$      
+!!$
 !!$      double precision MP_P
 !!$
 !!$      CalcT = (P(iLine,4)-MP_P(4,4))**2
@@ -696,7 +696,7 @@ contains
 !!$      iMeson = 0
 !!$      lMeson = 0
 !!$      IsItElastic = .false.
-!!$      if (N.gt.2) then 
+!!$      if (N.gt.2) then
 !!$         return
 !!$      endif
 !!$      if (K(1,2).eq.IP_KF(2)) then
@@ -716,7 +716,7 @@ contains
 !!$      elseif (K(lMeson,2).eq.443) then
 !!$         iMeson = 4
 !!$      endif
-!!$      
+!!$
 !!$      IsItElastic = (iMeson.ne.0)
 !!$
 !!$      return
@@ -752,7 +752,7 @@ contains
 !!$            if (K(i,2).eq.2101) goto 100 ! ud_0
 !!$            if (K(i,2).eq.2103) goto 100 ! ud_1
 !!$            if (K(i,2).eq.2203) goto 100 ! uu_1
-!!$            
+!!$
 !!$            write(*,*) 'Ooops, a decayed particle in line ',i,'!!!'
 !!$            call PYLIST(2)
 !!$            stop
@@ -760,7 +760,7 @@ contains
 !!$         endif
 !!$      enddo
 !!$      end
-      
+
 !!$c=================================================================
 !!$c The Conversion-Factor F_2 = F2Fac * sigma [FriSjo00]
 !!$c
@@ -803,14 +803,14 @@ contains
 !!$c
 !!$c Given the total Number of events Ntot and the number of interesting
 !!$c events N, this sets the absolute (negative and positive) errors
-!!$c dN_p and dN_m. 
+!!$c dN_p and dN_m.
 !!$c
 !!$c cf. Year 01, eq.{47.4)ff
 !!$c
 !!$      subroutine CalcMCError(Ntot, N, dN_p, dN_m)
 !!$      double precision Ntot, N, dN_p, dN_m
 !!$      double precision h0,h1,h2
-!!$      
+!!$
 !!$      h0 = Ntot/(Ntot+1)
 !!$      h1 = N+0.5d0
 !!$      h2 = sqrt(0.25d0+N-N**2/Ntot)
@@ -823,7 +823,7 @@ contains
 
 !!$  !*************************************************************************
 !!$  !****s* PyVP/CalcFlux
-!!$  ! NAME 
+!!$  ! NAME
 !!$  ! subroutine CalcFlux(Ebeam,Q2,y,x,weight,eps)
 !!$  !
 !!$  ! PURPOSE
@@ -838,16 +838,16 @@ contains
 !!$  ! OUTPUT
 !!$  ! * real :: weight -- transversal flux fT in GeV^-3
 !!$  ! * real :: eps    -- epsilon = fL/fT
-!!$  ! 
+!!$  !
 !!$  ! NOTES
-!!$  ! * the original formulae were implemented by Thomas Falter (PhD, 
+!!$  ! * the original formulae were implemented by Thomas Falter (PhD,
 !!$  !   eq.(3.15),(3.16)). We modified and corrected them.
 !!$  ! * we are now trying to supersede those by a "low-W/low-Q2" expression.
 !!$  ! * The equivalent photon energies are (we use the Hand convention)
 !!$  !     K = (W^2-M^2)/2M = (1-x)*nu = (1-x)*y*Ebeam  [Hand]
 !!$  !     K = sqrt[nu^2+Q^2] [Gilman]
 !!$  ! * The MC random variables are nu and Q2. Unfortunatly, in older code versions,
-!!$  !   the returned flux corresponds to the definition of d\sigma/dy dQ^2 (y=nu/E) 
+!!$  !   the returned flux corresponds to the definition of d\sigma/dy dQ^2 (y=nu/E)
 !!$  !   and is therefore only correct up to a factor E^2. ?????????????
 !!$  !
 !!$  !*************************************************************************
@@ -879,7 +879,7 @@ contains
 !!$    cT = cL + y**2
 !!$    weight = alphaQED/twopi * K/(Q2*nu**2) * cT
 !!$    eps = cL/cT
-!!$    
+!!$
 !!$
 !!$  end subroutine CalcFlux
 

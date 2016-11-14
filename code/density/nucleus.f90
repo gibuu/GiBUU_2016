@@ -5,7 +5,7 @@
 !
 ! PURPOSE
 ! Provides access to the projectile and target nuclei.
-! 
+!
 ! INPUTS
 ! Namelists "target" and "projectile".
 !*******************************************************************************
@@ -152,7 +152,7 @@ contains
   ! INPUTS
   ! * NONE
   ! OUTPUT
-  ! * type(nucleus) :: getTarget 
+  ! * type(nucleus) :: getTarget
   !*****************************************************************************
   function getTarget()
     use nucleusDefinition
@@ -174,7 +174,7 @@ contains
   ! INPUTS
   ! * NONE
   ! OUTPUT
-  ! * type(nucleus) :: getProjectile 
+  ! * type(nucleus) :: getProjectile
   !*****************************************************************************
   function getProjectile()
     use nucleusDefinition
@@ -230,15 +230,15 @@ contains
     !
     integer,save :: densitySwitch_static=3
     ! PURPOSE
-    ! This switch is important, because it decides, which static density is 
+    ! This switch is important, because it decides, which static density is
     ! used to set up the testparticles in the nuclei before the first
-    ! time-step. 
-    ! 
+    ! time-step.
+    !
     ! Possible values:
     ! * 0 : density=0.0
     ! * 1 : Static density uses Woods-Saxon according to H. Lenske
-    ! * 2 : Static density according to NPA 554  
-    ! * 3 : Static density according to Horst Lenske, 
+    ! * 2 : Static density according to NPA 554
+    ! * 3 : Static density according to Horst Lenske,
     !   implements different radii for neutrons and protons
     ! * 4 : Static density according oscillator shell model
     ! * 5 : Density distribution is a sphere with density according to the
@@ -247,14 +247,14 @@ contains
     ! * 7 : Static Density based on LDA + Welke potential
     ! * 8 : Static Density prescription according Relativistic Thomas-Fermi
     !       (Valid only in RMF-mode)
-    ! 
+    !
     ! Possible nuclei for the different prescriptions:
     ! * 1 : A > 2 (only A > 16 makes sense)
-    ! * 2 : 
-    ! * 3 : 
+    ! * 2 :
+    ! * 3 :
     !   6->C(12), 8->O(16),O(18), 13->Al(27), 20->Ca(40),Ca(44), 79->Au(197)
     !   82->Pb(208)
-    ! * 4: 2->He(4), 4->Be(9), 5->B(11), 6->C(12), 8->O(16)    
+    ! * 4: 2->He(4), 4->Be(9), 5->B(11), 6->C(12), 8->O(16)
     !***************************************************************************
 
     !***************************************************************************
@@ -270,7 +270,7 @@ contains
     !****n* initProjectile/projectile
     ! NAME
     ! NAMELIST /projectile/
-    ! 
+    !
     ! PURPOSE
     ! Includes the input parameters for the projectile nucleus:
     ! * Projectile_A
@@ -291,7 +291,7 @@ contains
     read(5,nml=projectile,iostat=ios)
 
     if (projectile_A<=0 .and. projectile_Z>=0 .and. projectile_Z<=Zmax) projectile_A = defaultIsotope (projectile_Z)
-    
+
     call Write_ReadingInput('projectile',0,ios)
     write(*,*) 'A=',Projectile_A,' Z=',Projectile_Z
     write(*,*) 'fermiMotion=', fermiMotion
@@ -366,17 +366,17 @@ contains
     !****g* initTarget/densitySwitch_static
     ! SOURCE
     !
-    integer,save :: densitySwitch_static=3  
+    integer,save :: densitySwitch_static=3
     ! PURPOSE
-    ! This switch is important, because it decides, which static density is 
+    ! This switch is important, because it decides, which static density is
     ! used to set up the testparticles in the nuclei before the first
-    ! time-step. 
-    ! 
+    ! time-step.
+    !
     ! Possible values:
     ! * 0 : density=0.0
     ! * 1 : Static density uses Woods-Saxon according to H. Lenske
-    ! * 2 : Static density according to NPA 554  
-    ! * 3 : Static density according to Horst Lenske, 
+    ! * 2 : Static density according to NPA 554
+    ! * 3 : Static density according to Horst Lenske,
     !   implements different radii for neutrons and protons
     ! * 4 : Static density according oscillator shell model
     ! * 5 : Density distribution is a sphere with density according to the
@@ -388,12 +388,12 @@ contains
     !
     ! Possible nuclei for the different prescriptions:
     ! * 1 : A > 2 (only A > 16 makes sense)
-    ! * 2 : Be (9), C(12), O(16,18), Al(27), Ca(40), Ca(44), Fe(56), Cu(63), As(75), Ce(142), Sn(112, 116,120,124), 
+    ! * 2 : Be (9), C(12), O(16,18), Al(27), Ca(40), Ca(44), Fe(56), Cu(63), As(75), Ce(142), Sn(112, 116,120,124),
     !       Ta(181), Au(197), Pb(208)    see densityStatic.f90   subroutine denspar for more info
-    ! * 3 : 
+    ! * 3 :
     !   6->C(12), 8->O(16),O(18), 13->Al(27), 20->Ca(40),Ca(44), 79->Au(197)
     !   82->Pb(208)
-    ! * 4: 2->He(4), 4->Be(9), 5->B(11), 6->C(12), 8->O(16)    
+    ! * 4: 2->He(4), 4->Be(9), 5->B(11), 6->C(12), 8->O(16)
     !***************************************************************************
 
     !***************************************************************************
@@ -413,10 +413,10 @@ contains
     ! PURPOSE
     ! If this flag is set to true, we use the selected density distribution
     ! only for a preliminary step, where we calculate the baryonic potential
-    ! as function of r (which depends on the density distribution). 
-    ! From the condition, that the binding energy has to be constant, we 
-    ! deduce the distribution of the fermi momentum and thus the 'new' 
-    ! density distribution. 
+    ! as function of r (which depends on the density distribution).
+    ! From the condition, that the binding energy has to be constant, we
+    ! deduce the distribution of the fermi momentum and thus the 'new'
+    ! density distribution.
     !
     ! The tabulated density distribution is replaced via the 'new' one
     ! and all behaviour is as usual.
@@ -430,14 +430,14 @@ contains
     ! PURPOSE
     ! if 'ReAdjustForConstBinding' equals true, we a trying to readjust
     ! the fermi momentum and the density such, we quarantee this value
-    ! for the binding energy. 
+    ! for the binding energy.
     !***************************************************************************
 
     !***************************************************************************
     !****n* initTarget/target
     ! NAME
     ! NAMELIST /target/
-    ! 
+    !
     ! PURPOSE
     ! Includes the input parameters for the target nucleus:
     ! * Target_A    ---  mass of nucleus
@@ -454,7 +454,7 @@ contains
     integer :: ios
 
     if (.not.targetNuc%DoInit) return
-    
+
     call Write_ReadingInput('target',0)
     rewind(5)
     read(5,nml=target,iostat=ios)
@@ -475,9 +475,9 @@ contains
     targetNuc%charge = Target_Z
     targetNuc%fermiMotion=fermiMotion
     targetNuc%densitySwitch_static=densitySwitch_static
-    
+
     if (Target_A == 1) ReAdjustForConstBinding = .false.
-    
+
     if (ReAdjustForConstBinding) then
        write(*,*)
        write(*,*) 'We us the initial density distribution only'
@@ -494,7 +494,7 @@ contains
 
     targetNuc%ReAdjustForConstBinding = ReAdjustForConstBinding
     targetNuc%ConstBinding = ConstBinding
-    
+
 
     call InitNucleus(targetNuc,fermiMomentum_input)
 
@@ -533,14 +533,14 @@ contains
 
     type(tNucleus), pointer :: Nuc
     real,intent(in) :: fermiMomentum_input
-    real :: radius,surface,density 
+    real :: radius,surface,density
 
     if (Nuc%charge > Nuc%mass) then
       write(*,*) 'Wrong nucleus in the input:'
       write(*,*) 'A, Z: ', Nuc%mass, Nuc%charge
       write(*,*) 'STOP'
       stop
-    end if       
+    end if
 
     select case(nuc%densitySwitch_static)
     case(5)

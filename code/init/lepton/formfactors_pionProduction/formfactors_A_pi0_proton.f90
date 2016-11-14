@@ -1,7 +1,7 @@
 !***************************************************************************
-!****m* /formfactors_A_piZero_proton 
+!****m* /formfactors_A_piZero_proton
 ! NAME
-! module formfactors_A_piZero_proton 
+! module formfactors_A_piZero_proton
 !
 ! PURPOSE
 ! This module reads in the form factors for gamma* N -> N pi out of text files
@@ -12,7 +12,7 @@
 ! INPUTS
 ! None
 !***************************************************************************
-module formfactors_A_piZero_proton 
+module formfactors_A_piZero_proton
   implicit none
 
   private
@@ -26,7 +26,7 @@ module formfactors_A_piZero_proton
   character(60) :: modName='formfactors_A_pi0_proton'
 
   ! Fields to save the grid obtained by MAID (initialized at first call):
-  complex, save , dimension(:,:), Allocatable :: A                   ! The amplitude field 
+  complex, save , dimension(:,:), Allocatable :: A                   ! The amplitude field
   real,    save , dimension(:)  , Allocatable :: W, theta, Q2, s, t  ! Fields to store W,theta,q^2,s and t
 
 contains
@@ -40,12 +40,12 @@ contains
   ! This function returns the invariant Amplitudes A_1, ... A_6 of the MAID analysis.
   !
   ! INPUTS
-  ! * real  ::  thetaIn    ! Theta scattering angle of the pion relative to q in the CM system of the hadronic vertex 
+  ! * real  ::  thetaIn    ! Theta scattering angle of the pion relative to q in the CM system of the hadronic vertex
   ! * real  ::  QSquaredIn ! Q^2=-q^mu q_mu  of the gamma
   ! * real  ::  sIn        ! Mandelstam s of the hadronic vertex: gamma* N-> pi N
   ! OUTPUT
-  ! complex, dimension(1:6) :: getA   ! The complex amplitudes A_1 to A_6 in units of: 
-  ! * [GeV**-2] for A(1) 
+  ! complex, dimension(1:6) :: getA   ! The complex amplitudes A_1 to A_6 in units of:
+  ! * [GeV**-2] for A(1)
   ! * [GeV**-4] for A(2) and A(5)
   ! * [GeV**-3] for A(3), A(4) and A(5)
   !*************************************************************************
@@ -97,7 +97,7 @@ contains
        theta_cube=theta(n_index)
        w_cube=w(n_index)
        q2_cube=q2(n_index)
-       do 
+       do
           getA=0.
           factorsum=0
           do i=1,8
@@ -131,8 +131,8 @@ contains
     end if
 
 
-    ! (4) Debugging output 
-    if(debug) then 
+    ! (4) Debugging output
+    if(debug) then
        write(*,'(A,F12.5)') 's=',sIn
        write(*,'(A,F12.5)') 'W=',sqrt(sIN)
        write(*,'(A,2F12.5)') 'Q^2=',qSquaredIn,Qin2
@@ -160,7 +160,7 @@ contains
     ! PURPOSE
     ! Evaluates index which corresponds to the grid point which lies closest to the input values:
     ! * For int_nint_switch=.false. it's the overall closest point
-    ! * For int_nint_switch=.true.  it's the closest point which is also in all dimensions closer to 0 than the input point.  
+    ! * For int_nint_switch=.true.  it's the closest point which is also in all dimensions closer to 0 than the input point.
     !*************************************************************************
     integer function get_i(tin,Win,Qin,int_nint_switch)
       real, intent(in) :: Tin,Win,Qin
@@ -179,7 +179,7 @@ contains
       t_index=min(max(1,t_index),numsteps_t)
       w_index=min(max(0,w_index),numsteps_w)
       q_index=min(max(0,q_index),numsteps_q)
-      
+
       ! Loop order is : q,w ,t . Therefore:
       get_i=q_index*numSteps_t*numSteps_w+w_index*numSteps_t+t_index
 
@@ -197,7 +197,7 @@ contains
     ! function get_neighbors(tin,Win,Qin)
     !
     ! PURPOSE
-    ! Returns the eight grid points which are defining the smallest cube in which the input 
+    ! Returns the eight grid points which are defining the smallest cube in which the input
     ! point (tin,win,Qin) can be locked into. These are the neighboring grid-points of our
     ! input point.
     ! OUTPUT
@@ -255,8 +255,8 @@ contains
          qin_new=qin
       end if
 
-      
-      ! (2) get neighbors 
+
+      ! (2) get neighbors
       do i=0,1
          do j=0,1
             do k=0,1
@@ -276,7 +276,7 @@ contains
     ! Reads in the MAID input file, writes into FF_A.dat the control output. It expects an input file with the following format:
     ! * first some comment lines (doesn't matter how many)
     ! * Data lines with the following order : W, ThetaCM , Q^2 ,s ,t, Re(A_1), Im(A_1),...Re(A_6), Im(A_6)
-    ! 
+    !
     ! The loop structure to generate this input file should be :
     ! * thetaCM-Loop, W-Loop, Q^2-Loop
     !
@@ -307,7 +307,7 @@ contains
       numsteps_q=1
       numsteps_w=1
       i=1
-      do 
+      do
          if (i<2) ll = 0
          call bzReadLine(f,line,ll)
          if (ll==0) cycle
@@ -318,7 +318,7 @@ contains
             ! Start determine grid spacings
             IF(i.eq.1) then
                w_max=WREAD(i)
-               theta_max= ThetaREAD(i) 
+               theta_max= ThetaREAD(i)
                q2_max=  Q2READ(i)
             else IF(i.gt.1) then
                if(WREAD(i)-W_max.gt.0.000001) then
@@ -380,8 +380,8 @@ contains
       if(debug) then
          ! Control output
          open(101,file='FF_A_pi0_proton.dat')
-         do i= lBound(A,dim=2),uBound(A,dim=2)         
-            write(100+1,'(17E12.4)')     W(i), Theta(i) , Q2(i) ,s(i) ,t(i), (A(k,i),k=1,6)   
+         do i= lBound(A,dim=2),uBound(A,dim=2)
+            write(100+1,'(17E12.4)')     W(i), Theta(i) , Q2(i) ,s(i) ,t(i), (A(k,i),k=1,6)
          end do
          close(101)
       end if

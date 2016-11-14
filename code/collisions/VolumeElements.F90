@@ -13,7 +13,7 @@
 ! (none)
 !***************************************************************************
 module VolumeElements
-  
+
   use particleDefinition
   use particlePointerListDefinition
   use particlePointerList
@@ -83,7 +83,7 @@ module VolumeElements
   ! This value is automatically adjusted in the INIT routine by looking
   ! at inputGeneral/eventType
   !*************************************************************************
-  
+
   integer, dimension(3) :: iPart
   type(tParticleListNode), POINTER :: pPert, pReal
 
@@ -105,7 +105,7 @@ module VolumeElements
   PUBLIC:: VolumeElements_boxSize
   PUBLIC:: VolumeElements_NukSearch
   PUBLIC:: VolumeElements_3Body
-  
+
   logical, save :: initFlag=.true.
 
 
@@ -148,6 +148,7 @@ contains
   ! hard wired. maybe some more sophisticated init should be realized.
   !*************************************************************************
   subroutine VolumeElements_INIT()
+    use densityModule, only: gridsize
     use inputGeneral, only: eventType
     use EventTypes
 
@@ -158,16 +159,21 @@ contains
     select case(eventType)
     case(InABox,InABox_pion,InABox_delta,PionBox)
        boxshift = 0.5
+
+       tVE%Range(:,1) = -gridsize(:) ! lower bound
+       tVE%Range(:,2) =  gridsize(:) ! upper bound
+
+    case default
+       tVE%Range(1,1:2) = (/-40., 40./) ! x-Range
+       tVE%Range(2,1:2) = (/-40., 40./) ! y-Range
+       tVE%Range(3,1:2) = (/-40., 40./) ! z-Range
+
     end select
 
-    
+
 !    tVE%Delta = (/0.25,0.25,0.25/) ! x-, y-, z-Binning
     tVE%Delta = (/0.50,0.50,0.50/) ! x-, y-, z-Binning
 !    tVE%Delta = (/1.00,1.00,1.00/) ! x-, y-, z-Binning
-
-    tVE%Range(1,1:2) = (/-40., 40./) ! x-Range
-    tVE%Range(2,1:2) = (/-40., 40./) ! y-Range
-    tVE%Range(3,1:2) = (/-40., 40./) ! z-Range
 
     do i=1,3
        tVE%iRange(i,1:2) = nint(tVE%Range(i,1:2)/tVE%Delta(i)+boxshift)
@@ -176,15 +182,19 @@ contains
     end do
 
     write(*,'(79("#"))')
-    write(*,*) ' tVE-Size   = ',&
-         & (tVE%iRange(1,2)-tVE%iRange(1,1))* &
-         & (tVE%iRange(2,2)-tVE%iRange(2,1))* &
-         & (tVE%iRange(3,2)-tVE%iRange(3,1))
+    write(*,'(A,3f9.4)') '  VE: Delta  = ',tVE%Delta
+    write(*,'(A,6f9.4)') '  VE: Range  = ',tVE%Range
+    write(*,'(A,6i9)')   '  VE: iRange = ',tVE%iRange
+    write(*,*) ' VE: Size   = ',&
+         (tVE%iRange(1,2)-tVE%iRange(1,1))* &
+         (tVE%iRange(2,2)-tVE%iRange(2,1))* &
+         (tVE%iRange(3,2)-tVE%iRange(3,1)), &
+         ' Entries'
     write(*,'(79("#"))')
 
     ALLOCATE(tVE%VE_real(tVE%iRange(1,1):tVE%iRange(1,2),&
-         & tVE%iRange(2,1):tVE%iRange(2,2),&
-         & tVE%iRange(3,1):tVE%iRange(3,2)))
+         tVE%iRange(2,1):tVE%iRange(2,2),&
+         tVE%iRange(3,1):tVE%iRange(3,2)))
 
     do k=tVE%iRange(3,1),tVE%iRange(3,2)
        do j=tVE%iRange(2,1),tVE%iRange(2,2)
@@ -468,9 +478,9 @@ contains
     integer, dimension(-1:201) :: histCollRR, histCollPR
 
     real :: NN(0:2)
-    
+
     NN = 0.0
-    
+
     hh = (tVE%iRange(1,2)-tVE%iRange(1,1)) * (tVE%iRange(2,2)-tVE%iRange(2,1))
 
     histPartR = 0
@@ -494,8 +504,8 @@ contains
           end do
        end do
     end do
-    
-    
+
+
     write(*,*) NN
     if (NN(0) > 0) then
        NN(1)=NN(1)/NN(0)
@@ -513,7 +523,7 @@ contains
 !!$    write(411,*)
 
 
-    
+
     do k=tVE%iRange(3,1),tVE%iRange(3,2)
        if (.not.tVE%zCoordFilled_pert(k)) then
           histPartP(-1) = histPartP(-1) + hh
@@ -675,7 +685,7 @@ contains
 
   end function FindNextVE_RealReal
 
-  
+
   !*************************************************************************
   !****s* VolumeElements/VolumeElements_InitGetPart_RealPert
   ! NAME
@@ -690,7 +700,7 @@ contains
   !*************************************************************************
   subroutine VolumeElements_InitGetPart_RealPert
     use callstack, only: traceBack
-    
+
     NULLIFY(pPert,pReal)
     iPart(1:2) = tVE%iRange(1:2,2) ! really start with max value
     iPart(3) = tVE%iRange(3,1)-1
@@ -726,7 +736,7 @@ contains
   end subroutine VolumeElements_InitGetPart_RealReal
 
 
-  
+
 #ifdef f95
 #define LOCcmd pointer
 #elif defined nagfor
@@ -1074,14 +1084,14 @@ contains
     use particlePointerList
     use particlePointerListDefinition
     use callstack, only: traceBack
-    
+
     type(tDecay3Body), intent(in) :: Decay3Body
     integer, intent(in) :: isSameBool
     logical, intent(inOut) :: doInit
     integer, intent(out), dimension(1:3) :: iEns,iInd
     type(particle), POINTER, intent(OUT) :: Part1, Part2, Part3
     real, intent(out) :: scaleFak ! see also FindFirst3
-    
+
     type(tParticleList), save :: L1, L2, L3
 
     type(tParticleListNode), POINTER, save :: pNode1, pNode2, pNode3
@@ -1098,7 +1108,7 @@ contains
        iPart(3) = tVE%iRange(3,1)-1
        doInit = .false.
     end if
-    
+
     loop1: do
 !       write(*,*) 'loop1'
        if (.not.ASSOCIATED(pReal)) then
@@ -1115,19 +1125,19 @@ contains
 
        if (FindSecond3()) exit loop1 ! exit the loop
        NULLIFY(pReal)
-       
+
     end do loop1
 
     call GetEnsInd( Part1, iEns(1), iInd(1) )
     call GetEnsInd( Part2, iEns(2), iInd(2) )
     call GetEnsInd( Part3, iEns(3), iInd(3) )
-    
+
     scaleFak = scaleFak_
-    
+
     VolumeElements_3Body = .true.
     return
 
-    
+
   contains
     !***************************************************************************
     !****if* VolumeElements_3Body/FindFirst3
@@ -1158,9 +1168,9 @@ contains
       type(tParticleListNode), POINTER :: pNode
       type(particle), POINTER :: pP
       integer :: nPossible, nMax, nMin
-      
+
 !      write(*,*) 'FindFirst'
-      
+
       FindFirst3 = .false.
 
       scaleFak_ = 0.0 ! set default return value
@@ -1170,7 +1180,7 @@ contains
       call ParticleList_CLEAR(L3)
 
       ! iterate over all particles in the cell, build up L1,L2,L3:
-      
+
       pNode => pReal
       do
          if (.not.ASSOCIATED(pNode)) exit
@@ -1207,7 +1217,7 @@ contains
       end if
 
       ! calculate combinatorical factors:
-      
+
       select case (isSameBool)
       case (0) ! -- all particles different
          nPossible = L1%nEntries*L2%nEntries*L3%nEntries
@@ -1228,7 +1238,7 @@ contains
       if (nPossible==0) then
          return  ! --> failure
       end if
-      
+
       nMax = min(nMax,nPossible)
       nMin = min(nMin,nPossible)
 
@@ -1239,13 +1249,13 @@ contains
       if (nDo <= 0) then
          return  ! --> failure
       end if
-      
+
       scaleFak_ = real(nPossible) / nDo
 
 !      write(*,'(4(A,i4,"  "),A,f9.3)') 'nPossible=',nPossible,'nDo=',nDo,'nMin=',nMin,'nMax=',nMax,'scaleFak=',scaleFak_
-      
+
       ! set pointer to particle 1:
-      
+
       pNode1 => L1%first
       Part1 => pNode1%V
 
@@ -1262,7 +1272,7 @@ contains
 
       ! set pointer to particle 3:
       ! check, whether Part1/2 and Part3 point to the same particle
-      
+
       pNode3 => L3%first
       do
          if (.not.ASSOCIATED(pNode3)) return ! --> failure
@@ -1270,7 +1280,7 @@ contains
          if ((.not.ASSOCIATED(Part1,Part3)).and.(.not.ASSOCIATED(Part2,Part3))) exit ! okay
          pNode3 => pNode3%next
       end do
-      
+
       FindFirst3 = .true.
       return
 
@@ -1293,14 +1303,14 @@ contains
       FindSecond3 = .false.
 
       do while (.not.FindSecond3)
-      
+
          if (nDo==0) return ! --> failure
          nDo = nDo-1
-      
+
          pNode1 => pNode1%next
          if (.not.ASSOCIATED(pNode1)) pNode1 => L1%first
          Part1 => pNode1%V
-         
+
          pNode2 => pNode2%next
          do
             if (.not.ASSOCIATED(pNode2)) pNode2 => L2%first
@@ -1308,7 +1318,7 @@ contains
             if (.not.ASSOCIATED(Part1,Part2)) exit ! okay
             pNode2 => pNode2%next
          end do
-         
+
          pNode3 => pNode3%next
          do
             if (.not.ASSOCIATED(pNode3)) pNode3 => L3%first
@@ -1319,9 +1329,9 @@ contains
 
          FindSecond3 = CheckFound3()
       end do
-      return      
+      return
     end function FindSecond3
-    
+
     !***************************************************************************
     !****if* VolumeElements_3Body/CheckFound3()
     ! NAME
@@ -1330,7 +1340,7 @@ contains
     ! This routine checks, whether the found triple is really according the
     ! input wishes. This is necessary, since a successfully performed
     ! 3->1 collision should delete the incoming mesons.
-    ! 
+    !
     !***************************************************************************
     logical function CheckFound3()
 
@@ -1368,7 +1378,7 @@ contains
       end if
       iInd=j+1
     end subroutine GetEnsInd
-    
+
   end function VolumeElements_3Body
-  
+
 end module VolumeElements

@@ -18,14 +18,14 @@ module densitymodule
   !****g* densitymodule/densitySwitch
   ! SOURCE
   !
-  integer, save :: densitySwitch=1  
+  integer, save :: densitySwitch=1
   ! PURPOSE
-  ! This switch decides whether the density is static or dynamic during 
+  ! This switch decides whether the density is static or dynamic during
   ! the run. ("Static" makes sense only for fixed target scenarios!)
-  ! 
-  ! One can use a static density if the nucleus stays roughly in its 
+  !
+  ! One can use a static density if the nucleus stays roughly in its
   ! ground state during the collision.
-  ! 
+  !
   ! possible values:
   ! * 0: Density is set to 0.
   ! * 1: Dynamic density according to test-particle distribution.
@@ -61,7 +61,7 @@ module densitymodule
   !****g* densitymodule/gridPoints
   ! SOURCE
   !
-  integer, dimension(1:3), save, public :: gridPoints = (/30,30,30/) 
+  integer, dimension(1:3), save, public :: gridPoints = (/30,30,30/)
   ! PURPOSE
   ! Number of gridpoints in each space direction.
   !*************************************************************************
@@ -130,23 +130,23 @@ module densitymodule
   real(singlePrecision), save, Allocatable, dimension(:,:,:) :: d_scalarDensity_dsigma    ! partial derivative of the scalar density over sigma field (fm^-3/GeV)
   real,                  save, Allocatable, dimension(:,:,:) :: K_rmf, Diag_rmf, U_rmf    ! auxiliary arrays needed when RMF gradients are included
 
-  real(singlePrecision), save, Allocatable, dimension(:,:,:,:), public :: fourMomentumDensity     ! four-momentum density field (not used in propagation) 
+  real(singlePrecision), save, Allocatable, dimension(:,:,:,:), public :: fourMomentumDensity     ! four-momentum density field (not used in propagation)
 
 
   !*************************************************************************
   !****g* densitymodule/numberLargePoints
   ! SOURCE
   !
-  integer, save, public :: numberLargePoints=2 
+  integer, save, public :: numberLargePoints=2
   ! PURPOSE
-  ! Number of points which are considered to the left and right to smear 
+  ! Number of points which are considered to the left and right to smear
   ! density on
   !*************************************************************************
 
   integer, parameter,public :: smallerGridPoints=2 !number of Gridpoints in smaller grid
 
   !normalized weights for smearing
-  real, save,dimension(:,:),allocatable,public :: smearingWeights  
+  real, save,dimension(:,:),allocatable,public :: smearingWeights
 
   logical, save  :: initFlag=.true.   ! Checks whether input was already read in.
 
@@ -227,7 +227,7 @@ contains
     !***************************************************************************
     !****n* densitymodule/initDensity
     ! NAME
-    ! NAMELIST /initDensity/ 
+    ! NAMELIST /initDensity/
     ! PURPOSE
     ! Includes the input switches and variables:
     ! * densitySwitch
@@ -249,13 +249,13 @@ contains
     call Write_ReadingInput('initDensity',0,ios)
 
     write(*,'(A,I5,A)') ' Set densitySwitch to ',densitySwitch,'.'
-    
+
     targetNuc => getTarget()
     if (eventType==elementary .or. targetNuc%mass==1) then
       densitySwitch = 0
       write (*,*) 'densitySwitch is set to 0 for elementary target'
     end if
-    
+
     If (densitySwitch==3) then
        write(*,'(A)')        '   => We assume resting matter.'
        write(*,'(A,F5.3,A)') '      proton density:  ',densityInput_proton, '/fm^3.'
@@ -324,7 +324,7 @@ contains
     DeAllocate(densityField, totalDensity)
 
     if( getRMF_flag() ) then ! RMF used
-        DeAllocate(sigmaField,omegaField,rhoField,scalarDensity,d_scalarDensity_dsigma,omegaField_old, & 
+        DeAllocate(sigmaField,omegaField,rhoField,scalarDensity,d_scalarDensity_dsigma,omegaField_old, &
              & rhoField_old, baryonCurrent_old)
         if(grad_flag) then
            DeAllocate(K_rmf,Diag_rmf,U_rmf)
@@ -343,9 +343,9 @@ contains
   ! subroutine  acceptGrid(GridSpacing_x,GridSpacing_y,GridSpacing_z)
   !
   ! PURPOSE
-  ! Accepts the grid spacings and recalculates 
+  ! Accepts the grid spacings and recalculates
   ! the numbers of points in each direction. Needed for relativistic HIC,
-  ! when initial nuclei are Lorentz-contracted. Called from the module 
+  ! when initial nuclei are Lorentz-contracted. Called from the module
   ! initHeavyIon.
   !*************************************************************************
   subroutine acceptGrid(GridSpacing_x,GridSpacing_y,GridSpacing_z)
@@ -378,7 +378,7 @@ contains
 
   GridSpacing(1:3) = (/ GridSpacing_x, GridSpacing_y, GridSpacing_z /)
 
-  ! Adjust gridSize for HIC; 
+  ! Adjust gridSize for HIC;
   ! x- and y-directions: nuclei-radius + surface + 5fm
   ! z-direction in addition: (HIC) grid extension up to Pos_z = V_beam*time_max
   targetNuc => getTarget()
@@ -390,19 +390,19 @@ contains
   checkGrid(1:3) = aint( max(PosT(1:3),PosP(1:3)) )
 
   !check that nuclei will stay inside the spatial grid
-  if ( gridSize(1) < checkGrid(1) .or. gridSize(2) < checkGrid(2) .or. & 
+  if ( gridSize(1) < checkGrid(1) .or. gridSize(2) < checkGrid(2) .or. &
      & gridSize(3) < checkGrid(3) ) then
 
      write(*,*) '  nuclei partially outside of spatial grid!'
      write(*,'(A,2(F6.2,","),F6.2,A)') '  checkGrid        = (', checkGrid, ') fm'
      write(*,*) '  readjust gridSize too'
-       
+
      gridSize(1:3) = checkGrid(1:3)
 
   endif
 
   gridPoints = nint(gridSize/gridSpacing)
-  
+
   write(*,*) ' New grid parameters:'
   write(*,'(A,2(F6.2,","),F6.2,A)') '  The gridsize of the density grid is        = (', gridsize, ') fm'
   write(*,'(A,2(I6,","),I6,A)')     '  The number of gridpoints per dimension are = (', gridPoints, ') '
@@ -417,10 +417,10 @@ contains
 
   if( getRMF_flag() ) then ! RMF used
 
-      deallocate( sigmaField, omegaField, rhoField, & 
+      deallocate( sigmaField, omegaField, rhoField, &
                 & scalarDensity, d_scalarDensity_dsigma, &
                 & omegaField_old, rhoField_old, baryonCurrent_old)
- 
+
       Allocate(sigmaField(-gridPoints(1):gridPoints(1),-gridPoints(2):gridPoints(2),&
                        &  -gridPoints(3):gridPoints(3)))
       Allocate(omegaField(-gridPoints(1):gridPoints(1),-gridPoints(2):gridPoints(2),&
@@ -449,7 +449,7 @@ contains
                           &  -gridPoints(3):gridPoints(3)))
            Allocate(U_rmf(-gridPoints(1):gridPoints(1),-gridPoints(2):gridPoints(2),&
                           &  -gridPoints(3):gridPoints(3)))
-      end if 
+      end if
       if(fourMomDen_flag) then
           deallocate(fourMomentumDensity)
           Allocate(fourMomentumDensity(-gridPoints(1):gridPoints(1),&
@@ -597,10 +597,10 @@ contains
       real :: factor
 
       ! The point "r" where the density should be calculated
-      ! is sitting in a 3D-box with lowest corner "LowIndex" on the 
+      ! is sitting in a 3D-box with lowest corner "LowIndex" on the
       ! density grid. We first construct this point. Then all other corners of the 3D-box
       ! are constructed.
-      ! In the end a simple linear interpolation is used to make the density smooth 
+      ! In the end a simple linear interpolation is used to make the density smooth
       ! inside the box.
 
       ! (1.) Construct Lowest lying point (most negative point!)
@@ -624,9 +624,9 @@ contains
       interpolate = densZero
 
       Do i=0,7
-         gridPos(1:3)=grid(i,1:3)*gridSpacing(1:3) !position of grid point 
+         gridPos(1:3)=grid(i,1:3)*gridSpacing(1:3) !position of grid point
          factor=1.  ! evaluate weight for linear interpolation for each grid point
-         Do j=1,3                            
+         Do j=1,3
             factor=factor*Abs(gridSpacing(j)-Abs(r(j)-gridPos(j)))/gridspacing(j)
          End do
          If(continousBoundaries) then
@@ -659,7 +659,7 @@ contains
   ! NAME
   ! subroutine updateDensity(teilchen)
   ! PURPOSE
-  ! Updates the vector densityField which is used by densityAt and stores the 
+  ! Updates the vector densityField which is used by densityAt and stores the
   ! density of the testparticles.
   ! INPUTS
   ! * type(particle) teilchen(:,:)
@@ -673,7 +673,7 @@ contains
     type(particle),dimension(:,:),intent(in) :: teilchen
 
     !Flag that controls whether density weights are already calculated
-    logical, save :: FirstTime=.true. 
+    logical, save :: FirstTime=.true.
 
     !logical :: edgeFlag
     integer :: i,j
@@ -708,7 +708,7 @@ contains
           ! position in small grid:
           indexSmall=NINT((Teilchen(j,i)%position(1:3)/gridSpacing-float(posOrig))&
                           &*(2.*float(SmallergridPoints)+0.999999))
-          
+
           ! Test for errors:
           If       ((abs(indexSmall(1)).gt.smallergridpoints)&
                &.or.(abs(indexSmall(2)).gt.smallergridpoints)&
@@ -735,7 +735,7 @@ contains
                    index2New=index2
                    index3New=index3
                    If(continousBoundaries) then
-                      ! Implement continous boundary conditions, 
+                      ! Implement continous boundary conditions,
                       ! so every point outside the grid is attributed to a point inside.
                       if(index1.gt.gridPoints(1)) then
                          index1New=index1-2*gridPoints(1)
@@ -762,10 +762,10 @@ contains
                       !Evaluate baryon density
                       call addTodensityfield(index1new,index2new,index3new)
                       If (continousBoundaries) then
-                         ! When having continous boundaries, then every contribution 
-                         ! to a point at the edge of the grid must also be attributed 
+                         ! When having continous boundaries, then every contribution
+                         ! to a point at the edge of the grid must also be attributed
                          ! to its opposing point on the other side.
-                         !edgeFlag=.false. ! Flag which shows whether the point is actually 
+                         !edgeFlag=.false. ! Flag which shows whether the point is actually
                          ! on the edge
                          If ((Abs(Index1new).eq.gridPoints(1)).and.(Abs(Index2new).eq.gridPoints(2)) &
                               & .and.(Abs(Index3new).eq.gridPoints(3))) then
@@ -814,11 +814,11 @@ contains
                 end do !loop Index1
              end do !loop Index2
           end do !!loop Index3
-       end do !loop over all particles in one ensemble 
+       end do !loop over all particles in one ensemble
     end do !loop over ensembles
 
 
-  contains  
+  contains
 
     !***********************************************************************
 
@@ -887,9 +887,9 @@ contains
     ! NAME
     ! subroutine initDensityWeights
     ! PURPOSE
-    ! * Initializes weights which are used to evaluate the densities at the gridpoints. 
-    ! * Each particle has some coordinate off the gridpoints. Therefore it is needed to 
-    !   define weights which tell how much a particle at position r contributes to the 
+    ! * Initializes weights which are used to evaluate the densities at the gridpoints.
+    ! * Each particle has some coordinate off the gridpoints. Therefore it is needed to
+    !   define weights which tell how much a particle at position r contributes to the
     !   ith grid point. The particle are smeared with a gaussian distribution.
     ! * The width is chosen such that it is equal to the maximum of the gridspacings.
     ! INPUTS
@@ -914,29 +914,29 @@ contains
       integer :: indexLarge1,indexLarge2,indexLarge3
       integer :: small,large
       real,dimension(1:3) :: rSquare          !(distance of points on large and small grids)**2
-      real :: norm             !Normalization 
+      real :: norm             !Normalization
       integer :: i
       logical,save :: firstTime=.true.
 
       call Write_InitStatus("Smearing weights for density",0)
 
       if (.not.firstTime) call TRACEBACK("WARNING: Allocating array again !!!",-1)
-      allocate(smearingWeights(1:(2*smallergridpoints+1)**3,1:(2*numberLargepoints+1)**3)) 
+      allocate(smearingWeights(1:(2*smallergridpoints+1)**3,1:(2*numberLargepoints+1)**3))
 
       ! Set smearing width in each direction equal to the grid spacing in this direction:
 
       if (setnewsmearing) then
          smearingWidth=gridSpacing*newsmearing
-         smallerGridSpacing=GridSpacing*newsmearing/(2.*float(smallergridpoints)+1.) 
+         smallerGridSpacing=GridSpacing*newsmearing/(2.*float(smallergridpoints)+1.)
       else
          smearingWidth=gridSpacing
-         smallerGridSpacing=GridSpacing/(2.*float(smallergridpoints)+1.) 
+         smallerGridSpacing=GridSpacing/(2.*float(smallergridpoints)+1.)
       end if
 
 
       ! Check that cut off is smaller than the maximal distance of a point on which I am smearing:
-      do i = 1,3      
-         smearingLoop: do 
+      do i = 1,3
+         smearingLoop: do
             If ( (float(numberlargePoints)+0.5)*gridSpacing(i).lt.Sqrt(smearingCutoff(i)) ) then
 !!$            If(firstTime) then
 !!$               write (*,'("     ************************************************************")')
@@ -946,7 +946,7 @@ contains
 !!$               firsttime=.false.
 !!$            end if
                smearingCutOFF(i)=smearingCutOFF(i)*0.9
-            else 
+            else
                exit smearingLoop
             end if
          end do smearingLoop
@@ -1029,8 +1029,8 @@ contains
     ! NAME
     ! subroutine FillStaticDensity
     ! PURPOSE
-    ! In the case of static density, this fills the fields densityField and 
-    ! totalDensity with values of the density parametrization. Needed in 
+    ! In the case of static density, this fills the fields densityField and
+    ! totalDensity with values of the density parametrization. Needed in
     ! the case of RMF calculations and also for Coulomb potential.
     !*************************************************************************
     subroutine FillStaticDensity
@@ -1089,7 +1089,7 @@ contains
   ! NAME
   ! subroutine updateRMF(teilchen)
   ! PURPOSE
-  ! Updates the sigmaField which is needed when the propagation  
+  ! Updates the sigmaField which is needed when the propagation
   ! with the RMF is done.
   ! Updates also the baryon velocities
   ! which are needed in the subsequent updating of the baryon 4-current
@@ -1119,7 +1119,7 @@ contains
   integer, dimension(1:3) :: indexSmall
   integer :: niter
 
-  real, dimension(1:3) :: rpos 
+  real, dimension(1:3) :: rpos
   real, dimension(0:3) :: momentum
   real :: rho_lrf, pstar2, mstar, estar, pf_n, pf_p
   real :: funMax, fun, derfun, factor
@@ -1131,7 +1131,7 @@ contains
 
   if(.not.flagini .and. densitySwitch.ne.1) then
 
-     ! In the case of static density only    
+     ! In the case of static density only
      ! update particle energies (E^*'s) and velocities:
      Do j=1,Size(Teilchen,dim=1)
         Do i=1,Size(Teilchen,dim=2)
@@ -1141,7 +1141,7 @@ contains
           else If ( teilchen(j,i)%id < 0 ) then
              exit
           end If
-   
+
           call energyDeterminationRMF( teilchen(j,i) )
 
           teilchen(j,i)%velocity(1:3) = teilchen(j,i)%momentum(1:3) &
@@ -1182,7 +1182,7 @@ contains
 
     if (g_rho /= 0.0) then
        do k = 0,3
-          rhoField(:,:,:,k) = & 
+          rhoField(:,:,:,k) = &
                & a_7/g_rho*(densityField(:,:,:)%proton(k)-densityField(:,:,:)%neutron(k))
        end do
        write(*,*)' rhoField initialized'
@@ -1195,7 +1195,7 @@ contains
   end if
 
 
-  if((debug).and.(DoPR(2))) write(*,*)' Iterations to find the sigma field:' 
+  if((debug).and.(DoPR(2))) write(*,*)' Iterations to find the sigma field:'
 
   flagit = .true.
   niter = 0
@@ -1207,34 +1207,34 @@ contains
 
            scalarDensity(:,:,:) = 0.
            d_scalarDensity_dsigma(:,:,:) = 0.
-   
+
            Loop_over_ensembles_1 : Do j=1,Size(Teilchen,dim=1)
              Loop_over_particles_1 : Do i=1,Size(Teilchen,dim=2)
-    
+
                If ( teilchen(j,i)%id == 0 ) then
                   cycle Loop_over_particles_1
                else If ( teilchen(j,i)%id < 0 ) then
                   exit Loop_over_particles_1
                end If
-    
+
                If ( teilchen(j,i)%id >= pion) cycle  Loop_over_particles_1 ! Only baryons are accounted for presently
-    
+
                ! Modification factor for the coupling constants:
-               factor = ModificationFactor(teilchen(j,i)%Id,teilchen(j,i)%antiparticle)       
-    
+               factor = ModificationFactor(teilchen(j,i)%Id,teilchen(j,i)%antiparticle)
+
                ! position in large grid:
                rpos = Teilchen(j,i)%position(1:3)/gridSpacing
                posOrig=NINT(rpos)
-    
+
                if(      abs(posOrig(1)).gt.gridPoints(1) &
                   &.or. abs(posOrig(2)).gt.gridPoints(2) &
                   &.or. abs(posOrig(3)).gt.gridPoints(3) ) cycle Loop_over_particles_1
-    
+
                pstar2 = dot_product(teilchen(j,i)%momentum(1:3),teilchen(j,i)%momentum(1:3))
-    
+
                ! position in small grid:
                indexSmall=NINT((rpos-float(posOrig))*(2.*float(SmallergridPoints)+0.999999))
-    
+
                ! Test for errors:
                If       ((abs(indexSmall(1)).gt.smallergridpoints)&
                     &.or.(abs(indexSmall(2)).gt.smallergridpoints)&
@@ -1243,28 +1243,28 @@ contains
                   write(*,*) IndexSmall, 'too big, this must happen !!!'
                   stop
                end if
-    
+
                small=1+(SmallergridPoints+indexSmall(3))                               &
                     & +(SmallergridPoints+indexSmall(2))*(2*SmallerGridPoints+1)       &
                     & +(SmallergridPoints+indexSmall(1))*(2*SmallerGridPoints+1)**2
-    
+
                large=0
-    
+
                ! Smearing particle over points in Neighborhood:
                Do Index1=posOrig(1)-numberLargePoints,posOrig(1)+numberlargePoints
                   Do Index2=posOrig(2)-numberLargePoints,posOrig(2)+numberlargePoints
                      Do Index3=posOrig(3)-numberLargePoints,posOrig(3)+numberlargePoints
-    
+
                         large=large+1
-    
+
                         if(       abs(Index1).le.gridPoints(1) &
                           & .and. abs(Index2).le.gridPoints(2) &
                           & .and. abs(Index3).le.gridPoints(3) &
                           & .and. smearingWeights(small,large).gt.0. ) then
-    
+
                            mstar = teilchen(j,i)%mass + factor*g_sigma*sigmaField(Index1,Index2,Index3)
                            estar = sqrt( mstar**2 + pstar2 )
-    
+
                            scalarDensity(Index1,Index2,Index3) = scalarDensity(Index1,Index2,Index3) &
                              & + mstar/estar*smearingWeights(small,large) * factor
                            d_scalarDensity_dsigma(Index1,Index2,Index3) &
@@ -1272,16 +1272,16 @@ contains
                              & + g_sigma*pstar2/estar**3*smearingWeights(small,large) * factor**2
 
                         end if
-    
+
                      end Do
                   end Do
                end Do
-    
+
              end Do Loop_over_particles_1
            end Do Loop_over_ensembles_1
 
-       else ! Static density profiles are used:   
-    
+       else ! Static density profiles are used:
+
            do Index1 = -gridPoints(1),gridPoints(1)
              do Index2 = -gridPoints(2),gridPoints(2)
                do Index3 = -gridPoints(3),gridPoints(3)
@@ -1306,22 +1306,22 @@ contains
        end if
 
        funMax = 0.
-    
+
        if(grad_flag) then
           tmp = -(gridSpacing(3)*m_sigma/hbarc)**2/g_sigma
           eta_x = (gridSpacing(3)/gridSpacing(1))**2
           eta_y = (gridSpacing(3)/gridSpacing(2))**2
        end if
-    
+
        do Index1 = -gridPoints(1),gridPoints(1)
          do Index2 = -gridPoints(2),gridPoints(2)
            do Index3 = -gridPoints(3),gridPoints(3)
-    
+
              fun = g_sigma*sigmaField(Index1,Index2,Index3) &
                  & + a_1*scalarDensity(Index1,Index2,Index3) &
                  & + a_2*sigmaField(Index1,Index2,Index3)**2 &
                  & + a_3*sigmaField(Index1,Index2,Index3)**3   ! function we want to have = 0.
-    
+
              derfun = g_sigma*( 1. + a_4*sigmaField(Index1,Index2,Index3) &
                              &     + a_5*sigmaField(Index1,Index2,Index3)**2 ) &
                       & +a_1*d_scalarDensity_dsigma(Index1,Index2,Index3) ! d fun / d sigma
@@ -1329,7 +1329,7 @@ contains
              if(.not.grad_flag) then ! local fields:
 
                 if( abs(fun) > funMax ) funMax = abs(fun)
-   
+
                 if( derfun /= 0. ) &
                   & sigmaField(Index1,Index2,Index3) = sigmaField(Index1,Index2,Index3) &
                                                 & - fun/derfun
@@ -1343,7 +1343,7 @@ contains
                 if( abs(Index1).lt.gridPoints(1) .and. &
                    &abs(Index2).lt.gridPoints(2) .and. &
                    &abs(Index3).lt.gridPoints(3) ) then
-                   
+
                    lhs = ( -eta_x * (  sigmaField(Index1-1,Index2,Index3) &
                                    &+ sigmaField(Index1+1,Index2,Index3) ) &
                          & -eta_y * ( sigmaField(Index1,Index2-1,Index3) &
@@ -1365,7 +1365,7 @@ contains
        end do
 
        if((debug).and.(DoPR(2))) write(*,*)' In updateRMF, niter, funMax: ', niter, funMax
-     
+
        if(grad_flag) &
          & call ADI_solve_Douglas(sigmaField, K_rmf, Diag_rmf, eta_x, eta_y)
 
@@ -1397,7 +1397,7 @@ contains
     end Do Loop_over_particles_2
   end Do Loop_over_ensembles_2
 
-  call updateDensity(teilchen)  
+  call updateDensity(teilchen)
 
   if(lorentz_flag) then
     k_max=3    ! With space components of the omega- and rho- fields
@@ -1406,10 +1406,10 @@ contains
   end if
 
   !-------------------------------------------------------------------------
-  if((debug).and.(DoPR(2))) write(*,*)' Iterations to find the omega field:' 
+  if((debug).and.(DoPR(2))) write(*,*)' Iterations to find the omega field:'
   !-------------------------------------------------------------------------
-  do k = 0,k_max 
-  
+  do k = 0,k_max
+
      if(.not.grad_flag) then ! local fields:
 
         omegaField(:,:,:,k) = a_6/g_omega*densityField(:,:,:)%baryon(k)
@@ -1432,14 +1432,14 @@ contains
 
   if (g_rho /= 0.0) then
      !----------------------------------------------------------------------
-     if((debug).and.(DoPR(2))) write(*,*)' Iterations to find the rho field:' 
+     if((debug).and.(DoPR(2))) write(*,*)' Iterations to find the rho field:'
      !----------------------------------------------------------------------
 
-     do k = 0,k_max 
-  
+     do k = 0,k_max
+
         if(.not.grad_flag) then ! local fields:
 
-           rhoField(:,:,:,k) = & 
+           rhoField(:,:,:,k) = &
                 & a_7/g_rho*(densityField(:,:,:)%proton(k)-densityField(:,:,:)%neutron(k))
 
         else ! gradients included:
@@ -1460,7 +1460,7 @@ contains
      end do
 
   else
-     do k = 0,k_max 
+     do k = 0,k_max
         rhoField(:,:,:,k) = 0.0
      end do
   endif
@@ -1509,7 +1509,7 @@ contains
                       & .and. abs(Index3).le.gridPoints(3) &
                       & .and. smearingWeights(small,large).gt.0. ) then
 
-                       call true4Momentum_RMF(teilchen(j,i),momentum) 
+                       call true4Momentum_RMF(teilchen(j,i),momentum)
                        fourMomentumDensity(Index1,Index2,Index3,0:3)&
                           &=fourMomentumDensity(Index1,Index2,Index3,0:3)&
                           &+momentum(0:3)*smearingWeights(small,large)
@@ -1552,18 +1552,18 @@ contains
 
     type(particle),intent(inOut) :: teilchen ! particle whose energy should be calculated
 
-    real, dimension(1:3) :: rpos 
+    real, dimension(1:3) :: rpos
     real    :: pstar2, mstar, factor
     integer :: Index1, Index2, Index3
 
-  
+
     ! Check input:
     if( teilchen%Id <= 0 ) then
       write(*,*)' In energyDeterminationRMF: wrong input particle', teilchen%Id
       stop
     end if
 
-    factor = ModificationFactor(teilchen%Id,teilchen%antiparticle)    
+    factor = ModificationFactor(teilchen%Id,teilchen%antiparticle)
 
     pstar2 = dot_product(teilchen%momentum(1:3),teilchen%momentum(1:3))
 
@@ -1581,7 +1581,7 @@ contains
        if(       abs(Index1).le.gridPoints(1) &
          & .and. abs(Index2).le.gridPoints(2) &
          & .and. abs(Index3).le.gridPoints(3)  ) then
-          
+
          mstar = DiracMass(Index1,Index2,Index3,teilchen%mass,teilchen%id,teilchen%charge,teilchen%antiparticle)
 
        else
@@ -1609,7 +1609,7 @@ contains
   ! This subroutine determines the canonical four-momentum
   ! in computational frame (i.e. where mesonic mean fields are given).
   ! INPUTS
-  ! * type(particle),intent(in) :: teilchen              ! Particle 
+  ! * type(particle),intent(in) :: teilchen              ! Particle
   ! OUTPUT
   ! * real, dimension(0:3), intent(out) :: momentum ! canonical 4-momentum of the particle
   ! NOTES
@@ -1636,13 +1636,13 @@ contains
       stop
     end if
 
-    fact = ModificationFactor(teilchen%Id,teilchen%antiparticle)    
+    fact = ModificationFactor(teilchen%Id,teilchen%antiparticle)
 
     momentum = teilchen%momentum
 
     if( (isBaryon(teilchen%Id) .or. teilchen%id.eq.Kaon .or. teilchen%id.eq.kaonBar) &
        & .and. fact > 0. ) then
-    
+
        ! position in large grid:
        I1 = NINT( teilchen%position(1) / gridSpacing(1) )
        I2 = NINT( teilchen%position(2) / gridSpacing(2) )
@@ -1655,7 +1655,7 @@ contains
           do k=0,3
              V(k) = SelfEnergy_vector(i1,i2,i3,k,teilchen%id,teilchen%charge,teilchen%antiparticle)
           end do
-          
+
           momentum(0:3) = momentum(0:3) + V(0:3)
 
        end if
@@ -1677,24 +1677,24 @@ contains
   ! OUTPUT
   ! * real, dimension(0:3), intent(out) :: momentum ! "true" 4-momentum of the particle
   ! * logical, optional, intent(out) :: inside_grid_flag ! .true. if the particle is inside grid
-  !                                                    ! .false. otherwise   
+  !                                                    ! .false. otherwise
   ! NOTES
-  ! * Should be used in RMF-mode. The input particle kinetic 4-momentum must be given in 
+  ! * Should be used in RMF-mode. The input particle kinetic 4-momentum must be given in
   !   the computational frame (where the density field is defined).
-  ! * Formula for the fieldenergy updated; gradient terms replaced the corresponding sources using 
+  ! * Formula for the fieldenergy updated; gradient terms replaced the corresponding sources using
   !   the meson-field equations and partial integrations.
   !********************************************************************************************************
-  subroutine true4Momentum_RMF(teilchen,momentum,inside_grid_flag)  
-  
+  subroutine true4Momentum_RMF(teilchen,momentum,inside_grid_flag)
+
     use constants, only : hbarc
     use particleDefinition
     use idTable, only: nucleon,kaon,kaonBar,isMeson
     use RMF, only: ModificationFactor, g_2, g_3, g_omega, g_rho, g_sigma, lorentz_flag
-  
+
     type(particle),       intent(in) :: teilchen
     real, dimension(0:3), intent(out) :: momentum
     logical, optional,    intent(out) :: inside_grid_flag
-  
+
     integer :: I1, I2, I3
     real    :: fieldEnergy, fact, bar_plus_antibar_density, factor  ! , isofact
 
@@ -1704,21 +1704,21 @@ contains
 
     if(present(inside_grid_flag)) inside_grid_flag = .false.
 
-    factor = ModificationFactor(teilchen%Id,teilchen%antiparticle)    
+    factor = ModificationFactor(teilchen%Id,teilchen%antiparticle)
 
     if( teilchen%ID <= 0 ) then
 
        write(*,*) 'In true4Momentum_RMF: wrong input particle Id', &
                  & teilchen%ID
        stop
-   
-    else if( isMeson(teilchen%Id) .and. & 
+
+    else if( isMeson(teilchen%Id) .and. &
       &      ( teilchen%Id.ne.Kaon.and.teilchen%Id.ne.kaonBar .or. &
       &        (teilchen%id.eq.Kaon.or.teilchen%Id.eq.kaonBar).and.factor.eq.0. ) ) then
-  
-       momentum(0:3) = teilchen%momentum(0:3)      
+
+       momentum(0:3) = teilchen%momentum(0:3)
        return
-  
+
     end if
 
     !------------------------------------------------------------------------------------------------------
@@ -1730,10 +1730,10 @@ contains
     InsideGrid : if(  abs(I1) < gridPoints(1) .and. &
        & abs(I2) < gridPoints(2) .and. &
        & abs(I3) < gridPoints(3) )        then
-  
+
        if(present(inside_grid_flag)) inside_grid_flag = .true.
 
-       ! Energy density of the fields: 
+       ! Energy density of the fields:
        ! valid in RMF with and without gradient terms
 
        BaryonCurrent(:)  = densityField(I1,I2,I3)%baryon(:)
@@ -1741,14 +1741,14 @@ contains
 
        if(lorentz_flag) then  ! With space components of the omega- & rho-fields:
 
-          fieldEnergy = & 
-              & 0.5*g_omega*( & 
+          fieldEnergy = &
+              & 0.5*g_omega*( &
               &                 dot_product( omegaField(I1,I2,I3,1:3),BaryonCurrent(1:3) )&
               &               - BaryonCurrent(0)*omegaField(I1,I2,I3,0) ) &
-              & + 0.5*g_rho*( & 
+              & + 0.5*g_rho*( &
               &                 dot_product(IsospinCurrent(1:3),rhoField(I1,I2,I3,1:3))&
               &               - IsospinCurrent(0)*rhoField(I1,I2,I3,0) ) &
-              & - 0.5*g_sigma*scalarDensity(I1,I2,I3)*sigmaField(I1,I2,I3) & 
+              & - 0.5*g_sigma*scalarDensity(I1,I2,I3)*sigmaField(I1,I2,I3) &
               & - ( g_2*sigmaField(I1,I2,I3)**3/6. &
               &    +g_3*sigmaField(I1,I2,I3)**4/4. ) / hbarc**3
 
@@ -1756,7 +1756,7 @@ contains
 
          fieldEnergy = - 0.5*g_omega*BaryonCurrent(0)*omegaField(I1,I2,I3,0) &
               &        - 0.5*g_rho*IsospinCurrent(0)*rhoField(I1,I2,I3,0) &
-              &        - 0.5*g_sigma*scalarDensity(I1,I2,I3)*sigmaField(I1,I2,I3) & 
+              &        - 0.5*g_sigma*scalarDensity(I1,I2,I3)*sigmaField(I1,I2,I3) &
               & - ( g_2*sigmaField(I1,I2,I3)**3/6. &
               &    +g_3*sigmaField(I1,I2,I3)**4/4. ) / hbarc**3
 
@@ -1765,7 +1765,7 @@ contains
        fact = ModificationFactor(teilchen%Id,teilchen%antiparticle)
 
 !        if (teilchen%ID==nucleon) then
-!           if (teilchen%charge==0) then 
+!           if (teilchen%charge==0) then
 !              isofact=-1.
 !           else
 !              isofact=1.
@@ -1775,43 +1775,43 @@ contains
 !        endif
 
        if( teilchen%antiparticle .or. teilchen%ID==kaonBar ) fact=-fact
-  
+
        bar_plus_antibar_density = totalDensity(I1,I2,I3)
 
        if( bar_plus_antibar_density > 1.e-06 ) then
 
 !          momentum(0) = teilchen%momentum(0) + g_omega*omegaField(I1,I2,I3,0)*fact &
-!                       &+ isofact*fact*g_rho*rhoField(I1,I2,I3,0) & 
+!                       &+ isofact*fact*g_rho*rhoField(I1,I2,I3,0) &
 !                       &+ fieldEnergy / bar_plus_antibar_density
-          momentum(0) = teilchen%momentum(0) + SelfEnergy_vector(i1,i2,i3,0,teilchen%Id,teilchen%charge,teilchen%antiparticle) & 
+          momentum(0) = teilchen%momentum(0) + SelfEnergy_vector(i1,i2,i3,0,teilchen%Id,teilchen%charge,teilchen%antiparticle) &
                &      + fieldEnergy / bar_plus_antibar_density
        else
-  
+
           momentum(0) = teilchen%momentum(0)
 
        end if
 
-       if(lorentz_flag) then  
-!         momentum(1:3) = teilchen%momentum(1:3) + g_omega*omegaField(I1,I2,I3,1:3)*fact & 
+       if(lorentz_flag) then
+!         momentum(1:3) = teilchen%momentum(1:3) + g_omega*omegaField(I1,I2,I3,1:3)*fact &
 !                       &+ isofact*fact*g_rho*rhoField(I1,I2,I3,1:3)
           momentum(1:3) = teilchen%momentum(1:3) &
                         + SelfEnergy_vector(i1,i2,i3,(/1,2,3/),teilchen%Id,teilchen%charge,teilchen%antiparticle)
        else
          momentum(1:3) = teilchen%momentum(1:3)
        end if
-  
+
     else
-  
+
        momentum(0:3) = teilchen%momentum(0:3)
 
     end if InsideGrid
-     
+
   end subroutine true4Momentum_RMF
 
 
   !*************************************************************************
   ! calculates the effective (Dirac) mass of a particle
-  ! 
+  !
   real function DiracMass(i1,i2,i3,barMass,id,charge,antiFlag)
     use IdTable, only : kaon,kaonBar
     use RMF, only : kaonpot_flag
@@ -1824,8 +1824,8 @@ contains
     real :: Masse, S
     real, dimension(0:3) :: V
 
-    S = SelfEnergy_scalar(i1,i2,i3,id,antiFlag) 
-    
+    S = SelfEnergy_scalar(i1,i2,i3,id,antiFlag)
+
     if ( kaonpot_flag .and. (id==kaon .or. id==kaonBar) ) then
        do i=0,3
           V(i) = Selfenergy_vector(i1,i2,i3,i,id,charge,antiFlag)
@@ -1884,7 +1884,7 @@ contains
 
   !*************************************************************************
   ! calculates the scalar component of the RMF selfenergy of a particle
-  ! NOTE: for kaons selfenergy_scalar includes the Sigma_KN term only! 
+  ! NOTE: for kaons selfenergy_scalar includes the Sigma_KN term only!
   !       gs_kaon = Sigma_KN / f_pi^2
   !
   real function SelfEnergy_scalar(i1,i2,i3,id,antiFlag)
@@ -1910,7 +1910,7 @@ contains
   !*************************************************************************
 
   !*************************************************************************
-  ! calculates the vector component of the RMF selfenergy of a particle 
+  ! calculates the vector component of the RMF selfenergy of a particle
   ! from the previous time step; needed for time derivatives in propagation_RMF
   ! NOTE: gv_kaon = 3/(8 * f_pi*^2)
   !
@@ -1982,7 +1982,7 @@ contains
   ! NAME
   ! function get_realGridSpacing()
   ! PURPOSE
-  ! returns GridSize 
+  ! returns GridSize
   ! RESULT
   ! real, dimension(1:3) gridSize in units of fermi
   !*************************************************************************
@@ -2019,7 +2019,7 @@ contains
   ! NAME
   ! function getGridPoints()
   ! PURPOSE
-  ! returns  GridPoints 
+  ! returns  GridPoints
   ! RESULT
   ! integer, dimension(1:3) gridPoints in units of fermi
   !*************************************************************************
@@ -2039,7 +2039,7 @@ contains
   ! Returns .false. if the point is outside the grid (then 'ind' is invalid).
   ! Otherwise 'ind' is the index of the corresponding coordinate.
   ! NOTES
-  ! The first tests according the real grid size is necessary, since it 
+  ! The first tests according the real grid size is necessary, since it
   ! may give integer overfloats, if one only checks the integer values.
   !*************************************************************************
   logical function GetGridIndex(r,ind,add)
@@ -2074,7 +2074,7 @@ contains
   ! * integer, intent(in) :: switch              ! 1= boost from CF to LRF
   !                                              ! 2= boost from LRF to CF
   ! NOTES
-  ! The LRF is the frame in which the baryon current vanishes. 
+  ! The LRF is the frame in which the baryon current vanishes.
   ! If the density is very small, then no boost takes place.
   !*************************************************************************
   subroutine boostToLRF (teilchen, switch, density_in)
@@ -2101,7 +2101,7 @@ contains
     ! Boost particle's momentum
     select case(switch)
     case (1) ! The particle is boosted to LRF out of CF
-       call lorentz( beta,teilchen%momentum(0:3), 'density(1)') 
+       call lorentz( beta,teilchen%momentum(0:3), 'density(1)')
     case (2) ! The particle is boosted to calculation frame out of LRF.
        call lorentz(-beta,teilchen%momentum(0:3), 'density(2)')
     case default
@@ -2167,7 +2167,7 @@ contains
   !****f* densitymodule/FermiMomAt
   ! NAME
   ! real function FermiMomAt(pos,charge)
-  ! 
+  !
   ! PURPOSE
   ! calculate the fermi momentum at some position. If no charge is given
   ! it uses the averaged proton/neutron densities, otherwise it uses
@@ -2216,9 +2216,8 @@ contains
        rho = abs4(dens%baryon)/2
     end if
     FermiMomAt = (3.*pi**2*rho)**(1./3.)*hbarc
-    
+
   end function FermiMomAt
   !*************************************************************************
 
 end module densitymodule
-

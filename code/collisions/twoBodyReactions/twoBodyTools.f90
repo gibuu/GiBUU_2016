@@ -23,7 +23,7 @@ module twoBodyTools
   !
   ! real function pCM(srts, mass1, mass2, flagOK)
   ! PURPOSE
-  ! This routine evaluates the CM-momentum of two particles, asssuming 
+  ! This routine evaluates the CM-momentum of two particles, asssuming
   ! vacuum kinematics.
   !
   ! The formula used here looks different than the standard formula
@@ -31,9 +31,9 @@ module twoBodyTools
   ! pCM is of course invariant with respect to an exchange of
   ! 'mass1' and 'mass2'.
   !
-  ! If the no logical 'falgOK' is given, the routine aims for performance, 
-  ! and does not check whether the argument of the sqrt is positive. 
-  ! If you need to check this, give this logical. 
+  ! If the no logical 'falgOK' is given, the routine aims for performance,
+  ! and does not check whether the argument of the sqrt is positive.
+  ! If you need to check this, give this logical.
   !
   ! INPUTS
   ! * real :: mass1, mass2  ! masses of both particles
@@ -88,7 +88,7 @@ contains
 
     !Boost everything to the CM-frame
     ! Need this dummy because otherwise my compiler throws warnings : "In call to LORENTZ, an array temporary was created for argument #2"
-    
+
     dummy=velocity(1,0:3)
     call lorentz(beta,dummy, 'velocity_correction')
     velocity(1,0:3)=dummy
@@ -104,13 +104,13 @@ contains
        velocity_Correction=1.
        return
     end if
-   
+
     !*********************************************+
     ! Evaluate vacuum relative velocity in CM-Frame
     !*********************************************+
 
     !Boost momenta to the CM-frame
-    
+
     momCM_1=pair(1)%momentum
     call lorentz(beta,momCM_1, 'velocity_correction')
 
@@ -154,14 +154,14 @@ contains
     real, dimension(1:3) :: betaCM
     real, dimension(0:3) :: momentum_Total,mom
     integer :: k
-    
+
     If(mode.eq.0) then
        Do k=0,3
           momentum_Total(k)=Sum(teilchenIn(:)%momentum(k))
        end do
-       
+
        betacm = lorentzCalcBeta (momentum_Total, 'get_PInitial')
-       
+
        mom(0:3)=teilchenIN(1)%momentum(0:3)
        call lorentz(betacm,mom,'twoBodyTools')
 
@@ -185,8 +185,8 @@ contains
   ! * type(particle),intent(in),dimension(1:2) :: teilchen
   ! NOTES
   ! The name "free Sqrt(s)" is according to standard BUU prescription the following:
-  ! Transform everything to CM system and define there the sqrt(s) by neglecting the 
-  ! potentials. Therefore one wants to take care of the fact, that also the Xsections 
+  ! Transform everything to CM system and define there the sqrt(s) by neglecting the
+  ! potentials. Therefore one wants to take care of the fact, that also the Xsections
   ! are measured in vacuum, therefore without potentials.
   ! RESULT
   ! * Real : The free Sqrt(s)
@@ -216,7 +216,7 @@ contains
     call lorentz(betacm,mom,'twoBodyTools')
 
     ! momentum(1:3) is CM-Momentum
-    ! In CM-frame without potentials: s=(E_1+E_2)**2 with E=SQRT[m**2+pCM**2]. 
+    ! In CM-frame without potentials: s=(E_1+E_2)**2 with E=SQRT[m**2+pCM**2].
     ! Therefore:
     mom2 = Dot_Product(mom(1:3),mom(1:3))
     sqrtS_free=sqrt(teilchen(1)%mass**2+mom2) &
@@ -230,7 +230,7 @@ contains
   ! subroutine searchInInput(teilchenIn,id1,id2,particle_1,particle_2,failFlag)
   ! PURPOSE
   ! Given two IDs and a particleVector of dimension 2, this routine tries to find
-  ! the given IDs in the particleVector. 
+  ! the given IDs in the particleVector.
   ! INPUTS
   ! * type(particle),dimension(1,2), intent(in) :: teilchenIn
   ! * integer, intent(in) :: id1,id2
@@ -254,7 +254,7 @@ contains
        particle_1=teilchenIN(2)
        particle_2=teilchenIN(1)
        failflag=.false.
-    else 
+    else
        failflag=.true.
     end if
 
@@ -296,7 +296,7 @@ contains
   ! NAME
   ! real function pCM_sqr(s, msqr1, msqr2)
   ! PURPOSE
-  ! This routine evaluates the CM-momentum of two particles, asssuming 
+  ! This routine evaluates the CM-momentum of two particles, asssuming
   ! vacuum kinematics.
   !
   ! Attention: Takes all arguments as squared quantities!!!
@@ -323,7 +323,7 @@ contains
   ! NAME
   ! real function p_lab(srts, mass1, mass2)
   ! PURPOSE
-  ! This routine evaluates the momentum of the 1-st particle in the rest 
+  ! This routine evaluates the momentum of the 1-st particle in the rest
   ! frame of the 2-nd particle, asssuming vacuum kinematics.
   !
   ! INPUTS
@@ -374,7 +374,7 @@ contains
   !
   ! INPUTS
   ! * type(preEvent), intent(inOut) :: a
-  ! 
+  !
   ! OUTPUT
   ! * type(preEvent), intent(inOut) :: a
   !*************************************************************************
@@ -385,7 +385,7 @@ contains
     integer :: newID, newCharge, i
 
     do i=lBound(a,dim=1),uBound(a,dim=1)
-       
+
        If(a(i)%ID.ne.0) then
           if(isMeson(a(i)%ID)) then
              call getAntiMeson(a(i)%ID,a(i)%charge,newID,newCharge)
@@ -449,7 +449,7 @@ contains
         if( part3%Id.eq.part1%Id .and. part4%Id.eq.part2%Id .and. &
           & (part3%antiParticle.eqv.part1%antiParticle) .and. &
           & (part4%antiParticle.eqv.part2%antiParticle) .and. &
-          & part3%charge.ne.part1%charge )   then 
+          & part3%charge.ne.part1%charge )   then
              IsChargeExchange=.true.
         else if( part4%Id.eq.part1%Id .and. part3%Id.eq.part2%Id .and. &
           &      (part4%antiParticle.eqv.part1%antiParticle) .and. &

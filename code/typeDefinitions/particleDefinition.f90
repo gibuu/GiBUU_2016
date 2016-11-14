@@ -3,7 +3,7 @@
 ! NAME
 ! module particleDefinition
 ! PURPOSE
-! Here type(particle) is defined. 
+! Here type(particle) is defined.
 ! This module includes also functions for this type.
 !***************************************************************************
 Module  particleDefinition
@@ -37,10 +37,10 @@ Module  particleDefinition
      real, dimension (1:3) :: position=0.
      real, dimension (0:3) :: momentum=0.
      real, dimension (1:3) :: velocity=0.            ! velocity=dr/dt in calculation frame
-     real                  :: mass=0.                
+     real                  :: mass=0.
      ! Note :
      ! This is not the invariant mass p^mu p_mu, but the bare mass of the particle without the self-energy shift:
-     ! => p(0)      =   sqrt[mass+scalarPot)**2+p(1:3)**2] 
+     ! => p(0)      =   sqrt[mass+scalarPot)**2+p(1:3)**2]
      ! => p^mu p_mu =   (mass+scalarPot)**2
      real                  :: lastCollisionTime=0.   ! time of last collision
      real                  :: productionTime=0.      ! time of production
@@ -51,12 +51,12 @@ Module  particleDefinition
      integer               :: ID=0
      integer               :: number=0               ! unique number for every particle
      integer               :: charge =0
-     integer,dimension(1:2):: event=0                ! Number of event in which the particle was generated, 
-                                                     ! changes during the run. 
+     integer,dimension(1:2):: event=0                ! Number of event in which the particle was generated,
+                                                     ! changes during the run.
                                                      ! cf. "collisionNumbering.f90" for details.
-     integer               :: firstEvent=0           ! Number of first event, important for perturbative particles 
-                                                     ! to track particle back to its production event. 
-                                                     ! should stay constant during the run if the value is >0! 
+     integer               :: firstEvent=0           ! Number of first event, important for perturbative particles
+                                                     ! to track particle back to its production event.
+                                                     ! should stay constant during the run if the value is >0!
                                                      ! is inherited to reaction products of the particle.
      integer               :: history=0              ! Variable to store the collision history of a particle
      logical               :: antiparticle=.false.
@@ -64,7 +64,7 @@ Module  particleDefinition
      logical               :: in_Formation=.false.
   End Type particle
   !*************************************************************************
-  
+
 
   !*************************************************************************
   !****f* particleDefinition/sqrtS
@@ -81,13 +81,13 @@ Module  particleDefinition
   ! * (real)=sqrtS(x,y)
   ! * (real)=sqrtS(x,y,z) with x,y,z of type particle
   ! * (real)=sqrtS(V) with V = vector of type particle
-  ! 
+  !
   ! NOTES
   ! This function is overloaded.
   !
-  ! You can also give an additional text as last argument: 
+  ! You can also give an additional text as last argument:
   ! Then, before taking the sqrt, a test on negative argument is done.
-  ! If the argument is smaller than -1e-3 an error message including the 
+  ! If the argument is smaller than -1e-3 an error message including the
   ! given text is thrown. (The threshold is given by the internal parameter
   ! "sqrtsCut".)
   !*************************************************************************
@@ -102,16 +102,16 @@ Module  particleDefinition
   ! NAME
   ! subroutine setNumber(teilchen)
   ! PURPOSE
-  ! Set number of a particle, a vector of particles or an array of particles, 
+  ! Set number of a particle, a vector of particles or an array of particles,
   ! which is unique.
   ! INPUTS
-  ! * type(particle),intent(INout) :: teilchen 
+  ! * type(particle),intent(INout) :: teilchen
   !
   ! or:
-  ! * type(particle),intent(INout),dimension(:) :: teilchen 
+  ! * type(particle),intent(INout),dimension(:) :: teilchen
   !
   ! or:
-  ! * type(particle),intent(INout),dimension(:,:) :: teilchen 
+  ! * type(particle),intent(INout),dimension(:,:) :: teilchen
   !*************************************************************************
   Interface setNumber
      Module Procedure setNumber_0,setNumber_1,setNumber_2
@@ -119,7 +119,7 @@ Module  particleDefinition
 
 
   type(particle), save :: p0  ! standard-initialized, used by 'setToDefault'
-  
+
   !*************************************************************************
 
   integer, parameter :: number0 = 100000
@@ -141,7 +141,7 @@ Module  particleDefinition
   public :: getNumber,setNumber,setnumberguess,resetNumberGuess,AcceptGuessedNumbers,countParticles
   public :: setNumbersToDefault
 
-contains 
+contains
 
   !*************************************************************************
   !****f* particleDefinition/FreeEnergy
@@ -182,7 +182,7 @@ contains
   !*************************************************************************
   !****f* particleDefinition/absMom
   ! NAME
-  ! real function absMom(x) 
+  ! real function absMom(x)
   ! PURPOSE
   ! Evaluates absolute momentum= SQRT(p,p) for a particle
   ! INPUTS
@@ -201,7 +201,7 @@ contains
   !*************************************************************************
   !****f* particleDefinition/absPos
   ! NAME
-  ! real function absPos(x) 
+  ! real function absPos(x)
   ! PURPOSE
   ! Evaluates absolute position= SQRT(x,x) for a particle
   ! INPUTS
@@ -365,7 +365,7 @@ contains
   ! This routine is elemental, i.e. it can be applied to scalars as well as arrays.
   !*************************************************************************
   elemental subroutine setToDefault(teilchen)
-    type(particle),intent(inOut) :: teilchen     
+    type(particle),intent(inOut) :: teilchen
      teilchen = p0
   end subroutine setToDefault
 
@@ -376,25 +376,25 @@ contains
   ! subroutine setNumberGuess(teilchen)
   ! PURPOSE
   ! As the subroutine "setNumber", set the (unique) number of a particle.
-  ! But here: Do this on a preliminary way. 
+  ! But here: Do this on a preliminary way.
   ! INPUTS
-  ! * type(particle),intent(INout) :: teilchen 
+  ! * type(particle),intent(INout) :: teilchen
   ! RESULT
   ! teilchen%number is set
   ! NOTES
   ! During generation of high energetic events, the ("unique") number of
-  ! a particle has already to be known before they are really inserted into 
-  ! the particle vector and the numbers are assigned. 
-  ! But some events are skipped an redone resulting in a new particle list. 
+  ! a particle has already to be known before they are really inserted into
+  ! the particle vector and the numbers are assigned.
+  ! But some events are skipped an redone resulting in a new particle list.
   ! Therefore the former "SetNumberGuess" calls can be forgotten by a call
   ! to "resetNumberGuess" or can be kept via "AcceptGuessedNumbers"
   ! [A "Hurra" for the nomenclature ;)]
   !
   ! The Calls "SetNumberGuess(...); ...;AcepptGuessedNumbers" is equivalent
-  ! to "SetNumber" 
+  ! to "SetNumber"
   !*************************************************************************
   subroutine setNumberGuess(teilchen)
-    type(particle),intent(INout) :: teilchen 
+    type(particle),intent(INout) :: teilchen
     teilchen%number = numberGuess
     numberGuess=numberGuess+1
     lastNumberWasGuessed = .TRUE.
@@ -452,7 +452,7 @@ contains
   !*************************************************************************
   subroutine setNumber_0(teilchen)
     use CALLSTACK
-    type(particle),intent(INout) :: teilchen 
+    type(particle),intent(INout) :: teilchen
 
     if (teilchen%number > 0) then
        if (teilchen%number .ne. number) then
@@ -470,7 +470,7 @@ contains
 
   !-------------------------------------------------------------------------
   subroutine setNumber_1(teilchen)
-    type(particle),intent(INout),dimension(:) :: teilchen 
+    type(particle),intent(INout),dimension(:) :: teilchen
     integer :: i
     do i=lBound(teilchen,dim=1),uBound(teilchen,dim=1)
        call setNumber_0(teilchen(i))
@@ -479,7 +479,7 @@ contains
 
   !-------------------------------------------------------------------------
   subroutine setNumber_2(teilchen)
-    type(particle),intent(INout),dimension(:,:) :: teilchen 
+    type(particle),intent(INout),dimension(:,:) :: teilchen
     integer :: i
     do i=lBound(teilchen,dim=1),uBound(teilchen,dim=1)
        call setNumber_1(teilchen(i,:))

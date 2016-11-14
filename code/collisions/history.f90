@@ -59,7 +59,7 @@ module history
   !
   ! PURPOSE
   ! Evaluates the value of %history for a particle which was produced in
-  ! a interaction, which was either a resonance decay, 2 body interaction or 3 
+  ! a interaction, which was either a resonance decay, 2 body interaction or 3
   ! body interaction.
   !
   ! NOTES
@@ -198,7 +198,7 @@ contains
 
     generation = max(abs(p1%history),abs(p2%history),abs(p3%history))/million + 1
 
-    if ((p1%ID==nucleon).and.(p2%ID==nucleon).and.(p3%ID==nucleon)) then      
+    if ((p1%ID==nucleon).and.(p2%ID==nucleon).and.(p3%ID==nucleon)) then
       id = -nnn      ! ---- NNN channel
     else if ( ((p1%ID==nucleon).and.(p2%ID==nucleon).and.(p3%ID==delta)) .or. &
               ((p1%ID==nucleon).and.(p3%ID==nucleon).and.(p2%ID==delta)) .or. &
@@ -222,11 +222,11 @@ contains
   !****s* history/history_getParents
   ! NAME
   ! function history_getParents (history) result (parents)
-  ! 
+  !
   ! PURPOSE
-  ! Analyzes a given value of %history of a particle and returns an array of integers which include 
+  ! Analyzes a given value of %history of a particle and returns an array of integers which include
   ! the IDs of the particles which produced the latter particle.
-  ! 
+  !
   ! INPUTS
   ! * integer, intent(in) :: history -- value of %history of the regarded particle
   !
@@ -270,12 +270,12 @@ contains
   !*************************************************************************
   !****f* history/history_getGeneration
   ! NAME
-  ! integer function history_getGeneration(history) 
-  ! 
+  ! integer function history_getGeneration(history)
+  !
   ! PURPOSE
   ! Analyzes a given value of %history of a particle and returns the value
   ! of generation of the latter particle.
-  ! 
+  !
   ! INPUTS
   ! * integer, intent(in) :: history -- value of %history of the regarded particle
   !
@@ -367,10 +367,10 @@ contains
   !****f* history/history_print
   ! NAME
   ! subroutine history_print(ensemble,p, iFile)
-  ! 
+  !
   ! PURPOSE
   ! Print the history of a given particle to channel "ifile"
-  ! 
+  !
   ! INPUTS
   ! * integer, intent(in) :: iFile, ensemble
   ! * type(particle),intent(in)  :: p

@@ -1,10 +1,10 @@
 !*******************************************************************************
 !****m* /hypNuc_hypNuc
 ! NOTES
-! This module includes the calculation of 
+! This module includes the calculation of
 ! (a) Lambda(Sigma) nucleon --> Lambda(Sigma) nucleon (S=-1 channels)
 ! (b) Xi nucleon --> Lambda(Sigma) Lambda(Sigma) (S=-2 channels)
-! cross sections including isospin exchange. 
+! cross sections including isospin exchange.
 ! The properties of all final channels are calculated.
 !*******************************************************************************
 module hypNuc_hypNuc
@@ -39,7 +39,7 @@ contains
   ! * real,                            intent(in) :: srts        -- sqrt(s) [GeV]
   ! OUTPUT
   ! * see global variables of this module.
-  ! NOTES 
+  ! NOTES
   ! Included reactions:
   ! * Lambda Nucleon -> Lambda Nucleon
   ! * Lambda Nucleon -> Sigma  Nucleon
@@ -58,7 +58,7 @@ contains
     real,           intent(in)                  :: srts
     type(particle), intent(in), dimension (1:2) :: teilchenIN
     real, dimension(1:4) :: sigma_yn
-    !-----------------------------------------------------------------------------    
+    !-----------------------------------------------------------------------------
     integer :: inuc, ihyp
     real    :: M_Nuc,M_Hyp
 
@@ -234,11 +234,11 @@ contains
 
        Case((Xi+nucleon))
           ! Xi^- p & Xi^0 n (I=0) --> elastic & Lambda Lambda
-          if ( ( TeilchenIN(3-inuc)%charge==-1 .and. TeilchenIN(inuc)%charge==1 ) .or. & 
+          if ( ( TeilchenIN(3-inuc)%charge==-1 .and. TeilchenIN(inuc)%charge==1 ) .or. &
                ( TeilchenIN(3-inuc)%charge==0  .and. TeilchenIN(inuc)%charge==0 ) ) then
 
              if (XiN_Set == 1) then !Rijken/Yamamoto, nucl-th/0608074
-             
+
                 ! Xi^- p & Xi^0 n (I=0) --> elastic
                 sigma_yn(1) = xsectionYN(srts,M_Nuc,M_Hyp,21)
 
@@ -295,9 +295,9 @@ contains
 
              endif
 
-             ! Xi^- + n --> Xi^- n & Lambda Sigma^- 
+             ! Xi^- + n --> Xi^- n & Lambda Sigma^-
              ! (only for YN_Set=2, Fujiwara et al., PRC64, 054001)
-             else if ( (XiN_Set==2) .and. & 
+             else if ( (XiN_Set==2) .and. &
                   & (TeilchenIN(3-inuc)%charge==-1 .and. TeilchenIN(inuc)%charge==0) ) then
 
                 ! Xi^- + n --> Xi^- n
@@ -313,7 +313,7 @@ contains
           ! Xi + Nucleon (I=1) --> Xi N & Lambda Sigma
           ! (for Xi^0 p channel only one model exists (Rijken/Yamamoto, nucl-th/0608074))
           else if ( TeilchenIN(3-inuc)%charge==0 .and. TeilchenIN(inuc)%charge==1 ) then
-             ! Xi + Nucleon (I=1) --> Xi + Nucleon 
+             ! Xi + Nucleon (I=1) --> Xi + Nucleon
              sigma_yn(1) = xsectionYN(srts,M_Nuc,M_Hyp,23)
 
              ! Xi + Nucleon (I=1) --> Lambda Sigma
@@ -332,7 +332,7 @@ contains
 
           endif
 
-       Case default 
+       Case default
 
           write(*,*) 'HypBar_HypBar_Main: undefined channel!', teilchenIN%ID
           STOP
@@ -345,9 +345,9 @@ contains
   !*******************************************************************************
   !****s* hypNuc_hypNuc/get_XiN_Set
   ! NAME
-  ! returns the value of XiN_Set 
+  ! returns the value of XiN_Set
   ! PURPOSE
-  ! Reads from Namelist 'XiN_input' the value for the variable XiN_Set, which 
+  ! Reads from Namelist 'XiN_input' the value for the variable XiN_Set, which
   ! determines the model usage for the Xi nucleon cross sections.
   !*******************************************************************************
   subroutine get_XiN_Set
@@ -379,7 +379,7 @@ contains
   function get_Channels_YN (InChan) result (ch)
     integer, intent(in) :: InChan
     type(preEvent), dimension(1:2) :: ch
-    
+
     ch(1:2)%ID = IdsOut(InChan,1:2)
     ch(1:2)%charge = ChargesOut(InChan,1:2)
 
@@ -391,27 +391,27 @@ contains
   ! NAME
   ! real function xsectionYN (srts, M_Nuc, M_Hyp, ichan)
   ! PURPOSE
-  ! * This function calculates the hyperon-baryon -> hyperon baryon cross sections 
-  !   for a particular isospin channel "ichan". 
+  ! * This function calculates the hyperon-baryon -> hyperon baryon cross sections
+  !   for a particular isospin channel "ichan".
   ! * The cross sections are given in mb.
   ! INPUTS
   ! * integer, intent(in) :: ichan  -- initial channel
   ! * real,    intent(in) :: M_Nuc,M_Hyp -- masses of incoming particles
   ! * real,    intent(in) :: srts -- sqrt(s) [GeV]
   ! NOTES
-  ! * Fits to experimentally known cross sections. 
-  ! * Not for all channels the XS were experimentally known. The XS's for the unknown 
-  !   channels were calculated using detailed balance or charge symmetry. 
-  ! * For the important channels, where a Lambda is converted into a Sigma 
-  !   (or a Sigma to a Lambda), the Xsections are known. 
-  ! * References for exp. data on hyperon+nucleon scattering: 
+  ! * Fits to experimentally known cross sections.
+  ! * Not for all channels the XS were experimentally known. The XS's for the unknown
+  !   channels were calculated using detailed balance or charge symmetry.
+  ! * For the important channels, where a Lambda is converted into a Sigma
+  !   (or a Sigma to a Lambda), the Xsections are known.
+  ! * References for exp. data on hyperon+nucleon scattering:
   !   Landolt-Boernstein, New Series I/12b, p. 323: "Hyperon induced reactions"
   !   M.M. Nagels, T.A. Rijken, J.J. De Swart, Annals of Physics 79 (1973) 338.
   !   T.A. Rijken, Y. Yamamoto, Phys. Rev. C73 (2006) 044008.
-  ! * Xi+N scattering cross sections: no exp. data available here; fits to theoretical 
-  !   calculations: ESC04a model, 
+  ! * Xi+N scattering cross sections: no exp. data available here; fits to theoretical
+  !   calculations: ESC04a model,
   !   T.A. Rijken, Y. Yamamoto, nucl-th/0608074 (30.08.2006), Tables IX,X,XI & XII.
-  ! * Xi+N scattering cross sections UPDATE: theoretical calculations from 
+  ! * Xi+N scattering cross sections UPDATE: theoretical calculations from
   !   Fujiwara et al., PRC64, 054001 including exclusive more channels.
   !*******************************************************************************
   real function xsectionYN (srts, M_Nuc, M_Hyp, ichan)
@@ -475,8 +475,8 @@ contains
          If (p_ab<1E-10) then
            write(*,*) 'WARNING: pInitial is zero in xsectionYN', p_ab
            balFac= 0.
-         else  
-           balFac= (p_cd/p_ab)**2        
+         else
+           balFac= (p_cd/p_ab)**2
          end if
          xsectionYN = xsectionYN*balFac ! detailed balance
        end if
@@ -503,8 +503,8 @@ contains
          If (p_ab<1E-10) then
            write(*,*) 'WARNING: pInitial is zero in xsectionYN', p_ab
            balFac= 0.
-         else  
-           balFac= (p_cd/p_ab)**2        
+         else
+           balFac= (p_cd/p_ab)**2
          end if
          xsectionYN = xsectionYN*balFac ! detailed balance
        end if
@@ -522,27 +522,27 @@ contains
        ! Sigma+ + Proton  --> Sigma+ + Proton  (ichan==17)
        xsectionYN = 38.*plab**(-0.62)
 
-    ! Xi Nucleon channels according 
+    ! Xi Nucleon channels according
     ! T.A. Rijken, Y. Yamamoto, nucl-th/0608074 (30.08.2006), Tables IX,X,XI & XII.
     case(21)
        ! Xi N --> Xi N (I=0)
        xsectionYN = 17.3886*exp(-0.01*pmev)+2572.95*pmev**(-1.18381)
 
     case(22)
-       ! Xi N --> Lambda Lambda (I=0)      
+       ! Xi N --> Lambda Lambda (I=0)
        xsectionYN = 417.996*exp(-0.00567813*pmev) - 340.722*pmev**(-0.359183) + 31.*pmev**0.02
 
     case(23)
        ! Xi N --> Xi N (I=1)
        xsectionYN = 328.083*exp(-0.00418763*pmev)+0.00602*pmev
-             
+
     case(24)
        ! Xi N --> Sigma Lambda (I=1)
        if (pmev > 590.) xsectionYN = 4.626*(pmev/590.+1.)**(-0.604771)
 
     ! Xi Nucleon channels according Fujiwara et al., PRC64, 054001:
 
-    !Xi^- p --> Xi^- p, Xi^0 n --> Xi^0 n : 
+    !Xi^- p --> Xi^- p, Xi^0 n --> Xi^0 n :
     case(25)
        if (x .lt. 208.23) then
           xsectionYN = 43179.9/(x**1.4509+293.093)
@@ -563,7 +563,7 @@ contains
           xsectionYN = 555307./(x**2.25814+6206.04)
        else if (x.gt.200. .and. x.lt.1000.) then
           xsectionYN = 6.06073*x**0.69767 - 5.74077*x**0.705059
-       else 
+       else
           xsectionYN = 2.39538574
        endif
 
@@ -583,7 +583,7 @@ contains
           xsectionYN = 302.336/( 0.0615418*x + 0.177857 )
        else if (x.gt.233.333 .and. x.le.343.137) then
           xsectionYN = 186597./( 9.72237*x + 6711.97 )
-       else if (x.gt.343.137 .and. x.le.600.) then 
+       else if (x.gt.343.137 .and. x.le.600.) then
           xsectionYN = 59.8056/( 0.00847445*x + 0.265243 )
        else if (x.gt.600. .and. x.lt.1000.) then
           xsectionYN = 1136.84/( 0.120506*x + 23.3462 )
@@ -595,16 +595,16 @@ contains
           If (p_ab<1E-10) then
              write(*,*) 'WARNING: pInitial is zero in xsectionYN', p_ab
              balFac= 0.
-          else  
-             balFac= (p_cd/p_ab)**2        
+          else
+             balFac= (p_cd/p_ab)**2
           end if
           xsectionYN = xsectionYN*balFac ! detailed balance
        endif
 
     ! Xi^- + n --> Xi^- n
     case(30)
-       if (x.le.571.) then 
-          xsectionYN = 6.373005+0.873676*x**(1.65697)- & 
+       if (x.le.571.) then
+          xsectionYN = 6.373005+0.873676*x**(1.65697)- &
            &  0.875998*x**(1.65655)
        else if (x.gt.571. .and. x.le.618.627) then
           xsectionYN = 15.5/((x-592.)**2-1.) + 12.0975
@@ -624,7 +624,7 @@ contains
           xsectionYN = 10.5716934
        endif
 
-    Case default 
+    Case default
 
        write(*,*) 'HypBar_HypBar/xsectionsYN: undefined channel! ichan = ', ichan
        STOP

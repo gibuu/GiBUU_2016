@@ -1,11 +1,11 @@
-!***********************************************************************************************
+!******************************************************************************
 !****m* /pionGamma
 ! NAME
 ! module pionGamma
 ! NOTES
 ! Modules includes routines which are used to evaluate the decay width (gamma) of the pion
 ! in the BUU program.
-!***********************************************************************************************
+!******************************************************************************
 module pionGamma
   PRIVATE
 
@@ -15,17 +15,17 @@ module pionGamma
 
 contains
 
-  !***********************************************************************************************
+  !****************************************************************************
   !****s* pionGamma/count_pions
   ! NAME
   ! subroutine count_pions(particleVector,time)
   ! INPUTS
   ! * type(particle), dimension(:,:),intent(in) :: particleVector
-  ! * real,intent(in) :: time                                      
+  ! * real,intent(in) :: time
   ! PURPOSE
   ! Counts number of pions in the particleVector and prints it to file "pionNumbers_*.dat" where * is the kinetic energy of the
   ! incoming pions
-  !***********************************************************************************************
+  !****************************************************************************
 
   subroutine count_pions(particleVector,time)
 
@@ -77,7 +77,7 @@ contains
   end subroutine count_pions
 
 
-  !***********************************************************************************************
+  !****************************************************************************
   !****s* pionGamma/evaluate_pionGamma
   ! NAME
   ! subroutine evaluate_pionGamma()
@@ -86,7 +86,7 @@ contains
   ! PURPOSE
   ! Reads in the number of pions out of the files created by count_pions
   ! and evaluates the decay width. Prints results to "pion_gamma.dat" and to "pion_gamma_mean.dat".
-  !***********************************************************************************************
+  !****************************************************************************
   subroutine evaluate_pionGamma()
     ! Reads in the number of pions and evaluates the decay width
     use initPion, only : getEkin
@@ -114,7 +114,7 @@ contains
        ! ios.ne.0 = File not available or some other error in reading it.
        write(*,*) 'File pion_Numbers.dat is not available!  Critical error in evaluate_pionGamma. Return!'
        return
-    else 
+    else
        number=0
        gammaMean=0.
 
@@ -122,7 +122,7 @@ contains
        num_notScattered=0
        veloMean=0.
        gammaError=0.
-       do 
+       do
           num(1)=num(2)
           num_notScattered(1)=num_notScattered(2)
           time(1)=time(2)

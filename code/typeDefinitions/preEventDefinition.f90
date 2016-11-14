@@ -27,7 +27,7 @@ module preEventDefinition
   ! the outgoing particles.
   !
   ! NOTES
-  ! We also use this type for listings of all possible out--channels. 
+  ! We also use this type for listings of all possible out--channels.
   ! It would be worthwile to rethink the naming.
   !*************************************************************************
 

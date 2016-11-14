@@ -26,7 +26,7 @@ module resonanceCrossSections
   !*************************************************************************
 
   logical, save :: initInput_Flag = .true.
-  
+
   logical, parameter :: debug = .false.
 
 contains
@@ -55,7 +55,7 @@ contains
     write(*,'(A)') '   (It should be TRUE only if mediumSwitch_coll=.true. in the namelist width_Baryon)'
 
     call Write_ReadingInput("ResonanceCrossSections",1)
-    
+
     initInput_Flag = .false.
 
   end subroutine readInput

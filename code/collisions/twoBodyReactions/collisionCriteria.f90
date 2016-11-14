@@ -148,7 +148,9 @@ contains
        if (DoPr(2)) then
           write(*,*) '****'
           write(*,*) 'Error in localCollisionCriteria: probability>1'
-          write(*,*) 'p=',probability," sigma=",sigmaTot, " vrel= ", vrel, " deltaT=",deltaT," d^3x=",dThreeX,"weight=", weightLocal
+          write(*,*) 'pair = ',pair(1)%ID,pair(2)%ID
+          write(*,*) 'p=',probability," sigma=",sigmaTot," srts=",sqrts(pair)
+          write(*,*) "vrel= ", vrel, " deltaT=",deltaT," d^3x=",dThreeX," weight=", weightLocal
           write(*,*) '****'
        endif
        localCollisionCriteria=.true.
@@ -370,7 +372,7 @@ contains
 
     else
        ! ** Decision is performed in the CM Frame (Wolff et al.) :
-       ! We evaluate for each particle in its own rest frame the time tau, which it takes 
+       ! We evaluate for each particle in its own rest frame the time tau, which it takes
        ! until it has reached closest distance to the other particle.
        ! This time tau might as well be negative since this point in time might lie in the past
        ! in this special rest frame.
@@ -396,7 +398,7 @@ contains
           !Boost Parameters for boost to restframe of i-th particle:
           beta(1:3)=teilchen(i)%velocity(1:3)
           gamma = 1-Dot_Product(beta,beta)
-          if (gamma<=0.) then 
+          if (gamma<=0.) then
              write(*,*) 'kodama_time: wrong boost vector!'
              call WriteParticle(6,99,i, teilchen(i))
              stop
@@ -427,7 +429,7 @@ contains
           call lorentz (beta, position_i, 'kodama_time(2)')
           call lorentz (beta, velocity_j, 'kodama_time(3)')
 
-          ! Since velocity of particle i is zero in its own restframe we get: 
+          ! Since velocity of particle i is zero in its own restframe we get:
           x_ij(1:3)=position_i(1:3)-position_j(1:3)+velocity_j(1:3)/velocity_j(0)*position_j(0)
           beta_ij(1:3)=-velocity_j(1:3)/velocity_j(0)
 

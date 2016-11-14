@@ -3,7 +3,7 @@
 ! NAME
 ! module parBarMes_HighEnergy
 ! PURPOSE
-! Includes all routines which are parametrizations of 
+! Includes all routines which are parametrizations of
 ! "baryon meson -> X" data for the high-energy region.
 !***************************************************************************
 module parBarMes_HighEnergy
@@ -15,7 +15,7 @@ module parBarMes_HighEnergy
   PUBLIC :: paramBarMesHE_v
   PUBLIC :: paramBarMesHE_pion
 !  PUBLIC :: paramBarMesHE_kaon
-  
+
 contains
 
 
@@ -24,14 +24,14 @@ contains
   ! NAME
   ! subroutine paramBarMesHE (srts, idM, idB, izM, izB, media, sigma, sigmael)
   !
-  ! PURPOSE 
+  ! PURPOSE
   ! Calculates elastic and total high-energy meson-baryon cross sections.
   !
   ! INPUTS
   ! * real :: srts -- SQRT(s) (free)
   ! * integer :: idM,idB -- ID of meson and baryon
   ! * integer :: izM,izB -- charge of meson and baryon
-  ! * type(medium) :: media  -- medium at position 
+  ! * type(medium) :: media  -- medium at position
   ! OUTPUT
   ! * real :: sigma -- sigma(m B -> X) (in mb)
   ! * real :: sigel -- sigma(m B -> m B) (in mb)
@@ -41,7 +41,7 @@ contains
   !   Expects that mesons are no anti-mesons!!
   ! * The elastic cross section of V N -> V N is derived from the
   !   gamma N -> V N cross section.
-  ! * Here we call corresponding single standing routines and perform 
+  ! * Here we call corresponding single standing routines and perform
   !   some modifications in order to guarantee a smoother transition
   !   from low to high energy.
   ! * This routine was formerly known as "fritziCS".
@@ -63,18 +63,18 @@ contains
     integer :: iidM,ivec, izB2,izM2
 
     integer, dimension(103:109), parameter :: iivec = (/1,0,2,0,3,0,4/) ! rho,omega,phi or J/psi?
-    
+
     real, dimension(4) :: sigVM1
     real, parameter, dimension(1:4) :: gv = (/2.2, 23.6,18.4,11.5/) !  VMD coupling constants
 
     real, dimension(-2:2) :: sigK1, sigK2
     real, dimension(-1:1) :: sigP1, sigP2
-    
+
     real :: xs,xc ! scaling of XS according strangeness/charm content
     real :: E,plab
 
     !==== reset all values:
-    
+
     sigmael=0.
     sigma=0.
 
@@ -82,21 +82,21 @@ contains
     iidM = idM
     if (iidM==rho .and. izM/=0) iidM = 0
 
-    
+
     select case(iidM)
-       
+
     case(rho,omegaMeson,phi,JPsi) !==== Vector mesons ====
-       
+
        if (abs(idB)==nucleon) then
           ivec=iivec(iidM) ! rho0,omega,phi or J/psi?
-          
+
           !---- Elastic cross section via photon cross section : ----
-          
+
           call calcXS_gammaN2VN(srts,media,sigVM1)
           sigmael = sigVM1(ivec)/alphaQED*gv(ivec)/1000.
-          
+
           ! connection of Hi and Lo cross sections / "Flunschen":
-          
+
           select case (ivec)
           case(1) ! == rho0 ==
              if (srts<=5.0) sigmael = min(3.15,sigmael)
@@ -111,16 +111,16 @@ contains
        end if
 
     case(kaon:kaonStarBar) !==== Kaons ====
-       
+
        call paramBarMesHE_kaon(srts,sigK1,sigK2)
        izB2 = izB * sign(1,idB)
        izM2 = 0
-       
+
        select case(idM)
        case(kaon,kaonStar)
           izM2 = -2
           if ((izB2<=0 .and. izM==1) .or. (izB2>0 .and. izM==0)) izM2 = -1
-          
+
           if (abs(idB)==nucleon .and. idM==kaon) then
              if (srts<=2.614 .and. idB>0) then
                 E=(srts**2-mK**2-mN**2)/(2.*mN)
@@ -134,22 +134,22 @@ contains
                 sigmael=1/(srts-1.98)+2.8
              else
                 sigmael=sigK2(sign(2,-idB)) ! -2 für baryon, +2 für anti-baryon
-             end if 
+             end if
           end if
-          
+
        case(kaonBar,kaonStarBar)
           izM2 = 2
           if ((izB2<=0 .and. izM==-1) .or. (izB2>0 .and. izM==0)) izM2 = 1
-          
+
           if (abs(idB)==nucleon .and. idM==kaonBar) then
              if (izM2*sign(1,idB)==2 .and. srts<=2.85) then
                 sigmael=20*exp(-srts+1.32)
              else if (izM2*sign(1,idB)==1 .and. srts<=4.469)  then
                 ! sigmael= 20*exp(-srts)+2.5
-                sigmael=3.31  ! this works better for the high-momentum asymtotic 
+                sigmael=3.31  ! this works better for the high-momentum asymtotic
                               ! of the data on K- n --> K- n cross section.
-                              ! There is still a jump between this value 
-                              ! and low-energy parameterization. To be improved. 
+                              ! There is still a jump between this value
+                              ! and low-energy parameterization. To be improved.
              else
                 sigmael=sigK2(sign(2,idB))
              end if
@@ -160,7 +160,7 @@ contains
 
 !       if (idM.eq.kaonBar.and.izM2.eq.1.and.srts.le.3.) then
 !          sigma=20*exp(-srts+2)+14.5
-          
+
        if (idM==kaonStarBar .and. izM2==2 .and. srts<=4.4) then
           sigma = max (0., 20.*(1.-exp(-2*(srts-2.06)))+3.)
        else if (idM==kaonStarBar .and. izM2==1 .and. srts<=5.95) then
@@ -172,13 +172,13 @@ contains
     case DEFAULT !==== all other mesons/ nonstrange baryons====
 
        call paramBarMesHE_pion(srts,sigP1,sigP2)
-       
+
        izM2 = min(max((2*izB-1)*izM,-1),1)
 
        xs=0.
        xc=0.
-       
-       if (abs(idB)==nucleon .and. idM==pion) then 
+
+       if (abs(idB)==nucleon .and. idM==pion) then
           sigmael=sigP2(izM2) ! elastic pi N scattering
        else
           select case(idM)
@@ -210,7 +210,7 @@ contains
     ! Now set elastic cross section, if not yet set:
     if (sigmael<1e-8) then
        sigmael = 0.039*sigma**(3./2.)
-       
+
        select case(idM)
        case(eta)
           if (srts<=3.8) sigmael = 50*exp(-2.5*srts+4.6)+5.0
@@ -282,12 +282,12 @@ contains
     real, parameter :: eps=0.0808, eta=-0.4525
     real, dimension(4), parameter :: X = (/13.63, 13.63, 10.01, 1.001/)
     real, dimension(4), parameter :: Y = (/31.79, 31.79, -1.52, -0.152/)
-    
+
     s = srts**2
-    sigma = X * s**eps + Y * s**eta 
+    sigma = X * s**eps + Y * s**eta
 
   end subroutine paramBarMesHE_v
-  
+
 
 
   !*******************************************************************
@@ -387,7 +387,7 @@ contains
     real :: plab
     real, dimension(4,5) :: a1,a2
 
-    ! Parameters from Falter PhD Table 4.4, with Typo for K+ n, corrected from -1.3 to -0.89 
+    ! Parameters from Falter PhD Table 4.4, with Typo for K+ n, corrected from -1.3 to -0.89
 
     ! total
     data((a1(i,j),j=1,5),i=1,4) /18.1,  0., 0., 0.26, -1.,    &
@@ -396,7 +396,7 @@ contains
                                  32.1,  0., 0., 0.66, -5.6/
     ! elastic
     data((a2(i,j),j=1,5),i=1,4) / 5.,    8.1, -1.8,  0.16, -1.3,  &
-                                  5.,    8.1, -1.8,  0.16, -1.3,  & 
+                                  5.,    8.1, -1.8,  0.16, -1.3,  &
                                   7.3,    0.,   0.,  0.29, -2.4,  &
                                   7.3,    0.,   0.,  0.29, -2.4 /
 

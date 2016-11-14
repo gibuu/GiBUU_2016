@@ -3,7 +3,7 @@
 ! NAME
 ! module initElementary
 ! PURPOSE
-! Implement the init routines for collisions of "elementary" 
+! Implement the init routines for collisions of "elementary"
 ! (non-perturbative) particles.
 !*******************************************************************************
 module initElementary
@@ -13,7 +13,7 @@ module initElementary
   IMPLICIT NONE
 
   Private
-  
+
   !*************************************************************************
   !****g* elementary/impactParameter
   ! SOURCE
@@ -66,7 +66,7 @@ module initElementary
   !****g* elementary/srtsRaiseFlag
   ! SOURCE
   !
-  logical, save :: srtsRaiseFlag=.false.   
+  logical, save :: srtsRaiseFlag=.false.
   ! PURPOSE
   ! * if .true. then the srts stepping is done
   ! * if .false. then the ekin_lab stepping is done
@@ -76,10 +76,10 @@ module initElementary
   !****g* elementary/ekin_lab
   ! SOURCE
   !
-  real, save :: ekin_lab=1. ! [GeV]          
+  real, save :: ekin_lab=1. ! [GeV]
   ! PURPOSE
   ! kin. energy of first particle in the rest frame of second particle
-  ! (starting value for the energy scan: the number of different energies 
+  ! (starting value for the energy scan: the number of different energies
   ! is set by parameter num_Energies in the namelist "input")
   !*************************************************************************
 
@@ -91,13 +91,13 @@ module initElementary
   ! PURPOSE
   ! kin. energy step for energy scan
   !*************************************************************************
-  
+
   !*************************************************************************
   !****g* elementary/srts
   ! SOURCE
   !
   real, save :: srts=3. ! [GeV]
-  ! PURPOSE  
+  ! PURPOSE
   ! invariant energy
   ! (starting value for the energy scan)
   !*************************************************************************
@@ -108,7 +108,7 @@ module initElementary
   !
   real, save :: delta_srts=1. ! [GeV]
   ! PURPOSE
-  ! srts step for srts scan  
+  ! srts step for srts scan
   !*************************************************************************
 
   !*************************************************************************
@@ -136,30 +136,30 @@ contains
   ! NAME
   ! subroutine initElementaryCollision(teilchen,energyRaiseFlag)
   ! PURPOSE
-  ! Provides initial conditions for the collision of two elementary 
+  ! Provides initial conditions for the collision of two elementary
   ! particles.
   ! INPUTS
-  ! * type(particle),dimension(:,:),intent(inout) :: teilchen 
+  ! * type(particle),dimension(:,:),intent(inout) :: teilchen
   !   -- array of particles to store the two colliding elementary particles.
   ! * logical, intent(in) :: energyRaiseFlag
-  !   -- if .true., then the lab. energy of the first particle is increased 
-  !   by delta_ekin_lab.                              
+  !   -- if .true., then the lab. energy of the first particle is increased
+  !   by delta_ekin_lab.
   ! NOTES
-  ! The user has to provide the namelist 'elementary', which contains 
-  ! the impact parameter and lab. energy of the projectile and id's of 
+  ! The user has to provide the namelist 'elementary', which contains
+  ! the impact parameter and lab. energy of the projectile and id's of
   ! colliding particles. If the input impact parameter is negative, then
   ! the actual impact parameter is chosen by Monte-Carlo between
-  ! 0 and abs(input impact parameter). 
+  ! 0 and abs(input impact parameter).
   !*************************************************************************
   subroutine initElementaryCollision(teilchen,energyRaiseFlag)
 
-    use insertion, only : GarbageCollection    
+    use insertion, only : GarbageCollection
 
     type(particle),dimension(:,:),intent(inout) :: teilchen
     logical, intent(in) :: energyRaiseFlag
-    
+
     logical, save :: initFlag=.true.
-    integer :: j 
+    integer :: j
     write(*,*)
     write(*,*) '**Initializing  elementary events'
 
@@ -172,14 +172,14 @@ contains
       else
         ekin_lab=ekin_lab+delta_ekin_lab
       end if
-    
+
     end if
 
     Do j=1,size(teilchen,dim=1) ! Loop over all Ensembles
-       
+
        call setKinematics
        call setPosition
-       
+
     end Do
 
     projectile=Teilchen(1,1)
@@ -187,7 +187,7 @@ contains
 
     call GarbageCollection(teilchen)
 
-  contains 
+  contains
 
     !***********************************************************************
     !****s* initElementaryCollision/initInput
@@ -211,7 +211,7 @@ contains
       ! NAME
       ! NAMELIST /elementary/
       ! PURPOSE
-      ! Includes parameters for initialization of a collision between two 
+      ! Includes parameters for initialization of a collision between two
       ! elementary particles:
       ! * impactParameter
       ! * particleId
@@ -238,14 +238,14 @@ contains
          name(i) = PartName(particleID(i),particleCharge(i),particleAnti(i))
 
          if(isHadron(particleId(i))) then
-            if (ParticleMass(i)<0.) ParticleMass(i)=hadron(particleId(i))%mass 
+            if (ParticleMass(i)<0.) ParticleMass(i)=hadron(particleId(i))%mass
          else
             write(*,*)' In initElementary: particle ',i,' is wrong'
-            stop          
+            stop
          end if
 
       end do
-      
+
       write(*,*) '  Impact Parameter = ',impactParameter
       write(*,*) '  Particle: ID     = ',particleId
       write(*,*) '            Anti   = ',particleAnti
@@ -275,7 +275,7 @@ contains
             stop
          endif
       end do
-      
+
       call Write_ReadingInput('Elementary',1)
 
       initFlag=.false.
@@ -307,7 +307,7 @@ contains
         ekin_lab = ( srts**2 - (Teilchen(j,1)%mass+Teilchen(j,2)%mass)**2 ) &
                 & / (2.*Teilchen(j,2)%mass)
       end if
-      
+
       Teilchen(j,1)%momentum(0)=ekin_lab+Teilchen(j,1)%mass
       !1-st particle is initialized moving in positive z-direction:
       p_lab=Sqrt(Teilchen(j,1)%momentum(0)**2-Teilchen(j,1)%mass**2)
@@ -316,7 +316,7 @@ contains
       !2-nd particle is initialized at rest:
       Teilchen(j,2)%momentum(1:3)=0.
 
-      if(.not.srtsRaiseFlag) then 
+      if(.not.srtsRaiseFlag) then
 
           srts = Sqrt((Teilchen(j,1)%momentum(0)+Teilchen(j,2)%mass)**2 &
              & - p_lab**2)
@@ -355,7 +355,7 @@ contains
     ! PURPOSE
     ! Sets positions of the elementary particles.
     ! NOTES
-    ! * If impactParameter is choosen to be less than zero, then the 
+    ! * If impactParameter is choosen to be less than zero, then the
     !   impact parameter is choosen by a Monte-Carlo decision.
     ! * The second particle is always initialized at zero (already done
     !   by subroutine setToDefault called in setKinematics).
@@ -380,7 +380,7 @@ contains
 
       if (impactParameter < 0.) b = b * sqrt(ratio) * sqrt(rn())
 
-      teilchen(j,1)%position=(/b,0.,z/)       
+      teilchen(j,1)%position=(/b,0.,z/)
 
       if (debug) then
          write(*,*) 'Position of 1-st particle:',teilchen(j,1)%position
@@ -396,24 +396,24 @@ contains
       use preEventDefinition
       use master_2Body, only: XsectionMaster
       use constants, only: pi
-      
+
       type(particle),dimension(1:2)    :: pair
       real :: srts, sigmaTot,sigmaElast,sigmaCEX,sigmaAnni
       real :: sigmaLbar,sigmaSbar,sigmaXiBar,sigmaJPsi
       real, dimension(0:3) :: momentumLRF
       type(preEvent), dimension(1:4)         :: finalState
       logical        :: HiFlag
-      
+
       srts=sqrts(pair(1),pair(2))
       momentumLRF=pair(2)%momentum+pair(1)%momentum
-      
+
       call XsectionMaster(srts,pair,vacuum,momentumLRF,finalState,sigmaTot,sigmaElast,&
                           sigmaCEX,sigmaAnni,sigmaLbar,sigmaSbar,sigmaXiBar,sigmaJPsi,HiFlag)
 
       AdjustImpact = sqrt(sigmaTot/(10.*pi))
-      
+
     end function AdjustImpact
-    
+
   end subroutine initElementaryCollision
 
 

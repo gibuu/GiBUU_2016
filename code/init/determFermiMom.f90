@@ -8,9 +8,9 @@
 !
 ! "fmbybE" stands for "fermi momentum by binding energy"
 !
-! NOTES 
+! NOTES
 ! [KG]: I cut this out of "initNucPhaseSpase.f90" and brought it to the
-! code format we all agreed on. 
+! code format we all agreed on.
 ! I do not guarantee full functionality and meaningful documentation.
 !***************************************************************************
 
@@ -21,8 +21,8 @@ module determine_fmbybE
   PRIVATE
 
   PUBLIC :: determine_fermimomentum,determine_fermiNucDLDA
-  
-  
+
+
   !*************************************************************************
   !****g* determine_fmbybE/teilchen_fermi
   ! SOURCE
@@ -59,7 +59,7 @@ contains
 
     real, intent(out) :: fermimomentum
     real, intent(in) :: baryondens
-    
+
     logical, save::initflag=.true.
     if (initflag) then
 
@@ -72,9 +72,9 @@ contains
        teilchen_fermi%id=1
        teilchen_fermi%perturbative=.false.
        ! finalState%productionTime=0.
-       ! finalState%lastCollisionTime=0. 
+       ! finalState%lastCollisionTime=0.
        ! finalState%formationTime=0.
-       ! finalState%scaleCS=1.             
+       ! finalState%scaleCS=1.
        ! finalState%in_Formation=.false.
        write(*,*) 'determin_fermimomentum initialized'
        initflag=.false.
@@ -84,7 +84,7 @@ contains
     fermimomentum=DZEROX(0.,1.,10**(-9.),1000,func,1)
 
     if (fermimomentum.lt. 0.01) then
-       write(*,*) 'fermimomentum=', fermimomentum, ' rho=', baryondens 
+       write(*,*) 'fermimomentum=', fermimomentum, ' rho=', baryondens
     end if
 
   end subroutine determine_fermimomentum
@@ -97,7 +97,7 @@ contains
   ! ...
   ! INPUTS
   ! * real, dimension(1:3) :: baryonplace -- ???
-  ! * real                 :: rhocent -- ??? 
+  ! * real                 :: rhocent -- ???
   ! OUTPUT
   ! * real :: baryonpFermi -- ???
   !
@@ -118,7 +118,7 @@ contains
     real :: rhoptemp, pFermi2temp, difftemp
     integer, save :: notBound=0
     logical, save :: firsttime=.true.
-    
+
     rhoptemp=rhoLaplace(baryonPlace,gridSpacing)
     pFermi2temp=(1.5*pi**2*rhocent)**(2./3.)*hbarc**2
     call getEParticleLaplace(Etemp,rhocent,rhoptemp,pFermi2temp)
@@ -143,9 +143,9 @@ contains
     else
        baryonpFermi=SQRT(pFermi2temp)
     end if
-    
+
   end subroutine determine_fermiNucDLDA
-  
+
 
   !*************************************************************************
   !****if* determine_fmbybE/func
@@ -165,10 +165,8 @@ contains
     med%density        = baryondensity
     med%densityProton  = baryondensity/2
     med%densityNeutron = baryondensity/2
-    func=sqrt((teilchen_fermi%mass+BaryonPotential(teilchen_fermi,med,.true.))**2 +p**2)-teilchen_fermi%mass+0.016 
+    func=sqrt((teilchen_fermi%mass+BaryonPotential(teilchen_fermi,med,.true.))**2 +p**2)-teilchen_fermi%mass+0.016
     !non relativistic energy  -Binding energy
   end function func
-  
+
 end module determine_fmbybE
-
-

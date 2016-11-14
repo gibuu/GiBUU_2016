@@ -1,4 +1,4 @@
-!******************************************************************************************
+!******************************************************************************
 !****m* /quadpack
 ! NAME
 ! module quadpack
@@ -12,19 +12,19 @@
 !     Springer, 1983,
 !     ISBN: 3540125531,
 !     LC: QA299.3.Q36.
-!******************************************************************************************
+!******************************************************************************
 module quadpack
 
   implicit none
   private
-  
+
   public :: qag, qags, qawc
 
 !   public :: qagp, qawf, qawo, qaws, qng, timestamp    ! unused
 
 contains
 
-    !******************************************************************************
+    !**************************************************************************
     !
     ! 1. introduction
     !
@@ -209,7 +209,7 @@ contains
     !        integrator available, qawf.
     !
     !******************************************************************************
-    
+
 
 
   subroutine qag ( f, a, b, epsabs, epsrel, key, result, abserr, neval, ier )
@@ -221,14 +221,14 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral   
+    !    The routine calculates an approximation RESULT to a definite integral
     !      I = integral of F over (A,B),
     !    hopefully satisfying
     !      || I - RESULT || <= max ( EPSABS, EPSREL * ||I|| ).
     !
-    !    QAG is a simple globally adaptive integrator using the strategy of 
+    !    QAG is a simple globally adaptive integrator using the strategy of
     !    Aind (Piessens, 1973).  It is possible to choose between 6 pairs of
-    !    Gauss-Kronrod quadrature formulae for the rule evaluation component. 
+    !    Gauss-Kronrod quadrature formulae for the rule evaluation component.
     !    The pairs of high degree of precision are suitable for handling
     !    integration difficulties due to a strongly oscillating integrand.
     !
@@ -265,17 +265,17 @@ contains
     !    Output, integer NEVAL, the number of times the integral was evaluated.
     !
     !    Output, integer IER, return code.
-    !    0, normal and reliable termination of the routine.  It is assumed that the 
+    !    0, normal and reliable termination of the routine.  It is assumed that the
     !      requested accuracy has been achieved.
-    !    1, maximum number of subdivisions allowed has been achieved.  One can 
-    !      allow more subdivisions by increasing the value of LIMIT in QAG. 
+    !    1, maximum number of subdivisions allowed has been achieved.  One can
+    !      allow more subdivisions by increasing the value of LIMIT in QAG.
     !      However, if this yields no improvement it is advised to analyze the
     !      integrand to determine the integration difficulties.  If the position
     !      of a local difficulty can be determined, such as a singularity or
-    !      discontinuity within the interval) one will probably gain from 
-    !      splitting up the interval at this point and calling the integrator 
-    !      on the subranges.  If possible, an appropriate special-purpose 
-    !      integrator should be used which is designed for handling the type 
+    !      discontinuity within the interval) one will probably gain from
+    !      splitting up the interval at this point and calling the integrator
+    !      on the subranges.  If possible, an appropriate special-purpose
+    !      integrator should be used which is designed for handling the type
     !      of difficulty involved.
     !    2, the occurrence of roundoff error is detected, which prevents the
     !      requested tolerance from being achieved.
@@ -323,7 +323,7 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral   
+    !    The routine calculates an approximation RESULT to a definite integral
     !      I = integral of F over (A,B),
     !    hopefully satisfying
     !      || I - RESULT || <= max ( EPSABS, EPSREL * ||I|| ).
@@ -364,17 +364,17 @@ contains
     !    Output, integer NEVAL, the number of times the integral was evaluated.
     !
     !    Output, integer IER, return code.
-    !    0, normal and reliable termination of the routine.  It is assumed that the 
+    !    0, normal and reliable termination of the routine.  It is assumed that the
     !      requested accuracy has been achieved.
-    !    1, maximum number of subdivisions allowed has been achieved.  One can 
-    !      allow more subdivisions by increasing the value of LIMIT in QAG. 
+    !    1, maximum number of subdivisions allowed has been achieved.  One can
+    !      allow more subdivisions by increasing the value of LIMIT in QAG.
     !      However, if this yields no improvement it is advised to analyze the
     !      integrand to determine the integration difficulties.  If the position
     !      of a local difficulty can be determined, such as a singularity or
-    !      discontinuity within the interval) one will probably gain from 
-    !      splitting up the interval at this point and calling the integrator 
-    !      on the subranges.  If possible, an appropriate special-purpose 
-    !      integrator should be used which is designed for handling the type 
+    !      discontinuity within the interval) one will probably gain from
+    !      splitting up the interval at this point and calling the integrator
+    !      on the subranges.  If possible, an appropriate special-purpose
+    !      integrator should be used which is designed for handling the type
     !      of difficulty involved.
     !    2, the occurrence of roundoff error is detected, which prevents the
     !      requested tolerance from being achieved.
@@ -382,7 +382,7 @@ contains
     !      integration interval.
     !    6, the input is invalid, because EPSABS < 0 and EPSREL < 0.
     !
-    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1 
+    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1
     !    through LAST the left and right ends of the partition subintervals.
     !
     !    Workspace, real RLIST(LIMIT), contains in entries 1 through LAST
@@ -391,12 +391,12 @@ contains
     !    Workspace, real ELIST(LIMIT), contains in entries 1 through LAST
     !    the absolute error estimates on the subintervals.
     !
-    !    Output, integer IORD(LIMIT), the first K elements of which are pointers 
+    !    Output, integer IORD(LIMIT), the first K elements of which are pointers
     !    to the error estimates over the subintervals, such that
     !    elist(iord(1)), ..., elist(iord(k)) form a decreasing sequence, with
     !    k = last if last <= (limit/2+2), and k = limit+1-last otherwise.
     !
-    !    Output, integer LAST, the number of subintervals actually produced 
+    !    Output, integer LAST, the number of subintervals actually produced
     !    in the subdivision process.
     !
     !  Local parameters:
@@ -683,11 +683,11 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral   
-    !      I = integral of F over (A, +Infinity), 
-    !    or 
+    !    The routine calculates an approximation RESULT to a definite integral
+    !      I = integral of F over (A, +Infinity),
+    !    or
     !      I = integral of F over (-Infinity,A)
-    !    or 
+    !    or
     !      I = integral of F over (-Infinity,+Infinity),
     !    hopefully satisfying
     !      || I - RESULT || <= max ( EPSABS, EPSREL * ||I|| ).
@@ -723,20 +723,20 @@ contains
     !    Output, integer NEVAL, the number of times the integral was evaluated.
     !
     !    Output, integer IER, error indicator.
-    !    0, normal and reliable termination of the routine.  It is assumed that 
+    !    0, normal and reliable termination of the routine.  It is assumed that
     !      the requested accuracy has been achieved.
     !    > 0,  abnormal termination of the routine.  The estimates for result
     !      and error are less reliable.  It is assumed that the requested
     !      accuracy has not been achieved.
-    !    1, maximum number of subdivisions allowed has been achieved.  One can 
+    !    1, maximum number of subdivisions allowed has been achieved.  One can
     !      allow more subdivisions by increasing the data value of LIMIT in QAGI
     !      (and taking the according dimension adjustments into account).
     !      However, if this yields no improvement it is advised to analyze the
     !      integrand in order to determine the integration difficulties.  If the
     !      position of a local difficulty can be determined (e.g. singularity,
     !      discontinuity within the interval) one will probably gain from
-    !      splitting up the interval at this point and calling the integrator 
-    !      on the subranges.  If possible, an appropriate special-purpose 
+    !      splitting up the interval at this point and calling the integrator
+    !      on the subranges.  If possible, an appropriate special-purpose
     !      integrator should be used, which is designed for handling the type
     !      of difficulty involved.
     !    2, the occurrence of roundoff error is detected, which prevents the
@@ -746,9 +746,9 @@ contains
     !      integration interval.
     !    4, the algorithm does not converge.  Roundoff error is detected in the
     !      extrapolation table.  It is assumed that the requested tolerance
-    !      cannot be achieved, and that the returned result is the best which 
+    !      cannot be achieved, and that the returned result is the best which
     !      can be obtained.
-    !    5, the integral is probably divergent, or slowly convergent.  It must 
+    !    5, the integral is probably divergent, or slowly convergent.  It must
     !      be noted that divergence can occur with any other value of IER.
     !    6, the input is invalid, because INF /= 1 and INF /= -1 and INF /= 2, or
     !      epsabs < 0 and epsrel < 0.  result, abserr, neval are set to zero.
@@ -1097,7 +1097,7 @@ contains
 
        numrl2 = numrl2 + 1
        rlist2(numrl2) = area
-       call qextr ( numrl2, rlist2, reseps, abseps, res3la, nres ) 
+       call qextr ( numrl2, rlist2, reseps, abseps, res3la, nres )
        ktmin = ktmin+1
 
        if ( ktmin > 5.and.abserr < 1.0e-03*errsum ) then
@@ -1207,7 +1207,7 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral   
+    !    The routine calculates an approximation RESULT to a definite integral
     !      I = integral of F over (A,B),
     !    hopefully satisfying
     !      || I - RESULT || <= max ( EPSABS, EPSREL * ||I|| ).
@@ -1232,7 +1232,7 @@ contains
     !
     !    Input, real A, B, the limits of integration.
     !
-    !    Input, integer NPTS2, the number of user-supplied break points within 
+    !    Input, integer NPTS2, the number of user-supplied break points within
     !    the integration range, plus 2.  NPTS2 must be at least 2.
     !
     !    Input/output, real POINTS(NPTS2), contains the user provided interior
@@ -1844,7 +1844,7 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral   
+    !    The routine calculates an approximation RESULT to a definite integral
     !      I = integral of F over (A,B),
     !    hopefully satisfying
     !      || I - RESULT || <= max ( EPSABS, EPSREL * ||I|| ).
@@ -2348,7 +2348,7 @@ contains
     !  Discussion:
     !
     !    The routine calculates an approximation RESULT to a Cauchy principal
-    !    value 
+    !    value
     !      I = integral of F*W over (A,B),
     !    with
     !      W(X) = 1 / (X-C),
@@ -2459,7 +2459,7 @@ contains
     !  Discussion:
     !
     !    The routine calculates an approximation RESULT to a Cauchy principal
-    !    value   
+    !    value
     !      I = integral of F*W over (A,B),
     !    with
     !      W(X) = 1 / ( X - C ),
@@ -2532,7 +2532,7 @@ contains
     !                             alist(1) and blist(1) are set to a and b
     !                             respectively.
     !
-    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1 
+    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1
     !    through LAST the left and right ends of the partition subintervals.
     !
     !    Workspace, real RLIST(LIMIT), contains in entries 1 through LAST
@@ -2784,7 +2784,7 @@ contains
 
     abserr = errsum
 
-70  continue 
+70  continue
 
     if ( aa == b ) then
        result = - result
@@ -2805,17 +2805,17 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral  
-    ! 
-    !      I = integral of F*COS(OMEGA*X) 
-    !    or 
-    !      I = integral of F*SIN(OMEGA*X) 
+    !    The routine calculates an approximation RESULT to a definite integral
+    !
+    !      I = integral of F*COS(OMEGA*X)
+    !    or
+    !      I = integral of F*SIN(OMEGA*X)
     !
     !    over the interval [A,+Infinity), hopefully satisfying
     !
     !      || I - RESULT || <= EPSABS.
     !
-    !    If OMEGA = 0 and INTEGR = 1, the integral is calculated by means 
+    !    If OMEGA = 0 and INTEGR = 1, the integral is calculated by means
     !    of QAGI, and IER has the meaning as described in the comments of QAGI.
     !
     !  Reference:
@@ -2880,8 +2880,8 @@ contains
     !    Integer LIMLST, gives an upper bound on the number of cycles, LIMLST >= 3.
     !    if limlst < 3, the routine will end with ier = 6.
     !
-    !    Integer MAXP1, an upper bound on the number of Chebyshev moments which 
-    !    can be stored, i.e. for the intervals of lengths abs(b-a)*2**(-l), 
+    !    Integer MAXP1, an upper bound on the number of Chebyshev moments which
+    !    can be stored, i.e. for the intervals of lengths abs(b-a)*2**(-l),
     !    l = 0,1, ..., maxp1-2, maxp1 >= 1.  if maxp1 < 1, the routine will end
     !    with ier = 6.
     !
@@ -2944,7 +2944,7 @@ contains
     !
     !  Discussion:
     !
-    !    The routine calculates an approximation RESULT to a definite integral   
+    !    The routine calculates an approximation RESULT to a definite integral
     !      I = integral of F*COS(OMEGA*X) or F*SIN(OMEGA*X) over (A,+Infinity),
     !    hopefully satisfying
     !      || I - RESULT || <= EPSABS.
@@ -2974,7 +2974,7 @@ contains
     !    Input, real EPSABS, the absolute accuracy requested.
     !
     !    Input, integer LIMLST, an upper bound on the number of cycles.
-    !    LIMLST must be at least 1.  In fact, if LIMLST < 3, the routine 
+    !    LIMLST must be at least 1.  In fact, if LIMLST < 3, the routine
     !    will end with IER= 6.
     !
     !            limit  - integer
@@ -3388,7 +3388,7 @@ contains
     !    The routine calculates an approximation RESULT to a given
     !    definite integral
     !      I = Integral ( A <= X <= B ) F(X) * cos ( OMEGA * X ) dx
-    !    or 
+    !    or
     !      I = Integral ( A <= X <= B ) F(X) * sin ( OMEGA * X ) dx
     !    hopefully satisfying following claim for accuracy
     !      | I - RESULT | <= max ( epsabs, epsrel * |I| ).
@@ -3523,8 +3523,8 @@ contains
     !  Discussion:
     !
     !    This routine calculates an approximation RESULT to a given
-    !    definite integral   
-    !      I = integral of f*w over (a,b) 
+    !    definite integral
+    !      I = integral of f*w over (a,b)
     !    where w shows a singular behavior at the end points, see parameter
     !    integr, hopefully satisfying following claim for accuracy
     !      abs(i-result) <= max(epsabs,epsrel*abs(i)).
@@ -3642,8 +3642,8 @@ contains
     !  Discussion:
     !
     !    This routine calculates an approximation RESULT to an integral
-    !      I = integral of F(X) * W(X) over (a,b), 
-    !    where W(X) shows a singular behavior at the endpoints, hopefully 
+    !      I = integral of F(X) * W(X) over (a,b),
+    !    where W(X) shows a singular behavior at the endpoints, hopefully
     !    satisfying:
     !      | I - RESULT | <= max ( epsabs, epsrel * |I| ).
     !
@@ -3675,7 +3675,7 @@ contains
     !    Input, real EPSABS, EPSREL, the absolute and relative accuracy requested.
     !
     !    Input, integer LIMIT, an upper bound on the number of subintervals
-    !    in the partition of (A,B), LIMIT >= 2.  If LIMIT < 2, the routine 
+    !    in the partition of (A,B), LIMIT >= 2.  If LIMIT < 2, the routine
     !     will end with IER = 6.
     !
     !    Output, real RESULT, the estimated value of the integral.
@@ -3723,7 +3723,7 @@ contains
     !                             alist(1) and blist(1) are set to a and b
     !                             respectively.
     !
-    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1 
+    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1
     !    through LAST the left and right ends of the partition subintervals.
     !
     !    Workspace, real RLIST(LIMIT), contains in entries 1 through LAST
@@ -3740,7 +3740,7 @@ contains
     !                     if last <= (limit/2+2), and k = limit+1-last
     !                     otherwise, form a decreasing sequence.
     !
-    !    Output, integer LAST, the number of subintervals actually produced in 
+    !    Output, integer LAST, the number of subintervals actually produced in
     !    the subdivision process.
     !
     !  Local parameters:
@@ -4025,9 +4025,9 @@ contains
     !
     !  Discussion:
     !
-    !    This routine estimates 
-    !      I = integral of F(X) * W(X) over (a,b) 
-    !    with error estimate, where 
+    !    This routine estimates
+    !      I = integral of F(X) * W(X) over (a,b)
+    !    with error estimate, where
     !      w(x) = 1/(x-c)
     !
     !  Reference:
@@ -4050,7 +4050,7 @@ contains
     !
     !    Output, real RESULT, the estimated value of the integral.
     !    RESULT is computed by using a generalized Clenshaw-Curtis method if
-    !    C lies within ten percent of the integration interval.  In the 
+    !    C lies within ten percent of the integration interval.  In the
     !    other case the 15-point Kronrod rule obtained by optimal addition
     !    of abscissae to the 7-point Gauss rule, is applied.
     !
@@ -4096,7 +4096,7 @@ contains
     real hlgth
     integer i
     integer isym
-    integer k 
+    integer k
     integer kp
     integer krul
     integer,intent(out):: neval
@@ -4205,16 +4205,16 @@ contains
     !      I = integral of f(x) * w(x) over (a,b)
     !    where
     !      w(x) = cos(omega*x)
-    !    or 
+    !    or
     !      w(x) = sin(omega*x),
     !    and estimates
     !      J = integral ( A <= X <= B ) |F(X)| dx.
     !
     !    For small values of OMEGA or small intervals (a,b) the 15-point
     !    Gauss-Kronrod rule is used.  In all other cases a generalized
-    !    Clenshaw-Curtis method is used, that is, a truncated Chebyshev 
-    !    expansion of the function F is computed on (a,b), so that the 
-    !    integrand can be written as a sum of terms of the form W(X)*T(K,X), 
+    !    Clenshaw-Curtis method is used, that is, a truncated Chebyshev
+    !    expansion of the function F is computed on (a,b), so that the
+    !    integrand can be written as a sum of terms of the form W(X)*T(K,X),
     !    where T(K,X) is the Chebyshev polynomial of degree K.  The Chebyshev
     !    moments are computed with use of a linear recurrence relation.
     !
@@ -4434,7 +4434,7 @@ contains
        go to 70
     end if
     !
-    !  Compute the Chebyshev moments as the solutions of a boundary value 
+    !  Compute the Chebyshev moments as the solutions of a boundary value
     !  problem with one initial value (v(3)) and one end value computed
     !  using an asymptotic formula.
     !
@@ -4640,11 +4640,11 @@ contains
     !
     !  Discussion:
     !
-    !    This routine computes 
-    !      i = integral of F(X) * W(X) over (bl,br), 
+    !    This routine computes
+    !      i = integral of F(X) * W(X) over (bl,br),
     !    with error estimate, where the weight function W(X) has a singular
     !    behavior of algebraico-logarithmic type at the points
-    !    a and/or b. 
+    !    a and/or b.
     !
     !    The interval (bl,br) is a subinterval of (a,b).
     !
@@ -4669,11 +4669,11 @@ contains
     !
     !    Input, real ALFA, BETA, parameters in the weight function.
     !
-    !    Input, real RI(25), RJ(25), RG(25), RH(25), modified Chebyshev moments 
+    !    Input, real RI(25), RJ(25), RG(25), RH(25), modified Chebyshev moments
     !    for the application of the generalized Clenshaw-Curtis method,
     !    computed in QMOMO.
     !
-    !    Output, real RESULT, the estimated value of the integral, computed by 
+    !    Output, real RESULT, the estimated value of the integral, computed by
     !    using a generalized clenshaw-curtis method if b1 = a or br = b.
     !    In all other cases the 15-point Kronrod rule is applied, obtained by
     !    optimal addition of abscissae to the 7-point Gauss rule.
@@ -5032,7 +5032,7 @@ contains
     !    Input, real X(11), contains the values of COS(K*PI/24), for K = 1 to 11.
     !
     !    Input/output, real FVAL(25), the function values at the points
-    !    (b+a+(b-a)*cos(k*pi/24))/2, k = 0, ...,24, where (a,b) is the 
+    !    (b+a+(b-a)*cos(k*pi/24))/2, k = 0, ...,24, where (a,b) is the
     !    approximation interval.  FVAL(1) and FVAL(25) are divided by two
     !    These values are destroyed at output.
     !
@@ -5174,8 +5174,8 @@ contains
     !
     !  Discussion:
     !
-    !    The routine determines the limit of a given sequence of approximations, 
-    !    by means of the epsilon algorithm of P. Wynn.  An estimate of the 
+    !    The routine determines the limit of a given sequence of approximations,
+    !    by means of the epsilon algorithm of P. Wynn.  An estimate of the
     !    absolute error is also given.  The condensed epsilon table is computed.
     !    Only those elements needed for the computation of the next diagonal
     !    are preserved.
@@ -5192,7 +5192,7 @@ contains
     !    the new element in the first column of the epsilon table.
     !
     !    Input/output, real EPSTAB(52), the two lower diagonals of the triangular
-    !    epsilon table.  The elements are numbered starting at the right-hand 
+    !    epsilon table.  The elements are numbered starting at the right-hand
     !    corner of the triangle.
     !
     !    Output, real RESULT, the estimated value of the integral.
@@ -5287,7 +5287,7 @@ contains
        err3 = abs(delta3)
        tol3 = max ( e1abs,abs(e0))* epsilon ( e0 )
        !
-       !  If e0, e1 and e2 are equal to within machine accuracy, convergence 
+       !  If e0, e1 and e2 are equal to within machine accuracy, convergence
        !  is assumed.
        !
        if ( err2 <= tol2 .and. err3 <= tol3 ) then
@@ -5405,14 +5405,14 @@ contains
     !  Discussion:
     !
     !    This routine calculates an approximation RESULT to a definite integral
-    !      I = integral of F(X) * COS(OMEGA*X) 
+    !      I = integral of F(X) * COS(OMEGA*X)
     !    or
-    !      I = integral of F(X) * SIN(OMEGA*X) 
+    !      I = integral of F(X) * SIN(OMEGA*X)
     !    over (A,B), hopefully satisfying:
     !      | I - RESULT | <= max ( epsabs, epsrel * |I| ) ).
     !
-    !    QFOUR is called by QAWO and QAWF.  It can also be called directly in 
-    !    a user-written program.  In the latter case it is possible for the 
+    !    QFOUR is called by QAWO and QAWF.  It can also be called directly in
+    !    a user-written program.  In the latter case it is possible for the
     !    user to determine the first dimension of array CHEBMO(MAXP1,25).
     !    See also parameter description of MAXP1.  Additionally see
     !    parameter description of ICALL for eventually re-using
@@ -5527,7 +5527,7 @@ contains
     !                             zero. alist(1) and blist(1) are set to a
     !                             and b respectively.
     !
-    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1 
+    !    Workspace, real ALIST(LIMIT), BLIST(LIMIT), contains in entries 1
     !    through LAST the left and right ends of the partition subintervals.
     !
     !    Workspace, real RLIST(LIMIT), contains in entries 1 through LAST
@@ -6053,8 +6053,8 @@ contains
       !    Input, real A, B, the limits of integration.
       !
       !    Output, real RESULT, the estimated value of the integral.
-      !    RESULT is computed by applying the 15-point Kronrod rule (RESK) 
-      !    obtained by optimal addition of abscissae to the 7-point Gauss rule 
+      !    RESULT is computed by applying the 15-point Kronrod rule (RESK)
+      !    obtained by optimal addition of abscissae to the 7-point Gauss rule
       !    (RESG).
       !
       !    Output, real ABSERR, an estimate of | I - RESULT |.
@@ -6062,7 +6062,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       !  Local Parameters:
@@ -6199,7 +6199,7 @@ contains
       !
       !  Discussion:
       !
-      !    The original infinite integration range is mapped onto the interval 
+      !    The original infinite integration range is mapped onto the interval
       !    (0,1) and (a,b) is a part of (0,1).  The routine then computes:
       !
       !    i = integral of transformed integrand over (a,b),
@@ -6236,7 +6236,7 @@ contains
       !    Input, real A, B, the limits of integration, over a subrange of [0,1].
       !
       !    Output, real RESULT, the estimated value of the integral.
-      !    RESULT is computed by applying the 15-point Kronrod rule (RESK) obtained 
+      !    RESULT is computed by applying the 15-point Kronrod rule (RESK) obtained
       !    by optimal addition of abscissae to the 7-point Gauss rule (RESG).
       !
       !    Output, real ABSERR, an estimate of | I - RESULT |.
@@ -6397,8 +6397,8 @@ contains
       !
       !  Discussion:
       !
-      !    This routine approximates 
-      !      i = integral of f*w over (a,b), 
+      !    This routine approximates
+      !      i = integral of f*w over (a,b),
       !    with error estimate, and
       !      j = integral of abs(f*w) over (a,b)
       !
@@ -6438,7 +6438,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       !  Local Parameters:
@@ -6618,7 +6618,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       real a
@@ -6797,7 +6797,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       real a
@@ -6978,7 +6978,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       !  Local Parameters:
@@ -7166,7 +7166,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       !  Local Parameters:
@@ -7324,7 +7324,7 @@ contains
 
       return
     end subroutine qk51
-    subroutine qk61 ( f, a, b, result, abserr, resabs, resasc ) 
+    subroutine qk61 ( f, a, b, result, abserr, resabs, resasc )
       !
       !******************************************************************************
       !
@@ -7364,7 +7364,7 @@ contains
       !    Output, real RESABS, approximation to the integral of the absolute
       !    value of F.
       !
-      !    Output, real RESASC, approximation to the integral | F-I/(B-A) | 
+      !    Output, real RESASC, approximation to the integral | F-I/(B-A) |
       !    over [A,B].
       !
       !  Local Parameters:
@@ -7691,7 +7691,7 @@ contains
       !
       !  Discussion:
       !
-      !    The routine calculates an approximation RESULT to a definite integral   
+      !    The routine calculates an approximation RESULT to a definite integral
       !      I = integral of F over (A,B),
       !    hopefully satisfying
       !      || I - RESULT || <= max ( EPSABS, EPSREL * ||I|| ).
@@ -7722,7 +7722,7 @@ contains
       !    RESULT is obtained by applying the 21-point Gauss-Kronrod rule (RES21)
       !    obtained  by optimal addition of abscissae to the 10-point Gauss rule
       !    (RES10), or by applying the 43-point rule (RES43) obtained by optimal
-      !    addition of abscissae to the 21-point Gauss-Kronrod rule, or by 
+      !    addition of abscissae to the 21-point Gauss-Kronrod rule, or by
       !    applying the 87-point rule (RES87) obtained by optimal addition of
       !    abscissae to the 43-point rule.
       !
@@ -8044,7 +8044,7 @@ contains
       return
     end subroutine qng
     subroutine qsort ( limit, last, maxerr, ermax, elist, iord, nrmax )
-      ! 
+      !
       !******************************************************************************
       !
       !! QSORT maintains the order of a list of local error estimates.
@@ -8052,9 +8052,9 @@ contains
       !
       !  Discussion:
       !
-      !    This routine maintains the descending ordering in the list of the 
-      !    local error estimates resulting from the interval subdivision process. 
-      !    At each call two error estimates are inserted using the sequential 
+      !    This routine maintains the descending ordering in the list of the
+      !    local error estimates resulting from the interval subdivision process.
+      !    At each call two error estimates are inserted using the sequential
       !    search top-down for the largest error estimate and bottom-up for the
       !    smallest error estimate.
       !
@@ -8071,19 +8071,19 @@ contains
       !
       !    Input, integer LAST, the current number of error estimates.
       !
-      !    Input/output, integer MAXERR, the index in the list of the NRMAX-th 
+      !    Input/output, integer MAXERR, the index in the list of the NRMAX-th
       !    largest error.
       !
       !    Output, real ERMAX, the NRMAX-th largest error = ELIST(MAXERR).
       !
       !    Input, real ELIST(LIMIT), contains the error estimates.
       !
-      !    Input/output, integer IORD(LAST).  The first K elements contain 
+      !    Input/output, integer IORD(LAST).  The first K elements contain
       !    pointers to the error estimates such that ELIST(IORD(1)) through
       !    ELIST(IORD(K)) form a decreasing sequence, with
-      !      K = LAST 
-      !    if 
-      !      LAST <= (LIMIT/2+2), 
+      !      K = LAST
+      !    if
+      !      LAST <= (LIMIT/2+2),
       !    and otherwise
       !      K = LIMIT+1-LAST.
       !
@@ -8399,7 +8399,7 @@ contains
 !       character ( len = 5 ) zone
 !       !
 !       call date_and_time ( date, time, zone, values )
-! 
+!
 !       y = values(1)
 !       m = values(2)
 !       d = values(3)
@@ -8407,7 +8407,7 @@ contains
 !       n = values(6)
 !       s = values(7)
 !       mm = values(8)
-! 
+!
 !       if ( h < 12 ) then
 !          ampm = 'AM'
 !       else if ( h == 12 ) then
@@ -8428,10 +8428,10 @@ contains
 !             end if
 !          end if
 !       end if
-! 
+!
 !       write ( *, '(a,1x,i2,1x,i4,2x,i2,a1,i2.2,a1,i2.2,a1,i3.3,1x,a)' ) &
 !            trim ( month(m) ), d, y, h, ':', n, ':', s, '.', mm, trim ( ampm )
-! 
+!
 !       return
 !     end subroutine timestamp
 

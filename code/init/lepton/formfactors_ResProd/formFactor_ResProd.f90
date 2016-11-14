@@ -272,7 +272,7 @@ contains
        write(*,*) 'wrong input for deltaAxFF:',deltaAxFF
        call traceback()
     end select
-    
+
     if(W_cutOff_switch) then
        write(*,*) 'W-dependence in vector form factor of Delta is INCLUDED!'
        write(*,'(a,F12.4)') ' -> Value for the cut-off factor lambda:', W_cutOff_lambda
@@ -330,7 +330,7 @@ contains
   !*************************************************************************
   function getFormfactor_Res (Qs, bare_mass, resID, targetCharge, process, FF_set) result (formfactorfield)
     use IDTable, only : Delta
-    use particleProperties, only: hadron 
+    use particleProperties, only: hadron
     use distributions, only: markusPostFormfactor
 
     real, intent(in) :: Qs, bare_mass
@@ -408,7 +408,7 @@ contains
     use particleProperties, only: hadron
     use constants, only : sinsthweinbg
     use output, only: write_initstatus
-    
+
     real,  intent(in) :: Qs
     integer, intent(in) :: resID, process, targetCharge
     real, dimension(1:4), intent(out) :: vecformfactor

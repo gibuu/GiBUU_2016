@@ -4,18 +4,18 @@
 ! module sourceAnalysis
 !
 ! PURPOSE
-! The main module which determines parameters for (afterwards) statistical 
+! The main module which determines parameters for (afterwards) statistical
 ! fragmentation and stopping GiBUU-run.
 ! NOTES
-! * The major files which are neccessary for the afterwards statistical 
-!   fragmentation have the structure "Source<realToChar(time)>fmc.dat", and 
+! * The major files which are neccessary for the afterwards statistical
+!   fragmentation have the structure "Source<realToChar(time)>fmc.dat", and
 !   they store the major information event-by-event.
-! * The file "SourceEvol.dat" provides with additional information on time 
-!   evolution of thermodynamical properties at the center of the sources, 
+! * The file "SourceEvol.dat" provides with additional information on time
+!   evolution of thermodynamical properties at the center of the sources,
 !   mass, charge numbers and total energy.
 !***************************************************************************
 module sourceAnalysis
- 
+
   PRIVATE
 
   !*************************************************************************
@@ -50,7 +50,7 @@ module sourceAnalysis
   !
   real,    SAVE :: rho_cutoff       = 100.
   ! PURPOSE
-  ! density cutoff (in units of the saturation density "rhoNull") 
+  ! density cutoff (in units of the saturation density "rhoNull")
   ! which defines "emitting" particles
   !*************************************************************************
 
@@ -60,7 +60,7 @@ module sourceAnalysis
   !
   real,    SAVE :: spectator_cutoff = 1.
   ! PURPOSE
-  ! min. value of number of collisions which defines 
+  ! min. value of number of collisions which defines
   ! "spectator"-matter
   !*************************************************************************
 
@@ -111,7 +111,7 @@ module sourceAnalysis
   !
   logical, SAVE :: hyperSource = .false.
   ! PURPOSE
-  ! If true, the Lambda and Sigma0 hyperons will be included 
+  ! If true, the Lambda and Sigma0 hyperons will be included
   ! into source
   !*************************************************************************
 
@@ -131,9 +131,9 @@ module sourceAnalysis
   !
   Integer, SAVE :: iprint = 0
   ! PURPOSE
-  ! Indicates how many times one saves the results. When the results 
-  ! have been printed MaxTimePrinting-times, the variable "StopGiBUU" is set 
-  ! to true and the actual GiBUU run stops. 
+  ! Indicates how many times one saves the results. When the results
+  ! have been printed MaxTimePrinting-times, the variable "StopGiBUU" is set
+  ! to true and the actual GiBUU run stops.
   !*************************************************************************
 
   !*************************************************************************
@@ -144,7 +144,7 @@ module sourceAnalysis
   ! PURPOSE
   ! Indicates how many times the results are printed into files.
   ! NOTES
-  ! Set MaxTimePrinting to a very big value, i.e. 1000, if you wish that 
+  ! Set MaxTimePrinting to a very big value, i.e. 1000, if you wish that
   ! the BUU-run developes until time=time_max.
   !*************************************************************************
 
@@ -182,11 +182,11 @@ module sourceAnalysis
   !
   Real, SAVE :: stossParameter=1000.
   ! PURPOSE
-  ! * Impact parameter [fm] of the reaction (HeavyIon or Hadron eventTypes). 
-  !   The impact parameter is taken from the initialization modules 
-  !   "initHeavyIon" or "initHadron" and copied to the local variable 
+  ! * Impact parameter [fm] of the reaction (HeavyIon or Hadron eventTypes).
+  !   The impact parameter is taken from the initialization modules
+  !   "initHeavyIon" or "initHadron" and copied to the local variable
   !   "stossParameter".
-  ! * The (unrealistic) default value is neccessary for control that the 
+  ! * The (unrealistic) default value is neccessary for control that the
   !   impact parameter has been extracted correctly.
   !*************************************************************************
 
@@ -201,28 +201,28 @@ contains
   ! subroutine DoSourceAnalysis
   !
   ! PURPOSE
-  ! The main routine which decides when to STOP BUU and switch to 
+  ! The main routine which decides when to STOP BUU and switch to
   ! Statistical Multifragmentation.
   ! INPUTS
   ! * type(particle),dimension(:,:) :: realPV -- real particle vector
   ! * real                          :: time   -- actual time of simulation
   ! * type(tNucleus)                :: targetNuc -- target properties
   ! * type(tNucleus),optional       :: projectileNuc -- projectile properties
-  ! * logical                       :: FinalFlag -- print source(s) info 
+  ! * logical                       :: FinalFlag -- print source(s) info
   !   after forced decays (important for high energy runs)
-  ! 
+  !
   ! NOTES
   ! * This analysis is valid only for real particles.
-  ! * Determination of fragmenting source(s) as function of time 
+  ! * Determination of fragmenting source(s) as function of time
   !   (controlled by the variable "timeSequence").
-  ! * Determination of physical properties at the center of the source(s), 
+  ! * Determination of physical properties at the center of the source(s),
   !   e.g. pressure components, density, degree of equilibration.
-  ! * GiBUU-run does not immediatly stop after onset of equilibration. 
-  !   First source(s) info is printed out at several times, and then 
+  ! * GiBUU-run does not immediatly stop after onset of equilibration.
+  !   First source(s) info is printed out at several times, and then
   !   GiBUU-run is terminated.
-  ! * For high energy runs analysis routine is called again after 
+  ! * For high energy runs analysis routine is called again after
   !   the forced decays.
-  ! * Statistical fragmentation is performed afterwards using an extra 
+  ! * Statistical fragmentation is performed afterwards using an extra
   !   program (see workingCode/testRun/auswerteTools/clusters/smm/smm_Main.f90).
   !***************************************************************************
   subroutine DoSourceAnalysis(realPV,time,delta_T,FinalFlag,targetNuc,projectileNuc)
@@ -233,7 +233,7 @@ contains
     use initHadron,         only : b_had => b
     use RMF,                only : getRMF_flag
     use inputGeneral,       only : timeForOutput,timeSequence
-    use determineSource,    only : Get_FragmentingSource,deallocate_source,& 
+    use determineSource,    only : Get_FragmentingSource,deallocate_source,&
          & Get_InitialPosX
     use sourceProperties
 
@@ -257,10 +257,10 @@ contains
     logical, save :: impact_Flag=.true.
     logical, save :: FirstTimeCall=.true.
     !-----------------------------------------------------------------------
-    ! Set the impact parameter of the actual run. Unfortunatly, the 
-    ! impact parameter between heavyIon and Hadron eventTypes is defined 
-    ! differently. For this reason we have two different variables from 
-    ! the corresponding init-modules (see the use declarations) for the 
+    ! Set the impact parameter of the actual run. Unfortunatly, the
+    ! impact parameter between heavyIon and Hadron eventTypes is defined
+    ! differently. For this reason we have two different variables from
+    ! the corresponding init-modules (see the use declarations) for the
     ! same physical quantity.
     !-----------------------------------------------------------------------
     if (impact_Flag) then
@@ -295,16 +295,16 @@ contains
        ! determine again source(s) after forced decays:
        if ( present(projectileNuc) ) then
 
-          call Get_FragmentingSource(numEnsemples,numParticles,& 
-               &  SelectionMethod,betaChoice,hyperSource, & 
-               &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, & 
+          call Get_FragmentingSource(numEnsemples,numParticles,&
+               &  SelectionMethod,betaChoice,hyperSource, &
+               &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, &
                &  Numsources,sourceType, &
                &  targetNuc,projectileNuc)
        else
 
-          call Get_FragmentingSource(numEnsemples,numParticles,& 
-               &  SelectionMethod,betaChoice,hyperSource, & 
-               &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, & 
+          call Get_FragmentingSource(numEnsemples,numParticles,&
+               &  SelectionMethod,betaChoice,hyperSource, &
+               &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, &
                &  Numsources,sourceType,targetNuc)
        endif
 
@@ -314,7 +314,7 @@ contains
 
        ! overwrite output files after forced decays:
        call WriteSourceInfo(time,stossParameter,isut,NumSources,hyperSource,FinalFlag)
-       call printParticleVector(isut,numEnsemples,numParticles,& 
+       call printParticleVector(isut,numEnsemples,numParticles,&
             &                   time,sourceType,realPV)
 
        ! deallocate fields:
@@ -323,7 +323,7 @@ contains
 
        RETURN
 
-    endif 
+    endif
     !~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     if (time.ge.timeForOutput) then
@@ -340,15 +340,15 @@ contains
           !-----------------------------------------------------------------
           if ( present(projectileNuc) ) then
 
-             call Get_FragmentingSource(numEnsemples,numParticles,& 
-                  &  SelectionMethod,betaChoice,hyperSource, & 
-                  &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, & 
+             call Get_FragmentingSource(numEnsemples,numParticles,&
+                  &  SelectionMethod,betaChoice,hyperSource, &
+                  &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, &
                   &  Numsources,sourceType, &
                   &  targetNuc,projectileNuc)
           else
 
-             call Get_FragmentingSource(numEnsemples,numParticles,& 
-                  &  SelectionMethod,betaChoice,hyperSource, & 
+             call Get_FragmentingSource(numEnsemples,numParticles,&
+                  &  SelectionMethod,betaChoice,hyperSource, &
                   &  realPV,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, &
                   &  Numsources,sourceType,targetNuc)
           endif
@@ -356,7 +356,7 @@ contains
           !-----------------------------------------------------------------
           ! (2) determine local quantities of the source(s):
           ! * calculation of pressure and density fields on the grid.
-          ! * determination of the pressure & density fields 
+          ! * determination of the pressure & density fields
           !   at the center of the source(s).
           ! * Determination of the average equilibration.
           ! * Determination of internal energy of the source(s).
@@ -366,20 +366,20 @@ contains
              call sourceProperties_Main(time,NumEnsemples,NumSources,realPV)
           endif
           call WriteSourceInfo(time,stossParameter,isut,NumSources,hyperSource)
-          call printParticleVector(isut,numEnsemples,numParticles,& 
+          call printParticleVector(isut,numEnsemples,numParticles,&
                &                   time,sourceType,realPV)
 
           !-----------------------------------------------------------------
-          !(4) Deallocate "type(quelle) TheSource" and its properties 
+          !(4) Deallocate "type(quelle) TheSource" and its properties
           !    before the next call at time= t + timeSequence
           !-----------------------------------------------------------------
           call deallocate_source
           if ( getRMF_Flag() ) call deallocate_sourceFields
-          
+
        endif
 
        !--------------------------------------------------------------------
-       !(4) Stop GiBUU-run after particlevector printed out 10 times after 
+       !(4) Stop GiBUU-run after particlevector printed out 10 times after
        !    onset of equilibration.
        !--------------------------------------------------------------------
        if (iprint==MaxTimePrinting) then
@@ -430,7 +430,7 @@ contains
     logical :: flag
     logical, save :: init_getSMM_flag=.true.
 
-    NAMELIST /SMM_input/ SMM_flag, rho_cutoff, spectator_cutoff, A_cutoff, & 
+    NAMELIST /SMM_input/ SMM_flag, rho_cutoff, spectator_cutoff, A_cutoff, &
          & SelectionMethod,betaChoice,MaxTimePrinting,DetailedHyperonOutput, &
          & hyperSource
 
@@ -446,10 +446,10 @@ contains
           write(*,*) ' Set spectator_cutoff to', spectator_cutoff,'.'
           write(*,*) ' Set A_cutoff to', A_cutoff,'.'
           write(*,*) ' Set SelectionMethod to', SelectionMethod,'.'
-          write(*,*) ' Set betaChoice to', betaChoice,'.'     
+          write(*,*) ' Set betaChoice to', betaChoice,'.'
           write(*,*) ' Max. Number of printing', MaxTimePrinting,'.'
           write(*,*) ' DetailedHyperonOutput ',DetailedHyperonOutput,'.'
-          write(*,*) ' hyperSource ', hyperSource 
+          write(*,*) ' hyperSource ', hyperSource
           write(*,*) ' Single/double Precision ?', singlePrecision,'.'
        endif
        call Write_ReadingInput('SMM_input',1)
@@ -470,7 +470,7 @@ contains
   ! PURPOSE
   ! Prints out the particle vector.
   !*************************************************************************
-  subroutine printParticleVector(isut,NumEns,NumPart,time,& 
+  subroutine printParticleVector(isut,NumEns,NumPart,time,&
        &                         sourceType,realPV,FinalFlag)
     use particleDefinition
     use output, only : realTochar
@@ -494,7 +494,7 @@ contains
              write(103,*) NumEns, 1
           end if
           write(103,*) '# time = ',time,' fm/c'
-          write(103,*) 
+          write(103,*)
        endif
 
        do i = 1,size(realPV,dim=1) ! ensembles
@@ -509,21 +509,21 @@ contains
              if(realPV(i,j)%antiparticle) ID = -ID
 
              if ( flag ) then !detailed output for hyperons & pions
-                write(103,49) & 
+                write(103,49) &
                      & realPV(i,j)%number, &
                      & ID, &
-                     & realPV(i,j)%productionTime, & 
-                     & realPV(i,j)%lastCollisionTime, & 
-                     & realPV(i,j)%history, & 
-                     & realPV(i,j)%charge, & 
-                     & realPV(i,j)%mass, & 
+                     & realPV(i,j)%productionTime, &
+                     & realPV(i,j)%lastCollisionTime, &
+                     & realPV(i,j)%history, &
+                     & realPV(i,j)%charge, &
+                     & realPV(i,j)%mass, &
                      & realPV(i,j)%position(1:3),&
                      & realPV(i,j)%momentum(1:3),i,isut+1
 
              else       ! standard output for all other emitted particles
                 write(103,50) ID, &
-                     & realPV(i,j)%charge, & 
-                     & realPV(i,j)%mass, & 
+                     & realPV(i,j)%charge, &
+                     & realPV(i,j)%mass, &
                      & realPV(i,j)%position(1:3), &
                      & realPV(i,j)%momentum(1:3),i,isut+1
              end if
@@ -532,7 +532,7 @@ contains
        enddo
 
        close(103)
-       
+
     else
 
        open(105,file='auauFile_noresonances.dat',position='Append')
@@ -545,9 +545,9 @@ contains
              if(realPV(i,j)%antiparticle) ID = -ID
 
              write(105,51) ID, &
-                  & sourceType(i,j), & 
-                  & realPV(i,j)%charge, & 
-                  & realPV(i,j)%mass, & 
+                  & sourceType(i,j), &
+                  & realPV(i,j)%charge, &
+                  & realPV(i,j)%mass, &
                   & realPV(i,j)%position(1:3), &
                   & realPV(i,j)%momentum(1:3),i,isut+1, time
           enddo
@@ -565,4 +565,3 @@ contains
   end subroutine printParticleVector
 
 end module sourceAnalysis
-

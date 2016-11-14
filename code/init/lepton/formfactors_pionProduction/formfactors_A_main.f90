@@ -1,16 +1,16 @@
 !***************************************************************************
-!****m* /formfactors_A_main 
+!****m* /formfactors_A_main
 ! NAME
-! module formfactors_A_main 
+! module formfactors_A_main
 !
 ! PURPOSE
 ! This module administrates the formfactors for gamma* N -> N pi.
 !
 ! USES
-! * formfactors_A_pi0_neutron 
-! * formfactors_A_pi0_protron 
-! * formfactors_A_piPlus_neutron 
-! * formfactors_A_piMinus_proton 
+! * formfactors_A_pi0_neutron
+! * formfactors_A_pi0_protron
+! * formfactors_A_piPlus_neutron
+! * formfactors_A_piMinus_proton
 !
 ! INPUTS
 ! None
@@ -33,14 +33,14 @@ contains
   ! This function returns the invariant Amplitudes A_1, ... A_6 of the MAID analysis.
   !
   ! INPUTS
-  ! * real  ::  thetaIn    ! Theta scattering angle of the pion relative to q in the CM system of the hadronic vertex 
+  ! * real  ::  thetaIn    ! Theta scattering angle of the pion relative to q in the CM system of the hadronic vertex
   ! * real  ::  QSquaredIn ! Q^2=-q^mu q_mu  of the gamma
   ! * real  ::  sIn        ! Mandelstam s of the hadronic vertex: gamma* N-> pi N
   ! * integer :: pionCharge_out,nucCharge_out ! charges of outgoing pion and nucleon
   !
   ! OUTPUT
-  ! complex, dimension(1:6) :: getA   ! The complex amplitudes A_1 to A_6 in units of: 
-  ! * [GeV**-2] for A(1) 
+  ! complex, dimension(1:6) :: getA   ! The complex amplitudes A_1 to A_6 in units of:
+  ! * [GeV**-2] for A(1)
   ! * [GeV**-4] for A(2) and A(5)
   ! * [GeV**-3] for A(3), A(4) and A(5)
   !
@@ -52,7 +52,7 @@ contains
     use formfactors_A_piMinus_proton, only: getA_piMinus_proton
 
     complex, dimension(1:6) :: getA
-    real  ::  thetaIn    ! Theta scattering angle of the pion relative to q in the CM system of the hadronic vertex 
+    real  ::  thetaIn    ! Theta scattering angle of the pion relative to q in the CM system of the hadronic vertex
     real  ::  QSquaredIn,QSquared ! Q^2=-q^mu q_mu  of the gamma
     real  ::  sIn        ! Mandelstam s of the hadronic vertex: gamma* N-> pi N
     integer :: pionCharge_out,nucCharge_out ! charges of outgoing pion and nucleon
@@ -93,7 +93,7 @@ contains
           getA=0.
           call error()
        end select
-    case default 
+    case default
        call error()
     end select
 

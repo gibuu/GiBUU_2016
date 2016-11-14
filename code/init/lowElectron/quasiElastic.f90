@@ -3,7 +3,7 @@
 ! NAME
 ! module quasiElastic_electron
 ! PURPOSE
-! * Evaluates cross sections for gamma N -> N'  
+! * Evaluates cross sections for gamma N -> N'
 ! * For details see the notes about this in the work of Oliver Buss
 !***************************************************************************
 module quasiElastic_electron
@@ -23,7 +23,7 @@ module quasiElastic_electron
   logical,save :: vac_kinematics=.false.
   !
   ! PURPOSE
-  ! Evaluates the cross section with matrix element in medium, but kinematical 
+  ! Evaluates the cross section with matrix element in medium, but kinematical
   ! stuff not.
   !*************************************************************************
 
@@ -67,7 +67,7 @@ module quasiElastic_electron
   logical,save :: simple_BW=.false.
   !
   ! PURPOSE
-  ! * If .true. then we use for the nucleon a simple Breit-Wigner with the 
+  ! * If .true. then we use for the nucleon a simple Breit-Wigner with the
   ! width defined in "width".
   ! * If .false. then we use the module "spectralFunc".
   !*************************************************************************
@@ -126,26 +126,26 @@ contains
 
   end subroutine initInput
 
-  
+
   !*************************************************************************
   !****f* quasiElastic_electron/dSigmadcosTheta_l_dE_l_BW_eN
   ! NAME
   ! function dSigmadcosTheta_l_dE_l_BW_eN(eN,pf,nuc_bareMass) result(sigma)
   !
   ! PURPOSE
-  ! * Evaluates cross sections for e N -> e' N'  
+  ! * Evaluates cross sections for e N -> e' N'
   ! * For details see the notes about this in the work of Oliver Buss
-  ! * Evaluates dSigma/dcos(theta_lepton)/dE_lepton by replacing the delta 
+  ! * Evaluates dSigma/dcos(theta_lepton)/dE_lepton by replacing the delta
   !   function delta(p'^2-m'^2) by a Breit-Wigner function or a real spectral
   !   function
   !
   ! INPUTS
-  ! * type(electronNucleon_event) :: eN  -- underlying electron nucleon event 
+  ! * type(electronNucleon_event) :: eN  -- underlying electron nucleon event
   !
   ! OUTPUT
   ! * real, dimension(0:3) :: pf   -- outgoing nucleon 4-momenta
   ! * real                 :: nuc_bareMass        --  bare mass of nucleon
-  ! * The cross section "dSigmadcosTheta_l_dE_l_BW_eN" is given in units 
+  ! * The cross section "dSigmadcosTheta_l_dE_l_BW_eN" is given in units
   !   of mb/GeV=mcb/MeV
   !
   !*************************************************************************
@@ -172,7 +172,7 @@ contains
     real                 :: pi_vec_abs  !, pf_vec_abs
     real :: dummy,mi,mf
     real :: kinematics
-    integer, save :: zerocount    
+    integer, save :: zerocount
     logical :: flagOk
 
     if(initFlag) then
@@ -181,10 +181,10 @@ contains
        initFlag=.false.
     end if
 
-    ! Initial lepton: Assume lepton in z-direction 
+    ! Initial lepton: Assume lepton in z-direction
     lin=eN%lepton_in%momentum
 
-    ! Initial nucleon 
+    ! Initial nucleon
     pin=eN%nucleon%momentum
     targetNuc=en%nucleon
 
@@ -200,7 +200,7 @@ contains
     ! Final lepton
     lf=en%lepton_out%momentum
 
-    ! Final Nucleon: Momentum conservation 
+    ! Final Nucleon: Momentum conservation
     pf=pin+lin-lf
 !     pf_vec_abs=abs3(pf)
 
@@ -212,7 +212,7 @@ contains
        sigma=0.
        return
     end if
-     
+
     ! Evaluate the bare mass of the nucleon:
     dummy=scapot(1,targetNuc%charge,pf,targetNuc%position,nuc_bareMass)
 
@@ -249,7 +249,7 @@ contains
             & *hbarc**2*10.
     end if
 
-    ! Converting to units 
+    ! Converting to units
     ! 1/GeV**2=1/1000**2/MeV**2=1/1000**2/(1/197 fm**2)=(197/1000)**2 fm**2= (197/1000)**2 * 10 mb
 
     sigma=sigma*hbarc**2*10. ! Now the cross section is given in units of mb/GeV
@@ -264,7 +264,7 @@ contains
   ! real function matrixElement(pin,pf,lin,lf,nuc_charge)
   !
   ! PURPOSE
-  ! * Evaluates matrix element for e N -> e' N'  
+  ! * Evaluates matrix element for e N -> e' N'
   ! * For details see the notes about this in the work of Oliver Buss
   !
   ! INPUTS
@@ -273,7 +273,7 @@ contains
   ! * real, dimension(0:3) :: lin,lf      -- incoming and outgoing lepton 4-momentum
   !
   ! NOTES
-  ! Note that the lepton tensor does not include the factor of m_e^2, 
+  ! Note that the lepton tensor does not include the factor of m_e^2,
   ! therefore it is not included in this matrixelement.
   !*************************************************************************
   real function matrixElement(pin,pf,lin,lf,nuc_charge)

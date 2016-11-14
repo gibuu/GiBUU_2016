@@ -5,10 +5,10 @@
 !
 ! PURPOSE
 ! Analytical Phase Volume Calculation
-! cf.: G.I. Kopyolv, Nucl.Phys. 36(1962)425 
+! cf.: G.I. Kopyolv, Nucl.Phys. 36(1962)425
 !***************************************************************************
 module um1
-  
+
   implicit none
   private
 
@@ -29,8 +29,8 @@ module um1
      &          117.3900, 108.3400,  86.1630,  60.2200,  37.5480,&
      &           21.1360,  10.8440,   5.1127,   2.2294,   0.90436,&
      &            0.34295,  0.12210,  0.040966, 0.012996, 0.0039103/)
-  
-  
+
+
 contains
   !*************************************************************************
   !****f* um1/sn
@@ -49,7 +49,7 @@ contains
 
     real :: DMU(21),DTAU(21),DMN(21),DMI(21),DPN(21),DEN(21),DLEV,DPRO
     real :: AMW(21),AMF(21)
-    integer :: i,INDC,IP,IWAY,j,k,l,n,n1,NM 
+    integer :: i,INDC,IP,IWAY,j,k,l,n,n1,NM
 
     real :: AMX
 
@@ -75,7 +75,7 @@ contains
 !            PRINT 20,IP,AMF(IP)
 ! 20         FORMAT(8X,' IP=',I4,6X,'AMF=',F12.5)
     end DO
-    !             
+    !
     !              --- MAIN CALCULATIONS ---
     !
     N1=N-1
@@ -107,7 +107,7 @@ contains
 8      DPRO=DPRO*DPN(K)
     end DO
 !         PRINT 700,DPRO,CK(N),DTAU(N)
-! 700     FORMAT(3X,'DPRO=',E10.3,' CK(N)=',E10.3,' DTAU(N)=',E10.3)  
+! 700     FORMAT(3X,'DPRO=',E10.3,' CK(N)=',E10.3,' DTAU(N)=',E10.3)
     SN=CK(N)*(DTAU(N)**(N-2))*DPRO/DMN(N)
     RETURN
 

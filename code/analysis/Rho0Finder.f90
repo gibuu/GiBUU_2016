@@ -28,7 +28,7 @@ module Rho0Finder
   logical, save :: TotChargeZero = .true.
   logical, save :: UseProbs  = .false.
   logical, save :: UseProbsBool  = .false.
-  !--- 
+  !---
 
 contains
 
@@ -65,7 +65,7 @@ contains
     initFlag=.false.
 
   end subroutine readInput
-  
+
 
 
   !*************************************************************************
@@ -78,10 +78,10 @@ contains
   ! Given the list of detected particles in a specific event, it returns
   ! a particle list of (possible) reconstructed rho0.
   !
-  ! If the particles have a detection probability less than 1, the 
+  ! If the particles have a detection probability less than 1, the
   ! probability of the rho0 is the product of the two decay candidates.
   ! One has the option to multiply this probability
-  ! with 1 minus the detection probability of every other 
+  ! with 1 minus the detection probability of every other
   ! particle.
   !
   ! INPUTS
@@ -96,7 +96,7 @@ contains
   !
   ! NOTES
   ! * At the moment, this routine just implements the method used by
-  !   the Hermes experiment, cf. M.Tytgat, PhD thesis (Diffractive 
+  !   the Hermes experiment, cf. M.Tytgat, PhD thesis (Diffractive
   !   production of rho0 and omega mesons at Hermes), p.116f.
   !   A more general definition with some steering parameters (maybe
   !   via jobCard) is anticipated.
@@ -113,12 +113,12 @@ contains
   ! * Abuse: x-position --> missing mass M_X
   ! * Abuse: y-position --> Delta E
   ! * Abuse: z-position --> DecayTime
-  ! * Abuse: scaleCS --> probability, that the pions really come out 
+  ! * Abuse: scaleCS --> probability, that the pions really come out
   !   of a decay (1.0, if both pions are stored in
   !   PIL_rho0Dec and 0.5, if only one pion is stored and 0, if we
   !   constructed a rho0, which does not stem from a decay [or we forgot
   !   to switch on storeRho0Info in collisionterm]).
-  ! * Abuse: offShellParameter --> Decay angle theta 
+  ! * Abuse: offShellParameter --> Decay angle theta
   !   (cf. CalculateDecayAngle)
   !*************************************************************************
 
@@ -137,7 +137,7 @@ contains
 
     real, dimension(:), allocatable :: Prob
     type(particle), POINTER :: Part
-    
+
     integer :: nParts, i1,i2,i3
     real :: probRho, mRho2, mX2, DeltaE
     real, dimension(0:3) :: momRho,momX
@@ -198,9 +198,9 @@ contains
              do while (ASSOCIATED(pNode3))
                 if (i3.eq.i1) goto 103
                 if (i3.eq.i2) goto 103
-                
-                probRho=probRho*(1.0-Prob(i3)) 
-                
+
+                probRho=probRho*(1.0-Prob(i3))
+
 103             pNode3 => pNode3%next
                 i3 = i3+1
              end do ! Loop3
@@ -210,7 +210,7 @@ contains
 
           momRho = pNode1%V%momentum+pNode2%V%momentum
           mRho2 = momRho(0)**2-Sum(momRho(1:3)**2)
-          
+
 !          if (mRho2 .lt. 0.6**2) goto 102
 !          if (mRho2 .gt. 1.0**2) goto 102
 
@@ -220,7 +220,7 @@ contains
           DeltaE=(mX2-mN**2)/(2*mN)
 
 !          if (DeltaE.gt.0.6) goto 102
-          
+
           call CalculateDecayAngle(thetaDecay)
 
 
@@ -246,7 +246,7 @@ contains
              end if
           else if (PIL_rho0Dec_GET(pNode2%V%number,nr2,tC,tP,tF)) then
              if (pNode1%V%number .eq. nr2) then
-                write(*,*) 'oops, why not earlier?' 
+                write(*,*) 'oops, why not earlier?'
                 call TRACEBACK()
                 Part%scaleCS = 1.0
              else
@@ -264,7 +264,7 @@ contains
              Part%formationTime    = tF
              Part%position(3) = pNode2%V%productionTime    ! abuse !!!
           end if
-          
+
           call ParticleList_APPEND(PartsOut,Part)
 
 102       pNode2=>pNode2%next
@@ -287,8 +287,8 @@ contains
     ! Calculate the decay angle theta in the "s-channel helicity system", i.e.
     ! the angle between the positive z-axis and the pi+ momentum
     ! in the rest frame of the rho (-z axis defined by recoil particle)
-    ! 
-    ! The angle phi (i.e. the azimuthal angle of the pi+ in respect of the 
+    !
+    ! The angle phi (i.e. the azimuthal angle of the pi+ in respect of the
     ! photon-recoil plane) is not calculated
     ! INPUTS
     ! * momIn
@@ -309,13 +309,13 @@ contains
 !      real :: theta_rot,phi_rot
 
       momRecoil = momIn - momRho
-      
+
       if (pNode1%V%charge.gt.0) then
          momPi = pNode1%V%momentum
       else
-         momPi = pNode2%V%momentum 
+         momPi = pNode2%V%momentum
       end if
-      
+
       beta = lorentzCalcBeta (momRho)
       call lorentz(beta,momRecoil)
       call lorentz(beta,momPi)

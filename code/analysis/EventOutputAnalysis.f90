@@ -162,7 +162,7 @@ contains
     if (Interval>0) then
       ! output at fixed interval
       doOutput = (mod(timestep,Interval)==0)
-    else 
+    else
       ! only final output
       doOutput = (timestep>numTimeSteps)
     end if

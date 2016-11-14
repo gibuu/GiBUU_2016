@@ -4,7 +4,7 @@
 ! module JPsiNucleon
 !
 ! PURPOSE
-! Includes the cross sections for J/Psi-nucleon 
+! Includes the cross sections for J/Psi-nucleon
 ! elastic scattering and J/Psi dissociation
 !
 ! Public routines:
@@ -30,30 +30,30 @@ contains
   ! subroutine JPsiNuc(srts,teilchenIN,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
   !
   ! PURPOSE
-  ! Evaluates the cross sections for 
-  ! * J N -> J N, 
-  ! * J N -> Lambda_c Dbar, 
-  ! * J N -> Lambda_c D*bar , 
+  ! Evaluates the cross sections for
+  ! * J N -> J N,
+  ! * J N -> Lambda_c Dbar,
+  ! * J N -> Lambda_c D*bar ,
   ! * J N -> N D Dbar
   ! and returns also a "preevent":
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut    !   outgoing particles
-  ! 
-  ! The cross sections are based on calculations of A. Sibirtsev (parameterized by A.L.). 
+  !
+  ! The cross sections are based on calculations of A. Sibirtsev (parameterized by A.L.).
   !
   ! INPUTS
   ! * real, intent(in)                              :: srts                  ! sqrt(s) in the process
   ! * type(particle),dimension(1:2), intent(in)     :: teilchenIn            ! colliding particles
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! OUTPUT
   ! * real, intent(out)                             :: sigmaTot              ! total Xsection
   ! * real, intent(out)                             :: sigmaElast            ! elastic Xsection
-  ! 
+  !
   !***************************************************************************
   subroutine JPsiNuc(srts,teilchenIN,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
-  use idTable, only: nucleon,JPsi,dMeson,dBar,dStarBar,Lambda_cPlus 
+  use idTable, only: nucleon,JPsi,dMeson,dBar,dStarBar,Lambda_cPlus
   use particleDefinition
   use preEventDefinition, only : preEvent
   use twoBodyTools, only: velocity_correction,p_lab,searchInInput,convertToAntiParticles
@@ -72,16 +72,16 @@ contains
 
   !***** Cross sections: **********************************
   real, dimension(1:4) :: sigma
-                         ! 1 --- J N -> J N (elastic), 
-                         ! 2 --- J N -> Lambda_c Dbar, 
-                         ! 3 --- J N -> Lambda_c D*bar , 
-                         ! 4 --- J N -> N D Dbar 
+                         ! 1 --- J N -> J N (elastic),
+                         ! 2 --- J N -> Lambda_c Dbar,
+                         ! 3 --- J N -> Lambda_c D*bar ,
+                         ! 4 --- J N -> N D Dbar
   !********************************************************
 
   ! Local variables
-  real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities 
+  real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
-  type(particle) :: jpsi_particle, nucleon_particle    
+  type(particle) :: jpsi_particle, nucleon_particle
   logical :: antiParticleInput, failFlag
 
   ! Initialize output
@@ -156,13 +156,13 @@ contains
   ! subroutine evaluateXsections
   !
   ! PURPOSE
-  ! Evaluates J N -> J N, J N -> Lambda_c Dbar, J N -> Lambda_c D*bar  
-  ! and J N -> N D Dbar cross sections 
+  ! Evaluates J N -> J N, J N -> Lambda_c Dbar, J N -> Lambda_c D*bar
+  ! and J N -> N D Dbar cross sections
   !
   ! NOTES
   ! There are no resonance contributions to JPsi N scattering.
   !**************************************************************
-  
+
   subroutine evaluateXsections
 
     use parametrizationsBarMes, only : JPsiN
@@ -186,7 +186,7 @@ contains
   !
   ! PURPOSE
   ! Chooses randomly one of possible outgoing channels in JPsi-nucleon
-  ! collision. Also the charges of outgoing particles are selected. 
+  ! collision. Also the charges of outgoing particles are selected.
   !**************************************************************
   subroutine makeDecision
       use random, only : rn
@@ -197,7 +197,7 @@ contains
 
       cut=rn()*sigmaTot ! random number for Monte-Carlo decision
 
-      If(sigma(1) >= cut) then                ! Elastic scattering       
+      If(sigma(1) >= cut) then                ! Elastic scattering
 
          teilchenOut(1)%Id=JPsi
          teilchenOut(2)%Id=nucleon
@@ -239,21 +239,21 @@ contains
 
       end if
 
-  end subroutine makeDecision         
+  end subroutine makeDecision
 
 
 
-    !********************************************************************** 
+    !**********************************************************************
     !****s* JPsiNuc/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
-    ! Writes all cross sections to file as function of srts and plab [GeV] 
+    ! Writes all cross sections to file as function of srts and plab [GeV]
     ! Filenames:
-    ! * 'JPsiN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'JPsiN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'JPsiN_diss.dat'        : outgoing channels with JPsi dissociation
-    !********************************************************************** 
+    !**********************************************************************
     subroutine makeOutPut
 
       logical, save :: initFlag=.true.

@@ -22,9 +22,9 @@ module Coll_gammaN
   PUBLIC :: DoColl_gammaN_Py, DoColl_gammaN_Fr
   PUBLIC :: DoColl_gammaN_Toy
   PUBLIC :: DoColl_gammaN_verbose
-  
+
 contains
-  
+
   !*************************************************************************
   !****s* Coll_gammaN/DoColl_gammaN_Py
   ! NAME
@@ -46,7 +46,7 @@ contains
   ! * integer                     :: EventClass -- reported class of this event
   !   (cf. PYTHIA encoding of events)
   ! * logical                     :: flagOK   -- .TRUE., if everything okay
-  ! 
+  !
   ! NOTES
   ! The returned cross section is sigma_T(y,Q^2) + eps * sigma_L(y,Q^2) in mb.
   !
@@ -54,16 +54,16 @@ contains
   ! multiply this returned cross section with
   !   \alpha/(2\pi) K/(Q^2 \nu^2) (E E')/\pi cT
   ! with cT ~ 1+(1-y)^2 in order to get the value of
-  !   d\sigma/(dE'd\cos\theta) in mb/GeV 
+  !   d\sigma/(dE'd\cos\theta) in mb/GeV
   !
-  ! PYTHIA fails primarily below W=2GeV. Therefore it does not make sense to  
+  ! PYTHIA fails primarily below W=2GeV. Therefore it does not make sense to
   ! reduce the hard wired cut in this routine. You may increase it with
   ! the parameter MinW; if you *REALLY* know what you are doing, you may
   ! also decrease it this way, as e.g. for DIS events below W=2GeV.
   !
   !*************************************************************************
   subroutine DoColl_gammaN_Py(eNev,outPart,flagOK, rVMD, DoDifr, Cross,EventClass,MinW)
-    
+
     use CollGetLeading
     use PIL_rhoDiff
     use output
@@ -139,7 +139,7 @@ contains
     Cross = 0.
     flagOK = .FALSE.
     EventClass = 0
-    
+
     ! set up PYTHIA
 
 
@@ -178,7 +178,7 @@ contains
     ! adjust the pThat cut off according W:
 
     CKIN05 = CKIN(5)
-    if (2*CKIN(5).ge.Wfree) CKIN(5) = Wfree/2-1e-3 
+    if (2*CKIN(5).ge.Wfree) CKIN(5) = Wfree/2-1e-3
 
     ! set some values, Pythia 6.4 can not live without !!!!
 
@@ -234,7 +234,7 @@ contains
     enddo
 
     call CollectXS_Class(Cross, 0)
-      
+
     ! generate THE EVENT:
 
     call InitPythia(eNev,.TRUE.,0,DoDifr)
@@ -300,7 +300,7 @@ contains
 !!$       call PYGIVE('MINT(123)=')
 !!$       call PYGIVE('MINT(17)=')
 !!$       call PYGIVE('MINT(18)=')
-!!$       
+!!$
 !!$
 !!$       call PYLIST(2)
 
@@ -309,7 +309,7 @@ contains
        call GetJetsetVecPYEDIT
 
     end if
-       
+
     call GetLeading_PY         ! find leading particles
 
 !    call PYLIST(2)
@@ -344,7 +344,7 @@ contains
     end if
 
     !...Copy Particles to ouput-vector
-       
+
     call SetVectorFromPYJETS(outPart, Q2, iDiffrRho)
 
     if (DoColl_gammaN_verbose) call WriteParticle(6,1,outPart)
@@ -388,7 +388,7 @@ contains
 
 
     select case (MSTP(14))
-    case (30) 
+    case (30)
        EventClass = MSTI(9)
     case (26)
        EventClass = 4
@@ -439,22 +439,22 @@ contains
   ! OUTPUT
   ! * type(particle),dimension(:) :: outPart  -- outgoing particles
   ! * logical                     :: flagOK   -- .TRUE., if everything okay
-  ! 
+  !
   ! NOTES
-  ! With Q2=Q^2 > 0 we have a projectile with imaginary mass. 
+  ! With Q2=Q^2 > 0 we have a projectile with imaginary mass.
   ! The VMD prescription holds for Q^2=0 with m_V=0.
   !
-  ! Here, with Q2>0,  
-  ! the mass of the projectile (mass1) can be choosen to be =0 or 
+  ! Here, with Q2>0,
+  ! the mass of the projectile (mass1) can be choosen to be =0 or
   ! to be massArr(iTyp) = /0.76850, 0.78194, 1.01940, 3.09688/.
   !
   ! Events of the kind V N -> pi0 pi0 R where both pi0 come from a cluster->2
   ! decay are excluded (by returning "flagOK=.false.")
   !*************************************************************************
   subroutine DoColl_gammaN_Fr(inPart,outPart,flagOK, W,Q2,eps, pcm,beta, iTyp)
-    
+
     use CollGetLeading
-    
+
     type(particle),             intent(in)   :: inPart   ! incoming nucleon
     type(particle),dimension(:),intent(inout):: outPart  ! outgoing particles
     logical,                    intent(out)  :: flagOK
@@ -472,7 +472,7 @@ contains
     real RO1, EXMA
     character*4 PACD
     SAVE /FRCODES/
-    
+
     COMMON/LUDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
     integer MSTU,MSTJ
     real PARU,PARJ
@@ -570,57 +570,57 @@ contains
 
 ! -- Projectile: Vector meson --
 
-    KCD(1) = iKF1             
+    KCD(1) = iKF1
     NPROT(1) = 0
     NNUC(1) = 1
     EXMA(1,1) = mass1             ! Fritiof sets mass to default !!!
     EXMA(1,2) = mass1
-    
+
 ! -- Target: proton/neutron --
-    
+
     KCD(2) = iKF2
     NPROT(2) = InPart%charge  ! proton/neutron
     NNUC(2) = 1
     EXMA(2,1) = mass2         ! Fritiof sets mass to default !!!
-    EXMA(2,2) = mass2 
+    EXMA(2,2) = mass2
 
 
 !    write(*,*) '===',mass1,mass2
 
 
-!...Start the Event Loop    
+!...Start the Event Loop
 
     iTry = 0
     do
        outPart%ID = 0 ! reset outgoing particles
-       
+
        iTry=iTry+1
        if(iTry.ge.100) then
           write(*,*) 'DoColl_GammaN_Fr: itry=',iTry
           return
        endif
-       
+
        if (useJetSetVec) call GetJetsetVecINIT
-       
+
 !...Generate THE EVENT:
 
        call FRHADHAD('CMS','NEW1','NEW2',W, mass1,mass2)
-       
+
        if (MSTU(24).ne.0) then
           if (iTRY.eq.99) write(*,*) 'DoColl_GammaN_Fr: MSTU(24).ne.0)',MSTU(24)
           cycle
        endif
-       
+
        if (useJetSetVec) then
           call GetJetsetVec(.FALSE.)
 !          call PYLIST(2)
 !          call GetJetSetVec_List(6,1,N)
 
           call GetJetsetVecCheckT(-1d-5)
-          
+
           call GetJetsetVecPYEDIT
        endif
-       
+
        call GetLeading_FR ! find leading particles
        call LUEDIT(1)     ! clean up event list
 
@@ -629,25 +629,25 @@ contains
        phi = atan2(pcm(2),pcm(1))
        theta = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))
        call LUROBO(theta, phi, beta(1),beta(2),beta(3))
-       
+
        if (useJetSetVec) then
           call GetJetsetVecPYROBO(theta,phi, beta(1),beta(2),beta(3))
-          
+
 !         call PYLIST(2)
 !         call GetJetSetVec_List(6,1,N)
 !         stop
        end if
 
 !...Copy Particles to ouput-vector
-       
+
        call SetVectorFromPYJETS(outPart, Q2)
 
 !...exit the loop
        exit
-      
+
     end do
 
-   
+
     flagOk = .TRUE.
 
     if (N.eq.3) then
@@ -669,10 +669,10 @@ contains
           endif
        endif
     end if
-   
-   
+
+
   end subroutine DoColl_gammaN_Fr
- 
+
   !*************************************************************************
   !****s* Coll_gammaN/DoColl_gammaN_Toy
   ! NAME
@@ -687,9 +687,9 @@ contains
   ! OUTPUT
   ! * type(particle),dimension(:) :: outPart  -- outgoing particles
   ! * logical                     :: flagOK   -- .TRUE., if everything okay
-  ! 
+  !
   ! NOTES
-  ! * This generates a single pion according to a very simple toy model. 
+  ! * This generates a single pion according to a very simple toy model.
   !   There are no conservations: baryon number, energy, momentum etc is
   !   violated
   !
@@ -744,11 +744,11 @@ contains
 
     ! select momenta according MC distributions:
 
-    do 
+    do
        pT2 = rnExp(-3.0)
        phi = twopi*rn()
        z = rn()
-       
+
        pz = (z*nu)**2-outPart(1)%mass**2-pT2
        if (pz.ge.0.0) exit
     end do
@@ -773,11 +773,11 @@ contains
 !    call MP_write(6,11,14)
 
     ! boost to final system:
-    
+
     phiB   = atan2(eNev%pcm(2),eNev%pcm(1))
     thetaB = atan2(sqrt(eNev%pcm(1)**2+eNev%pcm(2)**2),eNev%pcm(3))
-    
-    call MP_ROBO(11,14, thetaB, phiB, eNev%betacm(1),eNev%betacm(2),eNev%betacm(3) ) 
+
+    call MP_ROBO(11,14, thetaB, phiB, eNev%betacm(1),eNev%betacm(2),eNev%betacm(3) )
 
 !    call MP_write(6,11,14)
 !    stop

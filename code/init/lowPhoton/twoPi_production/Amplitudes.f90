@@ -6,14 +6,14 @@
 ! Calculates 2pi photoproduction amplitudes.
 !*****************************************************************************
 module amplitudes_2Pi
-  
+
   implicit none
   PRIVATE
-  
+
   type dos
      complex, dimension(2,2)::t1,t2
   end type dos
-  
+
   !***************************************************************************
   !****g* amplitudes_2Pi/inMedium_delta_width
   ! SOURCE
@@ -25,7 +25,7 @@ module amplitudes_2Pi
   !***************************************************************************
   !****g* amplitudes_2Pi/inMedium_delta_potential
   ! SOURCE
-  logical, save :: inMedium_delta_potential=.false.    
+  logical, save :: inMedium_delta_potential=.false.
   ! PURPOSE
   ! turn of the in-medium-potential of the delta
   !***************************************************************************
@@ -63,11 +63,11 @@ module amplitudes_2Pi
   !***************************************************************************
 
   logical, save :: initFlag=.true.
-  
+
   Public :: dos, ampli
-  
+
 contains
-  
+
   !***************************************************
   !****s* amplitudes_2Pi/init
   ! NAME
@@ -119,7 +119,7 @@ contains
   ! subroutine ampli(r,q,p1,p2,p4,p5,o,t,betaToLRF,mediumAtPosition)
   ! PURPOSE
   ! Calculates the 2pi photoproduction amplitude taken from Nacher et. al. NPA 695 (2001) 295.
-  ! t is given in the CM frame, only transverse components are calculated.       
+  ! t is given in the CM frame, only transverse components are calculated.
   ! AUTHOR
   ! L. Alvarez-Ruso
   !*****************************************************************************
@@ -134,7 +134,7 @@ contains
    type(medium) ,intent(in) :: mediumAtPosition
    real, dimension(1:3) ,intent(in) :: betaToLRF
    real, dimension(1:3) ,intent(in) :: position
-   type (dos), intent(out)::t  ! amplitude  
+   type (dos), intent(out)::t  ! amplitude
    type (dos) ta,tb,tc,td,te,tf,tg,th,ti,tj,tk,tl,tm,teo,tp,tq, &
         &         tr,ts,tt,tu,tv,tw,tx
    real, dimension(0:3), intent(in):: q ! photon 4-momentum
@@ -148,11 +148,11 @@ contains
    !                              r=3: gamma p -> pi0 pi0 p
    !                              r=4: gamma n -> pi+ pi- n
    !                              r=5: gamma n -> pi- pi0 p
-   !                              r=6: gamma n -> pi0 pi0 n      
+   !                              r=6: gamma n -> pi0 pi0 n
    integer, intent(in)::o ! refers to the order in which pions are emitted
    !                             o=1 <-> p4,p5 (the pion with p5 is emitted first)
-   !                             o=2 <-> p5,p4 (the pion with p4 is emitted first)      
-   !     other variables used      
+   !                             o=2 <-> p5,p4 (the pion with p4 is emitted first)
+   !     other variables used
    complex, dimension(2,2):: taux,ma1,ma2,ma3,ma4
    real, dimension(0:3):: p4p,p5p,vaux1,vaux2,vaux3,qp!,vaux4
    real:: fo
@@ -190,8 +190,8 @@ contains
    !      gnspf=0.
 
    !     in photons the ff(q2=0) for the N-N* transition are chosen
-   !     depending on whether r takes place on p or n      
-   call photons(r,g1,g2,g3,f1rop,f2rop)  
+   !     depending on whether r takes place on p or n
+   call photons(r,g1,g2,g3,f1rop,f2rop)
 
    p4p=p4-p4(0)/w(p2+p4)*(p2+p4)  ! pion momentum in the delta rest frame
    !      p4p=p4
@@ -224,7 +224,7 @@ contains
    tc%t2=taux*2.*p5(2)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !     Diagram (d)      
+   !     Diagram (d)
 
    taux=c(r,'d',o)*e*(f/mpi)**2*gn(p1-p5)*dpi(p4-q)*ff(p4-q)* &
         &     matmul(-(p4(0)-q(0))*sdotp(p1+p2-p5)/(2.*mn)+sdotp(p4-q), &
@@ -246,7 +246,7 @@ contains
    te%t2=matmul(taux,ii*gm*svp(q,2))/(2.*mn)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !     Diagram (f)      
+   !     Diagram (f)
 
    taux=c(r,'f',o)*e*(f/mpi)**2*gn(p2+p4)*gn(p1-p5)* &
         &       (-p4(0)*sdotp(2.*p2+p4)/(2.*mn)+sdotp(p4))
@@ -269,10 +269,10 @@ contains
    call photoff(r,'g',o,f1,gm)
 
    tg%t1=matmul(2.*p2(1)*unim*f1+ii*gm*svp(q,1),taux)/(2.*mn)
-   tg%t2=matmul(2.*p2(2)*unim*f1+ii*gm*svp(q,2),taux)/(2.*mn)     
+   tg%t2=matmul(2.*p2(2)*unim*f1+ii*gm*svp(q,2),taux)/(2.*mn)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !     Diagram (h)      
+   !     Diagram (h)
 
    taux=c(r,'h',o)*(f/mpi)*(fs/mpi)*(fgam/mpi)*gn(p2+p4)*gdf* &
         &       (-p4(0)*sdotp(2.*p2+p4)/(2.*mn)+sdotp(p4))
@@ -402,14 +402,14 @@ contains
            &         2./3.*sp(p4p,p5p)*svp(q,1)))
 
       tp%t2=taux*(ed/2.*vaux1(2)/mdel*(2.*sp(p4p,p5p)*unim- &
-           &         ii*sdotp(vp(p4p,p5p)))+ii*e*mud/mn*(ii*5./6.*sp(p5p,q)*p4p(2)*unim- & 
+           &         ii*sdotp(vp(p4p,p5p)))+ii*e*mud/mn*(ii*5./6.*sp(p5p,q)*p4p(2)*unim- &
            &         ii*5./6.*sp(p4p,q)*p5p(2)*unim-1./6.*sdotp(p4p)*vaux2(1)-1./6.*sdotp(p5p)*vaux3(1)+  &
            &         2./3.*sp(p4p,p5p)*svp(q,2)))
 
    end if
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !     Diagram (q)       
+   !     Diagram (q)
 
    taux=c(r,'q',o)*(fs/mpi)*(gnsdel/mpi)*gd(p2+p4)*gnsf* &
         &       (2.*sp(p4p,p5)*unim-ii*sdotp(vp(p4p,p5)))
@@ -475,7 +475,7 @@ contains
 
    fo=(gp1*(1.+q(0)/(2.*mn))+gp2*(p1(0)+q(0)))*q(0)
 
-   tu%t1=taux*(fdelsdel*(matmul(ma1,-ii*gp1/(2.*mn)*svp(q,1))- & 
+   tu%t1=taux*(fdelsdel*(matmul(ma1,-ii*gp1/(2.*mn)*svp(q,1))- &
         &       (2.*p4p(1)*unim-ii*svp(p4p,1))*fo)+&
         &       1./3.*gdelsdel/(mpi**2)*(matmul(ma4,-ii*gp1/(2.*mn)*svp(q,1))-&
         &       matmul(ma2,2.*p5(1)*unim-ii*svp(p5,1))*fo))
@@ -539,7 +539,7 @@ contains
    !       t%t2=ta%t2+tb%t2+tc%t2+td%t2+te%t2+tf%t2+tg%t2
 
    !10      t%t1=tq%t1+tr%t1+ts%t1+tt%t1
-   !        t%t2=tq%t2+tr%t2+ts%t2+tt%t2 
+   !        t%t2=tq%t2+tr%t2+ts%t2+tt%t2
 
    !10     t%t1=tk%t1-tr%t1
    !       t%t2=tk%t2-tr%t2
@@ -569,13 +569,13 @@ contains
    end function s
 
    real function w(p)
-     !     Calculates the inv. mass that corresponds to a given 4-momentum      
+     !     Calculates the inv. mass that corresponds to a given 4-momentum
      real, dimension(0:3), intent(in):: p
      w=sqrt(s(p))
    end function w
 
    real function sp(p1,p2)
-     !     Scalar product of two 3-momenta      
+     !     Scalar product of two 3-momenta
      real, dimension(0:3), intent(in):: p1,p2
      sp=p1(1)*p2(1)+p1(2)*p2(2)+p1(3)*p2(3)
    end function sp
@@ -591,14 +591,14 @@ contains
    end function vp
 
    function sdotp(p)
-     !     Calculates (sigma.p)        
+     !     Calculates (sigma.p)
      real, dimension(0:3), intent(in):: p
      complex, dimension(2,2)::sdotp
      sdotp=sigma1*p(1)+sigma2*p(2)+sigma3*p(3)
    end function sdotp
 
    function svp(p,i)
-     !     i-component of the vector product [sigma, p]        
+     !     i-component of the vector product [sigma, p]
      real, dimension(0:3), intent(in):: p
      integer, intent(in)::i
      complex, dimension(2,2)::svp
@@ -641,7 +641,7 @@ contains
         selfEnergy=2.*sqrt(mpi**2+Dot_Product(pBoosted(1:3),pBoosted(1:3)))*potential_LRF(teilchen)*GEV_TO_INVfm ! Converting from GEV to fm^-1
         ! Evaluate scalar potential :
         dpi=1./(s(p)-mpi**2-selfenergy)
-     else 
+     else
         dpi=1./(s(p)-mpi**2)
      end if
    end function dpi
@@ -655,7 +655,7 @@ contains
 
 
    complex function gn(p)
-     !     nucleon propagator        
+     !     nucleon propagator
      use lorentzTrafo,only : lorentz
      use potentialModule, only : potential_LRF
      use IdTable, only : nucleon
@@ -688,8 +688,8 @@ contains
         If(debugFlag) then
            write (*,*) 'nucleon selfenergy',selfenergy,potential_LRF(teilchen)
         end if
-     else 
-        ene=sqrt(mn**2+p(1)**2+p(2)**2+p(3)**2) 
+     else
+        ene=sqrt(mn**2+p(1)**2+p(2)**2+p(3)**2)
         gn=1./(p(0)-ene)
         !        *mn/ene
      end if
@@ -768,7 +768,7 @@ contains
         end if
 
         gd=1./(sqs-(mdel+selfenergy)+ii/2.*gamd(s))
-     else 
+     else
         s=p(0)**2-p(1)**2-p(2)**2-p(3)**2
         sqs=sqrt(s)
         !       Original vacuum delta propagator :
@@ -827,7 +827,7 @@ contains
    !     Decay widths
 
    real function gamrho(s)
-     !     rho -> pi pi         
+     !     rho -> pi pi
 
      real,intent(in)::s
      real::pcm
@@ -842,7 +842,7 @@ contains
    end function gamrho
 
    real function gamd(s)
-     !     Delta -> N pi       
+     !     Delta -> N pi
 
      real,intent(in)::s
 
@@ -860,7 +860,7 @@ contains
 
      real,intent(in)::s
      real::gam1,gam2,gam3,pmin,pmax,p,om,sd,resu,xmin,xmax,x
-     real,dimension(:),allocatable::absi,orde 
+     real,dimension(:),allocatable::absi,orde
      integer::n,ns,i
 
      !     N* -> N pi
@@ -889,7 +889,7 @@ contains
         deallocate (absi)
         call rg20r(pmin,pmax,n,orde,resu)
         deallocate (orde)
-        gam2=1./3./pi**2*(gnsdel/mpi)**2*resu          
+        gam2=1./3./pi**2*(gnsdel/mpi)**2*resu
      end if
 
      !       N*-> N (pi pi)s-wave
@@ -904,7 +904,7 @@ contains
         call sg20r(xmin,xmax,n,absi,ns)
         do i=1,ns
            x=absi(i)
-           orde(i)=sqrt(lam(s,x,mn**2)*lam(x,mpi**2,mpi**2))/x            
+           orde(i)=sqrt(lam(s,x,mn**2)*lam(x,mpi**2,mpi**2))/x
         end do
         deallocate (absi)
         call rg20r(xmin,xmax,n,orde,resu)
@@ -916,7 +916,7 @@ contains
 
    real function gamnsp(s)
      !     Full width of the N*(1520) from the main three contributions
-     !     N pi (d wave), Delta pi, N rho        
+     !     N pi (d wave), Delta pi, N rho
 
      real,intent(in)::s
      real::gam1,gam2,gam3,k,as,ad,mimin,mimax,mi,&
@@ -955,7 +955,7 @@ contains
         gam2=resu/sqrt(s)/(2*pi)**3
      end if
 
-     !     N*(1520) -> N rho 
+     !     N*(1520) -> N rho
      if (s.le.(mn+2.*mpi)**2) then
         gam3=0.
      else
@@ -985,7 +985,7 @@ contains
               end if
 
               !              ffrho=(lamrho2-mrho**2)/(lamrho2-srho)
-              ffrho=1.            
+              ffrho=1.
               drho2=1./((srho-mrho**2)**2+(mrho*gamrho(srho))**2)
               !              drho2=1./((srho-mrho**2)**2+(sqrt(srho)*gamrho(srho))**2)
               orde2(j)=drho2*ffrho**2* &
@@ -1001,12 +1001,12 @@ contains
         deallocate (orde1)
         deallocate (orde2)
      end if
-     gamnsp=gam1+gam2+gam3        
+     gamnsp=gam1+gam2+gam3
    end function gamnsp
 
    real function gamds(s)
      !     Full width of the Delta*(1700) from the main three contributions
-     !     N pi (d wave), Delta pi (s and d waves), N rho (s-wave)        
+     !     N pi (d wave), Delta pi (s and d waves), N rho (s-wave)
 
      real,intent(in)::s
      real::gam1,gam2,gam3,k,as,ad,mimin,mimax,mi,srho,resu, &
@@ -1047,8 +1047,8 @@ contains
         gam2=resu/sqrt(s)/(2*pi)**3*(15./8.)
      end if
 
-     !     Delta(1700) -> N rho 
-     !     Like the N*(1520) but grho replaced by gprho and a factor 1/3        
+     !     Delta(1700) -> N rho
+     !     Like the N*(1520) but grho replaced by gprho and a factor 1/3
      if (s.le.(mn+2.*mpi)**2) then
         gam3=0.
      else
@@ -1079,7 +1079,7 @@ contains
               end if
 
               !            ffrho=(lamrho2-mrho**2)/(lamrho2-srho)
-              ffrho=1.            
+              ffrho=1.
               drho2=1./((srho-mrho**2)**2+(mrho*gamrho(srho))**2)
               !            drho2=1./((srho-mrho**2)**2+(sqrt(srho)*gamrho(srho))**2)
               orde2(j)=drho2*ffrho**2* &
@@ -1093,13 +1093,13 @@ contains
         deallocate (absi1)
         deallocate (absi2)
         deallocate (orde1)
-        deallocate (orde2)  
+        deallocate (orde2)
      end if
      gamds=gam1+gam2+gam3
    end function gamds
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !     Form factors      
+   !     Form factors
 
    real function ff(p)
      real,dimension(0:3),intent(in)::p
@@ -1119,7 +1119,7 @@ contains
    real function qcm(s)
      !     Returns the 3-momentum of the pion formed after the decay of a
      !     resonance (R->N pi) of inv. mass s in the rest frame of the resonance
-     real,intent(in)::s        
+     real,intent(in)::s
      qcm=sqrt((s-mpi**2-mn**2)**2-4.*mpi**2*mn**2)/2./sqrt(s)
    end function qcm
 
@@ -1132,13 +1132,13 @@ contains
 
    complex function c(r,diag,o)
      !     Determines the numerical coeff. for each reaction
-     !     according to Table 3 of Nacher et al.        
+     !     according to Table 3 of Nacher et al.
      integer,intent(in)::r  ! reaction
      integer,intent(in)::o  ! order in which pions are emited
      character (len=1),intent(in):: diag  !diagram level in appendix 4
 
      select case (r)
-     case (1)  ! gamma p -> p pi+ pi-              
+     case (1)  ! gamma p -> p pi+ pi-
         select case (diag)
         case ('a')
            if (o.eq.1) then
@@ -1280,7 +1280,7 @@ contains
            end if
         end select
 
-     case (2)  ! gamma p -> n pi+ pi0              
+     case (2)  ! gamma p -> n pi+ pi0
         select case (diag)
         case ('a')
            if (o.eq.1) then
@@ -1423,7 +1423,7 @@ contains
            end if
         end select
 
-     case (3)  ! gamma p -> p pi0 pi0              
+     case (3)  ! gamma p -> p pi0 pi0
         select case (diag)
         case ('a')
            if (o.eq.1) then
@@ -1565,7 +1565,7 @@ contains
            end if
         end select
 
-     case (4)  ! gamma n -> n pi+ pi-              
+     case (4)  ! gamma n -> n pi+ pi-
         select case (diag)
         case ('a')
            if (o.eq.1) then
@@ -1707,7 +1707,7 @@ contains
            end if
         end select
 
-     case (5)  ! gamma n -> p pi0 pi-              
+     case (5)  ! gamma n -> p pi0 pi-
         select case (diag)
         case ('a')
            if (o.eq.1) then
@@ -1850,7 +1850,7 @@ contains
            end if
         end select
 
-     case (6)  ! gamma n -> n pi0 pi0              
+     case (6)  ! gamma n -> n pi0 pi0
         select case (diag)
         case ('a')
            if (o.eq.1) then
@@ -1997,14 +1997,14 @@ contains
 
    subroutine photoff(r,diag,o,f1,gm)
      !     determines the nucleon ff at the photon point deppending on the
-     !     reaction and diagram            
+     !     reaction and diagram
      integer,intent(in)::r  ! reaction
      integer,intent(in)::o  ! order in which pions are emited
      character (len=1),intent(in):: diag  !diagram label in appendix 4
      real,intent(out)::f1,gm
 
      if ((diag.eq.'e').or.(diag.eq.'m')) then
-        if ((r.eq.1).or.(r.eq.2).or.(r.eq.3)) then 
+        if ((r.eq.1).or.(r.eq.2).or.(r.eq.3)) then
            !         on proton
            f1=1.
            gm=mup
@@ -2026,7 +2026,7 @@ contains
      else if (diag.eq.'f') then
         select case (r)
         case (1)
-           !         on neutron for o=1 (o=2) is not allowed and c=0                   
+           !         on neutron for o=1 (o=2) is not allowed and c=0
            f1=0.
            gm=mun
         case (2)
@@ -2042,7 +2042,7 @@ contains
            f1=1.
            gm=mup
         case (4)
-           !           on proton for o=2 (o=1) is not allowed and c=0                   
+           !           on proton for o=2 (o=1) is not allowed and c=0
            f1=1.
            gm=mup
         case (5)
@@ -2062,7 +2062,7 @@ contains
    end subroutine photoff
 
    subroutine photodel(r,o,ed,mud)
-     !     Delta's charge and magnetic moment (for diag. p)             
+     !     Delta's charge and magnetic moment (for diag. p)
      integer,intent(in)::r  ! reaction
      integer,intent(in)::o  ! order in which pions are emitted
      real,intent(out)::ed,mud
@@ -2109,7 +2109,7 @@ contains
 
    subroutine photons(r,g1,g2,g3,f1rop,f2rop)
      !     Fixes the values of the N-N* transitions ff(q2=0)
-     !     for N*(1520) and  N*(1440) depending on the target (p or n)               
+     !     for N*(1520) and  N*(1440) depending on the target (p or n)
      integer,intent(in)::r
      real,intent(out)::g1,g2,g3,f1rop,f2rop
 

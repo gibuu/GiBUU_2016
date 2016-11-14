@@ -11,7 +11,7 @@
 module dimi
   use constants, only: mN, mPi
   implicit none
-  private 
+  private
 
   public :: dimiSigma
   public :: dimiIntegrated
@@ -51,7 +51,7 @@ contains
     indexMass=0
     sum_dsdm=0.
     x=rn()
-    do 
+    do
        massDelta=hadron(Delta)%minMass+float(indexMass)*delta_Mass
        call dimidm(dsdm,dsdm_Integrated,sigma,srts,massDelta)
        sum_dsdm=sum_dsdm+dsdm*delta_Mass
@@ -134,17 +134,17 @@ contains
   ! subroutine dimidm (dsdm, dsdmIntegrated, sigma, srts, mdel)
   ! PURPOSE
   ! this subroutine calculates the cross sections for p p <-> Delta++ n
-  ! Stores cross sections at first call to a field and then it only returns 
+  ! Stores cross sections at first call to a field and then it only returns
   ! those field values.
   ! INPUTS
   ! * real :: srts -- sqrt(s) in the process
   ! * real :: mdel -- mass of delta
   ! OUTPUT
-  ! * real :: sigma -- total cross section (for reaction with incoming delta) 
-  ! * real :: dsdm  --  mass differential cross section as function of mdel 
-  !   and srts (for reaction with outgoing delta)  
-  ! * real :: dsdm_Integrated -- mass differential cross section integrated 
-  !   over mass as function of srts (for reaction with outgoing delta) 
+  ! * real :: sigma -- total cross section (for reaction with incoming delta)
+  ! * real :: dsdm  --  mass differential cross section as function of mdel
+  !   and srts (for reaction with outgoing delta)
+  ! * real :: dsdm_Integrated -- mass differential cross section integrated
+  !   over mass as function of srts (for reaction with outgoing delta)
   !*************************************************************************
   subroutine dimidm (dsdm, dsdm_Integrated, sigma, srts, mdel)
 
@@ -280,9 +280,9 @@ contains
       if (mdel<mN+mPi) then
          f = 0.
       else
-         g=FullWidthBaryon(delta,mdel)           
+         g=FullWidthBaryon(delta,mdel)
          !         g=0.120
-         f=1./pi*mdel*g/((mdel**2-hadron(Delta)%mass**2)**2+(mdel*g)**2)     
+         f=1./pi*mdel*g/((mdel**2-hadron(Delta)%mass**2)**2+(mdel*g)**2)
       end if
 
       dsdm=0.
@@ -323,9 +323,9 @@ contains
   !
   ! PURPOSE
   ! return Matrix element squared and averaged over initial and summed over
-  ! final spins for p_1 p_2 -> n_3 delta_4^++ 
+  ! final spins for p_1 p_2 -> n_3 delta_4^++
   ! (within Dmitriev and Sushkov model with effective nucleon and delta masses).
-  ! 
+  !
   ! INPUTS
   ! * real :: t, u  -- Mandelstam variables
   ! * real :: mdel  -- current mass of delta
@@ -357,7 +357,7 @@ contains
     zt = (pCM_sqr(dmass2,mn2,t) + c2) / (pCM_sqr(mdel2, mn2,t) + c2)  ! decay form factor, eq. (12) in Dimitriev paper
     zu = (pCM_sqr(dmass2,mn2,u) + c2) / (pCM_sqr(mdel2 ,mn2,u) + c2)  !   "
 
-    if (debugflag) print *,'zt,zu:',zt,zu 
+    if (debugflag) print *,'zt,zu:',zt,zu
 
     m1  = t * (t-(mdel-mn)**2) * ((mdel+mn)**2-t)**2 / (3.*mdel2)   ! matrix element, eq. (7)
     m2  = u * (u-(mdel-mn)**2) * ((mdel+mn)**2-u)**2 / (3.*mdel2)   !  "

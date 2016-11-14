@@ -150,8 +150,8 @@ module lepton2p2h
   ! overall strength parameter for structure function W3
   !*************************************************************************
 
-  !*************************************************************************
-  !****g* lepton2p2h/ME_W1W3
+!*************************************************************************
+  !****g* lepton2p2h/ME_ODW
   ! PURPOSE
   ! switch for choosing the connection between structure functions
   ! W1(electron) and W1(neutrino) and W3(neutrino)
@@ -160,13 +160,13 @@ module lepton2p2h
   !
   ! only for CC,NC)
   ! SOURCE
-  integer, save :: ME_W1W3 = 1
+  integer, save :: ME_ODW = 1
   ! NOTES
   ! O'Connell et al: PR C6 (1972) 719
   ! Martini et al: PR C80 (2009) 065501
   !*************************************************************************
 
-  !*************************************************************************
+!*************************************************************************
   !****g* lepton2p2h/inmedW
   ! PURPOSE
   ! Controls which inv mass W is used in parametrization of 2p2h W1
@@ -177,12 +177,12 @@ module lepton2p2h
   ! inmedW = 1 : W = free, static inv. mass in 2p2h parametrization of W1
   ! inmedW = 2 : W = inv mass for Fermi moving nucleons in potential
   ! inmedW = 3 : W = inv mass for Fermi moving nucleons without potential
-  !*************************************************************************
-
+  !************************************************************************* 
+  
   !*************************************************************************
   !****g* lepton2p2h/T
   ! PURPOSE
-  ! Isospin of target nucleus, factor in Eq. (A10) in O'Connell, Donnelly,
+  ! Isospin of target nucleus, factor in Eq. (A10) in O'Connell, Donnelly, 
   ! Walecka, PR C6 (1972) 719
   !
   ! SOURCE
@@ -190,7 +190,7 @@ module lepton2p2h
   ! NOTES
   ! This is isospin T of NN pair, for 2p2h processes 
   !*************************************************************************
-
+  
   logical, save:: initflag = .true.
 
 contains
@@ -220,14 +220,14 @@ contains
     ! * ME_Transversity
     ! * ME_LONG
     ! * ME_W3
-    ! * ME_W1W3
+    ! * ME_ODW
     ! * inmedW
     ! * T
     !***********************************************************************
     NAMELIST /lepton2p2h/ ME_Version, &
                           ME_Norm_QE, ME_Norm_Delta, &
                           ME_Mass_QE, ME_Mass_Delta,ME_Transversity,ME_LONG, &
-                          ME_W3,ME_W1W3,inmedW,T
+                          ME_W3,ME_ODW,inmedW,T
 
     if(.not.initFlag) return
 
@@ -257,7 +257,8 @@ contains
        write(*,'(A)') 'ME 4, parametrization of structure functions W1,W2,W3,&
                       & W1 from E. Christy'
        write(*,*) 'ME_NORM=', ME_NORM_QE,'ME_W3=',ME_W3,'ME_Trans=',    &
-                   &   ME_Transversity, 'ME_LONG=',ME_LONG, 'inmedW=',inmedW
+                   &   ME_Transversity, 'ME_LONG=',ME_LONG, 'inmedW=',inmedW, &
+                   &   'T=',T
 
     case (5)
        write(*,'(A)') 'parametrization of structure functions W1,W2,W3,&
@@ -766,7 +767,7 @@ end if
        ME = ME_W1W2W3(eN)
 !    for this case ME describes experiment (except for coupling strength)
 !    and thus contains phase-space of outgoing particles
-
+    
     case default
        write (*,*) 'Other cases ME_Version > 4 not yet implemented'
     end select
@@ -956,14 +957,11 @@ end if
 
   ! real :: W1N,W2N,W3N
     real :: nuswitch= 0 ! switch for neutrino/antineutrino in structure function
-  ! nuswitch = 0 for em, = +1 for neutrino, -1 for antineutrino
+  ! nuswitch = 0 for em, = +1 for neutrino, -1 for antineutrino    
     real :: sinsqthetahalf,cossqthetahalf
     real :: omega, Q2   ! energy transfer, four-momentum transfer
-    real :: Tfact   ! isospin factor
     integer :: IP
     real :: GM0,GA0,MV,MA,GM,GA,GM2,GA2
-
-
 
     Q2=eN%QSquared                          !Q^2
     omega=eN%boson%momentum(0)              !omega = energy transfer
@@ -997,9 +995,9 @@ end if
        &  - nuswitch*(en%lepton_in%momentum(0)+en%lepton_out%momentum(0))/mN  &
        &  * W3(Q2,omega,GM,GA) * sinsqthetahalf
 
-    ME_W1W2W3 = ME_W1W2W3 * ME_Norm_QE(IP)
+    ME_W1W2W3 = ME_W1W2W3 * ME_Norm_QE(IP)        
 
-    if (IP /= 1) ME_W1W2W3 = ME_W1W2W3 * (T + 1) * ME_Norm_QE(IP)
+    if (IP /= 1) ME_W1W2W3 = ME_W1W2W3 * (T + 1)
   ! Factor 'T+1' here is isospin factor for neutrinos, not electrons
   ! in O'Connell, Donnelly and Walecka, PRC 6 (1972) 719, eq. A10
 
@@ -1081,7 +1079,7 @@ end if
 
         targetNuc => getTarget()
         Atarget = targetNuc%mass
-
+        
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  Now Fermi-smearing, switch controls method
       select case(inmedW)
@@ -1170,16 +1168,16 @@ end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
      real function W1NU(Q2,omega,GM2,GA2)
-! structure function W1 for neutrino-induced CC and NC MEC process
+! structure function W1 for neutrino-induced CC and NC MEC process 
 
      use constants, only : mN
 
      real, intent(in) :: Q2,omega,GM2,GA2
      real :: qvec2
-
+ 
      qvec2 = Q2 + omega**2
 
-  select case (ME_W1W3)
+  select case (ME_ODW)
 
    case (1)       ! case for connection between W1 and W3 from Martini et al
 
@@ -1187,7 +1185,7 @@ end if
 
    case(2)        ! case for connection between W1 and W3 from O'Connell,
                   ! Donnelly, Walecka PR C6 (1972) 719
-    W1NU = (1. + (2*mN)**2/qvec2 * GA2/GM2) * 2.0 * W1E(Q2,omega)
+    W1NU = (1. + (2*mN)**2/qvec2 * GA2/GM2) * 2.0 * W1E(Q2,omega) 
 
    case DEFAULT
     write(*,*) 'MEW1W3 error in W1NU'
@@ -1203,7 +1201,7 @@ end if
     use constants, only : mN
 
     real, intent(in) :: Q2,omega,GM2,GA2
-    real :: MDelta
+    real, parameter :: MDelta = 1.232
     real :: qvec2
     integer :: IP
 
@@ -1212,17 +1210,15 @@ end if
     qvec2 = Q2 + omega**2
 !   vector and axial coupling constants and cutoff masses
 
-    MDelta = 1.232
-
     W2 = ME_Transversity(IP) * Q2/qvec2 * W1(Q2,omega,GM2,GA2)
 ! W2: term necessary for purely transverse interaction, could be turned off
 !     by setting ME_Transversity = 0, default = 1
 
     if(ME_Long(IP) > 0) &
     W2 = W2  + GA2*(MDelta - mN)**2/(2.*(Q2 + omega**2))* 1./(1 + Q2/0.3**2)**2&
-         & * ME_LONG(iP) * 1.e-5
-!   Structure of longitudinal term follows Martini et al (PRC 2009)
-!   ME_LONG: allows to turn off longitudinal contribution to 2p2h, default = 0
+         & * ME_LONG(iP) * 1.e-5 
+!   Structure of longitudinal term follows Martini et al (PRC 2009)          
+!   ME_LONG: allows to turn off longitudinal contribution to 2p2h, default = 0         
 !   W2: 2nd term for longitudinal response, strength function untested
     end function W2
 
@@ -1237,7 +1233,7 @@ end if
 
     real, intent(in) :: Q2,omega,GM,GA
     real :: qvec2
-
+    
     integer IP
 
     IP = abs(eN%idProcess)
@@ -1245,10 +1241,10 @@ end if
       W3 = 0.0
       return
     end if
-
+   
     qvec2 = Q2 + omega**2
-
- select case (ME_W1W3)
+    
+ select case (ME_ODW)
 
    case (1)       ! case for connection between W1 and W3 from Martini et al
 
@@ -1264,7 +1260,7 @@ end if
    end select
 
     end function W3
-
+    
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   end function lepton2p2h_XS

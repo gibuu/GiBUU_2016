@@ -438,7 +438,7 @@ contains
        else
           gamma = delta_fullWidth(mass,momentum,dens)-delta_nucleonPion(mass,momentum,dens)
        end if
-    else 
+    else
        gamma = 0.
        return
     end if
@@ -475,7 +475,7 @@ contains
     ! We denote :
     ! "channelFlag(i)" will show whether channel "i" is open
     ! "i" is the sum of nucleon charges in the incoming channel:
-    ! 0 : neutron neutron 
+    ! 0 : neutron neutron
     ! 1 : neutron proton
     ! 2 : proton proton
     channelFlag(0:2)=.false.  ! Initialization
@@ -608,7 +608,7 @@ contains
     else
        successFlag=.true.
     end if
-    If(debugDelta) then 
+    If(debugDelta) then
        write(*,*) 'deltaAbs:',outgoing%ID, outgoing%Charge, singleParticle%ID,singleParticle%charge
        write(*,*) associated(scatterPartner1),associated(scatterPartner2),'####' ,associated(neutron1),associated(neutron2) &
             & ,'####',associated(proton1),associated(proton2),'num Channels', numChannels,'random:',x, wahrscheinlichkeit
@@ -775,7 +775,7 @@ contains
     do i=lBound(finalState,dim=1),uBound(finalState,dim=1)
        If (finalState(i)%Id.eq.0) then
           Write(*,*) 'Critical Error in setKinematics'
-          Write(*,*) 'Particle ID equals 0!!!' 
+          Write(*,*) 'Particle ID equals 0!!!'
           Write(*,*) 'stop'
        end if
     end do
@@ -810,7 +810,7 @@ contains
                 stop ' setKinematics massass'
              endif
 
-            collisionFlag=.false. 
+            collisionFlag=.false.
             ! Kill Event
             finalState(1:2)%ID=0
             return ! --> Exit
@@ -846,7 +846,7 @@ contains
     Case(3)
        Do i=1, maxCorrectLoop
           ! three body final state. Neglecting possible scalar potentials, since spotOut=0
-          call assMass(srts_vacuum,medium_AtCollision,pairInDummy,finalState,spotOut3,betaToLRF, & 
+          call assMass(srts_vacuum,medium_AtCollision,pairInDummy,finalState,spotOut3,betaToLRF, &
                       &betaToCM,flag)
           If(.not.flag) then
              write(*,*) 'master_3Body: Impossible to find final state (2)', finalState%ID
@@ -866,7 +866,7 @@ contains
                 stop ' setKinematics assmass'
              endif
 
-             collisionFlag=.false. 
+             collisionFlag=.false.
              ! Kill Event
              finalState(1:3)%ID=0
              return ! --> Exit
@@ -951,7 +951,7 @@ contains
     position=particleIn%position
 
     ! Search for nucleons
-    nucleonsFound(0:1)=0          ! count nucleons that were found 
+    nucleonsFound(0:1)=0          ! count nucleons that were found
 
     ! Initialize indices
     successFlag=.true.
@@ -1028,18 +1028,18 @@ contains
        if((nucleonsFound(1)+nucleonsFound(0)).ne.4) successFlag=.false. !four nucleons could not be found
     end if
 
-!    If (debug) then 
+!    If (debug) then
 !       write(*,*) 'nach Nuksuche',nucleonsFound
 !    end if
 
     If (debug) then
        Open(973,File="NukSuche_ThreeBody.dat",position="Append")
-       if(nucleonsFound(1)+nucleonsFound(0).lt.2) then 
+       if(nucleonsFound(1)+nucleonsFound(0).lt.2) then
           write(973,'(A,2I3,5F9.3)') 'nucleonsFound <2',nucleonsFound(1),nucleonsFound(0),radius,position,dens%baryon(0)
        else if(nucleonsFound(1)+nucleonsFound(0).eq.2) then
           write(973,'(A,2I3,5F9.3)') 'nucleonsFound =2',nucleonsFound(1),nucleonsFound(0),radius,position,dens%baryon(0)
-       else if(nucleonsFound(1)+nucleonsFound(0).eq.3) then 
-          !three nucleons have been found             
+       else if(nucleonsFound(1)+nucleonsFound(0).eq.3) then
+          !three nucleons have been found
           write(973,'(A,2I3,5F9.3)')'nucleonsFound =3',nucleonsFound(1),nucleonsFound(0),radius,position,dens%baryon(0)
        else if(nucleonsFound(1)+nucleonsFound(0).eq.4) then
           write(973,'(A,2I3,5F9.3)')'nucleonsFound =4',nucleonsFound(1),nucleonsFound(0),radius,position,dens%baryon(0)

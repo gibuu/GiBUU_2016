@@ -1,11 +1,11 @@
-!*******************************************************************************************************
+!******************************************************************************
 !****m* /hadronTensor_Npi
 ! NAME
 ! module hadronTensor_Npi
 ! PURPOSE
-! * Evaluates the hadron tensor for gamma N -> N pi 
+! * Evaluates the hadron tensor for gamma N -> N pi
 ! * For details see the notes about this in the work of Oliver Buss
-!****************************************************************************************************
+!******************************************************************************
 
 module hadronTensor_NPi
 
@@ -59,10 +59,10 @@ contains
     a=-A_Maid(1)+2*mi*A_maid(4)
 
     H_munu=cMult(a,a)*s1(mu,nu)+cmult(a,c(nu))*s3(mu)+cmult(c(mu),a)*s3(nu)+cmult(c(nu),c(mu))*s9()
-  
+
     ! Single beta contractions
     do beta=0,3
-       H_munu=H_munu+cMult(a,b(nu,beta))*s2(mu,beta) & 
+       H_munu=H_munu+cMult(a,b(nu,beta))*s2(mu,beta) &
             & +cMult(c(mu),b(nu,beta))*s6(beta) &
             & +cMult(b(mu,beta),a)*s2(nu,beta)+cMult(b(mu,beta),c(nu))*s6(beta)
     end do
@@ -73,7 +73,7 @@ contains
           H_munu=H_munu+cMult(b(mu,alpha),b(nu,beta))*s5(alpha,beta)
        end do
     end do
-    H_munu=-H_munu/(8.*mi*mf)  
+    H_munu=-H_munu/(8.*mi*mf)
 
   contains
     real function s1(mu,nu)
@@ -155,7 +155,7 @@ contains
 
   !****************************************************
   !****************************************************
-  
+
   real function kronecker_delta(i,j)
     integer, intent(in) :: i,j
     if(i.eq.j) then

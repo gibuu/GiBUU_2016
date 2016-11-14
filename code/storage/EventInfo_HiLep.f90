@@ -12,12 +12,12 @@
 !    ...%firstEvent = iEns*1000+iPart
 !
 ! NOTES
-! here we have a somehow more special situation, since the mudule-global 
+! here we have a somehow more special situation, since the mudule-global
 ! variable "beamEnergy" is used in all calls.
 !
 !***************************************************************************
 module EventInfo_HiLep
-  
+
   PRIVATE
 
   !********************************************************************
@@ -37,12 +37,12 @@ module EventInfo_HiLep
   end type tEventInfo_HiLep
   !
   ! PURPOSE
-  ! This holds all information we want to store connected to 
+  ! This holds all information we want to store connected to
   ! HiLepton and HiPhoton induced reactions.
   !********************************************************************
-  
+
   type(tEventInfo_HiLep),save,dimension(:,:),allocatable :: ARR_HiLep
-  
+
   !********************************************************************
   !****g* EventInfo_HiLep/beamEnergy
   ! SOURCE
@@ -107,7 +107,7 @@ contains
   !
   ! PURPOSE
   ! Store the event info connected with ensemble "i" and nucleon "j":
-  ! 
+  !
   !
   ! INPUTS
   ! * integer :: i -- actual Ensemble
@@ -116,7 +116,7 @@ contains
   ! * real    :: nu,Q2,eps -- photonic variables
   ! * integer :: EventType -- cf. module Electron_origin
   ! * real    :: Ebeam        [OPTIONAL] -- energy of lepton beam
-  ! * real    :: phi_Lepton   [OPTIONAL] -- phi-angle of lepton  
+  ! * real    :: phi_Lepton   [OPTIONAL] -- phi-angle of lepton
   ! * real    :: W            [OPTIONAL] -- the value including fermi
   !   mom and potentials
   ! * real,dimension(3):: pos [OPTIONAL] -- position of the interaction
@@ -138,7 +138,7 @@ contains
     ARR_HiLep(i,j)%EventType   = EventType
 
 !    write(*,'(A,2i4.0,1P,2e12.5)') 'EventInfo_HiLep_Store: ',i,j,nu,Q2
-    
+
     if(Present(Ebeam)) beamEnergy=Ebeam
     if(Present(phi_Lepton))   ARR_HiLep(i,j)%phi_Lepton   = phi_Lepton
     if(Present(W))            ARR_HiLep(i,j)%W            = W
@@ -155,7 +155,7 @@ contains
   ! PURPOSE
   ! Get the event info stored connected with ensemble "i" and nucleon "j".
   !
-  ! if j>1000, the ensemble index is set by "i = j/1000" 
+  ! if j>1000, the ensemble index is set by "i = j/1000"
   !
   ! INPUTS
   ! * integer :: i -- actual Ensemble
@@ -166,7 +166,7 @@ contains
   ! * real    :: nu,Q2,eps -- photonic variables
   ! * integer :: EventType -- cf. module Electron_origin
   ! * real    :: Ebeam        [OPTIONAL] -- energy of lepton beam
-  ! * real    :: phi_Lepton   [OPTIONAL] -- phi-angle of lepton  
+  ! * real    :: phi_Lepton   [OPTIONAL] -- phi-angle of lepton
   ! * real    :: W            [OPTIONAL] -- the value including fermi
   !   mom and potentials
   ! * real,dimension(3):: pos [OPTIONAL] -- position of the interaction
@@ -213,7 +213,7 @@ contains
 
   end function EventInfo_HiLep_Get
 
-  
+
   !********************************************************************
   !****f* EventInfo_HiLep/EventInfo_HiLep_GetBeamEnergy
   ! NAME
@@ -256,7 +256,7 @@ contains
                & ARR_HiLep(i,j)%eps, ARR_HiLep(i,j)%EventType, &
                & ARR_HiLep(i,j)%phi_Lepton, ARR_HiLep(i,j)%W, &
                & ARR_HiLep(i,j)%pos
-          
+
        end do
     end do
 

@@ -4,7 +4,7 @@
 ! module nBodyPhaseSpace
 ! NOTES
 ! Includes the routine integrate_nBodyPS needed for calculation
-! of the n-body phase space volume (n=2,...,6) and also the 
+! of the n-body phase space volume (n=2,...,6) and also the
 ! routines momenta_in_nBodyPS, momenta_in_2BodyPS, ..., momenta_in_6BodyPS
 ! for the simulation of the particle momenta according to the n-body phase
 ! space.
@@ -57,7 +57,7 @@ contains
     n = size(mass,dim=1)
 
     if (n < 2 .or. n > 6) then
-       write(*,*) ' In momenta_in_nBodyPS: size of mass array is wrong: ', n 
+       write(*,*) ' In momenta_in_nBodyPS: size of mass array is wrong: ', n
        stop
     else if (size(pn,dim=2)/=n .or. size(pn,dim=1)/=3) then
        write(*,*) ' In momenta_in_nBodyPS: size of pn array is wrong: ', size(pn,dim=1), size(pn,dim=2)
@@ -89,7 +89,7 @@ contains
        if (debugFlag) write(*,*)' Calling momenta_in_6BodyPS ...'
        pn(1:3,1:6) = momenta_in_6BodyPS (srts, mass(1:6))
        if (debugFlag) write(*,*)' Done'
-       
+
     end select
 
   end subroutine momenta_in_nBodyPS
@@ -177,8 +177,8 @@ contains
     flag=.true.
 
     ! Roll the dice for m12 and m23.
-    ! We assume that the phase space is equally distributed in the 
-    ! (m12, m23 ) plane. 
+    ! We assume that the phase space is equally distributed in the
+    ! (m12, m23 ) plane.
     ! The borders of this phase space are evaluated by the routine "ps3bo".
 
     do while (flag)
@@ -194,14 +194,14 @@ contains
     e3=(s+mass2(3)-m12)/(2*srts)
     pp3(3)=sqrt(max(e3**2-mass2(3),0.))
     p3(:,3)=(/0., 0., pp3(3)/)
-    
+
     e1=(s+mass2(1)-m23)/(2*srts)
     pp3(1)=sqrt(max(e1**2-mass2(1),0.))
 
     e2=srts-e1-e3
     pp3(2)=sqrt(max(e2**2-mass2(2),0.))
 
-    !*angle between pp3(1) and pp3(3)      
+    !*angle between pp3(1) and pp3(3)
     cost3=(-1.)*(pp3(1)**2+pp3(3)**2-pp3(2)**2)/(2.*pp3(1)*pp3(3))
 
     if (abs(cost3)>1) then
@@ -229,9 +229,9 @@ contains
        stop
     end if
 
-    ! Since we have chosen arbitrarily the z-axis as direction of the 
+    ! Since we have chosen arbitrarily the z-axis as direction of the
     ! third vector, we now need to do
-    ! a random rotation of the whole coordinate system. By doing this 
+    ! a random rotation of the whole coordinate system. By doing this
     ! we ensure that we distribute the phase space
     ! in an isotropic way.
 
@@ -239,7 +239,7 @@ contains
     phi=rn()*2.*pi
 
     do k=1,3
-      p3(:,k) = rotateYZ (0.0, phi, p3(:,k), cosTheta=cost) 
+      p3(:,k) = rotateYZ (0.0, phi, p3(:,k), cosTheta=cost)
     end do
 
   contains
@@ -263,7 +263,7 @@ contains
 
       real, intent(in) ::  m1,m2,m3,srts,m12
       real, intent(out) :: m23max,m23min
-      
+
       real :: e2star,e3star
 
       e2star=(m12-m1**2+m2**2)/(2*sqrt(m12))
@@ -336,17 +336,17 @@ contains
     enddo
     st = sqrt(1.-ct**2)
     phi = 2.*pi*rn()
-    
+
     pK(0) = sqrt(pkaon**2+mass(3)**2)
     pK(1:3) = pkaon * (/st*cos(phi),st*sin(phi),ct/)
 
-    ! rotate according to incoming particle    
+    ! rotate according to incoming particle
     pK(1:3) = rotateTo (pcm_in(1:3), pK(1:3))
 
     ! Energy, momentum components and c.m. velocity of the BY pair:
     pby(0) = srts - pK(0)
     pby(1:3) = -pK(1:3)
-    betaby(1:3) = pby(1:3)/pby(0) 
+    betaby(1:3) = pby(1:3)/pby(0)
 
     ! B and Y momenta in BY c.m. frame:
     pbyabs = pCM (abs4(pby), mass(1), mass(2))
@@ -725,7 +725,7 @@ contains
   ! PURPOSE
   ! Determine the phase space volume for n=2,...,6 outgoing particles
   ! (see definition in PDG-booklet-2002 p. 269)
-  ! INPUT: 
+  ! INPUT:
   ! * real, intent(in) :: srts                ! c.m. energy (GeV),
   ! * real, intent(in), dimension(:) ::  mass ! masses of outgoing particles (GeV)
   ! * OUTPUT:
@@ -746,7 +746,7 @@ contains
 
     logical, parameter :: flagKopylov=.true. ! If .true. --- use analytical formulae
     ! of G.I. Kopylov, NPA 36 (1962) 425
-    ! (communicated by Igor Pschenichnov) 
+    ! (communicated by Igor Pschenichnov)
 
     real :: ps, q2min, q2max, thresh
     integer :: n
@@ -771,7 +771,7 @@ contains
 
     if (flagKopylov .and. n>=2 .and. n<=20) then
        mass_wk(:)=0.
-       mass_wk(1:n)=mass(1:n)  
+       mass_wk(1:n)=mass(1:n)
        phi=SN(srts,n,mass_wk)/(2.*pi)**(3*n)
        return
     end if
@@ -786,11 +786,11 @@ contains
        phi = sint(fun1,q2min,q2max,100)*pi/(2.*pi)**10/16.
     case (5)
        q2min = (mass(3)+mass(4)+mass(5))**2
-       q2max = (srts-mass(1)-mass(2))**2      
+       q2max = (srts-mass(1)-mass(2))**2
        phi = sint(fun2,q2min,q2max,50)/16.**2/(2.*pi)**11
     case (6)
        q2min = (mass(3)+mass(4)+mass(5)+mass(6))**2
-       q2max = (srts-mass(1)-mass(2))**2      
+       q2max = (srts-mass(1)-mass(2))**2
        phi = sint(fun3,q2min,q2max,50)
     case default
        write(*,*) 'In integrate_nBodyPS n=', n
@@ -834,9 +834,9 @@ contains
     real, intent(in) :: q2
     real :: qp2min,qp2max,phi4
 
-    qG = sqrt(q2)   
+    qG = sqrt(q2)
     qp2min = (massG(4)+massG(5)+massG(6))**2
-    qp2max = (qG-massG(3))**2 
+    qp2max = (qG-massG(3))**2
 
     phi4 = sint(fun4,qp2min,qp2max,100)*pi/qG/16./(2.*pi)**10
     fun3 = phi4/16./(2.*pi)**4 * Integrate_3BodyPS(srtsG,qG,massG(1),massG(2))

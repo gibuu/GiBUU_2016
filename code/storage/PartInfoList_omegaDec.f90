@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PIL_omegaDec
-! NAME 
+! NAME
 ! module PIL_omegaDec
 ! PURPOSE
 !
@@ -21,7 +21,7 @@ module PIL_omegaDec
 
   !***************************************************************************
   !****t* PIL_omegaDec/decayInfo
-  ! NAME 
+  ! NAME
   ! type decayInfo
   ! PURPOSE
   ! a container of the information to be stored
@@ -59,7 +59,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_omegaDec/PIL_omegaDec_Deallocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_omegaDec_Deallocate
   ! PURPOSE
   ! Deallocate the memory for this list and the corresponding index list.
@@ -72,7 +72,7 @@ contains
 
   !*************************************************************************
   !****s* PIL_omegaDec/PIL_omegaDec_Zero
-  ! NAME 
+  ! NAME
   ! subroutine PIL_omegaDec_Zero()
   ! PURPOSE
   ! Reset the list by setting the counter of stored information to 0.
@@ -85,7 +85,7 @@ contains
 
   !*************************************************************************
   !****s* PIL_omegaDec/PIL_omegaDec_Put
-  ! NAME 
+  ! NAME
   ! subroutine PIL_omegaDec_Put (number, d)
   ! PURPOSE
   ! Store the information connected with particle "number" in the list.
@@ -104,10 +104,10 @@ contains
     iEntry = PILIndex_PUT(IndexList, number,"rho0Dec")
 
 !    write(*,*) '###PUT: ',number,r,iEntry
-    
+
     if (iEntry>0) then      ! everything is ok
        ValueList(iEntry)%dens = d
-    else 
+    else
        call PIL_omegaDec_Allocate() ! do (re)allocate
        ValueList(-iEntry)%dens = d
     endif
@@ -116,7 +116,7 @@ contains
 
   !*************************************************************************
   !****f* PIL_omegaDec/PIL_omegaDec_Get
-  ! NAME 
+  ! NAME
   ! logical function PIL_omegaDec_Get (number, d)
   ! PURPOSE
   ! Get the stored information of particle "number".
@@ -152,7 +152,7 @@ contains
 
   !*************************************************************************
   !****is* PIL_omegaDec/PIL_omegaDec_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_omegaDec_Allocate
   ! PURPOSE
   ! Do the allocation and reallocation of the value vector.
@@ -163,7 +163,7 @@ contains
   !*************************************************************************
   subroutine PIL_omegaDec_Allocate
     integer :: n0, n1
-    type(decayInfo), allocatable :: L0(:) 
+    type(decayInfo), allocatable :: L0(:)
 
     n1 = size(IndexList%PartNumber) ! new size
 
@@ -185,4 +185,3 @@ contains
 
 
 end module PIL_omegaDec
- 

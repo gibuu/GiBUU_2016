@@ -1,18 +1,18 @@
 !***************************************************************************
 !****m* /PILIndex
-! NAME 
+! NAME
 ! module PILIndex
 ! PURPOSE
 ! Provide a multi usable list connecting the (unique) particle number with
 ! the index number of some additional information in some other array.
 !
-! While the list in the 'other array' is filled entry by entry, the list 
-! provided here is sorted by the index number in increasing order. 
+! While the list in the 'other array' is filled entry by entry, the list
+! provided here is sorted by the index number in increasing order.
 ! This is done in order to speed up finding information about a particle
 ! from the 'other array' and whether information about this specific
 ! particle is actually stored in the array.
 !
-! This implementation speeds up getting information at the expense of 
+! This implementation speeds up getting information at the expense of
 ! inserting new information.
 !
 ! INPUTS
@@ -29,7 +29,7 @@ module PILIndex
 
   !***************************************************************************
   !****t* PILIndex/tIndexList
-  ! NAME 
+  ! NAME
   ! type tIndexList
   ! PURPOSE
   ! store all information of a IndexList
@@ -59,12 +59,12 @@ contains
 
   !***************************************************************************
   !****f* PILIndex/PILIndex_PUT
-  ! NAME 
+  ! NAME
   ! integer function PILIndex_PUT(List, number)
   ! PURPOSE
   ! find the place, where some information concerning a particle with "number"
   ! should be put into some info vector.
-  ! 
+  !
   ! INPUTS
   ! * type(tIndexList) :: List   -- The List to put the entry in
   ! * integer          :: number -- The particle number to insert
@@ -85,7 +85,7 @@ contains
     integer :: i1
     logical :: flagAlloc
     integer :: newEntry, newPos
-    
+
     flagAlloc = .false.
 
     !=== first call: ===
@@ -102,7 +102,7 @@ contains
     endif
 
     !=== empty list: ===
-    if (List%nEntry == 0) then 
+    if (List%nEntry == 0) then
        List%nEntry = 1
        newEntry = 1
        newPos = 1
@@ -132,7 +132,7 @@ contains
           newPos = List%nEntry
        else
           newPos = List%Entry(size(List%Entry)-List%nHole)
-          List%nHole = List%nHole -1 
+          List%nHole = List%nHole -1
        end if
        List%PartNumber(newEntry) = number
        List%Entry(newEntry)      = newPos
@@ -177,7 +177,7 @@ contains
        newPos = List%nEntry
     else
        newPos = List%Entry(size(List%Entry)-List%nHole)
-       List%nHole = List%nHole -1 
+       List%nHole = List%nHole -1
     end if
     List%PartNumber(newEntry) = number
     List%Entry(newEntry)      = newPos
@@ -186,20 +186,20 @@ contains
     else
        PILIndex_PUT  = newPos
     end if
- 
+
 !   call PILIndex_Print(List,6)
-    
+
   end function PILIndex_PUT
 
 
   !***************************************************************************
   !****f* PILIndex/PILIndex_FIND
-  ! NAME 
+  ! NAME
   ! integer function PILIndex_FIND(List, number)
   ! PURPOSE
-  ! find the place, where the "number" is in the list 
+  ! find the place, where the "number" is in the list
   ! or where it should be stored
-  ! 
+  !
   ! INPUTS
   ! * type(tIndexList) :: List   -- The List
   ! * integer          :: number -- The particle number to find
@@ -209,13 +209,13 @@ contains
   ! here the entry "number" was found in the list
   !
   ! if the return value R <= 0:
-  ! This means, that the entry at position (-R) is smaller than number, 
+  ! This means, that the entry at position (-R) is smaller than number,
   ! while the entry at position (-R)+1 is already larger.
   !
   ! NOTES
-  ! the return value R==0 is possible. This means of course, that already 
-  ! the first entry is larger than number. 
-  ! But you should never (!) try to access some entries at position R==0, 
+  ! the return value R==0 is possible. This means of course, that already
+  ! the first entry is larger than number.
+  ! But you should never (!) try to access some entries at position R==0,
   ! because this undershoots the lower bound of the arrays.
   !***************************************************************************
   integer function PILIndex_FIND (List, number)
@@ -242,7 +242,7 @@ contains
        return
     endif
 
-    do 
+    do
        if (jU-jL <= 1) exit
        jM = (jU+jL)/2
        if (number .ge. List%PartNumber(jM)) then
@@ -267,22 +267,22 @@ contains
 
   !***************************************************************************
   !****s* PILIndex/PILIndex_Print
-  ! NAME 
+  ! NAME
   ! subroutine PILIndex_Print(List, file)
   ! PURPOSE
   ! just print the list to a file stream
-  ! 
+  !
   ! INPUTS
   ! * type(tIndexList) :: List -- The List
   ! * integer          :: file -- The file number
   !***************************************************************************
 !   subroutine PILIndex_Print(List, file)
-! 
+!
 !     type(tIndexList), intent(IN) :: List
 !     integer,          intent(IN) :: file
-! 
+!
 !     integer :: i
-! 
+!
 !     do i=1,List%nEntry
 !        write(file,'(i5.0,2i7.0)') i,List%PartNumber(i),List%Entry(i)
 !     end do
@@ -291,17 +291,17 @@ contains
 
   !***************************************************************************
   !****s* PILIndex/PILIndex_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PILIndex_Allocate(List)
   ! PURPOSE
   ! Do all allocation and reallocatiomn stuff connected with "List"
-  ! 
+  !
   ! INPUTS
   ! * type(tIndexList) :: List -- The List
   ! OUTPUT
   ! * if the arrays of "list" were not allocated before, they are allocated with
   !   some default size
-  ! * if the arrays were allocated, they are reallocated with a size 1.3 times larger 
+  ! * if the arrays were allocated, they are reallocated with a size 1.3 times larger
   !   than the original size
   ! NOTES
   ! I think to remeber having read that the factor 1.3 is a good compromise
@@ -312,7 +312,7 @@ contains
   ! For security one should insert here checks, whether the memory allocations
   ! failed and stop execution in these cases.
   !
-  ! It would be a good idea to check whether the compiler knows the intrinsic 
+  ! It would be a good idea to check whether the compiler knows the intrinsic
   ! MOVE_ALLOC subroutine and use this instead of copying the contents twice.
   !***************************************************************************
   subroutine PILIndex_Allocate(List)
@@ -337,16 +337,16 @@ contains
     n1 = int ( n0 * 1.3 )
 
     allocate(L0(n0))
-    
+
     L0 = List%PartNumber
-    
+
     deallocate(List%PartNumber)
     allocate(List%PartNumber(n1))
 
     List%PartNumber(1:n0) = L0(:)
 
     L0 = List%Entry
-    
+
     deallocate(List%Entry)
     allocate(List%Entry(n1))
 
@@ -357,7 +357,7 @@ contains
 
   !***************************************************************************
   !****s* PILIndex/PILIndex_DeAllocate
-  ! NAME 
+  ! NAME
   ! subroutine PILIndex_DeAllocate(List)
   ! PURPOSE
   ! DeAllocate all memory connected wit this index list.
@@ -374,12 +374,12 @@ contains
 
   !***************************************************************************
   !****f* PILIndex/PILIndex_DELETE
-  ! NAME 
+  ! NAME
   ! integer function PILIndex_DELETE(List, number)
   ! PURPOSE
   ! find the place, where the "number" is in the list,
-  ! delete it and return the index for others list to follow. 
-  ! 
+  ! delete it and return the index for others list to follow.
+  !
   ! INPUTS
   ! * type(tIndexList) :: List   -- The List
   ! * integer          :: number -- The particle number to find

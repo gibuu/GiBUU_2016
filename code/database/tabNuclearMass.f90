@@ -388,7 +388,7 @@ contains
 !     subroutine End_Mass_Table
 !     !***********************************************************************
 !       integer :: status,i
-! 
+!
 !       do i=1,NucMax
 !          Deallocate(Elements(i)%Ejectile,STAT=status)
 !          if(status /= 0) then
@@ -403,27 +403,24 @@ contains
 !             STOP
 !          endif
 !       end do
-! 
+!
 !       Deallocate(Elements,STAT=status)
 !       if(status /= 0) then
 !          write(*,*) 'deallocation of variable "Elements" NOT successfull'
 !          write(*,*) '!!! TERMINATION NOW...!!!'
 !          STOP
 !       endif
-! 
+!
 !       Deallocate(NucPosition,STAT=status)
 !       if(status /= 0) then
 !          write(*,*) 'deallocation of variable "NucPosition" NOT successfull'
 !          write(*,*) '!!! TERMINATION NOW...!!!'
 !          STOP
 !       endif
-! 
+!
 !     !***********************************************************************
 !     end subroutine End_Mass_Table !*****************************************
 !     !***********************************************************************
 
 
   end Module tabNuclearMass
-
-
-

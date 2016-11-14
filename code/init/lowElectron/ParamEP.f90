@@ -4,27 +4,27 @@
 ! module ParamEP
 !
 ! PURPOSE
-! This module defines routines which return parametrizations of the 
+! This module defines routines which return parametrizations of the
 ! electron proton cross section.
 !
 ! INPUTS
 ! The Namelist "paramEP" in the Jobcard.
 !
 ! NOTES
-! At the moment we include the parametrizations: 
+! At the moment we include the parametrizations:
 ! * F. W. Brasse et al.,
 !   ``Parametrization Of The Q**2 Dependence Of Virtual Gamma P Total
-!   Cross-Sections In The Resonance Region,'' 
+!   Cross-Sections In The Resonance Region,''
 !   Nucl. Phys. B {\bf 110}, 413 (1976).
 ! * M. E. Christy and P. E. Bosted,
-!   ``Empirical Fit to Precision Inclusive Electron-Proton Cross Sections 
-!   in the Resonance Region,'' 
+!   ``Empirical Fit to Precision Inclusive Electron-Proton Cross Sections
+!   in the Resonance Region,''
 !   Phys.Rev. C81 (2010) 055213
 !
-! In addition, we also include here the the ALLM parametrization for high W 
+! In addition, we also include here the the ALLM parametrization for high W
 ! values (W>1.75 GeV):
 ! * H. Abramowicz, E. M. Levin, A. Levy and U. Maor,
-!   ``A Parametrization of sigma-T (gamma* p) above the resonance region 
+!   ``A Parametrization of sigma-T (gamma* p) above the resonance region
 !   Q**2 >= 0,'' Phys. Lett. B {\bf 269} (1991) 465.
 ! Here the authors claim, that this provides a smooth continuation of the
 ! parametrization by Brasse et al.. The newest version is also implemented:
@@ -34,11 +34,11 @@
 !
 ! We also provide the parametrizations for R=sigma_L/sigma_T by:
 ! * L.W.Whitlow et al.,
-!   ``A Precise extraction of R = sigma-L / sigma-T from a global analysis 
+!   ``A Precise extraction of R = sigma-L / sigma-T from a global analysis
 !   of the SLAC deep inelastic e p and e d scattering cross-sections,''
 !   Phys.Lett.B250:193-198,1990.
-! * V.Tvaskis et al., 
-!   ``Longitudinal-transverse separations of structure functions at low Q**2 
+! * V.Tvaskis et al.,
+!   ``Longitudinal-transverse separations of structure functions at low Q**2
 !   for hydrogen and deuterium,''
 !   Phys.Rev.Lett.98:142301,2007.
 !   PhD thesis, http://www1.jlab.org/Ul/Publications/documents/thesis_V_Tvaskis.pdf
@@ -68,7 +68,7 @@ module ParamEP
 
   real, save, dimension(3,56,4) :: Bra1
   real, save, dimension(3,56,6) :: Bra2
-  
+
 
 contains
 
@@ -78,7 +78,7 @@ contains
   ! subroutine initInput
   !
   ! PURPOSE
-  ! Reads in job card, checks the settings of the input parameters and also 
+  ! Reads in job card, checks the settings of the input parameters and also
   ! reads the data arrays
   !*************************************************************************
   subroutine initInput
@@ -86,7 +86,7 @@ contains
     use inputGeneral, only : path_to_input
 
     integer :: ios
-    
+
     character(100) :: filename
     integer :: i
     !*************************************************************************
@@ -111,19 +111,19 @@ contains
     open(77,file=filename,iostat=ios,status='old')
     call iosCheck(ios,fileName)
     filename=trim(path_to_input)//'/electronNucleon/Brasse/brasse_0906.dat'
-    open(78,file=filename,iostat=ios,status='old') 
+    open(78,file=filename,iostat=ios,status='old')
     call iosCheck(ios,fileName)
     filename=trim(path_to_input)//'/electronNucleon/Brasse/brasse_lt06.dat'
-    open(79,file=filename,iostat=ios,status='old') 
+    open(79,file=filename,iostat=ios,status='old')
     call iosCheck(ios,fileName)
     filename=trim(path_to_input)//'/electronNucleon/Brasse/brerror.dat'
     open(87,file=filename,iostat=ios,status='old')
     call iosCheck(ios,fileName)
     filename=trim(path_to_input)//'/electronNucleon/Brasse/brerror_0906.dat'
-    open(88,file=filename,iostat=ios,status='old') 
+    open(88,file=filename,iostat=ios,status='old')
     call iosCheck(ios,fileName)
     filename=trim(path_to_input)//'/electronNucleon/Brasse/brerror_lt06.dat'
-    open(89,file=filename,iostat=ios,status='old') 
+    open(89,file=filename,iostat=ios,status='old')
     call iosCheck(ios,fileName)
 
     do i=1,56
@@ -143,7 +143,7 @@ contains
     close(87)
     close(88)
     close(89)
-    
+
     initFlag = .false.
 
     call Write_ReadingInput('paramEP',1)
@@ -153,16 +153,16 @@ contains
     subroutine iosCheck(ios,name)
       integer :: ios
       character(*) :: name
-      
+
       if(ios.ne.0) then
          write(*,'(2A)') 'Error in opening input file: ',name
          write(*,'(A,I5)') 'I/O status=', ios
          write(*,'(A)') 'STOP!'
          stop
       end if
-      
+
     end subroutine iosCheck
-    
+
   end subroutine initInput
 
   !*************************************************************************
@@ -171,7 +171,7 @@ contains
   ! subroutine CalcParamEP(W,Q2,eps, XS, XSerr)
   !
   ! PURPOSE
-  ! Calculate the XS (and its error) according the selected Parametrization 
+  ! Calculate the XS (and its error) according the selected Parametrization
   !
   ! INPUTS
   ! * real                        :: W        -- incoming photon (W)
@@ -216,7 +216,7 @@ contains
   ! Calculate the XS (and its error) according the Brasse Parametrization:
   ! * F.~W.~Brasse et al.,
   !   ``Parametrization Of The Q**2 Dependence Of Virtual Gamma P Total
-  !   Cross-Sections In The Resonance Region,'' 
+  !   Cross-Sections In The Resonance Region,''
   !   Nucl. Phys. B {\bf 110}, 413 (1976)
   !
   ! INPUTS
@@ -234,8 +234,8 @@ contains
   ! * Q2 = 0 ... ??? GeV^2
   ! * W = 1.1 ... 2.0 GeV
   !
-  ! The returned cross section is 
-  !    \sigma^* = \sigma_T+\epsilon\sigma_L 
+  ! The returned cross section is
+  !    \sigma^* = \sigma_T+\epsilon\sigma_L
   !             = \frac{1}{\Gamma} \frac{d\sigma}{dE' d\Omega}
   ! Unfortunately, the authors do not giv a definition of Gamma.
   !
@@ -320,11 +320,11 @@ contains
   !****f* ParamEP/Flux_Bosted
   ! NAME
   ! real function Flux_Bosted(W,Q2,eps)
-  ! 
+  !
   ! PURPOSE
   ! return the value of equation (4) in Phys.Rev. C81 (2010) 055213
   !
-  ! Multiplying this return value with the value given by 
+  ! Multiplying this return value with the value given by
   ! CalcParamEP_Bosted() yields
   !     \frac{d\sigma}{dE' d\Omega}
   !
@@ -338,7 +338,7 @@ contains
   !*************************************************************************
   real function Flux_Bosted(W,Q2,eps)
      use constants, only : twopi,alphaQED,mN
-    
+
      real, intent(in)            :: W, Q2, eps
      real :: Ebeam,nu
 
@@ -355,7 +355,7 @@ contains
   ! PURPOSE
   ! Calculate the XS according the Bosted Parametrization:
   ! * M. E. Christy and P. E. Bosted,
-  !   ``Empirical Fit to Precision Inclusive Electron-Proton Cross Sections 
+  !   ``Empirical Fit to Precision Inclusive Electron-Proton Cross Sections
   !   in the Resonance Region,'' Phys.Rev. C81 (2010) 055213
   !
   ! INPUTS
@@ -370,7 +370,7 @@ contains
   ! This is a wrapper function around code provided by P.Bosted.
   !
   ! The returned cross section is
-  !    \sigma^* = \sigma_T+\epsilon\sigma_L 
+  !    \sigma^* = \sigma_T+\epsilon\sigma_L
   !             = \frac{1}{\Gamma} \frac{d\sigma}{dE' d\Omega}
   ! with
   !    \Gamma = \frac{\alpha E' (W^2-M^2)}{(2\pi)^2 Q^2 M E (1-\epsilon)}
@@ -393,9 +393,9 @@ contains
     XS = sigt+eps*sigl
 
   contains
-  
+
     SUBROUTINE christy507(W2,Q2,F1,R,sigt,sigl)
-      !c   M.E. Christy and P.E. Bosted, ``Empirical Fit to Precision 
+      !c   M.E. Christy and P.E. Bosted, ``Empirical Fit to Precision
       !c    Inclusive Electron-Proton Cross Sections in the Resonance Region'',
       !c    (arXiv:0712.3731). To be submitted to Phys. Rev. C.
 
@@ -404,7 +404,7 @@ contains
       integer i !,npts,sf
 
       mp = .9382727
-      mp2 = mp*mp   
+      mp2 = mp*mp
       pi = 3.141593
       alpha = 1./137.036
 
@@ -434,7 +434,7 @@ contains
 
       do i=1,50
          xval1(i) = xval(i)
-         xvalL(i) = xval(50+i) 
+         xvalL(i) = xval(50+i)
          if(i.LE.12) xvalL(i) = xval1(i)
       enddo
       xvalL(43) = xval1(47)
@@ -453,7 +453,7 @@ contains
 
     end SUBROUTINE christy507
 
-    SUBROUTINE RESMOD507(sf,w2,q2,xval,sig) 
+    SUBROUTINE RESMOD507(sf,w2,q2,xval,sig)
 
       real(8) W,w2,q2,mp,mp2,xb,sig,xval(50),mass(7),width(7)!,xth(4),mpi2
       real(8) height(7),rescoef(6,4)!,sig_del,sig_21,sig_22,sig_31,sig_32
@@ -491,22 +491,22 @@ contains
 
       !CCCC   single pion branching ratios  CCCC
 
-      br(1,1) = 1.0       !!!  P33(1232)       
-      br(2,1) = 0.45      !!!  S11(1535)   
+      br(1,1) = 1.0       !!!  P33(1232)
+      br(2,1) = 0.45      !!!  S11(1535)
       br(3,1) = 0.65      !!!  D13(1520)
       br(4,1) = 0.65      !!!  F15(1680)
       br(5,1) = 0.4       !!!  S11(1650)
-      br(6,1) = 0.65      !!!  P11(1440) roper 
+      br(6,1) = 0.65      !!!  P11(1440) roper
       br(7,1) = 0.50      !!!  F37(1950)
 
       !CCCC  eta branching ratios   CCCC
 
       br(1,3) = 0.0       !!!  P33(1232)
-      br(2,3) = 0.45      !!!  S11(1535) 
+      br(2,3) = 0.45      !!!  S11(1535)
       br(3,3) = 0.0       !!!  D13(1520)
       br(4,3) = 0.0       !!!  F15(1680)
       br(5,3) = 0.1       !!!  S11(1650)
-      br(6,3) = 0.0       !!!  P11(1440) roper   
+      br(6,3) = 0.0       !!!  P11(1440) roper
       br(7,3) = 0.0       !!!  F37(1950)
 
       !CCCC  2-pion branching ratios  CCCC
@@ -525,7 +525,7 @@ contains
       ang(3) = 2.       !!!  D13(1520)
       ang(4) = 3.       !!!  F15(1680)
       ang(5) = 0.       !!!  S15(1650)
-      ang(6) = 1.       !!!  P11(1440) roper   
+      ang(6) = 1.       !!!  P11(1440) roper
       ang(7) = 3.       !!!  F37(1950)
 
       do i=1,7     !!!  resonance damping parameter  !!!
@@ -534,7 +534,7 @@ contains
       enddo
 
       x0(1) = 0.15
-      x0(1) = xval(50)   
+      x0(1) = xval(50)
 
       do i=1,7
          br(i,2) = 1.-br(i,1)-br(i,3)
@@ -584,7 +584,7 @@ contains
       else
          mass(7) = xval(47)
          intwidth(7) = xval(48)
-         width(7) = intwidth(7) 
+         width(7) = intwidth(7)
       endif
 
       do i=1,7
@@ -617,7 +617,7 @@ contains
          if(i.EQ.2.OR.i.EQ.5) then
             pwid(i,3) =  intwidth(i)*(petacm/petacmr(i))**(2.*ang(i)+1.)&
                  & *((petacmr(i)**2+x0(i)**2)/(petacm**2+x0(i)**2))**ang(i)
-            !c         !!!  eta decay only for S11's 
+            !c         !!!  eta decay only for S11's
          endif
 
 
@@ -667,7 +667,7 @@ contains
          height(7) = xval(45)*q2/(1.+xval(46)*q2)*exp(-1.*xval(47)*q2)
 
       else
-         height(7) = xval(49)/(1.+q2/0.91)**1. 
+         height(7) = xval(49)/(1.+q2/0.91)**1.
 
       endif
       height(7) = height(7)*height(7)
@@ -694,7 +694,7 @@ contains
               &              + (mass(i)*width(i))**2.)
          sigr(i) = height(i)*kr(i)/k*kcmr(i)/kcm*sigr(i)/intwidth(i)
          if(sf.eq.1) sigrsv(i) = sigr(i)
-         sig_res = sig_res + sigr(i)   
+         sig_res = sig_res + sigr(i)
       enddo
 
       sig_res = sig_res*w
@@ -707,7 +707,7 @@ contains
 
       if(sf.EQ.1) then
 
-         do i=1,2  
+         do i=1,2
 
             h_nr(i) = nr_coef(i,1)/     &
                  &       (q2+nr_coef(i,2))** &
@@ -736,7 +736,7 @@ contains
 
 !1000  format(8f12.5)
 
-      RETURN 
+      RETURN
     END SUBROUTINE RESMOD507
 
 
@@ -750,7 +750,7 @@ contains
   ! PURPOSE
   ! Calculate the XS according the ALLM Parametrization:
   ! * H. Abramowicz, E. M. Levin, A. Levy and U. Maor,
-  !   ``A Parametrization of sigma-T (gamma* p) above the resonance region 
+  !   ``A Parametrization of sigma-T (gamma* p) above the resonance region
   !   Q**2 >= 0,'' Phys. Lett. B {\bf 269} (1991) 465.
   !
   ! INPUTS
@@ -783,14 +783,14 @@ contains
          &     P_aPom(3),P_bPom(3),P_CPom(3)
 
     real :: f1,f2, a1,a2,a3
-      
+
     f1(t,a1,a2,a3) = a1+a2*t**a3
     f2(t,a1,a2,a3) = a1+(a1-a2)*(1E0/(1E0+t**a3)-1E0)
 
     data M02,MPom2,MReg2,L2,Q02 / &
 !         &     0.30508d0,10.67564d0,0.20623d0,0.06527d0,0.27799d0/
          &     0.30508d0,10.67564d0,0.20623d0,0.06527d0,0.27001d0/
-      
+
     data P_aReg,P_bReg,P_CReg / &
 !         &     0.60408d0, 0.17353d0, 1.61812d0, &
 !         &     1.26066d0, 1.83624d0, 0.81141d0, &
@@ -798,7 +798,7 @@ contains
          &     0.60408d0, 0.08144d0, 2.18355d0, &
          &     1.21849d0, 1.82378d0, 0.71033d0, &
          &     0.67639d0, 0.52072d0, 1.90782d0/
-      
+
     data P_aPom,P_bPom,P_CPom / &
 !         &     -0.04503d0, -0.36407d0, 8.17091d0, &
 !         &      0.49222d0,  0.52116d0, 3.55115d0, &
@@ -817,17 +817,17 @@ contains
     CReg = f1(t,P_CReg(1),P_CReg(2),P_CReg(3))
     aReg = f1(t,P_aReg(1),P_aReg(2),P_aReg(3))
     bReg = f1(t,P_bReg(1),P_bReg(2),P_bReg(3))
-    
+
     CPom = f2(t,P_CPom(1),P_CPom(2),P_CPom(3))
     aPom = f2(t,P_aPom(1),P_aPom(2),P_aPom(3))
     bPom = f1(t,P_bPom(1),P_bPom(2),P_bPom(3))
-    
+
     F2Pom = CPom * xPom**aPom * (1-x)**bPom
     F2Reg = CReg * xReg**aReg * (1-x)**bReg
-    
+
     XS = 1000* C/((Q2+M02)*(1-x)) * &
          &     (1d0+(4d0*M2*Q2)/(Q2+W2-M2)**2)*(F2Pom+F2Reg)
-    
+
   end subroutine CalcParamEP_ALLM
 
 
@@ -871,18 +871,18 @@ contains
          &     P_aPom(3),P_bPom(3),P_CPom(3)
 
     real :: f1,f2, a1,a2,a3
-      
+
     f1(t,a1,a2,a3) = a1+a2*t**a3
     f2(t,a1,a2,a3) = a1+(a1-a2)*(1E0/(1E0+t**a3)-1E0)
 
     data M02,MPom2,MReg2,L2,Q02 / &
          &     0.31985d0, 49.457d0, 0.15052d0, 0.06527d0, 0.52544d0/
-      
+
     data P_aReg,P_bReg,P_CReg / &
          &     0.58400d0, 0.37888d0, 2.60630d0, &
          &     0.01147d0, 3.75820d0, 0.49338d0, &
          &     0.80107d0, 0.97307d0, 0.31985d0/
-      
+
     data P_aPom,P_bPom,P_CPom / &
          &     -0.08080d0, -0.44812d0, 1.1709d0, &
          &      0.36292d0,  1.89170d0, 1.8439d0, &
@@ -899,17 +899,17 @@ contains
     CReg = f1(t,P_CReg(1),P_CReg(2),P_CReg(3))
     aReg = f1(t,P_aReg(1),P_aReg(2),P_aReg(3))
     bReg = f1(t,P_bReg(1),P_bReg(2),P_bReg(3))
-    
+
     CPom = f2(t,P_CPom(1),P_CPom(2),P_CPom(3))
     aPom = f2(t,P_aPom(1),P_aPom(2),P_aPom(3))
     bPom = f1(t,P_bPom(1),P_bPom(2),P_bPom(3))
-    
+
     F2Pom = CPom * xPom**aPom * (1-x)**bPom
     F2Reg = CReg * xReg**aReg * (1-x)**bReg
-    
+
     XS = 1000* C/((Q2+M02)*(1-x)) * &
          &     (1d0+(4d0*M2*Q2)/(Q2+W2-M2)**2)*(F2Pom+F2Reg)
-    
+
   end subroutine CalcParamEP_ALLM97
 
   !*************************************************************************
@@ -920,7 +920,7 @@ contains
   ! PURPOSE
   ! Calculate R=sigma_L/sigma_T according:
   ! * L.W.Whitlow et al.,
-  !   ``A Precise extraction of R = sigma-L / sigma-T from a global analysis 
+  !   ``A Precise extraction of R = sigma-L / sigma-T from a global analysis
   !   of the SLAC deep inelastic e p and e d scattering cross-sections,''
   !   Phys.Lett.B250:193-198,1990.
   !
@@ -947,5 +947,3 @@ contains
   end subroutine CalcParamEP_R1990
 
 end module ParamEP
-
-

@@ -73,7 +73,7 @@ module checks
   ! Flag to indicate whether the local density approximation check routine
   ! should be called.
   !*****************************************************************************
-  
+
   !*****************************************************************************
   !****g* checks/Do_OccupiedReal
   ! SOURCE
@@ -136,12 +136,12 @@ module checks
   ! particle vectors
   !*****************************************************************************
 
-  
+
   logical :: checkGS_Flag = .false. ! true: only for time=0, false: for all times
 
-contains 
+contains
 
-  
+
   !*****************************************************************************
   !****s* checks/ChecksSetDefaulSwitches
   ! NAME
@@ -179,7 +179,7 @@ contains
 
     case (LoPion,RealPhoton,LoLepton,neutrino)
        Do_checkMomentumDensity = .true.
-       checkGS_Flag = .true. 
+       checkGS_Flag = .true.
        ! if CheckGS:Flag then...
        ! Do_CheckDensity = .true.
        ! Do_CheckCoulomb = .true.
@@ -301,10 +301,10 @@ contains
 !!$  ! NAME
 !!$  ! subroutine ChecksSwitchOffFrozen()
 !!$  ! PURPOSE
-!!$  ! After having set all defaults and after the routines have been called 
+!!$  ! After having set all defaults and after the routines have been called
 !!$  ! once at the first time step, we switch off
-!!$  ! all checks just oncerning the realParticles vector, if 
-!!$  ! we have selected the frozen approximation. 
+!!$  ! all checks just oncerning the realParticles vector, if
+!!$  ! we have selected the frozen approximation.
 !!$  !*************************************************************************
 !!$  subroutine ChecksSwitchOffFrozen()
 !!$
@@ -347,7 +347,7 @@ contains
   !*************************************************************************
 !   subroutine ChecksSwitchGS(isFrozen)
 !     logical, intent(in) :: isFrozen
-! 
+!
 !     checkGS_Flag = isFrozen
 !   end subroutine ChecksSwitchGS
 
@@ -451,7 +451,7 @@ contains
   ! PURPOSE
   ! This is one of the upper level routines, called to check the occupansies
   ! of the real and perturbative particle vectors.
-  ! 
+  !
   ! Major switches: 'Do_OccupiedReal', 'Do_OccupiedPert'
   !*************************************************************************
   subroutine ChecksCallOccupied(realParticles,pertParticles,text)
@@ -471,7 +471,7 @@ contains
     if (Do_OccupiedPert) then
        call occupied(pertParticles,text//'pertParticles')
     end if
-    
+
   end subroutine ChecksCallOccupied
 
   !*************************************************************************
@@ -555,7 +555,7 @@ contains
   ! NAME
   ! subroutine evaluateFermiSurface(fileName)
   ! PURPOSE
-  ! 
+  !
   !*************************************************************************
   subroutine evaluateFermiSurface(fileName)
     use particleDefinition
@@ -591,7 +591,7 @@ contains
        Open(100,File='FermiSurface_init.dat')
     end if
 
-    write(100,'(A1,6A20)') & 
+    write(100,'(A1,6A20)') &
          & "#","x", "E_f_p", "E_f_n", "E_f_p(rel)", "E_f_n(rel)","Density"
 
     Init_check : if ( .not.Present(fileName)) then
@@ -621,8 +621,8 @@ contains
           Efree_p       = freeEnergy(p)
           p%momentum(1) = fermiMomentum_noIsospin(rhoNuc_n)
           Efree_n       = freeEnergy(p)
-          write(100,'(36E20.9)') p%position(1), & 
-               & Ef_p,Ef_n,Efree_p+pot-mN+cpot,Efree_n+pot-mN, & 
+          write(100,'(36E20.9)') p%position(1), &
+               & Ef_p,Ef_n,Efree_p+pot-mN+cpot,Efree_n+pot-mN, &
                & rhoNuc_p, rhoNuc_n,pot
        end do
 
@@ -653,8 +653,8 @@ contains
        Efree_p       = freeEnergy(p)
        p%momentum(1) = fermiMomentum_noIsospin(rhoNuc_n)
        Efree_n       = freeEnergy(p)
-       write(100,'(36E20.9)') p%position(1), & 
-            & Ef_p,Ef_n,Efree_p+pot-mN+cpot,Efree_n+pot-mN, & 
+       write(100,'(36E20.9)') p%position(1), &
+            & Ef_p,Ef_n,Efree_p+pot-mN+cpot,Efree_n+pot-mN, &
             & rhoNuc_p, rhoNuc_n,pot
     end do
 
@@ -690,18 +690,18 @@ contains
        med%densityProton  = rhoNuc_p
        med%densityNeutron = rhoNuc_n
        pf=fermiMomentum_sym(rhoNuc)
-       dp=pf/1000. 
+       dp=pf/1000.
        average_fs=0.
        fsInt=0.
        if(pf.gt.0.001) then
-          do j=0,1000 
+          do j=0,1000
              p%momentum(1)=float(j)*dp
              pot=BaryonPotential(p,med,.false.)
              average_fs=average_fs+pot*4.*pi/3.*p%momentum(1)**2/dp
              fsInt     =fsInt     +    4.*pi/3.*p%momentum(1)**2/dp
           end do
           average=average+average_fs*4.*pi/3.*p%position(1)**2/dr
-          densInt=densInt+     fsInt*4.*pi/3.*p%position(1)**2/dr 
+          densInt=densInt+     fsInt*4.*pi/3.*p%position(1)**2/dr
        end if
 
     end do
@@ -725,7 +725,7 @@ contains
 !     use output, only : intToChar
 !     type(particle) :: p
 !     character(*),optional :: name
-! 
+!
 !     if(present(name)) then
 !        Open(100,file='particle_track_'//trim(name)//'.dat', position='Append')
 !     else
@@ -745,23 +745,23 @@ contains
 !   subroutine particleTrack_byNumber(parts,number,time,DoNew)
 !     use particleDefinition
 !     use output, only : intToChar4
-! 
+!
 !     type(particle),dimension(:,:),intent(in)  :: parts
 !     integer, intent(in) :: number
 !     real, OPTIONAL, intent(in) :: time
 !     logical, OPTIONAL, intent(in) :: DoNew
-! 
-! 
+!
+!
 !     integer :: i,j
 ! !    logical :: found
 !     logical,save :: firstTime=.true.
 !     real :: t
-! 
+!
 !     t = 0
 !     if (present(time)) t=time
-! 
+!
 !     if (present(DoNew)) firstTime = DoNew
-! 
+!
 !     if(firstTime) then
 !        Open(100,file='particle_track_'//trim(intToChar4(number))//'.dat')
 !        write(100,*) '#time, ID, position(1:3), momentum(0:3),mass,velocity(1:3)'
@@ -769,7 +769,7 @@ contains
 !     else
 !        Open(100,file='particle_track_'//trim(intToChar4(number))//'.dat', position='Append')
 !     end if
-! 
+!
 ! !    found=.false.
 !     do j=lbound(parts,dim=2),ubound(parts,dim=2)
 !        do i=lbound(parts,dim=1),ubound(parts,dim=1)
@@ -798,7 +798,7 @@ contains
   ! Prints information, how many entries and of every ensemble is actually
   ! occupied by particles and the percentage of maximum occupation
   !*************************************************************************
-  
+
   !*************************************************************************
   !****o* checks/Occupation.dat
   ! NAME
@@ -809,9 +809,9 @@ contains
   ! increase parameter length_Perturbative in the namelist "input".
   ! Columns:
   ! * 1: ensemble number
-  ! * 2: occupation 
+  ! * 2: occupation
   !*************************************************************************
-  
+
   subroutine occupied(particleVector,name)
     use particleDefinition
 
@@ -824,12 +824,12 @@ contains
 
 !     Open(178,File='Occupation.dat')
 
-    !  write(*,*) 
+    !  write(*,*)
 !     Write(178,*) '# Maximal possible number of entries is', size(particleVector,dim=2)
 !     Write(178,*) '# 1: ensemble-number  2: entries'
-    do i=lBound(particleVector,dim=1),uBound(particleVector,dim=1) 
+    do i=lBound(particleVector,dim=1),uBound(particleVector,dim=1)
        count=0
-       do j=lBound(particleVector,dim=2),uBound(particleVector,dim=2) 
+       do j=lBound(particleVector,dim=2),uBound(particleVector,dim=2)
          if (particleVector(i,j)%ID > 0) count=count+1
        end  do
 !        Write(178,*) i,count
@@ -855,9 +855,9 @@ contains
 !     use pauliBlockingModule, only: pauliBlocking
 !     use particleDefinition
 !     use constants, only: mN
-! 
+!
 !     type(particle),intent(in),dimension(:,:) :: realparticles
-! 
+!
 !     integer :: i,k
 !     real :: x,p,z!,y
 !     real,dimension(0:3) :: momentum
@@ -873,9 +873,9 @@ contains
 !           x=i*0.5
 !           pauliflag=pauliBlocking(momentum,(/x,0.,0./),0,realparticles)
 !           If (pauliflag) then
-!              write(11,*) x,p,1 
+!              write(11,*) x,p,1
 !           else
-!              write(11,*) x,p,0 
+!              write(11,*) x,p,0
 !           end if
 !        end do
 !     end do
@@ -892,9 +892,9 @@ contains
 !           x=i*0.5
 !           pauliflag=pauliBlocking(momentum,(/x,0.,z/),0,realparticles)
 !           If (pauliflag) then
-!              write(11,*) x,z,1 
+!              write(11,*) x,z,1
 !           else
-!              write(11,*) x,z,0 
+!              write(11,*) x,z,0
 !           end if
 !        end do
 !     end do
@@ -911,7 +911,7 @@ contains
 !        end do
 !     end do
 !     !  call timeMeasurement
-! 
+!
 !   end subroutine checkPauli
 
 
@@ -947,7 +947,7 @@ contains
 
     if ((checkGS_Flag).and.(timestep > 0)) return
 
-    Write(*,*) 'Check momentum density' 
+    Write(*,*) 'Check momentum density'
 
     if (DoInit) then
        integral=0.
@@ -962,10 +962,10 @@ contains
        do j= lbound(realParticles,dim=2),ubound(realParticles,dim=2)
           if(realParticles(i,j)%ID.ne.nucleon) cycle
           p = absMom(realParticles(i,j))
-          call AddHist(momentumHist,p ,1.) 
+          call AddHist(momentumHist,p ,1.)
           dens=densityAt(realParticles(i,j)%position)
           dens_nuc=abs4(dens%proton+dens%neutron)
-          call AddHist2d(momDens,(/p,dens_nuc/) ,1.) 
+          call AddHist2d(momDens,(/p,dens_nuc/) ,1.)
 
           integral      = integral     +1.
           mean_momentum = mean_momentum+p
@@ -986,7 +986,7 @@ contains
     call WriteHist2D_Gnuplot(momDens,121,mul=1./integral)
     close(121)
 
-    if (.not. checkGS_Flag) then 
+    if (.not. checkGS_Flag) then
        ! prepare everything for next call:
        call removeHist(momentumHist)
        call removeHist2D(momDens)
@@ -1142,14 +1142,14 @@ contains
       phi=0.
       rp=0.
       r=absVec(r_vec)
-      do 
+      do
          rp=rp+dr
          rp_vec=(/rp,0.,0./)
          dens=densityAt(rp_vec)
          rhoP=dens%proton(0)
          if(rp.ge.r) then
             phi=phi+rhoP*rp
-         else 
+         else
             phi=phi+rhoP*rp**2/r
          end if
          if(rp.gt.20) exit
@@ -1177,49 +1177,49 @@ contains
 !     use potentialModule, only: potential_LRF
 !     use constants, only: mN, rhoNull
 !     use energyCalc, only: energyDetermination
-! 
+!
 !     integer i,j
 !     real ::  x,y,p,dens
 !     real,dimension(1:3) :: r,place
 !     logical,parameter :: checkEnergy=.false.
-! 
+!
 !     type(particle) :: testParticle
 !     type(dichte) :: density
-! 
+!
 !     Print *, "Yukawa-alpha:",getYukawaAlpha()
-! 
+!
 !     Write(*,*) 'Check yukawa'
 !     Open(11,File='CheckYukawa.dat')
 !     Do i=-25,25
-!        x=i*0.5 
+!        x=i*0.5
 !        Do j=-25,25
-!           y=j*0.5 
+!           y=j*0.5
 !           r=(/x,0.,y/)
 !           write(11,fmt='(3f6.3)') x,y,yukPot(r)
 !        end do
 !     end do
 !     Close(11)
-! 
-! 
+!
+!
 !     testparticle%Id=nucleon
 !     Open(11,File='./output/nucleonPot.dat')
 !     Do i=0,6
 !        dens=i*0.25*rhoNull
 !        Do j=0,10
-!           p=j*0.04 
+!           p=j*0.04
 !           testparticle%position(1:3)=(/x,0.,0./)
 !           testparticle%momentum(1:3)=(/p,0.,0./)
 !           write(11,fmt='(3f6.3)') dens/rhoNull,p,potential_LRF(testParticle)
 !        end do
 !     end do
 !     close(11)
-! 
+!
 !     testparticle%Id=phi
 !     Open(11,File='./output/phiPot.dat')
 !     Do i=0,25
-!        x=i*0.5 
+!        x=i*0.5
 !        Do j=0,25
-!           p=j*0.04 
+!           p=j*0.04
 !           testparticle%position(1:3)=(/x,0.,0./)
 !           testparticle%momentum(1:3)=(/p,0.,0./)
 !           place=testparticle%position(1:3)
@@ -1228,26 +1228,26 @@ contains
 !        end do
 !     end do
 !     Close(11)
-! 
+!
 !     testparticle%Id=pion
 !     Open(11,File='./output/pionPot.dat')
 !     Do i=0,6
 !        dens=i*0.25*rhoNull
 !        Do j=0,10
-!           p=j*0.04 
+!           p=j*0.04
 !           testparticle%position(1:3)=(/x,0.,0./)
 !           testparticle%momentum(1:3)=(/p,0.,0./)
 !           write(11,fmt='(3f6.3)') dens/rhoNull,p,potential_LRF(testParticle)
 !        end do
 !     end do
 !     close(11)
-! 
+!
 !     testparticle%Id=delta
 !     Open(11,File='./output/deltaPot.dat')
 !     Do i=0,25
-!        x=i*0.5 
+!        x=i*0.5
 !        Do j=0,25
-!           p=j*0.04 
+!           p=j*0.04
 !           testparticle%position(1:3)=(/x,0.,0./)
 !           testparticle%momentum(1:3)=(/p,0.,0./)
 !           place=testparticle%position(1:3)
@@ -1256,7 +1256,7 @@ contains
 !        end do
 !     end do
 !     Close(11)
-! 
+!
 !     If (checkEnergy) then
 !        Write(*,*) 'Check EnergyDetermination'
 !        testparticle%Id=nucleon
@@ -1272,7 +1272,7 @@ contains
 !        write(*,*) density%baryon(0),testparticle%momentum(0:3)
 !        Write(*,*) potential_LRF(testParticle)+mN
 !        Write(*,*)
-! 
+!
 !        testparticle%position(1:3)=(/0.,0.,0./)
 !        p=0.1
 !        testparticle%momentum(0:3)=(/SQRT(mN**2+p**2),p,0.,0./)
@@ -1283,7 +1283,7 @@ contains
 !        write(*,*) density%baryon(0),testparticle%momentum(0:3)
 !        Write(*,*) potential_LRF(testParticle,density%baryon(0))+SQRT(mN**2+p**2)
 !        Write(*,*)
-! 
+!
 !        testparticle%position(1:3)=(/0.,0.,0./)
 !        p=10.
 !        testparticle%momentum(0:3)=(/SQRT(mN**2+p**2),p,0.,0./)
@@ -1294,7 +1294,7 @@ contains
 !        write(*,*) density%baryon(0),testparticle%momentum(0:3)
 !        Write(*,*) potential_LRF(testParticle,density%baryon(0))+SQRT(mN**2+p**2)
 !        Write(*,*)
-! 
+!
 !        testparticle%position(1:3)=(/1120.,0.,0./)
 !        p=10.
 !        testparticle%momentum(0:3)=(/SQRT(mN**2+p**2),p,0.,0./)
@@ -1392,7 +1392,7 @@ contains
   ! PURPOSE
   ! Sums the potential Enrgy of all nucleons
   ! INPUTS
-  ! * real :: E -- energy 
+  ! * real :: E -- energy
   ! * real :: rho -- density
   ! * logical :: i -- .true.: store; .false.: retrieve and delete
   ! OUTPUT
@@ -1402,7 +1402,7 @@ contains
 !     real, intent(in)::E,rho
 !     logical, intent(in)::i
 !     real, save::Energy=0.,sumdensity=0.
-! 
+!
 !     if (i) then
 !        Energy=Energy+E
 !        sumdensity=sumdensity+rho
@@ -1412,15 +1412,15 @@ contains
 !        Energy=0.
 !        sumdensity=0.
 !     end if
-! 
+!
 !   end function saveEpot
-  
+
   !*************************************************************************
   !****s* checks/checkEnergyLDA
   ! NAME
   ! subroutine checkEnergyLDA(teilchen)
   ! PURPOSE
-  ! 
+  !
   !*************************************************************************
   subroutine checkEnergyLDA(teilchen)
     use particleDefinition
@@ -1499,8 +1499,8 @@ contains
     EnergySum=EnergySum/float(numberParticles)
 
 
-    ! Ausgabe von Zeitschritt, Gesamtenergie, kinetischer Energie, Potentialenergie, 
-    ! Gradientenenergie, Anzahl der Teilchen, Anzahl der ungebundenen Teilchen, 
+    ! Ausgabe von Zeitschritt, Gesamtenergie, kinetischer Energie, Potentialenergie,
+    ! Gradientenenergie, Anzahl der Teilchen, Anzahl der ungebundenen Teilchen,
     !Teilchen die über den maximalen Radius der berechneten Dichtevertielung hinaus sind, dasselbe +1fm, +2fm
     write(20,fmt='(I5,1X,F10.4,1X,F10.4,1X,F10.4,1X,F10.4,1X,I7,1X,I7,1X,I7,1X,I7,1X,I7)') &
          & schritt,EnergySum(1),EnergySum(2),EnergySum(3),EnergySum(4),numberParticles,notBound,outside,outside1,outside2
@@ -1513,7 +1513,7 @@ contains
   ! NAME
   ! subroutine checkEnergyLDAWelke(teilchen)
   ! PURPOSE
-  ! 
+  !
   !*************************************************************************
   subroutine checkEnergyLDAWelke(teilchen)
     use particleDefinition
@@ -1609,7 +1609,7 @@ contains
   ! NAME
   ! subroutine evaluateEnergy(teilchen,time)
   ! PURPOSE
-  ! print the averaged kinetic energy sqrt(p^2+m^2) and also p0 per time step 
+  ! print the averaged kinetic energy sqrt(p^2+m^2) and also p0 per time step
   !*************************************************************************
   subroutine evaluateEnergy(teilchen,time)
     use particleDefinition
@@ -1629,12 +1629,12 @@ contains
        Open(20,file='Energy.dat',position='Append')
     end if
 
-    Ekin  = 0.  
+    Ekin  = 0.
     Ekin0 = 0.
     numberParticles=0
     ! Sum the kinetic energy over all ensembles
     Do i=1,size(teilchen,dim=1)
-       Do j=1,size(teilchen,dim=2) 
+       Do j=1,size(teilchen,dim=2)
           if (teilchen(i,j)%ID.eq.nucleon) then
              Ekin=Ekin+KineticEnergy(teilchen(i,j))
              Ekin0=Ekin0+teilchen(i,j)%momentum(0)-teilchen(i,j)%mass
@@ -1700,7 +1700,7 @@ contains
        write(21,*)
     end if
 
-    call CreateHist(hBA, "B/A for bound nucleons", -0.1,0.1,0.001) 
+    call CreateHist(hBA, "B/A for bound nucleons", -0.1,0.1,0.001)
 
     E_all=0.
     E_bar=0.
@@ -1722,7 +1722,7 @@ contains
 !             dE = teilchen(i,j)%perWeight*(/1.,EE,0./)+(/0.,0.,1./)
              dE = (/1.,EE,1./)
              E_all=E_all+dE
-             ! Count only baryons, since baryon number must be conserved: 
+             ! Count only baryons, since baryon number must be conserved:
              if (isBaryon(teilchen(i,j)%ID)) then
                 if (.not.teilchen(i,j)%antiparticle) then
                    E_bar=E_bar+dE
@@ -1769,7 +1769,7 @@ contains
 !   subroutine checkTrajectories(teilchen)
 !     use particleDefinition
 !     use IDTable
-! 
+!
 !     logical,save :: initFlag=.true.
 !     type(particle), dimension(:,:),intent(in) :: teilchen
 !     If (initFlag) then
@@ -1784,7 +1784,7 @@ contains
 !        Open(22,file='Trajectory_3.dat',position='Append')
 !        Open(23,file='Trajectory_3.dat',position='Append')
 !     end if
-! 
+!
 !     Write(20,fmt='(3f8.2)') teilchen(1,1)%position(1:3)
 !     If(size(teilchen,dim=2).ge.4) then
 !        Write(21,fmt='(3f8.2)') teilchen(1,2)%position(1:3)
@@ -1795,7 +1795,7 @@ contains
 !     close(21)
 !     close(22)
 !     close(23)
-! 
+!
 !   end subroutine checkTrajectories
 
 
@@ -1807,15 +1807,15 @@ contains
   ! INPUTS
   ! * integer, intent(in) :: iflag=1  ! use real-real counted collisions
   !                               =2  ! use real-perturbative counted collisions
-  ! * real, intent(in) :: coll_num    ! allow .leq.coll_num collisions/particle  
+  ! * real, intent(in) :: coll_num    ! allow .leq.coll_num collisions/particle
   ! * real, intent(in) :: delta_T_max ! maximal allowed time step (fm/c)
   ! * real, intent(in) :: time ! current time (fm/c)
   ! OUTPUT
   ! * real, intent(out) :: delta_T_new ! calculated time step
   ! NOTES
-  ! If gridSpacing(3) <  delta_T_max, the upper limit on the time step 
+  ! If gridSpacing(3) <  delta_T_max, the upper limit on the time step
   ! is chosen as gridSpacing(3). This is important for high energy HIC
-  ! due to Lorentz contraction along z-axis. 
+  ! due to Lorentz contraction along z-axis.
   !*************************************************************************
   subroutine evaluateTimeStep(iflag,coll_num,delta_T_max,time,delta_T_new)
 
@@ -1824,7 +1824,7 @@ contains
 
     real, intent(in) :: coll_num
     integer, intent(in) :: iflag
-    real, intent(in) :: delta_T_max 
+    real, intent(in) :: delta_T_max
     real, intent(in) :: time
     real, intent(out) :: delta_T_new
 
@@ -1905,7 +1905,7 @@ contains
     open(1,file='timestep.dat',status='unknown',position='append')
     write(1,'(f6.3,1x,I6,1x,I6,1x,e13.6,1x,f6.3)') time,num_2body,num_part,&
          &freq,delta_T_new
-    close(1)    
+    close(1)
 
 
 
@@ -1917,10 +1917,10 @@ contains
   !****s* checks/evaluateTotal4Momentum_RMF
   ! subroutine evaluateTotal4Momentum_RMF(teilchen,time)
   ! PURPOSE
-  ! Compute the total energy and momentum of the system within 
+  ! Compute the total energy and momentum of the system within
   ! the relativistic mean field model.
   ! INPUTS
-  ! * type(particle), dimension(:,:), intent(in) :: teilchen  ! particle array 
+  ! * type(particle), dimension(:,:), intent(in) :: teilchen  ! particle array
   ! * real, intent(in) :: time ! current time (fm/c)
   ! OUTPUT
   ! Prints out the total 4-momentum vs time.
@@ -1940,7 +1940,7 @@ contains
     integer :: nEns, nPart
     real :: baryonNumber, charge, antibaryonNumber, baryons_inside_grid, meff, meff_aver
     real, dimension(0:3) :: Pstar_tot, P_tot ! Total kinetic and canonical 4-momenta of particles.
-    real, dimension(0:3) :: momentum 
+    real, dimension(0:3) :: momentum
 
     real :: P_tc
     real, dimension(1:3) :: place,impuls
@@ -1952,7 +1952,7 @@ contains
 
     Open(20,file='Total4Momentum_RMF.dat',position='Append')
 
-    Pstar_tot = 0.  
+    Pstar_tot = 0.
     P_tot = 0.
     P_tc = 0.
     baryonNumber = 0.
@@ -1964,7 +1964,7 @@ contains
     ! Sum single-particle kinetic 4-momenta:
 
     Loop_over_ensembles : Do i=1,nEns
-       Loop_over_particles : Do j=1,nPart 
+       Loop_over_particles : Do j=1,nPart
 
           If ( teilchen(i,j)%id == 0 ) then
              cycle Loop_over_particles
@@ -1993,14 +1993,14 @@ contains
           P_tot(0:3) = P_tot(0:3) + momentum(0:3)
 
           !coulomb contribution
-          !emfoca gives the elektrostatic scalar potential from the solution 
-          !of the Poisson-equation. By considering only the 0-component of 
-          !the vector potential A^{\mu}=(\phi,\vec{A}) in T^{00}(x), one 
-          !obtains V_c(x) = 1/2*e*j^{0}_{p}*A^{0} as the coulomb contribution to the 
-          !energy density T^{00}. The total coulomb energy is derived from 
-          !the space integration over V_c(x) leading to a simple sumation over 
-          !the test particles (j(x) is represented in terms of delta functions within 
-          ! the test-particle formalism). 
+          !emfoca gives the elektrostatic scalar potential from the solution
+          !of the Poisson-equation. By considering only the 0-component of
+          !the vector potential A^{\mu}=(\phi,\vec{A}) in T^{00}(x), one
+          !obtains V_c(x) = 1/2*e*j^{0}_{p}*A^{0} as the coulomb contribution to the
+          !energy density T^{00}. The total coulomb energy is derived from
+          !the space integration over V_c(x) leading to a simple sumation over
+          !the test particles (j(x) is represented in terms of delta functions within
+          ! the test-particle formalism).
           place(1:3)  = teilchen(i,j)%position(1:3)
           impuls(1:3) = teilchen(i,j)%momentum(1:3)
           P_tc = P_tc + momentum(0) + 0.5*emfoca(place,impuls,teilchen(i,j)%charge,teilchen(i,j)%ID) !see notes above
@@ -2034,7 +2034,7 @@ contains
   ! PURPOSE
   ! Checks if real particles start to escape out of grid.
   ! INPUTS
-  ! * type(particle), dimension(:,:) :: teilchen        -- particle array 
+  ! * type(particle), dimension(:,:) :: teilchen        -- particle array
   ! * real,                          :: time            -- current time (fm/c)
   ! * real,                          :: time_max        -- max. time of simulation (fm/c)
   ! * integer                        :: TheEventType    -- Eventclass
@@ -2080,26 +2080,26 @@ contains
        initGridFlag    = .false.
     endif
     !-----------------------------------------------------------------------
-    Warning : if (.not.WarningFlag) then !do the check ONLY at once per subsequent run 
+    Warning : if (.not.WarningFlag) then !do the check ONLY at once per subsequent run
        !--------------------------------------------------------------------
        nEns = size(teilchen,dim=1)
        nPart = size(teilchen,dim=2)
        !--------------------------------------------------------------------
        Loop_over_ensembles : Do i=1,nEns
-          Loop_over_particles : Do j=1,nPart 
+          Loop_over_particles : Do j=1,nPart
              If ( teilchen(i,j)%id == 0 ) then
                 cycle Loop_over_particles
              else If ( teilchen(i,j)%id < 0 ) then
-                exit Loop_over_particles 
+                exit Loop_over_particles
              end If
              if (isMeson(teilchen(i,j)%ID)) cycle Loop_over_particles !only baryons
              posOrig(:)=abs( NINT(Teilchen(i,j)%position(:)/gridSpacing(:)) )
-             if ( (posOrig(1) > gridSize(1)) .or. & 
-                  & (posOrig(2) > gridSize(2)) .or. & 
+             if ( (posOrig(1) > gridSize(1)) .or. &
+                  & (posOrig(2) > gridSize(2)) .or. &
                   & (posOrig(3) > gridSize(3)) ) OutOfGrid(i) = OutOfGrid(i) + 1.
           end do Loop_over_particles
           !more than 10% of baryons outside of grid=>event affected
-          if( (OutOfGrid(i)/SystemSize)*100. > 10. ) then 
+          if( (OutOfGrid(i)/SystemSize)*100. > 10. ) then
              affected_events = affected_events + 1
           endif
        end do Loop_over_ensembles
@@ -2110,7 +2110,7 @@ contains
           write(*,*)
           write(*,*) '   Warning in CheckGridSize, module checks.f90'
           write(*,*) '   more than 10% of particles/ensemple out of grid!'
-          write(*,'(A,f7.2,A,f5.2,A,f5.2,A)') '   <Number of escaped baryons> = ', & 
+          write(*,'(A,f7.2,A,f5.2,A,f5.2,A)') '   <Number of escaped baryons> = ', &
                & MeanValue,' corresponding to ',(MeanValue/SystemSize)*100., &
                & '% at time => ',time,' fm/c'
           write(*,*)
@@ -2122,7 +2122,7 @@ contains
        !--------------------------------------------------------------------
     endif Warning !---------------------------------------------------------
     !-----------------------------------------------------------------------
-    ! reset to init-values warningFlag,OutOfGrid(:) and affected_events 
+    ! reset to init-values warningFlag,OutOfGrid(:) and affected_events
     ! for the next subsequent run (just to be sure...)
     !-----------------------------------------------------------------------
     if (abs(time-time_max) < 0.0001) then
@@ -2148,7 +2148,7 @@ contains
     integer :: i,j
     logical :: found = .false.
 
-    do i=lBound(Parts,dim=1),uBound(Parts,dim=1) 
+    do i=lBound(Parts,dim=1),uBound(Parts,dim=1)
        do j=lBound(Parts,dim=2),uBound(Parts,dim=2)
           if(Parts(i,j)%ID<=0) cycle
 
@@ -2158,7 +2158,7 @@ contains
              write(*,*) '  M^2 = ', abs4Sq(Parts(i,j)%momentum)
              call WriteParticle(6,i,j,Parts(i,j))
 
-             ! since the problem with the tachyons occured within the neutrino 
+             ! since the problem with the tachyons occured within the neutrino
              ! business, I added the following line for debugging purposes.
              ! In principle, you can remove this line (and the 'use ...' above)
 !!$             call neutrinoProdInfo_Dump(Parts(i,j)%firstevent)
@@ -2179,13 +2179,13 @@ contains
   ! This routine checks, whether the particle property '%perturbative'
   ! is set to the given value (.true./.false.( for all particles
   ! NOTES
-  ! 
+  !
   !*************************************************************************
   subroutine ChecksCallPertFlag(particles, flag)
     use particleDefinition
     use callstack, only: traceback
     use output, only: WriteParticle
-    
+
     type(particle), dimension(:,:), intent(in) :: particles
     logical, intent(in) :: flag
 
@@ -2200,9 +2200,9 @@ contains
           end if
        end do
     end do
-    
-    
+
+
   end subroutine ChecksCallPertFlag
 
-  
+
 end module checks

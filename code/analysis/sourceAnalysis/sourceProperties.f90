@@ -6,10 +6,10 @@
 ! Administrates the calculation of local thermodynamical quantities
 ! NOTES
 ! * Calculation of longitudinal and transversal pressure densities.
-! * This module can be used in RMF- and Skyrme-mode, however, in Skyrme-mode 
+! * This module can be used in RMF- and Skyrme-mode, however, in Skyrme-mode
 !   the calculation of the pressures has to be still implemented.
-! * This module estimates the time for switching from dynamical BUU to 
-!   statistical fragmentation. 
+! * This module estimates the time for switching from dynamical BUU to
+!   statistical fragmentation.
 !***************************************************************************
 module sourceProperties
 
@@ -49,7 +49,7 @@ module sourceProperties
   !
   real(singlePrecision), dimension(:), allocatable, SAVE :: Anisotropy
   ! PURPOSE
-  ! Anisotropy factor Q(x)=2*T^{zz}(x)-(T^{xx}(x)+T^{yy}(x)) at the 
+  ! Anisotropy factor Q(x)=2*T^{zz}(x)-(T^{xx}(x)+T^{yy}(x)) at the
   ! center of the source(s).
   !*************************************************************************
 
@@ -73,7 +73,7 @@ module sourceProperties
 
 
   PUBLIC :: sourceProperties_Main,WriteSourceInfo,deallocate_sourceFields
-  
+
 contains
 
 
@@ -82,7 +82,7 @@ contains
   ! NAME
   ! subroutine sourceProperties_Main(time,NumSources,TheSource,instability_Flag)
   ! PURPOSE
-  ! main routine: administrates the calculation of local thermodynamical 
+  ! main routine: administrates the calculation of local thermodynamical
   ! properties of the source(s) and the determination of local spinodal instabilities.
   ! INPUTS
   ! * real,                             :: time         -- actual time (fm/c)
@@ -120,18 +120,18 @@ contains
        firstCall = .false.
     endif
     !-----------------------------------------------------------------------
-    !    Determine at each time step delta_T the energy-momentum tensor 
-    !    on the grid. 
-    !    The local pressure components and the density are calculated also 
+    !    Determine at each time step delta_T the energy-momentum tensor
+    !    on the grid.
+    !    The local pressure components and the density are calculated also
     !    at the center of the source(s).
     !-----------------------------------------------------------------------
     call EnergyMomentumTensor(realPV)
     call allocate_sourceFields(MaxNumSources)
     call get_PressureField(NumEnsemples,MaxNumSources,NumSources,TheSource)
     !-----------------------------------------------------------------------
-    ! Printing the time dependence of the average (over the centroids of the 
-    ! valid sources) of the anisotropy factor. This file gives important 
-    ! information on achieved degree of equilibration at that time, when 
+    ! Printing the time dependence of the average (over the centroids of the
+    ! valid sources) of the anisotropy factor. This file gives important
+    ! information on achieved degree of equilibration at that time, when
     ! statistical fragmentation is applied.
     write(*,*)
     write(*,'(A,(f12.5))') '### <Anisotropy> = ',MeanAnisotropy
@@ -146,13 +146,13 @@ contains
   !****s* sourceProperties/allocateFields
   ! PURPOSE
   ! Allocation of the energy-momentum Tensor at the first call.
-  ! NOTES 
-  ! The allocation of the tensor is done only at the first call, since 
-  ! its size remains constant. For other fields of this module, see 
+  ! NOTES
+  ! The allocation of the tensor is done only at the first call, since
+  ! its size remains constant. For other fields of this module, see
   ! notes in the routines (de)allocate_sourceFields.
   !***********************************************************************
   subroutine allocateFields
-    
+
     use densitymodule, only : gridPoints
 
     Allocate(TheTensor(-gridPoints(1):gridPoints(1),&
@@ -167,8 +167,8 @@ contains
   !***********************************************************************
   !****s* sourceProperties/get_localPressure
   ! PURPOSE
-  ! Determination of the local Pressure density, baryon density and 
-  ! of local anisotropies at the center of the source(s), as well as 
+  ! Determination of the local Pressure density, baryon density and
+  ! of local anisotropies at the center of the source(s), as well as
   ! determination of the average anisotropy ratio.
   ! INPUTS
   ! integer               :: NumEnsemples     -- Number of ensemples
@@ -176,7 +176,7 @@ contains
   ! integer,dimension(:)  :: NumSources       -- Number of valid sources
   ! type(quelle), dimension(:,:) :: TheSource -- source(s) properties
   !
-  ! USES 
+  ! USES
   ! sourceTypeDefinition, densitymodule,lorentzTrafo
   !***********************************************************************
   subroutine get_PressureField(NumEnsemples,MaxNumSources,NumSources,TheSource)
@@ -217,8 +217,8 @@ contains
     Loop_over_Ensemples : do m=1,NumEnsemples
 
        !skip here events with non-existing projectile/target/fireball
-!       if (NumSources(m) > 1 .and. NumSources(m) < 3) cycle 
-          
+!       if (NumSources(m) > 1 .and. NumSources(m) < 3) cycle
+
        Loop_over_Sources : do i=1,NumSources(m)
 
           if (i > MaxNumSources) then
@@ -243,8 +243,8 @@ contains
              Loop_ySpace : do i2=index(2)-2,index(2)+2
                 Loop_zSpace : do i3=index(3)-2,index(3)+2
 
-                   if (   abs(i1) > gridPoints(1) .or. & 
-                        & abs(i2) > gridPoints(2) .or. & 
+                   if (   abs(i1) > gridPoints(1) .or. &
+                        & abs(i2) > gridPoints(2) .or. &
                         & abs(i3) > gridPoints(3) ) cycle
 
                    strom(:) = densityField(i1,i2,i3)%baryon(:)
@@ -374,7 +374,7 @@ contains
           If ( teilchen(j,i)%id >= pion) cycle  Loop_over_particles_1 ! Only baryons are accounted for presently
 
           ! Modification factor for the coupling constants:
-          factor = ModificationFactor(teilchen(j,i)%Id,teilchen(j,i)%antiparticle)       
+          factor = ModificationFactor(teilchen(j,i)%Id,teilchen(j,i)%antiparticle)
 
           ! position in large grid:
           rpos = Teilchen(j,i)%position(1:3)/gridSpacing
@@ -418,7 +418,7 @@ contains
                       ujj(:) = teilchen(j,i)%momentum(:)/mstar
                       do m=0,3
                          do l=0,3
-                            TheTensor(Index1,Index2,Index3,m,l) = TheTensor(Index1,Index2,Index3,m,l)  + & 
+                            TheTensor(Index1,Index2,Index3,m,l) = TheTensor(Index1,Index2,Index3,m,l)  + &
                                  &  mstar*ujj(m)*ujj(l)*smearingWeights(small,large)/ujj(0)
                          end do
                       end do
@@ -444,8 +444,8 @@ contains
              stromq   = strom(0)**2 - dot_product(strom(1:3),strom(1:3))
 
              !total isospin current (difference between proton and neutron currents)
-             stromi(:) = & 
-                  & densityField(Index1,Index2,Index3)%proton(:)- & 
+             stromi(:) = &
+                  & densityField(Index1,Index2,Index3)%proton(:)- &
                   & densityField(Index1,Index2,Index3)%neutron(:)
              stromiq   = stromi(0)**2 - dot_product(stromi(1:3),stromi(1:3))
 
@@ -456,9 +456,9 @@ contains
 
              do m=0,3
                 do l=0,3
-                   TheTensor(Index1,Index2,Index3,m,l) = TheTensor(Index1,Index2,Index3,m,l)  & 
+                   TheTensor(Index1,Index2,Index3,m,l) = TheTensor(Index1,Index2,Index3,m,l)  &
                         & + a_6*strom(m)*strom(l) + a_7*stromi(m)*stromi(l) & !still kinetic contrinution
-                        & + metrik(m,l)*( ScalarPart - VectorPart ) !potential contribution   
+                        & + metrik(m,l)*( ScalarPart - VectorPart ) !potential contribution
                 end do
              end do
 
@@ -477,11 +477,11 @@ contains
   ! Administrates the printing of source properties.
   ! NOTES
   ! * Print information on sources as function of time
-  ! * PrintCotrol = true --> prints at onset of equilibration 
+  ! * PrintCotrol = true --> prints at onset of equilibration
   !   (SourceFile.dat)
-  ! * FinalFlag   = true --> prints at onset of equilibration 
+  ! * FinalFlag   = true --> prints at onset of equilibration
   !   after forced decays (SourceFile_NoResonances.dat)
-  ! * The file "SourceFile.dat" or "SourceFile_NoResonances.dat" serve 
+  ! * The file "SourceFile.dat" or "SourceFile_NoResonances.dat" serve
   !   as input for the statistical multifragmentation code.
   !***********************************************************************
   subroutine WriteSourceInfo(time,stossParameter,isut,NumSources,hyperSource,FinalFlag)
@@ -526,7 +526,7 @@ contains
        open(105,file='SourceFile_NoResonances.dat',position='Append')
 
        do m=1,Size(TheSource,dim=1)
-                   
+
           write(105,'(A,1x,i5)') 'Number of valid sources: ',NumValidSources(m)
 
           do i=1,NumSources(m)
@@ -534,17 +534,17 @@ contains
           if (.not.TheSource(m,i)%status) cycle
 
           if(.not.hyperSource) then
-             write(105,100) time,& 
+             write(105,100) time,&
                   & TheSource(m,i)%Size,TheSource(m,i)%Charge, &
-                  & TheSource(m,i)%position,TheSource(m,i)%velocity, & 
-                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,& 
+                  & TheSource(m,i)%position,TheSource(m,i)%velocity, &
+                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,&
                   & stossParameter,m,isut+1
           else
-             write(105,102) time,& 
+             write(105,102) time,&
                   & TheSource(m,i)%Size,TheSource(m,i)%Charge, &
                   & TheSource(m,i)%nLambda,TheSource(m,i)%nSigma0, &
-                  & TheSource(m,i)%position,TheSource(m,i)%velocity, & 
-                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,& 
+                  & TheSource(m,i)%position,TheSource(m,i)%velocity, &
+                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,&
                   & stossParameter,m,isut+1
           end if
 
@@ -566,7 +566,7 @@ contains
     open(103,file='Source'//realTochar(time)//'.dat',position='Append')
 
     Loop_over_Ensemples : do m=1,Size(TheSource,dim=1)
-       
+
        write(103,'(A,1x,i5)') 'Number of valid sources: ',NumValidSources(m)
 
        Loop_over_Sources : do i=1,NumSources(m)
@@ -574,17 +574,17 @@ contains
           if (.not.TheSource(m,i)%status) cycle
 
           if(.not.hyperSource) then
-             write(103,100) time,& 
+             write(103,100) time,&
                   & TheSource(m,i)%Size,TheSource(m,i)%Charge, &
-                  & TheSource(m,i)%position,TheSource(m,i)%velocity, & 
-                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,& 
+                  & TheSource(m,i)%position,TheSource(m,i)%velocity, &
+                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,&
                   & stossParameter,m,isut+1
           else
-             write(103,102) time,& 
+             write(103,102) time,&
                   & TheSource(m,i)%Size,TheSource(m,i)%Charge, &
                   & TheSource(m,i)%nLambda,TheSource(m,i)%nSigma0, &
-                  & TheSource(m,i)%position,TheSource(m,i)%velocity, & 
-                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,& 
+                  & TheSource(m,i)%position,TheSource(m,i)%velocity, &
+                  & TheSource(m,i)%ExEnergy,TheSource(m,i)%radEnergy,&
                   & stossParameter,m,isut+1
           end if
 
@@ -611,7 +611,7 @@ contains
     MeanSource(:)%radEnergy = 0
     MeanSource(:)%ExEnergy = 0
     Loop_over_Ensemples2 : do i=1,Size(TheSource,dim=1)
-!       if (NumSources(i) > 1 .and. NumSources(i) < 3) cycle 
+!       if (NumSources(i) > 1 .and. NumSources(i) < 3) cycle
        Loop_over_Sources2 : do m=1,NumSources(i)
           if (.not.TheSource(i,m)%Status) cycle
           NormSource(m) = NormSource(m) + 1.
@@ -656,28 +656,28 @@ contains
           write(*,'(A,f12.4)')    '### <Q>                = ',Anisotropy(i)
        endif
        !--------------------------------------------------------------------
-       
+
        if ( getRMF_Flag() ) then
 
           if(.not.hyperSource) then
-              write(106,101) time, & 
-                   &   float(MeanSource(i)%Size)/NormSource(i), & 
-                   &   float(MeanSource(i)%Charge)/NormSource(i), & 
-                   &   MeanSource(i)%Position/NormSource(i), & 
-                   &   MeanSource(i)%Velocity/NormSource(i), & 
-                   &   MeanSource(i)%radEnergy/NormSource(i), & 
-                   &   MeanSource(i)%ExEnergy/NormSource(i), & 
+              write(106,101) time, &
+                   &   float(MeanSource(i)%Size)/NormSource(i), &
+                   &   float(MeanSource(i)%Charge)/NormSource(i), &
+                   &   MeanSource(i)%Position/NormSource(i), &
+                   &   MeanSource(i)%Velocity/NormSource(i), &
+                   &   MeanSource(i)%radEnergy/NormSource(i), &
+                   &   MeanSource(i)%ExEnergy/NormSource(i), &
                    &   InvariantDensity(i),Pmean(i),P_zz(i),P_tr(i),Anisotropy(i)
           else
-              write(106,101) time, & 
-                   &   float(MeanSource(i)%Size)/NormSource(i), & 
-                   &   float(MeanSource(i)%Charge)/NormSource(i), & 
+              write(106,101) time, &
+                   &   float(MeanSource(i)%Size)/NormSource(i), &
+                   &   float(MeanSource(i)%Charge)/NormSource(i), &
                    &   float(MeanSource(i)%nLambda)/NormSource(i), &
                    &   float(MeanSource(i)%nSigma0)/NormSource(i), &
-                   &   MeanSource(i)%Position/NormSource(i), & 
-                   &   MeanSource(i)%Velocity/NormSource(i), & 
-                   &   MeanSource(i)%radEnergy/NormSource(i), & 
-                   &   MeanSource(i)%ExEnergy/NormSource(i), & 
+                   &   MeanSource(i)%Position/NormSource(i), &
+                   &   MeanSource(i)%Velocity/NormSource(i), &
+                   &   MeanSource(i)%radEnergy/NormSource(i), &
+                   &   MeanSource(i)%ExEnergy/NormSource(i), &
                    &   InvariantDensity(i),Pmean(i),P_zz(i),P_tr(i),Anisotropy(i)
           end if
 
@@ -685,22 +685,22 @@ contains
        else
 
           if(.not.hyperSource) then
-              write(106,101) time, & 
-                   &   float(MeanSource(i)%Size)/NormSource(i), & 
+              write(106,101) time, &
+                   &   float(MeanSource(i)%Size)/NormSource(i), &
                    &   float(MeanSource(i)%Charge)/NormSource(i), &
-                   &   MeanSource(i)%Position/NormSource(i), & 
-                   &   MeanSource(i)%Velocity/NormSource(i), & 
-                   &   MeanSource(i)%radEnergy/NormSource(i), & 
+                   &   MeanSource(i)%Position/NormSource(i), &
+                   &   MeanSource(i)%Velocity/NormSource(i), &
+                   &   MeanSource(i)%radEnergy/NormSource(i), &
                    &   MeanSource(i)%ExEnergy/NormSource(i)
           else
-              write(106,101) time, & 
-                   &   float(MeanSource(i)%Size)/NormSource(i), & 
+              write(106,101) time, &
+                   &   float(MeanSource(i)%Size)/NormSource(i), &
                    &   float(MeanSource(i)%Charge)/NormSource(i), &
                    &   float(MeanSource(i)%nLambda)/NormSource(i), &
                    &   float(MeanSource(i)%nSigma0)/NormSource(i), &
-                   &   MeanSource(i)%Position/NormSource(i), & 
-                   &   MeanSource(i)%Velocity/NormSource(i), & 
-                   &   MeanSource(i)%radEnergy/NormSource(i), & 
+                   &   MeanSource(i)%Position/NormSource(i), &
+                   &   MeanSource(i)%Velocity/NormSource(i), &
+                   &   MeanSource(i)%radEnergy/NormSource(i), &
                    &   MeanSource(i)%ExEnergy/NormSource(i)
           end if
 
@@ -727,8 +727,8 @@ contains
   ! PURPOSE
   ! allocates source's properties
   ! NOTES
-  ! The allocation of the source's properties has to be done at each 
-  ! time when this module is called from outside, because the size 
+  ! The allocation of the source's properties has to be done at each
+  ! time when this module is called from outside, because the size
   ! of the source properties is variable in time!
   !
   !***********************************************************************
@@ -754,7 +754,7 @@ contains
   ! PURPOSE
   ! deallocates source's properties.
   ! NOTES
-  ! The size of the source properties is variable in time! see also 
+  ! The size of the source properties is variable in time! see also
   ! notes in routine allocate_sourceFields.
   !
   !***********************************************************************

@@ -9,7 +9,7 @@ module singlePionProductionMAIDlike
 
   implicit none
   PRIVATE
-  
+
   !***************************************************************************
   !****g* singlePionProductionMAIDlike/elpionData
   ! SOURCE
@@ -18,14 +18,14 @@ module singlePionProductionMAIDlike
   ! Switch to use fit to ANL or BNL elementary pion production data
   ! Use: elpionData = ANL or elpionData = BNL
   ! switch used to set parameters for 1 pion BG and for Delta resonance:
-  !real,save :: b_proton_pinull, b_neutron_piplus, MADelta                    
+  !real,save :: b_proton_pinull, b_neutron_piplus, MADelta
   !
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* singlePionProductionMAIDlike/b_proton_pinull
   ! SOURCE
-  real, save :: b_proton_pinull=3.   
+  real, save :: b_proton_pinull=3.
   ! PURPOSE
   ! 3. is  tuned to ANL, 6. is tuned to BNL
   !***************************************************************************
@@ -33,20 +33,20 @@ module singlePionProductionMAIDlike
   !***************************************************************************
   !****g* singlePionProductionMAIDlike/b_neutron_piplus
   ! SOURCE
-  real, save :: b_neutron_piplus=1.5 
+  real, save :: b_neutron_piplus=1.5
   ! PURPOSE
   ! 1.5 is tuned to ANL, 3. is tuned to BNL
   !***************************************************************************
 
   logical, save :: initFlag=.true.
-  
+
   PUBLIC :: MAIDlike_singlePi
-  
+
 contains
-  
+
  subroutine readInput
     use output
-   
+
     integer :: ios
     !*************************************************************************
     !****n* singlePionProductionMAIDlike/neutrino_MAIDlikeBG
@@ -93,7 +93,7 @@ contains
     use leptonicID
     use eN_eventDefinition, only : electronNucleon_event
     use eN_event, only : eNev_init_Target, nuclearFluxFactor_correction
-    
+
 
     type(electronNucleon_event),intent(in) :: eNev
     integer,              intent(in) :: charge_out
@@ -107,7 +107,7 @@ contains
     type(electronNucleon_event) :: eN
     real ,dimension(0:3) :: pf,k  !pf --- outgoing nucleon, k -- pion momentum
     real :: sigmaPion
-    real,dimension(-1:1)  :: sigmaRes 
+    real,dimension(-1:1)  :: sigmaRes
     real :: phi_k_MC, theta_k_MC!, theta_lf_MC
     real :: deltaMonteCarlo
     type(particle) :: targetNuc
@@ -116,22 +116,22 @@ contains
     real :: coupling, Qs
     integer :: process_ID
     real, dimension(0:3) :: k_in, p_in, k_out
-   
-    
+
+
     if(initFlag) then
        call readInput
        initFlag=.false.
     end if
-    
-    
-    
+
+
+
     ! set some abbreviations:
     process_ID = eNev%idProcess
     k_in  = eNev%lepton_in%momentum
     k_out = eNev%lepton_out%momentum
     p_in  = eNev%nucleon%momentum
     ! ---------------
-   
+
     MAIDlike_singlePi=0.
     p_out=0.
     pion_momentum_out=0.
@@ -173,13 +173,13 @@ contains
     ! Full pion production cross section:
     sigmaPion=dSdO_fdE_fdO_k_med_eN(eN, pion_Charge_out, phi_k_MC, theta_k_MC, k, pf, process_ID,pionNucleonSystem=2)
     if(nuclear_phasespace) sigmaPion=sigmaPion*nuclearFluxFactor_correction(targetNuc%momentum &
-         & ,k_out+k+pf-targetNuc%momentum) 
+         & ,k_out+k+pf-targetNuc%momentum)
 
     if(sigmaPion.lt.1E-20) return ! no solution to kinematical problem was found
 
 
     ! Resonance contribution:
-    sigmaRes=dSdO_fdE_fdO_k_med_res_EN(eN,k,pf,process_ID,pionNucleonSystem=2) 
+    sigmaRes=dSdO_fdE_fdO_k_med_res_EN(eN,k,pf,process_ID,pionNucleonSystem=2)
 
 
     ! Subtract resonance contributions:
@@ -209,7 +209,7 @@ contains
     targetNuc%momentum=p_in
     targetNuc%charge=eNev%nucleon%charge
     targetNuc%id=nucleon
-    targetNuc%mass=mN  
+    targetNuc%mass=mN
     targetNuc%position=eNev%nucleon%position
     targetNuc%perturbative=.true.
 
@@ -235,4 +235,3 @@ contains
 
 
 end module singlePionProductionMAIDlike
-

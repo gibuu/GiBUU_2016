@@ -4,34 +4,34 @@
 ! module collisionNumbering
 !
 ! PURPOSE
-! * includes the numbering of the particles according to their collision 
-!   partners. 
-! * This numbering is stored in the "%event" variable. 
-! * Also includes the routine which based on %event decides whether two 
+! * includes the numbering of the particles according to their collision
+!   partners.
+! * This numbering is stored in the "%event" variable.
+! * Also includes the routine which based on %event decides whether two
 !   particles did collide before.
 ! * Include routines which store and output the number of collisions.
 ! NOTES
-! In GiBUU we label each particle by the event it stems from. 
-! This labeling is different for real and perturbative particles. 
+! In GiBUU we label each particle by the event it stems from.
+! This labeling is different for real and perturbative particles.
 !
 ! REAL PARTICLES:
-! * We assign a unique number to each event. 
-!   Event #1 gets %event=firstEventNumber, 
+! * We assign a unique number to each event.
+!   Event #1 gets %event=firstEventNumber,
 !   Event #2 gets %event=firstEventNumber+1,...
-! * To check whether to particles stem from the same event, 
+! * To check whether to particles stem from the same event,
 !   we just need to check whether their %event entries coincide.
-! 
+!
 ! PERTURBATIVE PARTICLES:
-! *  The perturbative particles produced in some event get 
+! *  The perturbative particles produced in some event get
 !    as %event the %number of the realParticle which took part in the event
-! *  To check whether a real and perturbative particle stem from 
+! *  To check whether a real and perturbative particle stem from
 !    the same event, we check whether pert%event=real%number
 !*****************************************************************************
 module collisionNumbering
 
   implicit none
   Private
-  
+
   !**************************************************************************
   !****g* collisionNumbering/firstEventNumber
   ! PURPOSE
@@ -44,7 +44,7 @@ module collisionNumbering
   !**************************************************************************
   !****g* collisionNumbering/CountedEvents
   ! PURPOSE
-  ! Global storage of the number of events 
+  ! Global storage of the number of events
   ! * first index  --- 0: integrated number, 1: from a given time step only
   ! * second index --- 0: all, 1: 1-Body, 2: 2-Body, 3: 3-Body
   ! * third index  --- 1: real particles, 2: perturbative particles
@@ -62,7 +62,7 @@ module collisionNumbering
   Public :: real_firstnumbering
 
   integer, save :: n_participants_rr=0
-  integer, save :: n_participants_rp=0 
+  integer, save :: n_participants_rp=0
 
 contains
 
@@ -81,7 +81,7 @@ contains
   ! * integer :: iType  --- 1: real particles, 2: perturbative particles
   !
   ! OUTPUT
-  ! * integer 
+  ! * integer
   !
   ! NOTES
   ! no range checking
@@ -199,7 +199,7 @@ contains
   ! possible values for code1 are:
   ! * 1-body:    11= real particle decay, 12= pert.particle decay
   ! * 2-body:   211= real+real ,         212= real+pert
-  ! * 3-body:  3111= real+real+real,    3112= real+real+pert 
+  ! * 3-body:  3111= real+real+real,    3112= real+real+pert
   !
   ! possible values for code2 (2-body) are:
   ! *  -3: BaB    (Baryon-Antibaryon-Annihilation)
@@ -210,7 +210,7 @@ contains
   !
   ! OUTPUT
   ! ---
-  ! 
+  !
   ! NOTES
   ! You can (ab)use this routine for debugging purposes:
   ! listing the event if a particle with a given ID collides or
@@ -220,7 +220,7 @@ contains
   ! But be aware: you have no information about finalState !
   !***************************************************************************
   subroutine ReportEventNumber(InPart,OutPart, nr,time,code1,code2,weight)
-    
+
     use particleDefinition
     use collisionReporter, only: cR_Add
 !     use output, only: WriteParticle
@@ -234,7 +234,7 @@ contains
     real,                optional,intent(in) :: weight
 
 
-!...local variables: 
+!...local variables:
     integer :: code11 ! , eventclass
     real :: w;
     integer :: i
@@ -308,7 +308,7 @@ contains
 
 !    write(*,'(A,i5,i3,f9.3,f9.3,3i9)') 'code,N :',code1,code11,time,sqrtS(InPart),InPart%number
 
-    if (code1==211 .or. code1==212) call cR_Add (sqrtS(InPart), time, code11, w) 
+    if (code1==211 .or. code1==212) call cR_Add (sqrtS(InPart), time, code11, w)
 
 
 !    call WriteEventHistory
@@ -325,7 +325,7 @@ contains
 
 !!$    do i=1,size(InPart,dim=1)
 !!$       if ((InPart(i)%firstevent.eq.628001).or.(InPart(i)%firstevent.eq.628002)) then
-!!$          call WriteEventHistory 
+!!$          call WriteEventHistory
 !!$          exit
 !!$       end if
 !!$    end do
@@ -335,7 +335,7 @@ contains
 !       do i=1,size(InPart,dim=1)
 !          call WriteParticle(6,99,i,InPart(i))
 !       end do
-!!$       
+!!$
 !!$
 !!$       if (code11.eq.2) then
 !!$          call QYLIST(2)
@@ -374,7 +374,7 @@ contains
          nOut = i
          if (OutPart(i)%ID .gt. 0) exit
       end do
-      
+
       if (code1.lt.100) then
          write(iFile,1001) iEvent,time,nr,code1,sqrtS(InPart), &
               & InPart(1)%number, OutPart(1:nOut)%number
@@ -405,11 +405,11 @@ contains
          enddo
          write(iFile,2003) iEvent,NameIn(1:3),NameOut(1:nOut)
       end if
-         
+
 1001  format(i9,f5.2,'[',2i9,']:',i5,'    |',f9.3,'|',i9,' --> ',30i9)
 1002  format(i9,f5.2,'[',2i9,']:',i5,'(',i2,')|',f9.3,'|',2i9,' --> ',30i9)
 1003  format(i9,f5.2,'[',2i9,']:',i5,'    |',f9.3,'|',3i9,' --> ',30i9)
-      
+
 2001  format(i9,'   ',A15,' --> ',30A15)
 2002  format(i9,'   ',2A15,' --> ',30A15)
 2003  format(i9,'   ',3A15,' --> ',30A15)
@@ -426,11 +426,11 @@ contains
   ! integer function pert_numbering(realteilchen)
   !
   ! PURPOSE
-  ! Calculate the Event number of a perturbative particle which collided with 
-  ! the real particle "realteilchen". 
+  ! Calculate the Event number of a perturbative particle which collided with
+  ! the real particle "realteilchen".
   ! If realTeilchen is not given than the return value is -999,
   ! which can never be associated to any particle.
-  ! 
+  !
   ! INPUTS
   ! * type(particle), optional :: realTeilchen
   !
@@ -455,10 +455,10 @@ contains
   ! integer function real_numbering()
   !
   ! PURPOSE
-  ! Calculate the Event number of a real particle. 
-  ! The event number for the real particles are unique. 
+  ! Calculate the Event number of a real particle.
+  ! The event number for the real particles are unique.
   ! A collision happened at later time will cause a higher event number.
-  ! 
+  !
   ! INPUTS
   ! ---
   !
@@ -466,7 +466,7 @@ contains
   ! event number
   !
   ! NOTES
-  ! The minimal value of numbering is firstEventNumber. 
+  ! The minimal value of numbering is firstEventNumber.
   !***************************************************************************
   integer function real_numbering()
 
@@ -477,12 +477,12 @@ contains
     integer, save  :: eventNumber=firstEventNumber
     !
     ! PURPOSE
-    ! Number to be given to every real particle stemming from a collision 
+    ! Number to be given to every real particle stemming from a collision
     ! event:
-    ! * This number should by unique ! 
-    ! * Therefore we raise  "eventnumber" by one for every event. 
-    ! * All produced particles then get this "eventnumber" set 
-    !   into "teilchen(i,j)%event". 
+    ! * This number should by unique !
+    ! * Therefore we raise  "eventnumber" by one for every event.
+    ! * All produced particles then get this "eventnumber" set
+    !   into "teilchen(i,j)%event".
     ! If two real particles agree in "teilchen(i,j)%event",
     ! "teilchen(k,l)%event" then they are not allowed to scatter to prevent
     ! multiple collisions.
@@ -496,7 +496,7 @@ contains
   !****f* collisionNumbering/pert_firstnumbering
   ! NAME
   ! integer function pert_numbering(realTeilchen,pertTeilchen)
-  ! 
+  !
   ! PURPOSE
   ! calculate the value of firstevent, which has to be given to the
   ! final particles, when realTeilchen and pertTeilchen collided
@@ -512,11 +512,11 @@ contains
   ! * type(particle),optional :: pertTeilchen
   !
   ! NOTES
-  ! This routine should be called only, if for a incoming particle we 
+  ! This routine should be called only, if for a incoming particle we
   ! had %firstEvent==0;
   ! If not, it does also the right stuff, but slower.
   !
-  ! if only realTeilchen is given, it is as calling 
+  ! if only realTeilchen is given, it is as calling
   ! "pert_numbering(realTeilchen)": return value =  realTeilchen%number
   !
   !***************************************************************************
@@ -542,7 +542,7 @@ contains
        pert_firstnumbering = pert_firstnumbering12()
 
 !       write(*,'(A,4i10)') 'pert_firstnumbering',realTeilchen%number,pertTeilchen%number,pert_firstnumbering
-       
+
 
     case default
        pert_firstnumbering = realTeilchen%number
@@ -556,14 +556,14 @@ contains
   !****f* collisionNumbering/pert_firstnumbering12
   ! NAME
   ! integer function pert_firstnumbering12(reset,DoNotInc)
-  ! 
+  !
   ! PURPOSE
   ! just return an increasing number every call
   !
   ! INPUTS
-  ! * logical, optional :: reset -- if .true. the internal counter is 
+  ! * logical, optional :: reset -- if .true. the internal counter is
   !   reset to zero
-  ! * logical, optional :: DoNotInc -- if .true. the internal counter is 
+  ! * logical, optional :: DoNotInc -- if .true. the internal counter is
   !   not increased, the returned number is the number given before
   !
   ! NOTES
@@ -573,7 +573,7 @@ contains
   integer function pert_firstnumbering12(reset,DoNotInc)
     logical, optional :: reset
     logical, optional :: DoNotInc
-    
+
     integer, save :: iCount = 0
 
     iCount = iCount + 1
@@ -594,17 +594,17 @@ contains
   !****f* collisionNumbering/real_firstnumbering
   ! NAME
   ! integer function real_firstnumbering(reset)
-  ! 
+  !
   ! PURPOSE
   ! just return an increasing number every call
   !
   ! INPUTS
-  ! * logical, optional :: reset -- if .true. the internal counter is 
+  ! * logical, optional :: reset -- if .true. the internal counter is
   !   reset to zero
   !***************************************************************************
   integer function real_firstnumbering(reset)
     logical, optional :: reset
-    
+
     integer, save :: iCount = 0
 
     iCount = iCount + 1
@@ -622,8 +622,8 @@ contains
   ! NAME
   ! logical function check_justCollided(a,b)
   ! PURPOSE
-  ! Checks wether particles a and b stem from the same collision, 
-  ! and no other collision happened yet. 
+  ! Checks wether particles a and b stem from the same collision,
+  ! and no other collision happened yet.
   ! RESULT
   ! * true = if they are just created before by the very same event
   ! * false= if not...

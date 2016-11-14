@@ -113,7 +113,7 @@ contains
 !     real,parameter::mrho=0.77
 !     ! variables for dsrho
 !     real,save::srts
-! 
+!
 !     pini=qcm(sqrt(s),mn,0.)
 !     pout=qcm(sqrt(s),mn,mv)
 !     if(pout==0.)then
@@ -145,9 +145,9 @@ contains
 !        dndt=1./(4.*pi)*pi/(pini*pout) !below threshold: isotropic
 !        msq=sigm*dndt*64*pi*s*pini**2*4.*GeVSquared_times_mb
 !     end if
-! 
+!
 !   contains
-! 
+!
 !     subroutine ininorm
 !       ! calculates integral I[ds/do,cost=-1:1]*2pi
 !       real,parameter::srtmin=mn+mrho,srtmax=4.
@@ -165,10 +165,10 @@ contains
 !       end do
 !       call spline_nr(xn,yn,n,5.e+30,5.e+30,y2n)
 !     end subroutine ininorm
-! 
+!
 !   end subroutine photorho
-! 
-! 
+!
+!
 !   function dsrho(cost)
 !     ! dsigma/dOmega [microbarn/sr] on-shell
 !     real(kind=8)::dsrho
@@ -411,7 +411,7 @@ contains
       b2=gv2/(2.*mn)
       trace=-2*(mass**2-(mn-Sqrt(s))**2)*(b2**2*(mass**2+2*(mn+Sqrt(s))**2))
       gam1=1./(8.*pi)*pcm(sqrt(s),mn,mass)/s*trace/2.*(resform(s,lv))**2
-      gam2=(1.-bratio)*gamres*(pcm(sqrt(s),mn,mpi)/pcm(mres,mn,mpi))**3 
+      gam2=(1.-bratio)*gamres*(pcm(sqrt(s),mn,mpi)/pcm(mres,mn,mpi))**3
       !& *(resform(s,1.)/resform(mres**2,1.))**2
       reswidth=gam1+gam2
     end function reswidth
@@ -496,7 +496,7 @@ contains
     sum6=(2*mn**4*(2*mp**2 - t)*x1*x1d - t*(2*scms**2 + 2*scms*t +     &
          t**2)*x1*x1d +                                                &
          2*mn**2*(mp**4 + 2*scms*t - mp**2*(4*scms + t))*x1*x1d -      &
-         mp**6*t*x3*x3d-mp**4*(4*scms*x1*x1d+t*x1*x1d-2*t**2*x3*x3d) + & 
+         mp**6*t*x3*x3d-mp**4*(4*scms*x1*x1d+t*x1*x1d-2*t**2*x3*x3d) + &
          mp**2*(4*scms**2*x1*x1d + 6*scms*t*x1*x1d + 2*t**2*x1*x1d -   &
          t**3*x3*x3d))/mp**2
     sum=sum6+sum2(scms,t,y1,y2,y3,y4,fn)+sum1(scms,t,y1,y2,y3,y4,x1,x5,fn)

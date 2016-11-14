@@ -17,12 +17,12 @@ module NuclearPDF
   !*************************************************************************
   !****s* NuclearPDF/NuclearPDFtype
   ! SOURCE
-  !       
+  !
   integer,  save :: NuclearPDFtype = 0
   !
   ! PURPOSE
   ! Select, which nuclear modification of the parton distribution functions
-  ! is used: 
+  ! is used:
   ! * 0: no modification
   ! * 1: EKS 98
   !*************************************************************************
@@ -57,7 +57,7 @@ contains
     call Write_ReadingInput("NuclearPDF",0,ios)
 
     select case (NuclearPDFtype)
-    case (0) 
+    case (0)
        write(*,*) 'Nuclear PDF: none'
     case (1)
        write(*,*) 'Nuclear PDF: EKS98'
@@ -142,10 +142,10 @@ contains
        XPQ(-6)= XPQ(-6)*Rt
 
     end select
-    
+
 
   end subroutine DoNuclearPDF
-    
+
 
 
 end module NuclearPDF

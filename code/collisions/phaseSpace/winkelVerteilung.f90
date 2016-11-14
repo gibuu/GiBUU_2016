@@ -21,7 +21,7 @@ module winkelVerteilung
   ! -> see also master_2body
   ! Values:
   ! * .false.= isotropic in CM-Frame
-  ! * .true. = 1+3*cos(theta)**2 in CM Frame (theta is angle of producing 
+  ! * .true. = 1+3*cos(theta)**2 in CM Frame (theta is angle of producing
   !   pion to outgoing pion)
   !**********************************************************************
 
@@ -53,7 +53,7 @@ module winkelVerteilung
   !
   real, save :: pionNucleon_backward_exponent=26.5
   ! PURPOSE
-  ! Exponent for backward peaked pion nucleon cross section. 
+  ! Exponent for backward peaked pion nucleon cross section.
   ! Distribution=(coeff-cos(theta))**exponent*(pole-sqrt(s)/pole)
   ! Only used if pionNucleon_backward=.true. .
   !**********************************************************************
@@ -64,7 +64,7 @@ module winkelVerteilung
   !
   real, save :: pionNucleon_backward_coeff=1.9
   ! PURPOSE
-  ! Exponent for backward peaked pion nucleon cross section. 
+  ! Exponent for backward peaked pion nucleon cross section.
   ! Distribution=(coeff-cos(theta))**exponent*(pole-sqrt(s)/pole)
   ! Only used if pionNucleon_backward=.true. .
   !**********************************************************************
@@ -84,8 +84,8 @@ module winkelVerteilung
   !
   integer, save :: iParam_gammaNVN = 3
   ! PURPOSE
-  ! for gamma N -> V N events, this parameter is given to the routine 
-  ! vecmesa and selects there, how dsigma/dt is calculated. 
+  ! for gamma N -> V N events, this parameter is given to the routine
+  ! vecmesa and selects there, how dsigma/dt is calculated.
   ! Only if iParam_gammaNVN >= 0 the default value of that routine
   ! is overwritten.
   !
@@ -147,7 +147,7 @@ contains
     ! NAMELIST angular_distribution
     ! PURPOSE
     ! Includes the switches:
-    ! * deltaPWave 
+    ! * deltaPWave
     ! * debug
     ! * pionNucleon_backward
     ! * pionNucleon_backward_exponent
@@ -161,7 +161,7 @@ contains
                                     pionNucleon_Backward, pionNucleon_backward_exponent, pionNucleon_backward_coeff, &
                                     NN_NR_noniso
 
-    integer :: IOS                      
+    integer :: IOS
 
     ! Read special angular distribution switches:
     call Write_ReadingInput('angular_distribution',0)
@@ -199,22 +199,22 @@ contains
   ! function winkel (teilchenIn, teilchenOut, srts, betaToCM, mediumAtCollision, successflag) result (pscatt)
   !
   ! PURPOSE
-  ! This subroutine determines the scattering angle for two particles in 
-  ! the final state. 
-  ! For 2->2 and 1->2 processes. 
+  ! This subroutine determines the scattering angle for two particles in
+  ! the final state.
+  ! For 2->2 and 1->2 processes.
   !
   ! INPUTS
-  ! * type(particle) :: teilchenIn(1:2)     -- Initial state particles, 
+  ! * type(particle) :: teilchenIn(1:2)     -- Initial state particles,
   !   If teilchenIn(2)%ID=0 then it's just a decay of teilchenIn(1)
-  ! * type(particle) :: teilchenOut(1:2)    -- Final state particles 
+  ! * type(particle) :: teilchenOut(1:2)    -- Final state particles
   !   (only their Id's,antiflags,charges and masses are needed here)
   ! * real           :: srts                -- SQRT(s) in vacuum
-  ! * real, dimension(1:3) :: betaToCM      -- Center of mass velocity in 
+  ! * real, dimension(1:3) :: betaToCM      -- Center of mass velocity in
   !   calc. frame
   ! * type(medium)   :: MediumAtCollision   -- medium information
   !
   ! OUTPUT
-  ! * real, dimension(1:3):: pscatt         -- unit vector in the direction 
+  ! * real, dimension(1:3):: pscatt         -- unit vector in the direction
   !   of the outgoing particle teilchenOut(1) in the CM frame
   ! * logical             :: successflag    -- .true. is routine was successful
   !*****************************************************************************
@@ -247,7 +247,7 @@ contains
     m3=teilchenOut(1)%mass
     m4=teilchenOut(2)%mass
 
-    if (id2 == 0) then 
+    if (id2 == 0) then
        ! ******************PARTICLE DECAYS*************************
        If (id1==Delta .and. id3==pion .and. deltaPWave) then
           ! Delta -> pi N decay in a P-Wave mode if delta was produced in pion-nucleon->Delta scattering
@@ -259,11 +259,11 @@ contains
           pscatt = pscatt_Rho_pipi_Distribution (teilchenIn(1))
        else
           !  Isotropic decay:
-          if (debug) write(*,*) ' Isotropic decay: ',id1,' -> ',id3,id4 
+          if (debug) write(*,*) ' Isotropic decay: ',id1,' -> ',id3,id4
           pscatt = rnOmega()
        end If
 
-    else 
+    else
        ! ******************2-BODY REACTIONS*************************
 
        ! please note: mesons have always larger ID than baryons!
@@ -307,7 +307,7 @@ contains
        else
 
           !  Isotropic scattering
-          if (debug) write(*,*) ' Isotropic scattering: ',id1,id2,' -> ',id3,id4 
+          if (debug) write(*,*) ' Isotropic scattering: ',id1,id2,' -> ',id3,id4
           pscatt = rnOmega()
 
        end if
@@ -323,7 +323,7 @@ contains
 
   !######################################################################
   !######################################################################
-  !   SPECIAL DISTRIBUTIONS 
+  !   SPECIAL DISTRIBUTIONS
   !######################################################################
   !######################################################################
 
@@ -334,17 +334,17 @@ contains
   ! NAME
   ! function pscatt_Delta_PWave (teilchen, srts) result (pScatt)
   ! PURPOSE
-  ! This routine determines the outgoing unit vector in the cm-frame for 
+  ! This routine determines the outgoing unit vector in the cm-frame for
   ! a meson out of p-wave Delta resonance decay.
-  ! The angle should be distributed according to 
+  ! The angle should be distributed according to
   ! f(theta)=(3*cos^2(theta)+1)*(pionNucleon_Backward_coeff-cost)**(pionNucleon_Backward_exponent*(pole-srts)/pole)
   ! INPUTS
-  ! * real           :: srts 
+  ! * real           :: srts
   ! * type(particle) :: teilchen  --- The Delta Particle
   ! OUTPUT
   ! * real, dimension(1:3) :: pScatt --- Scattering vector in cm-frame
   !**********************************************************************
-  function pscatt_Delta_PWave (teilchen, srts) result (pScatt) 
+  function pscatt_Delta_PWave (teilchen, srts) result (pScatt)
     use particleDefinition
     use PIL_mesonMom, only: PIL_mesonMom_GET
     use random, only: rn, rnOmega
@@ -358,7 +358,7 @@ contains
     real, dimension(1:3) :: mesonMomentum
     real :: cost, x, phi, sint
     real, parameter :: pole=1.232
-    logical :: infoAvailable 
+    logical :: infoAvailable
 
     If (initFlag) call readInput
 
@@ -372,12 +372,12 @@ contains
     else
 
        if (pionNucleon_backward) then
-          ! (1a) Choose cos(theta) according to 
+          ! (1a) Choose cos(theta) according to
           !  f(cost)=(3*cost**2+1)*(coeff-cost)**(exponent*(pole-srts)/pole)
           do
              cost=1-(rn()*2.)
              x=rn()*(1+pionNucleon_Backward_coeff)**(pionNucleon_Backward_exponent*(pole-mN)/pole)
-             if (x<(3.*cost**2+1.)/4.*(pionNucleon_Backward_coeff-cost)**(pionNucleon_Backward_exponent*(pole-srts)/pole)) exit 
+             if (x<(3.*cost**2+1.)/4.*(pionNucleon_Backward_coeff-cost)**(pionNucleon_Backward_exponent*(pole-srts)/pole)) exit
           end do
 
        else
@@ -385,7 +385,7 @@ contains
           do
              cost=1-(rn()*2.)
              x=rn()
-             if (x<(3.*cost**2+1.)/4.) exit 
+             if (x<(3.*cost**2+1.)/4.) exit
           end do
 
        end if
@@ -412,7 +412,7 @@ contains
   ! NAME
   ! function pscatt_VN_VX (teilchenIn, id3, id4, mass3, mass4, srts, mediumAtCollision, successflag) result (pscatt)
   ! PURPOSE
-  ! This routine determines a random unit vector for an outgoing vector 
+  ! This routine determines a random unit vector for an outgoing vector
   ! meson in a V N-> V X colllision. (X stands for N or Delta)
   !
   ! INPUTS
@@ -420,19 +420,19 @@ contains
   ! * real,          :: srts             --- sqrt(s)
   ! * integer        :: id3, id4         --- ID of outgoing particles
   ! * real           :: mass3, mass4     --- mass of outgoing particle
-  ! 
+  !
   ! OUTPUT
   ! * real, dimension(1:3) :: pscatt --- unit vector in outgoing baryon
-  !   direction in CM frame 
+  !   direction in CM frame
   !
   ! NOTES
-  ! The given vector is the vector of particle given by id3, mass3. 
-  ! This is normally a baryon (we are normally treating B+M -> B+M 
+  ! The given vector is the vector of particle given by id3, mass3.
+  ! This is normally a baryon (we are normally treating B+M -> B+M
   ! collisions).
   !**********************************************************************
 
   function pscatt_VN_VX (teilchenIn, id3, id4, mass3, mass4, srts, mediumAtCollision, successflag) result (pscatt)
-    
+
     use particleDefinition
     use VecMesWinkel, only: vecmesa, vecdelta
     use IDtable, only: nucleon, isMeson
@@ -450,7 +450,7 @@ contains
     real, dimension(1:3) :: pscatt
 
     real :: cost, sint, phi, massMes, massBar
-    real :: massInMes2 ! mass of incoming meson mass squared or -Q^2        
+    real :: massInMes2 ! mass of incoming meson mass squared or -Q^2
     integer :: idMes,idBar
 
 !    write(*,*) '........pscatt_VN_VX'
@@ -463,10 +463,10 @@ contains
        massInMes2 = teilchenIn(2)%mass
     endif
     ! if %mass is really the mass, then we have to square it.
-    ! if %mass < 0, then the really stored value was -Q^2 
-    if (massInMes2 > 0.) massInMes2 = massInMes2**2 
+    ! if %mass < 0, then the really stored value was -Q^2
+    if (massInMes2 > 0.) massInMes2 = massInMes2**2
 
-    if (id3 < id4) then ! 
+    if (id3 < id4) then !
        idBar = id3
        idMes = id4
        massBar = mass3
@@ -514,8 +514,8 @@ contains
   ! NAME
   ! function pscatt_gammaN_VN (teilchenIn, id3, id4, mass3, mass4, srts, mediumAtCollision) result (pscatt)
   ! PURPOSE
-  ! This routine determines a random unit vector for an outgoing vector 
-  ! meson in a gamma N -> V N colllision. 
+  ! This routine determines a random unit vector for an outgoing vector
+  ! meson in a gamma N -> V N colllision.
   ! (V is a vector meson: rho, omega, phi, J/psi)
   !
   ! INPUTS
@@ -523,10 +523,10 @@ contains
   ! * real,          :: srts            --- sqrt(s)
   ! * integer        :: id3, id4        --- ID of outgoing particles
   ! * real           :: mass3, mass4    --- mass of outgoing particle
-  ! 
+  !
   ! OUTPUT
   ! * real, dimension(1:3) :: pscatt --- unit vector in outgoing baryon
-  !   direction in CM frame 
+  !   direction in CM frame
   !
   ! NOTES
   ! The given vector is the vector of particle given by id3, mass3.
@@ -593,18 +593,18 @@ contains
   ! NAME
   ! function pscatt_piN_piN_backward (teilchenIn, srts) result (pscatt)
   ! PURPOSE
-  ! Determines a random unit vector for an outgoing pion in a piN->piN 
+  ! Determines a random unit vector for an outgoing pion in a piN->piN
   ! colllision.
   !
-  ! Backward peaked pion nucleon cross section (e.g. nucl-ex 0403040), 
+  ! Backward peaked pion nucleon cross section (e.g. nucl-ex 0403040),
   ! valid for sqrt(s)<1.35 GeV
-  ! 
+  !
   ! INPUTS
   ! * type(particle) :: teilchenIn(1:2) --- incoming pion and nucleon
   ! * real           :: srts            --- sqrt(s)
   ! OUTPUT
-  ! * real, dimension(1:3) :: pscatt --- unit vector in outgoing pion 
-  ! direction in CM frame 
+  ! * real, dimension(1:3) :: pscatt --- unit vector in outgoing pion
+  ! direction in CM frame
   !**********************************************************************
   function pscatt_piN_piN_backward (teilchenIn, srts) result (pscatt)
     use rotation, only: rotateTo
@@ -622,7 +622,7 @@ contains
     do
        cost=1-(rn()*2.)
        x=rn()*(1+pionNucleon_Backward_coeff)**(pionNucleon_Backward_exponent*(1.235-mN)/1.235)
-       if (x<(pionNucleon_Backward_coeff-cost)**(pionNucleon_Backward_exponent*(1.235-srts)/1.235)) exit 
+       if (x<(pionNucleon_Backward_coeff-cost)**(pionNucleon_Backward_exponent*(1.235-srts)/1.235)) exit
     end do
     sint=sqrt(max(1.-cost**2,0.))
     phi=rn()*2.*pi
@@ -652,10 +652,10 @@ contains
   !
   ! PURPOSE
   ! This subroutine determines the scattering angle for baryon-baryon scattering processes.
-  ! Especially for NN<-> NN, NN<->NDelta, Nbar N -> LambdaBar Lambda ... 
+  ! Especially for NN<-> NN, NN<->NDelta, Nbar N -> LambdaBar Lambda ...
   !
   ! INPUTS
-  ! * type(particle) :: teilchenIn(1:2)   --- Initial state particles 
+  ! * type(particle) :: teilchenIn(1:2)   --- Initial state particles
   ! * type(particle) :: teilchenOut(1:2)  --- Final state particles (only their Id's,antiflags,charges and masses are needed here)
   ! * real :: srts                        --- SQRT(s) in vacuum
   ! * real, dimension(1:3) :: betaToCM    --- Center of mass velocity in calc. frame
@@ -702,9 +702,9 @@ contains
     id4=teilchenOut(2)%Id
 
     m1=teilchenIn(1)%mass
-    m2=teilchenIn(2)%mass 
+    m2=teilchenIn(2)%mass
     m3=teilchenOut(1)%mass
-    m4=teilchenOut(2)%mass 
+    m4=teilchenOut(2)%mass
 
     pcm = teilchenIn(1)%momentum
     call lorentz(betaToCM,pcm,'winkelVerteilung') ! boost from Lab to CM
@@ -720,7 +720,7 @@ contains
     pcm(1:3) = pcm(1:3)/prcm  ! Renormalize pcm to 1
 
     if (getRMF_flag()) then ! Redefine prcm using vacuum kinematics
-        prcm = ( srts**2 + m1**2 - m2**2 )**2/(4.*srts**2) - m1**2 
+        prcm = ( srts**2 + m1**2 - m2**2 )**2/(4.*srts**2) - m1**2
         prcm = sqrt( max(0.,prcm) )
     end if
 
@@ -759,7 +759,7 @@ contains
                 bb = max(Cugnon_bpp(plab),1.e-06)
                 a = 1.
              endif
-             ta = -4.*prcm**2 
+             ta = -4.*prcm**2
              if (rn() <= 1./(1.+a)) then
                 t = rnExp (bb, 0., ta)
              else
@@ -823,7 +823,7 @@ contains
 
        pi2=(s - mN**2 + mdel**2)**2/(4.*s) - mdel**2
        pf2=s/4. - mN**2
-       if (pi2*pf2<0.) then  
+       if (pi2*pf2<0.) then
           write(*,*)'winkelverteilung: not possible with this kinematics'
           write(*,*)'srts,pi2,pf2', srts,pi2,pf2
           write(*,*) 'incoming particles (masses):',id1,id2,m1,m2
@@ -837,12 +837,12 @@ contains
           endif
        end if
 
-       if (teilchenIn(1)%antiParticle.eqv.teilchenIn(2)%antiParticle) then 
+       if (teilchenIn(1)%antiParticle.eqv.teilchenIn(2)%antiParticle) then
 
-         ! proper N N <-> N Delta or Nbar Nbar <-> Nbar Deltabar 
+         ! proper N N <-> N Delta or Nbar Nbar <-> Nbar Deltabar
 
           dsdm=0.
-          do i=0,ntheta-1      
+          do i=0,ntheta-1
              cost=(float(i)+0.5)/float(ntheta)
              t = mdel**2 + mN**2 - 2.*sqrt(mdel**2+pi2)*sqrt(mN**2+pf2) + 2.*cost*sqrt(pi2*pf2)
              u =        2.*mN**2 - 2.*sqrt(mN**2+pf2)  *sqrt(mN**2+pi2) - 2.*cost*sqrt(pi2*pf2)
@@ -858,17 +858,17 @@ contains
 
           sum= 0.
           flag= .true.
-          i= -1 
-          do while(flag) 
+          i= -1
+          do while(flag)
              i= i + 1
-             if (i>ntheta-1) then 
+             if (i>ntheta-1) then
                 write(*,*)'problem in pscatt_BarBar', i
-                write(*,*) rntheta, dsdodm(i-1), sum , dsdm 
+                write(*,*) rntheta, dsdodm(i-1), sum , dsdm
                 stop
              end if
              sum = sum + dsdodm(i)/float(ntheta)
-             if (sum>=rntheta*dsdm) then 
-               flag = .false. 
+             if (sum>=rntheta*dsdm) then
+               flag = .false.
                c1 = forback * (float(i)+0.5)/float(ntheta)
              end if
           end do
@@ -878,7 +878,7 @@ contains
           ! Nbar N <-> Nbar Delta or Nbar N <-> Deltabar N
 
           dsdm=0.
-          do i=-ntheta,ntheta-1      
+          do i=-ntheta,ntheta-1
              cost=(float(i)+0.5)/float(ntheta)
              t = mdel**2 + mN**2 - 2.*sqrt(mdel**2+pi2)*sqrt(mN**2+pf2) + 2.*cost*sqrt(pi2*pf2)
              if (debugflag) write(*,*) 'before mNbarN_to_NbarD2:', t,mdel
@@ -892,17 +892,17 @@ contains
 
           sum= 0.
           flag= .true.
-          i= -ntheta-1 
-          do while(flag) 
+          i= -ntheta-1
+          do while(flag)
              i= i + 1
-             if (i>ntheta-1) then 
+             if (i>ntheta-1) then
                 write(*,*)'problem in pscatt_BarBar', i
-                write(*,*) rntheta, dsdodm(i-1), sum , dsdm 
+                write(*,*) rntheta, dsdodm(i-1), sum , dsdm
                 stop
              end if
              sum= sum + dsdodm(i)/float(ntheta)
-             if (sum>=rntheta*dsdm) then 
-                flag= .false. 
+             if (sum>=rntheta*dsdm) then
+                flag= .false.
                 c1= (float(i)+0.5) /float(ntheta)
              end if
           end do
@@ -933,9 +933,9 @@ contains
        if (id3==Lambda .and. id4==Lambda) then
 
           ! Nbar N -> LambdaBar Lambda
-          if (srts <= 2.37) then  
+          if (srts <= 2.37) then
              c1 = dsigdt_LE (srts, prcm)
-          else 
+          else
              c1 = dsigdt_Regge (srts, prcm, 1)
           end if
 
@@ -1057,13 +1057,13 @@ contains
   ! NAME
   ! function pscatt_Rho_pipi_Distribution (Part) result (pscatt)
   ! PURPOSE
-  ! This routine determines the outgoing unit vector in the cm-frame for 
-  ! the pi pi final-state 
+  ! This routine determines the outgoing unit vector in the cm-frame for
+  ! the pi pi final-state
   ! out of decay of a diffractive rho0.
   !
-  ! The angle should be distributed according to: 
-  !   sin(theta)**2+2*eps*R*cos(theta)**2 
-  ! in the rest frame of ther rho0, where the z-axis is defined by the 
+  ! The angle should be distributed according to:
+  !   sin(theta)**2+2*eps*R*cos(theta)**2
+  ! in the rest frame of ther rho0, where the z-axis is defined by the
   ! negative recoil momentum of the nucleon (helicity frame).
   !
   ! INPUTS
@@ -1074,7 +1074,7 @@ contains
   ! NOTES
   ! If initialized via HiLepton:
   ! * the momentum of Part (=rho0) is given in the system, where the
-  !   photon was going in z-direction and the target was moving according 
+  !   photon was going in z-direction and the target was moving according
   !   fermi motion.
   ! * betaToCM = Part%momentum/Part%momentum(0)
   !**********************************************************************
@@ -1105,7 +1105,7 @@ contains
 
     if(isDiffractive) then
        If(Debug) write(*,*) 'rho: isDiffractive=.true.'
-       
+
 !!$       write(*,*) 'rho: isDiffractive=.true.'
 !!$       write(*,*) recoil(1:3)
 !!$       write(*,*) 'epsR = ',epsR
@@ -1119,12 +1119,12 @@ contains
 !!$       epsR=0.0 !!!! DUMMY !!!!
 !!$       epsR=1.27 !!!! DUMMY !!!!
 
-       x0 = max(1.0,2*epsR) 
-       do 
+       x0 = max(1.0,2*epsR)
+       do
           cost = 1.0-(rn()*2.0)
           if (rn()*x0 .lt. 1.0+(2.0*epsR-1.0)*cost**2) exit
        end do
-          
+
        sint=sqrt(max(1.-cost**2,0.))
        phi=rn()*2.*pi
 
@@ -1156,7 +1156,7 @@ contains
        If(Debug) write(*,*) 'rho: isDiffractive=.false. or noInfo'
        pscatt = rnOmega()
     end if
-    
+
   end function pscatt_Rho_pipi_Distribution
 
 

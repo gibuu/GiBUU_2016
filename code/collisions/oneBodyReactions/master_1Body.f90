@@ -13,10 +13,10 @@ module master_1Body
   !*************************************************************************
   !****g* master_1Body/correctEnergy
   ! SOURCE
-  ! 
-  logical,save :: correctEnergy=.true. 
+  !
+  logical,save :: correctEnergy=.true.
   ! PURPOSE
-  ! Scale final state momenta to fulfill energy and momentum conservation. 
+  ! Scale final state momenta to fulfill energy and momentum conservation.
   ! If .false. energy conservation is violated
   !*************************************************************************
 
@@ -24,7 +24,7 @@ module master_1Body
   !*************************************************************************
   !****g* master_1Body/debug
   ! SOURCE
-  ! 
+  !
   logical, save :: debug = .false.
   ! PURPOSE
   ! If .true., additional debugging information will be printed out.
@@ -34,10 +34,10 @@ module master_1Body
   !*************************************************************************
   !****g* master_1Body/gammaCutOff
   ! SOURCE
-  ! 
+  !
   real, parameter :: gammaCutOff = 1E-4
   ! PURPOSE
-  ! If the decay width is lower than this value, than we treat this particle 
+  ! If the decay width is lower than this value, than we treat this particle
   ! to be stable during propagation;
   ! particle is forced to decay in last time step, if gammaDecay > 0.
   !*************************************************************************
@@ -46,7 +46,7 @@ module master_1Body
   !*************************************************************************
   !****g* master_1Body/StableInFormation
   ! SOURCE
-  ! 
+  !
   logical, save :: StableInFormation = .true.
   ! PURPOSE
   ! Particles during its formation time are considered to be stable or not.
@@ -56,7 +56,7 @@ module master_1Body
   !*************************************************************************
   !****g* master_1Body/omegaDecayMediumInfo
   ! SOURCE
-  ! 
+  !
   logical, save :: omegaDecayMediumInfo = .false.
   ! PURPOSE
   ! Write out information about all decaying omega mesons to a file
@@ -67,7 +67,7 @@ module master_1Body
   !*************************************************************************
   !****g* master_1Body/omegaDecay_restriction
   ! SOURCE
-  ! 
+  !
   integer, save :: omegaDecay_restriction = 0
   ! PURPOSE
   ! This switch, like omegaDecayMediumInfo, helps to analyze omega -> pi0 gamma decays.
@@ -108,7 +108,7 @@ contains
     ! NAME
     ! NAMELIST /master_1body/
     ! PURPOSE
-    ! Includes the switches: 
+    ! Includes the switches:
     ! * correctEnergy
     ! * debug
     ! * StableInFormation
@@ -139,15 +139,15 @@ contains
   ! NAME
   ! subroutine decayParticle (resonanceIN, finalState, collisionFlag, pauliFlag, finalFlag, time, gammaOut)
   ! PURPOSE
-  ! Evaluates for a given particle the final states of a decay process. 
-  ! First it checks wether the decay takes place in this time step, 
+  ! Evaluates for a given particle the final states of a decay process.
+  ! First it checks wether the decay takes place in this time step,
   ! then it evaluates the final state if the decay criteria is fulfilled.
   !
   ! Treatment of the antiParticles:
-  ! If the incoming resonance is an anti-particle, then we charge conjugate the 
+  ! If the incoming resonance is an anti-particle, then we charge conjugate the
   ! incoming resonance and promote it to a particle. In the end we will
   ! do the charge conjugation again and promote all particle to antiparticles.
-  ! If the particle is still in its formation period (%in_formation=.true.) then we 
+  ! If the particle is still in its formation period (%in_formation=.true.) then we
   ! don't allow it to decay!
   !
   ! INPUTS
@@ -158,7 +158,7 @@ contains
   ! OUTPUT
   ! * type(particle),dimension(:)   :: finalState    -- produced final state
   ! * logical                       :: collisionFlag -- true if decay took place
-  ! * logical                       :: pauliFlag     -- Set to .true. if Pauli blocking 
+  ! * logical                       :: pauliFlag     -- Set to .true. if Pauli blocking
   !   is already considered in decay decision
   ! * real, optional                :: gammaOut      -- full width [GeV]
   !
@@ -189,7 +189,7 @@ contains
     logical, intent(in)          :: finalFlag
     real, intent(in)             :: time
     real, optional,intent(out)   :: gammaOut
-    
+
     logical :: success, AntiParticleFlag
     type(medium) :: MediumAtPosition
     real :: gammaDecay,gamma,wahrscheinlichkeit, zufall
@@ -222,8 +222,8 @@ contains
        call ReadInput
        initFlag=.false.
     end if
-  
-    ! (2) Evaluate medium informations 
+
+    ! (2) Evaluate medium informations
     if (.not. getRMF_flag()) then
        call getMomentum_and_Medium(resonance,momentumLRF, betaToLRF, mediumAtPosition)
     else
@@ -255,12 +255,12 @@ contains
 
     gammaDecay = Sum(width)
     if (Present(gammaOut)) gammaOut=gammaDecay
-  
+
     If (.not.finalFlag .and. gammaDecay<gammaCutOff) then
        collisionFlag=.false.
        return
     end if
-  
+
     ! (4) Apply time criteria to decide on the decay of the particle
     If (dot_product(resonance%velocity(1:3),resonance%velocity(1:3)) > 1.) then
        countspacelike=countspacelike +1
@@ -289,9 +289,9 @@ contains
        write(*,*) 'Decay probability=', wahrscheinlichkeit
        write(*,*) 'Zufallszahl=', zufall
     end if
-    
+
     If (finalFlag) then
-       ! If "Finalflag" is set then we force the decay to happen, 
+       ! If "Finalflag" is set then we force the decay to happen,
        ! if there is some decay width available.
        if (gammaDecay > 0.) then
          zufall = 0.
@@ -341,7 +341,7 @@ contains
     end Do
 
     L = 0
-  
+
     select case(dId)
     case (0)    ! no decay
        write(*,*) "error in decayParticle: no decay", resonance%ID, resonance%mass, gammaDecay, width
@@ -381,7 +381,7 @@ contains
        anzahl = 3
     end select
 
-    ! Convert particles in final state to AntiParticles , 
+    ! Convert particles in final state to AntiParticles ,
     ! if there was an antiparticle in the incoming channel:
     If (AntiParticleFlag) then
        Do i=1,anzahl
@@ -395,7 +395,7 @@ contains
           else
              write(*,*) 'Error in master_1Body. Final StateParticle is no Meson and no Baryon:', finalState%ID
              write(*,*) resonance%ID,resonanceIN%ID
-             write(*,*) 'Stop' 
+             write(*,*) 'Stop'
              stop
           end if
        end do
@@ -507,7 +507,7 @@ contains
     type(particle), intent(in) :: resonanceIN
     type(particle)             :: finalState(1:2)
     real                       :: gammaDecay
-    
+
     logical :: success, antiParticleFlag
     type(medium) :: MediumAtPosition
     real :: wahrscheinlichkeit, zufall, betaToLRF(1:3), momentumLRF(0:3)
@@ -522,8 +522,8 @@ contains
       call ReadInput
       initFlag=.false.
     end if
-    
-    ! (2) Evaluate medium informations 
+
+    ! (2) Evaluate medium informations
     if (.not. getRMF_flag()) then
       call getMomentum_and_Medium (resonance, momentumLRF, betaToLRF, mediumAtPosition)
     else
@@ -560,7 +560,7 @@ contains
 
     ! Initialize output
     call setToDefault(finalstate)
-    
+
     ! (5) Decay takes place: Determine the decay channel
     do
       zufall = rn()
@@ -595,7 +595,7 @@ contains
     finalState(1:2)%ID     = Decay2BodyBaryon(dId)%ID(1:2)
     finalState(1:2)%charge = (/ 0, resonance%charge /)
 
-    ! Convert particles in final state to AntiParticles, 
+    ! Convert particles in final state to AntiParticles,
     ! if there was an antiparticle in the incoming channel:
     If (antiParticleFlag) then
       Do i=1,2
@@ -609,7 +609,7 @@ contains
         else
           write(*,*) 'Error in master_1Body. Final StateParticle is no Meson and no Baryon:', finalState%ID
           write(*,*) resonance%ID,resonanceIN%ID
-          write(*,*) 'Stop' 
+          write(*,*) 'Stop'
           stop
         end if
       end do
@@ -671,7 +671,7 @@ contains
     write(66,'(2I7,11ES15.7)') current_run_number, part%firstEvent, part%perweight, part%momentum, part%position, part%mass, &
                                dens/rhoNull, time
     close(66)
-    
+
     call PIL_omegaDec_Put (part%firstEvent, dens)
 
     if (dens/rhoNull<0.1) then
@@ -697,19 +697,19 @@ contains
   ! NAME
   ! subroutine assignCharge(outPart,inID,inCharge)
   ! PURPOSE
-  ! Random Choice of charges for a 2-body final-state in a given decay of a 
+  ! Random Choice of charges for a 2-body final-state in a given decay of a
   ! resonance "inID" of charge "inCharge".  The charges
-  ! are choosen for hadronic decays according to the Clebsch-Gordan coefficients. 
-  ! For weak decays the charges are distributed according to their weak decay 
+  ! are choosen for hadronic decays according to the Clebsch-Gordan coefficients.
+  ! For weak decays the charges are distributed according to their weak decay
   ! channels.
   ! INPUTS
-  ! * type(particle), dimension(1:2) :: outPart  -- pair resulting of a decay 
-  ! * integer                        :: inID     -- Id of decaying particle 
-  ! * integer                        :: inCharge -- Charge of decaying particle 
+  ! * type(particle), dimension(1:2) :: outPart  -- pair resulting of a decay
+  ! * integer                        :: inID     -- Id of decaying particle
+  ! * integer                        :: inCharge -- Charge of decaying particle
   ! OUTPUT
   ! * type(particle), dimension(1:2) :: outPart  -- pair resulting of a decay
   ! NOTES
-  ! Be careful: variables named isospin can also contain isospin*2 to convert to 
+  ! Be careful: variables named isospin can also contain isospin*2 to convert to
   ! integer values.
   !**********************************************************************************
   subroutine assignCharge(outPart,inID,inCharge)
@@ -719,16 +719,16 @@ contains
     use clebschGordan, only : clebschSquared
     use IdTable, only: photon, dsStar_plus, dsStar_minus, DMeson, dBar, dStar, dStarBar, isMeson, isBaryon
 
-    type(particle), dimension(1:2),intent(inOUT) :: outPart      ! pair resulting of a decay 
-    integer, intent(in) :: inID ! Id of decaying particle 
-    integer, intent(in) :: inCharge ! Charge of decaying particle 
+    type(particle), dimension(1:2),intent(inOUT) :: outPart      ! pair resulting of a decay
+    integer, intent(in) :: inID ! Id of decaying particle
+    integer, intent(in) :: inCharge ! Charge of decaying particle
 
     integer :: inIsospin_times2,inStrange, inCharm
     integer :: inIsospin_z_times2,outIsospin_zMax_times2, outIsospin_zMin_times2
     integer,dimension(1:2)  :: outIsospin_times2
     integer,dimension(1:2)  :: outStrange,outCharm, iz
     real :: xrn, prob
-    real :: iso1,iso2,iso3,iso_z1,iso_z2  ! real Isospin (not multiplied by 2!!) 
+    real :: iso1,iso2,iso3,iso_z1,iso_z2  ! real Isospin (not multiplied by 2!!)
     integer :: j
 
     !****************************************************************
@@ -768,7 +768,7 @@ contains
     endif
 
     ! Test whether D*(0)  is decaying (decays violating isospin rules):
-    ! a) D*(0)-> D(0) Pi(0) 
+    ! a) D*(0)-> D(0) Pi(0)
     ! b) D*(0)-> D(0) gamma (is already treated above with the photon case)
     ! NOTE :  The decays of the charged D* mesons [ D*(+-)-> D Pi] conserve Isospin    !
 
@@ -787,8 +787,8 @@ contains
     !***********************************************************************
     ! No weak decay, therefore use isospin arguments to distribute charges:
     !************************************************************************
-   
-   
+
+
     ! Define isoSpin, strangeness and charm of the resonance
     inIsospin_times2=hadron(inID)%isospinTimes2
     inStrange=hadron(inID)%strangeness
@@ -840,7 +840,7 @@ contains
     iso1=float(outIsospin_times2(1))/2.
     iso2=float(outIsospin_times2(2))/2.
     iso3=float(inIsospin_times2)/2.
-    isospinLoop : do 
+    isospinLoop : do
        if(iz(1).gt.outIsospin_zmax_times2) then
           write(*,*) 'assignCharge:',inID,outPart(1)%ID,outPart(2)%ID
           write(*,*) 'master_1Body: problems in charge assignment'
@@ -857,10 +857,10 @@ contains
        ! Convert to real isospin : divide by 2
        iso_z1=float(iz(1))/2.
        iso_z2=float(iz(2))/2.
-       prob=prob+clebschSquared(iso1,iso2,iso3,iso_z1,iso_z2) 
+       prob=prob+clebschSquared(iso1,iso2,iso3,iso_z1,iso_z2)
 
        if(prob.ge.xrn) then
-          exit isoSpinLoop 
+          exit isoSpinLoop
        else
           iz(1)=iz(1)+2
        end if
@@ -881,12 +881,12 @@ contains
   ! NAME
   ! subroutine getMomentum_and_Medium(resonance,momentumLRF, betatToLRF, mediumAtDecay)
   ! PURPOSE
-  ! Evaluates for a given particle the medium at its position and transforms its 
-  ! momentum into the  LRF. 
+  ! Evaluates for a given particle the medium at its position and transforms its
+  ! momentum into the  LRF.
   ! INPUTS
   ! * type(particle)        :: resonance            -- considerer resonance particle
   ! OUTPUT
-  ! * type(medium)          :: mediumAtDecay 
+  ! * type(medium)          :: mediumAtDecay
   ! * real, dimension(0:3)  :: momentumLRF          -- momentum in the LRF
   ! * real, dimension(1:3)  :: betaToLRF            -- beta for boost to LRF
   !**********************************************************************************
@@ -900,7 +900,7 @@ contains
     use mediumModule, only: mediumAt,getMediumCutOff
 
     type(particle), intent(in) :: resonance
-    type(medium),intent(out)            :: mediumAtDecay 
+    type(medium),intent(out)            :: mediumAtDecay
     real,dimension(0:3) ,intent(out)  :: momentumLRF
     real, dimension(1:3),intent(out)   :: betaToLRF
 

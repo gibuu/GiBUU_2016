@@ -35,7 +35,7 @@ module finalState_Full
   logical, save :: silentMode=.true.
   !
   ! PURPOSE
-  ! * Switches error messages off in massAss. Errors can still be seen 
+  ! * Switches error messages off in massAss. Errors can still be seen
   !   looking at massAssStatus.dat
   !***************************************************************************
 
@@ -68,7 +68,7 @@ module finalState_Full
      integer       :: numSteps = 0
   end type channelType
 
-  
+
   logical, save :: debugFlag=.false.
   logical, save :: init_readinput=.true.
 
@@ -238,7 +238,7 @@ CONTAINS
     call throwDice (successFlag, momentum, masses, massFailure_nucleon, .false.)  ! Monte Carlo decision for final state
 
     ! If the mass decision failed for a final state including a nucleon, then we assume the nucleon on-shell and try once more:
-    if (massFailure_nucleon) call throwDice (successFlag, momentum, masses, massFailure_nucleon, .true.) 
+    if (massFailure_nucleon) call throwDice (successFlag, momentum, masses, massFailure_nucleon, .true.)
 
     If (successFlag) then
       Do i=1,2
@@ -252,8 +252,8 @@ CONTAINS
     !    call WriteParticle(6,2,2, pairout(2))
     !    write(*,*) '~~~~~~~~~~'
 
-    ! Write Status of the module to file: 
-    ! * Which channels have been initialized, how often?, 
+    ! Write Status of the module to file:
+    ! * Which channels have been initialized, how often?,
     !   how often did it fail?, how often was it close to failure?
     if (mod(numCalls,1000)==0) then
        ! Print out status every 1000th time to save system time for opening and closing
@@ -290,9 +290,9 @@ CONTAINS
     ! NAME
     ! subroutine getMaximum(maxBWD)
     ! PURPOSE
-    ! This subroutine evaluates the maximal value of 
-    ! $\frac{p_{cd}}{p^vacuum_{cd}}  \A_c  \A_d   \frac{d\mu_c}{dy_c} \frac{d\mu_d}{dy_d}$ 
-    ! in process a b -> c d. It's a purely empirical value. 
+    ! This subroutine evaluates the maximal value of
+    ! $\frac{p_{cd}}{p^vacuum_{cd}}  \A_c  \A_d   \frac{d\mu_c}{dy_c} \frac{d\mu_d}{dy_d}$
+    ! in process a b -> c d. It's a purely empirical value.
     ! RESULT
     ! real :: maxBWD
     !***********************************************************************
@@ -329,7 +329,7 @@ CONTAINS
          if(.not.channels(channelNumber)%init) &
               & channels(channelNumber)=initChannel('Y^* decay',maxbwd*maxbwd_scalingFactor)
       else if ((pairOut(1)%Id==rho .and. pairOut(2)%Id==Delta) &
-                & .or.(pairOut(1)%Id==Delta .and. pairOut(2)%Id==rho)) then 
+                & .or.(pairOut(1)%Id==Delta .and. pairOut(2)%Id==rho)) then
          ! rho Delta
          maxbwd=20.
          channelNumber=5
@@ -354,7 +354,7 @@ CONTAINS
             channelNumber=8
             if(.not.channels(channelNumber)%init) &
                  & channels(channelNumber)=initChannel('coll width: NR or RR',maxbwd*maxbwd_scalingFactor)
-         else 
+         else
             ! NN scattering for offshell nucleons
             maxbwd=100.
             channelNumber=9
@@ -398,7 +398,7 @@ CONTAINS
               & channels(channelNumber)=initChannel('VM + stable in vac.',maxbwd*maxbwd_scalingFactor)
       else if (((isMeson(pairIn(1)%Id).and.isBaryon(pairIn(2)%Id)) .or. (isMeson(pairIn(2)%Id).and.isBaryon(pairIn(1)%Id))) &
                .and. (idOut(1)==phi.or.idOut(2)==phi)) then
-         ! baryon meson -> baryon phi 
+         ! baryon meson -> baryon phi
          maxbwd = 24.
          channelNumber = 13
          if (.not.channels(channelNumber)%init) &
@@ -451,10 +451,10 @@ CONTAINS
     ! NAME
     ! subroutine checkMaximum(value, maxValue)
     ! PURPOSE
-    ! This subroutine checks wether the maximal value is really the maximal 
-    ! value. 
+    ! This subroutine checks wether the maximal value is really the maximal
+    ! value.
     ! If not, then error messages are written to standard out and
-    ! 'massAssError.dat'. After a critical number of errors the program is 
+    ! 'massAssError.dat'. After a critical number of errors the program is
     ! terminated!!
     !***********************************************************************
     subroutine checkMaximum(value, maxValue)
@@ -471,7 +471,7 @@ CONTAINS
             write(*,*) ' Incoming particles :', pairIn(1:2)%ID
             write(*,*) ' Outgoing particles :', IDOut(1:2)
 
-            Open(243,File='massAssError.dat',position='Append',status='unknown') 
+            Open(243,File='massAssError.dat',position='Append',status='unknown')
             write(243,*) 'Warning in massass: Value > maxValue.'
             write(243,*) 'This causes problem in Monte-Carlo decision. Modify Maxvalues!!!'
             write(243,*) ' Incoming particles :', pairIn(1:2)%ID
@@ -495,29 +495,29 @@ CONTAINS
     ! subroutine throwDice (success, momentum, mass, massFailure_Nuc, treatNuc_onshell)
     ! PURPOSE
     ! We consider a + b -> c + d. The kinematics of c and d are determined.
-    ! Here the masses and momenta of the particles are choosen by Monte-Carlo 
-    ! decision. 
+    ! Here the masses and momenta of the particles are choosen by Monte-Carlo
+    ! decision.
     ! Then p_cd/p_cd_vacuumMax*spectral(c)*spectral(d)/(intfac(c)*intfac(d)*maxValue)
     ! is evaluated which our probability to accept a choosen final state.
-    ! We then decide to reject or accept the final state. 
-    ! If rejected new masses and momenta are choosen until we find a final 
+    ! We then decide to reject or accept the final state.
+    ! If rejected new masses and momenta are choosen until we find a final
     ! state that is accepted.
-    ! If it's not possible to find a final state, than successs=.false. is set 
+    ! If it's not possible to find a final state, than successs=.false. is set
     ! and the routine is terminated.
     ! INPUTS
-    ! * real :: maxValue -- 
-    !   maximum of the function  
-    ! * logical :: treatNuc_onshell  -- 
+    ! * real :: maxValue --
+    !   maximum of the function
+    ! * logical :: treatNuc_onshell  --
     !   true: set nucleon masses to onshell value
-    ! 
+    !
     ! OUTPUT
     ! * real, dimension(1:3,1:2) :: momentum -- of the final state
     !   (first index: momentum, second: particle)
     ! * real, dimension(1:2)     :: mass     -- of the final state
-    ! * logical                  :: success  -- 
+    ! * logical                  :: success  --
     !   .true. if mass and momentum could be set
-    ! * logical                  :: massFailure_nuc -- 
-    !   .true. if process failed when setting the mass of a final state 
+    ! * logical                  :: massFailure_nuc --
+    !   .true. if process failed when setting the mass of a final state
     !   involving a nucleon
     !***********************************************************************
     subroutine throwDice (success, momentum, mass, massFailure_Nuc, treatNuc_onshell)
@@ -537,7 +537,7 @@ CONTAINS
       logical, intent(out) :: success, massFailure_nuc
       logical, intent(in)  :: treatNuc_onshell
 
-      real :: maxValue,probability,p_cd_vacuumMax,p_cd,helper,blw
+      real :: maxValue,probability,p_cd_vacuumMax,p_cd,helper,blw,blw_max
       real, dimension(1:2) :: yMax, yMin, y
       real, dimension(1:2) :: Spectral, intfac   ! spectral functions
       real, dimension(1:3) :: pscatt
@@ -594,7 +594,7 @@ CONTAINS
          end select
 
          ! Check whether particles are regarded as stable
-         if (gamma_pole(k) < 1e-03) then  
+         if (gamma_pole(k) < 1e-03) then
             flagStable(k)=.true.
             minmass(k)=mass_Pole(k)
          else
@@ -641,15 +641,16 @@ CONTAINS
       if (.not.(flagstable(1).and.flagstable(2))) then
             ! Evaluate maximal momentum of particles c and d in CM-frame (in the vacuum, but with final state potentials)
          p_cd_vacuumMax = pCM_sqr (srts**2, (minmass(1)+spotOut(1))**2, (minmass(2)+spotOut(2))**2)
-         if(p_cd_vacuumMax<0.) then
+         if (p_cd_vacuumMax<0.) then
             write(*,*)'problems in massass s too low',srts,minmass
             stop
          end if
-         p_cd_vacuumMax=SQRT(p_cd_vacuumMax)
+         p_cd_vacuumMax = sqrt(p_cd_vacuumMax)
+         blw_max = BlattWeisskopf(p_cd_vacuumMax*interactionRadius, L)**2
 
          ! Start monte carlo to find momenta and masses
          momLoop : do momSteps=1,maxMomSteps
-            ! Monte carlo to find the masses 
+            ! Monte carlo to find the masses
             massLoop : do massSteps=1,maxMassSteps
                ! Loop is necessary because both masses have to be chosen simultaneously*
                do k=1,2
@@ -711,7 +712,7 @@ CONTAINS
                end if
             end if
 
-            ! Calculate spectral functions 
+            ! Calculate spectral functions
             do k=1,2
                if (.not. flagStable(k)) then
                   ! Determine momenta in LRF for evaluation of the width
@@ -737,7 +738,7 @@ CONTAINS
             blw = BlattWeisskopf(p_cd*interactionRadius, L)**2
 
             helper = spectral(1) * spectral(2) / intfac(1) / intfac(2)
-            probability = p_cd/p_cd_vacuumMax * blw * helper / maxValue
+            probability = p_cd/p_cd_vacuumMax * blw/blw_max * helper / maxValue
             If (probability>=1.) call checkMaximum(helper, maxValue)
 
             If (probability>rn()) then
@@ -756,15 +757,14 @@ CONTAINS
             momentum(:,2)=-pscatt*p_cd
             success=.true.
             If (debugFlag) Write(*,*) momSteps
-         else 
+         else
             err_count_mom=err_count_mom+1
             Write(*,*) 'Momentum iteration in massass failed. Momsteps=', momsteps
-            write(*,*) IDout
-            write(*,*) chargeOUT
-            write(*,*) SPotOut
-            Write(*,*) srts
-            write(*,*) minmass
+            write(*,*) IDout, chargeOUT
+            write(*,*) SPotOut, srts, minmass
+            write(*,*) probability, helper, blw, spectral(1:2), intfac(1:2), p_cd, p_cd_vacuumMax
             Write(*,*) 'MaxValue=',maxValue
+            write(*,*) pairIn(1:2)%ID, L
             success=.false.
             if (err_count_mom > 10000) then
                stop 'In massass, momentum iteration'
@@ -797,7 +797,7 @@ CONTAINS
     end subroutine throwDice
 
 
-    subroutine writeChannels() 
+    subroutine writeChannels()
       integer, parameter :: iFile = 98
       integer :: n,events_tot,steps_tot
       type(channelType) :: c
@@ -828,7 +828,7 @@ CONTAINS
 
   !*************************************************************************
   !****s* finalState_Full/assMass_Full
-  ! NAME 
+  ! NAME
   ! subroutine assMass_Full (srts, medium_AtCollision, pairIn, tripleOut, spotOut, betaToLRF, betaToCM, flag)
   !
   ! PURPOSE
@@ -843,7 +843,7 @@ CONTAINS
   ! * type(medium)                   :: medium_AtCollision ! medium information : density, temperature,...
   ! * type(particle), dimension(1:2) :: pairIn     ! incoming particles a and b
   ! * type(particle), dimension(1:3) :: tripleOut  ! outgoing particles c,d and e
-  ! *                                              ! (only id's, charges and antiflags are used at input) 
+  ! *                                              ! (only id's, charges and antiflags are used at input)
   ! * real, dimension(1:3)           :: spotOut    ! scalar potential of produced particles
 
   ! * real, dimension(1:3)           :: betaToLRF  ! beta for boost to LRF
@@ -852,7 +852,7 @@ CONTAINS
   ! RESULT
   ! * logical :: flag         ! set to .true. is mass assignment was successful
   ! * type(particle), dimension (1:3) ,intent(out) :: tripleOut  !
-  !   final state particles with almost full kinematics in CM frame. 
+  !   final state particles with almost full kinematics in CM frame.
   !   ID, momentum(1:3),charge and mass are defined.
   !*************************************************************************
   subroutine assMass_Full (srts, medium_AtCollision, pairIn, tripleOut, spotOut, betaToLRF, betaToCM, flag)
@@ -906,11 +906,11 @@ CONTAINS
     subroutine getMaximum(maxBWD)
       use IdTable, only: nucleon, photon, rho, omegaMeson, phi
       use baryonWidthMedium, only: get_MediumSwitch_coll
-      real, intent(out)  :: maxBWD             
+      real, intent(out)  :: maxBWD
       if ((pairIn(1)%ID==photon .or. pairIn(2)%ID==photon) .and. &
           (idOut(1)==rho .or. idOut(1)==omegaMeson .or. idOut(1)==phi .or. &
            idOut(2)==rho .or. idOut(2)==omegaMeson .or. idOut(2)==phi .or. &
-           idOut(3)==rho .or. idOut(3)==omegaMeson .or. idOut(3)==phi)) then 
+           idOut(3)==rho .or. idOut(3)==omegaMeson .or. idOut(3)==phi)) then
          ! gamma N -> Vectormeson + X
          maxbwd = 2.
       else if (get_MediumSwitch_coll() .and. (idOut(1)==nucleon .or. idOut(2)==nucleon .or. idOut(3)==nucleon)) then
@@ -927,7 +927,7 @@ CONTAINS
     ! subroutine checkMaximum(value, maxValue)
     ! PURPOSE
     ! This subroutine checks wether the maximal value is really the maximal
-    ! value. 
+    ! value.
     ! If not, then error messages are written to standard out and
     ! 'massAssError.dat'. After a critical number of errors the program is
     ! terminated!!
@@ -945,7 +945,7 @@ CONTAINS
          write(*,*) ' Incoming particles :', pairIn(1:2)%ID
          write(*,*) ' Outgoing particles :', IDOut(1:3)
 
-         Open(243,File='assMassError.dat',position='Append',status='unknown') 
+         Open(243,File='assMassError.dat',position='Append',status='unknown')
          write(243,*) 'Warning in assMass: Value > maxValue.'
          write(243,*) 'This causes problem in Monte-Carlo decision. Modify Maxvalues!!!'
          write(243,*) ' Incoming particles :', pairIn(1:2)%ID
@@ -969,8 +969,8 @@ CONTAINS
     ! We consider a + b -> c + d + e. The kinematics of c, d & e are
     ! determined.
     ! Here the masses and momenta of the particles are choosen by Monte-Carlo
-    ! decision. 
-    ! pcmAbs(1)/ pcmAbs(3)/ecm(1)/eCM(3) *spectral(c)*spectral(d)*spectral(d)/ intfac(c) /intfac(d)/intfac(e) /maxValue is 
+    ! decision.
+    ! pcmAbs(1)/ pcmAbs(3)/ecm(1)/eCM(3) *spectral(c)*spectral(d)*spectral(d)/ intfac(c) /intfac(d)/intfac(e) /maxValue is
     ! evaluated which is our probability to accept a chosen final state.
     ! We then decide to reject or accept the final state. If rejected new
     ! masses and momenta are choosen until we find a final state that is
@@ -997,7 +997,7 @@ CONTAINS
 
       real :: probability, gamTot, cosTheta_13, sinTheta_13 , phi, cosTheta
       real, dimension(1:3)  :: Spectral, gamma_pole, mass_pole, minMass, maxMass, intfac
-      logical, dimension (1:3) :: flagStable 
+      logical, dimension (1:3) :: flagStable
       real, dimension(1:3) :: yMax, yMin, y, pcmAbs, ECM
       real, dimension(0:3) :: pLRF, pcm
       real, dimension(1:3) :: betaCMtoLab
@@ -1009,7 +1009,7 @@ CONTAINS
       Do k=1,3
          select case (idOut(k))
          case (nucleon)
-            if (get_MediumSwitch_coll()) then 
+            if (get_MediumSwitch_coll()) then
                gamma_pole(k) =0.035*medium_AtCollision%density/rhoNull   ! 35 MeV is empirical value!!!
             else
                gamma_pole(k) = hadron(idOut(k))%width
@@ -1030,7 +1030,7 @@ CONTAINS
          end select
 
          ! Check whether particles are regarded as stable
-         if (gamma_pole(k)<1e-03) then  
+         if (gamma_pole(k)<1e-03) then
             flagStable(k)=.true.
             minmass(k)=mass_Pole(k)
          else
@@ -1059,7 +1059,7 @@ CONTAINS
          end if
 
       else
-      
+
          ! Do variable transformation mass-> y
          do k=1,3
             if (.not.flagStable(k)) then
@@ -1109,7 +1109,7 @@ CONTAINS
                end if
 
 
-               ! Choose absolute momenta by random, maximal value of momenta in CM-Frame is given by srts (assuming masses are zero) 
+               ! Choose absolute momenta by random, maximal value of momenta in CM-Frame is given by srts (assuming masses are zero)
                pcmAbs(1)=max(rn()*srts,1E-6)
                pcmAbs(3)=max(rn()*srts,1E-6)
 
@@ -1118,14 +1118,14 @@ CONTAINS
                ! Due to energy conservation in CM-Frame :
                Ecm(2)=srts-Ecm(1)-Ecm(3)
 
-               If (Ecm(2)<mass(2)+spotOut(2)) cycle momLoop        ! new try if mass > energy             
+               If (Ecm(2)<mass(2)+spotOut(2)) cycle momLoop        ! new try if mass > energy
 
                pcmAbs(2)=sqrt(Ecm(2)**2-(mass(2)+spotOut(2))**2)
 
                ! Check wether momentum conservation is possible :
                ! Evaluate Cosinus(theta) with theta between particles 1&3.  Using (pCM(1)+pCM(2)+pCM(3))**2=0 in vector notation.
                cosTheta_13 = (pcmAbs(2)**2-pcmAbs(1)**2-pcmAbs(3)**2) / ( 2.* pcmAbs(1) * pcmAbs(3) )
-               If (Abs(cosTheta_13)<=1.) exit momLoop   
+               If (Abs(cosTheta_13)<=1.) exit momLoop
             end do momLoop
 
             If (momSteps >= maxMomSteps) then
@@ -1163,7 +1163,7 @@ CONTAINS
             ! Finished setting momenta
             !*******************************
 
-            ! Calculate spectral functions 
+            ! Calculate spectral functions
             do k=1,3
                if (.not.flagStable(k)) then
                   ! Determine momenta in LRF for evaluation of the width
@@ -1225,7 +1225,7 @@ CONTAINS
   ! * real, dimension(1:3) :: betaToLRF           ! Boost from computational frame to LRF
   ! * real, dimension(1:3) :: betaToCM            ! Boost from computational frame to CM frame
   ! * type(medium) :: mediumAtCollision           ! Medium info at collision point
-  ! * type(particle), dimension(:) :: finalState  ! Id's and charges of the outgoing particles 
+  ! * type(particle), dimension(:) :: finalState  ! Id's and charges of the outgoing particles
   ! OUTPUT
   ! * logical                      :: success     ! .true. if masses and momenta are set
   ! * type(particle), dimension(:) :: finalState  ! Masses and four-momenta of the final state particles
@@ -1240,7 +1240,7 @@ CONTAINS
   use particleProperties, only: hadron
   use mediumDefinition
   use random, only: rn
-  use nBodyPhaseSpace, only: momenta_in_nBodyPS, integrate_nBodyPS 
+  use nBodyPhaseSpace, only: momenta_in_nBodyPS, integrate_nBodyPS
   use lorentzTrafo, only: lorentz
   use MesonWidthMedium, only: WidthMesonMedium
   use BaryonWidthMedium, only: WidthBaryonMedium
@@ -1259,7 +1259,7 @@ CONTAINS
                                       &ymax, ymin, mass
   real, allocatable, dimension(:,:) :: pn
 
-  real :: sumMinMass, phaseSpace_norm, phaseSpace, y, probability, spectral, gamtot, intfac 
+  real :: sumMinMass, phaseSpace_norm, phaseSpace, y, probability, spectral, gamtot, intfac
   real, dimension(0:3) :: plrf
 
   logical, parameter :: flagMomDep=.false.  ! if .true. --- take into account momentum dependence
@@ -1299,7 +1299,7 @@ CONTAINS
      mass_Pole(k)  = hadron(finalState(k)%Id)%mass
      minMass(k)    = hadron(finalState(k)%Id)%minmass
 
-     if(gamma_pole(k).lt.1.e-03) then  
+     if(gamma_pole(k).lt.1.e-03) then
         flagStable(k)=.true.
         minMass(k)=mass_Pole(k)
      else
@@ -1307,7 +1307,7 @@ CONTAINS
         flagAllStable=.false.
      end if
 
-  end do    
+  end do
 
   sumMinMass=sum(minMass(1:n))
 
@@ -1317,7 +1317,7 @@ CONTAINS
      return
   end if
 
-  if(flagAllStable) then  ! Only stable outgoing particles 
+  if(flagAllStable) then  ! Only stable outgoing particles
      finalState(1:n)%mass=mass_Pole(1:n)
      ! Monte-Carlo sampling of the phase space:
      call momenta_in_nBodyPS(srts,finalState(1:n)%mass,pn(1:3,1:n))
@@ -1327,7 +1327,7 @@ CONTAINS
      end do
      success=.true.
      return
-  end if          
+  end if
 
   ! There are unstable outgoing particles
 
@@ -1371,7 +1371,7 @@ CONTAINS
 
   phaseSpace_norm = integrate_nBodyPS (srts, normMass(1:n))
 
-  ! Start monte carlo to find masses and (optionally) momenta: 
+  ! Start monte carlo to find masses and (optionally) momenta:
   attemptLoop : do i=1,maxAttempts
 
       ! Monte-Carlo choice of the outgoing masses:
@@ -1390,9 +1390,9 @@ CONTAINS
 
          if(massSteps.eq.maxMassSteps) then
             write(*,*)'problems in massass_nBody: mass choice is impossible',&
-            & srts, sum(mass_Pole(1:n)), finalState(1:n)%Id 
+            & srts, sum(mass_Pole(1:n)), finalState(1:n)%Id
             success=.false.
-            return 
+            return
          end if
 
       end do massLoop
@@ -1407,7 +1407,7 @@ CONTAINS
       ! Determine the phase space factor:
       phaseSpace = integrate_nBodyPS (srts, mass(1:n))
 
-      ! Calculate spectral functions: 
+      ! Calculate spectral functions:
       probability=1.
       do k=1,n
          if(.not.flagStable(k)) then
@@ -1433,7 +1433,7 @@ CONTAINS
 
       probability=probability*phaseSpace/phaseSpace_norm/maxValue
 
-      ! write(*,*)' probability: ', probability 
+      ! write(*,*)' probability: ', probability
 
       if(probability.gt.1.) then
          write(*,*)' problem in massass_nBody, probability.gt.1: ', probability
@@ -1451,7 +1451,7 @@ CONTAINS
 
       if(i.eq.maxAttempts) then
          write(*,*)'problems in massass_nBody: too many attempts',&
-                 & srts, sum(mass_Pole(1:n)), finalState(1:n)%Id 
+                 & srts, sum(mass_Pole(1:n)), finalState(1:n)%Id
          success=.false.
          return
       end if
@@ -1492,7 +1492,7 @@ CONTAINS
         mass_pole=hadron(rho)%mass
         spectral=mass**2*gamtot*gamma_pole / ( (mass_pole**2-mass**2)**2 &
                           &                             +gamtot**2*mass**2 )
-        intfac=gamma_pole**2/ ((mass-mass_pole)**2+gamma_pole**2/4.)/4.      
+        intfac=gamma_pole**2/ ((mass-mass_pole)**2+gamma_pole**2/4.)/4.
         phaseSpace = integrate_nBodyPS (3.024, (/mPi,mPi,mPi,mass,mass,mass/))
         write(1,'(5(1x,e13.6))') mass,spectral,intfac,phaseSpace,phaseSpace_norm
      end do
@@ -1507,5 +1507,3 @@ CONTAINS
 
 
 end module finalState_Full
-
-

@@ -37,7 +37,7 @@ module lorentzTrafo
   interface lorentzCalcBeta
      module procedure lorentzCalcBeta4,lorentzCalcBeta3
   end interface
-  
+
 contains
 
 
@@ -61,7 +61,7 @@ contains
 !!$    CALL lorentz(beta,a,'BoostToCM')
 !!$    CALL lorentz(beta,b,'BoostToCM')
 !!$  end subroutine BoostToCM
-    
+
 
 
   !***************************************************************************
@@ -69,8 +69,8 @@ contains
   ! NAME
   ! subroutine lorentz(beta,fourVector,CallName)
   ! PURPOSE
-  ! performs Lorentz transformation of fourVector into a 
-  ! system which is traveling with the velocity beta(1:3) 
+  ! performs Lorentz transformation of fourVector into a
+  ! system which is traveling with the velocity beta(1:3)
   ! INPUTS
   ! * real,dimension(0:3),intent(inout) :: fourVector
   ! * real,dimension(1:3),intent(in)    :: beta
@@ -163,7 +163,7 @@ contains
   ! NAME
   ! subroutine BoostTensor(u,e,e0)
   ! PURPOSE
-  ! Lorentz-Transformation of a tensor e(0:3,0:3) into a system moving 
+  ! Lorentz-Transformation of a tensor e(0:3,0:3) into a system moving
   ! with 4-velocity u(0,3).
   ! INPUTS
   ! * real,dimension(0:3),intent(in)     :: u -- boost 4-velocity
@@ -239,21 +239,21 @@ contains
   ! real function eval_sigmaBoost(mom1,mom2)
   !
   ! PURPOSE
-  ! This function calculates the boost factor for a cross section. Given a 
-  ! cross section "sigma" which is defined the rest frame of particles A or B, 
+  ! This function calculates the boost factor for a cross section. Given a
+  ! cross section "sigma" which is defined the rest frame of particles A or B,
   ! the cross section "sigmaPrime" in a frame where both a moving
   ! is given by:
   ! * sigmaPrime=sigma* eval_sigmaBoost
   !
   ! INPUTS
   ! * real , dimension(0:3),intent(in) :: mom1,mom2 -- 4-momenta of the colliding pair
-  ! 
+  !
   ! OUTPUT
   ! * Boost factor
-  ! 
+  !
   ! NOTES
-  ! * For derivation confer Oliver's Phd thesis (Appendix G) 
-  ! * Note that the formula given in Effenberger's diploma thesis is only 
+  ! * For derivation confer Oliver's Phd thesis (Appendix G)
+  ! * Note that the formula given in Effenberger's diploma thesis is only
   !   very approximate!!
   !***************************************************************************
   real function eval_sigmaBoost (mom1, mom2)
@@ -275,8 +275,8 @@ contains
     mom(:,2)=mom2
 
     ! Check whether one of the particles is massless
-    isMassless(1)= (abs4(mom1)<epsilon)  
-    isMassless(2)= (abs4(mom2)<epsilon)  
+    isMassless(1)= (abs4(mom1)<epsilon)
+    isMassless(2)= (abs4(mom2)<epsilon)
 
     if (isMassless(1).and.isMassless(2)) then
        write(*,*) 'error in eval_sigmaBoost! Both momenta are massless!!!'
@@ -288,11 +288,11 @@ contains
     end if
 
     !*****
-    ! Boost to restframes of particles (first to the one of particle 1, then 
+    ! Boost to restframes of particles (first to the one of particle 1, then
     ! to the one of  2) and evaluate the boost factor in both frames.
     !
-    ! In principle this procedure is an overkill: we could also simply choose 
-    ! one of the two rest frames since the result should not dependend on this 
+    ! In principle this procedure is an overkill: we could also simply choose
+    ! one of the two rest frames since the result should not dependend on this
     ! choice! However, we do it right now as a numerical check!
     !*****
     factor=1./abs3(mom(0,1)*mom(:,2)-mom(0,2)*mom(:,1))
@@ -300,9 +300,9 @@ contains
     value=0.
     do i=1,2
        if(isMassless(i)) cycle ! Cycle since we can't boost to a rest frame of a massless particle
-       j=3-i  
+       j=3-i
        mom(:,1)=mom1
-       mom(:,2)=mom2   
+       mom(:,2)=mom2
        beta=mom(1:3,i)/mom(0,i)
        call lorentz(beta,mom(:,j))
        value(i)=factor*abs4(mom(:,i))*abs3(mom(:,j))
@@ -311,7 +311,7 @@ contains
 
     eval_sigmaBoost=sum(value)/float(numTries)
 
-    ! Numtries is greater 1 if both particles have mass. Then we make a 
+    ! Numtries is greater 1 if both particles have mass. Then we make a
     ! consistency check:
     if (numTries>1) then
        ! check on numerics:

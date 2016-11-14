@@ -4,11 +4,11 @@
 ! module kaonNucleon
 !
 ! PURPOSE
-! Includes the cross sections for kaon-nucleon and antikaon-antinucleon 
+! Includes the cross sections for kaon-nucleon and antikaon-antinucleon
 ! elastic and inelastic scattering
 !
 ! Public routines:
-! * kaonNuc 
+! * kaonNuc
 !****************************************************************************
 module kaonNucleon
 
@@ -32,36 +32,36 @@ contains
   ! subroutine kaonNuc (srts,teilchenIN,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
   !
   ! PURPOSE
-  ! Evaluates the cross sections for 
-  ! * K N -> K N, 
-  ! * Kbar Nbar -> Kbar Nbar, 
-  ! * K N -> K N pi, 
+  ! Evaluates the cross sections for
+  ! * K N -> K N,
+  ! * Kbar Nbar -> Kbar Nbar,
+  ! * K N -> K N pi,
   ! * Kbar Nbar -> Kbar Nbar pi
   ! and returns also a "preevent"
   !
   ! Possible final states are :
   ! * 2-particle : K N
-  ! * 3-particle : K N pi  
+  ! * 3-particle : K N pi
   !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut    !   outgoing particles
-  ! 
-  ! The cross sections are based on parameterization by M. Effenberger. 
+  !
+  ! The cross sections are based on parameterization by M. Effenberger.
   !
   ! INPUTS
   ! * real, intent(in)                              :: srts                  ! sqrt(s) in the process
   ! * type(particle),dimension(1:2), intent(in)     :: teilchenIn            ! colliding particles
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! OUTPUT
   ! * real, intent(out)                             :: sigmaTot              ! total Xsection
   ! * real, intent(out)                             :: sigmaElast            ! elastic Xsection
-  ! 
+  !
   !***************************************************************************
   subroutine kaonNuc (srts,teilchenIN,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
   use idTable, only : nucleon, pion, kaon, kaonBar
@@ -88,9 +88,9 @@ contains
   real :: sigma_KNpi      ! K N pi final state (inelastic cross section)
 
   ! Local variables
-  real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities 
+  real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
-  type(particle) :: kaon_particle, nucleon_particle    
+  type(particle) :: kaon_particle, nucleon_particle
   logical :: antiParticleInput, failFlag
   integer :: totalCharge   ! total charge of colliding particles
 
@@ -178,12 +178,12 @@ contains
   ! subroutine evaluateXsections
   !
   ! PURPOSE
-  ! Evaluates K N -> K N and K N -> K N pi cross sections 
+  ! Evaluates K N -> K N and K N -> K N pi cross sections
   !
   ! NOTES
   ! There are no resonance contributions to K N scattering.
   !**************************************************************
-  
+
   subroutine evaluateXsections
 
     use parametrizationsBarMes, only : sigelkp, kppbg, kpnbg, sigCEXkp, sigCEXk0
@@ -215,7 +215,7 @@ contains
     else
       sigma_KNpi=0.
     end if
-      
+
     ! Flux correction for each channel:
     If(fluxCorrector_flag) then
       sigmaElast=sigmaElast*fluxcorrector
@@ -239,7 +239,7 @@ contains
     ! PURPOSE
     ! Chooses randomly one of possible outgoing channels in kaon-nucleon
     ! collision. Outgoing channels are: K N and K N pi. Also the charges
-    ! of outgoing particles are selected. 
+    ! of outgoing particles are selected.
     !
     ! NOTES
     !**************************************************************
@@ -254,7 +254,7 @@ contains
 
       If(sigma_KN >= cut) then
 
-         ! Elastic scattering or CEX:       
+         ! Elastic scattering or CEX:
 
          teilchenOut(1)%Id=kaon
          teilchenOut(2)%Id=nucleon
@@ -268,7 +268,7 @@ contains
               teilchenOut(1)%Charge=kaon_particle%charge
               teilchenOut(2)%Charge=nucleon_particle%charge
            end if
-         else          
+         else
            ! K^+ p or K^0 n incoming channel; the charges of outgoing
            ! particles are fixed:
            teilchenOut(1)%Charge=kaon_particle%charge
@@ -286,7 +286,7 @@ contains
 
 !*****   Empirical branching ratios:
          x=rn()
-         if(totalCharge.eq.2) then   ! K+ p     
+         if(totalCharge.eq.2) then   ! K+ p
 
             if(x.le.0.667) then          ! pi+ K0 p (2/3)
                teilchenOut(1)%Charge=1
@@ -302,7 +302,7 @@ contains
                teilchenOut(3)%Charge=0
             end if
 
-         else if(totalCharge.eq.0) then  ! K0 n     
+         else if(totalCharge.eq.0) then  ! K0 n
 
             ! obtained from K+p by isospin reflection:
             if(x.le.0.667) then          ! pi- K+ n (2/3)
@@ -382,18 +382,18 @@ contains
 
     end subroutine makeDecision
 
-    !********************************************************************** 
+    !**********************************************************************
     !****s* kaonNuc/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV]
-    ! . 
+    ! .
     ! Filenames:
-    ! * 'KN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'KN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'KN_KN_KNpi.dat'        : K N and and K N pi outgoing channels
-    !********************************************************************** 
+    !**********************************************************************
     subroutine makeOutPut
 
       logical, save :: initFlag=.true.

@@ -81,18 +81,18 @@ contains
   ! PURPOSE
   ! This routine does a simple coulomb propagation for a particle with charge "charge".
   ! A point charge of strength "externalCharge" is assumed to sit in the origin.
-  ! The propagation is terminated when 
-  ! ... "propagtionTime" is not present as input given and the particle is closer 
-  ! than "distance" to the origin or when it's starting to move away from the origin. This mode is 
+  ! The propagation is terminated when
+  ! ... "propagtionTime" is not present as input given and the particle is closer
+  ! than "distance" to the origin or when it's starting to move away from the origin. This mode is
   ! used to correct the trajectories of incoming particles.
-  ! ... "propagationTime" is present as input and the propagationTime is reached. This mode is used 
+  ! ... "propagationTime" is present as input and the propagationTime is reached. This mode is used
   ! to correct the trajectories of outgoing particles.
   ! Relativistic kinematics!
   ! INPUTS
   ! real mass   : mass of particle
   ! integer charge : charge of particle
   ! integer ExternalCharge  : fixed charge at origin
-  ! real distance  : minimal distance to which the particle is propagated 
+  ! real distance  : minimal distance to which the particle is propagated
   !             towards the origin where the point charge is assumed to sit
   ! real propagationTime : optional argument
   ! real (1:3) r,p  : position and momentum of particle at start
@@ -120,8 +120,8 @@ contains
     real               :: EPredictor       ! predicted Energy
     logical            :: printout
     !Printout :
-    integer, parameter :: printSteps=10  !printSteps*dt is difference in time for the printout 
-    integer :: i 
+    integer, parameter :: printSteps=10  !printSteps*dt is difference in time for the printout
+    integer :: i
     real :: rsave                         !variable used to save the distance to the origin for the next time step
 
     If (Present(printout_in)) then
@@ -134,11 +134,11 @@ contains
        nt=NINT(propagationTime/dt)
     end if
 
-    If (printout) then 
+    If (printout) then
        Open(99,File='CoulombPropagation.dat',position='append')
        Open(100,File='CoulombPropagation_EnergyCheck.dat',position='append')
     end if
-    rSave=2.*Dot_Product(r,r) 
+    rSave=2.*Dot_Product(r,r)
     Do i=1, nt
        E=SQRT(Dot_Product(p,p)+mass**2)
        If (Sqrt(Dot_Product(r,r)).lt.0.0001) return
@@ -154,7 +154,7 @@ contains
           !corrector step
           EPredictor=SQRT(Dot_Product(pp,pp)+mass**2)
           r=r+dt/2.*(p/E+pp/EPredictor)
-          p=p-dt/2.*(grad+gradPredictor)*charge 
+          p=p-dt/2.*(grad+gradPredictor)*charge
        else
           If (Sqrt(Dot_Product(r,r)).lt.0.0001) return
           grad=-r(:)/(Sqrt(Dot_Product(r,r)))**3*externalCharge*alphaQED*hbarc
@@ -162,8 +162,8 @@ contains
           p=p-dt*grad*charge
        end if
 
-       ! The propagation is terminated if the particle is closer 
-       ! than "distance" to 
+       ! The propagation is terminated if the particle is closer
+       ! than "distance" to
        ! the origin or when it's starting to move away from the origin.
 
        If (.not.Present(PropagationTime)) then
@@ -184,7 +184,7 @@ contains
        end if
 
     end do
-    If (printout) then 
+    If (printout) then
        Close(99)
        close(100)
     end if
@@ -199,14 +199,14 @@ contains
   ! PURPOSE
   ! This routine does a simple propagation for two point charges which interact
   ! with each other via the coulomb force. Relativistic kinematics!
-  ! The propagation is terminated when 
-  ! ... the particles are closer than "distance" to each other or when they are starting 
-  ! to move away from each other. 
+  ! The propagation is terminated when
+  ! ... the particles are closer than "distance" to each other or when they are starting
+  ! to move away from each other.
   ! ... or when the propagationTime is over.
   ! INPUTS
   ! real mass1,mass2   : masses of particle
   ! integer charge1,charge2 : charges of particle
-  ! real distance  : minimal distance to which the particle is propagated 
+  ! real distance  : minimal distance to which the particle is propagated
   !             towards the origin where the point charge is assumed to sit
   ! real propagationTime : optional argument
   ! real (1:3) r1,p1,r2,p2  : position and momentum of particles before propagation
@@ -254,7 +254,7 @@ contains
           !predictor step
 
           grad1=-(r1-r2)/Sqrt(dot_Product(r1-r2,r1-r2))**3*charge1*charge2*alphaQED*hbarc
-          grad2=-(r2-r1)/Sqrt(dot_Product(r1-r2,r1-r2))**3*charge1*charge2*alphaQED*hbarc 
+          grad2=-(r2-r1)/Sqrt(dot_Product(r1-r2,r1-r2))**3*charge1*charge2*alphaQED*hbarc
 
           !Predict values for charge 1:
           E1=SQRT(Dot_Product(p1,p1)+mass1**2)
@@ -276,15 +276,15 @@ contains
 
           !Corrector step:
           r1(:)=r1(:)+dt/2.*(p1(:)/E1+pp1(:)/EPredictor1)
-          p1(:)=p1(:)-dt/2.*(grad1(:)+gradPredictor1(:)) 
+          p1(:)=p1(:)-dt/2.*(grad1(:)+gradPredictor1(:))
 
           r2(:)=r2(:)+dt/2.*(p2(:)/E2+pp2(:)/EPredictor2)
-          p2(:)=p2(:)-dt/2.*(grad2(:)+gradPredictor2(:)) 
+          p2(:)=p2(:)-dt/2.*(grad2(:)+gradPredictor2(:))
        else
           !dV_Coulomb/dr1
           grad1=-(r1-r2)/Sqrt(dot_Product(r1-r2,r1-r2))**3*charge1*charge2*alphaQED*hbarc
           !dV_Coulomb/dr2
-          grad2=-(r2-r1)/Sqrt(dot_Product(r1-r2,r1-r2))**3*charge1*charge2*alphaQED*hbarc 
+          grad2=-(r2-r1)/Sqrt(dot_Product(r1-r2,r1-r2))**3*charge1*charge2*alphaQED*hbarc
 
           !charge 1:
           E1=SQRT(Dot_Product(p1,p1)+mass1**2)
@@ -314,7 +314,7 @@ contains
              write(22,*) i*dt,r2
              !Print full energy of particles
              write(222,*) i*dt, E1+E2  &
-                  & +charge1*charge2*alphaQED/sqrt(Dot_Product((r1-r2),(r1-r2)))*hbarc 
+                  & +charge1*charge2*alphaQED/sqrt(Dot_Product((r1-r2),(r1-r2)))*hbarc
              write(111,*) i*dt,p1+p2
           end if
        end if
@@ -330,7 +330,7 @@ contains
        close(111)
     end if
 
-    return 
+    return
   end subroutine CoulpropaTwo
 
 
@@ -339,7 +339,7 @@ contains
 !     use constants, only : alphaQED, hbarc
 !     real,intent(in)    :: r        ! abs(r) in fm of probe
 !     integer,intent(in) :: charge   ! charge of probe
-! 
+!
 !     logical, save :: initFlag=.true.
 !     integer, parameter :: numPoints=100
 !     real, dimension(0:numPoints) :: pot
@@ -347,7 +347,7 @@ contains
 !     real :: r_cutOff
 !     real :: A, diff
 !     integer :: index_r_low,index_r_up
-! 
+!
 !     if(initFlag) then
 !        ! Tabulate potential
 !        call tabulate_CoulPot(pot,r_cutOff,A,dr)
@@ -369,7 +369,7 @@ contains
 !   subroutine tabulate_CoulPot(pot,r_cutOff,A,dr)
 !     use densityModule, only :  densityAt
 !     use constants, only : pi
-!     use dichteDefinition    
+!     use dichteDefinition
 !     use minkowski, only : abs4
 !     real, intent(out),  dimension(0:) :: pot
 !     real, intent(out) :: dr
@@ -382,7 +382,7 @@ contains
 !     ! Find useful cutoff first
 !     r=0.
 !     A=0.
-!     find_cutOff_loop: do 
+!     find_cutOff_loop: do
 !        r=r+0.01
 !        dens=densityAt((/r,0.,0./))
 !        protonDens=abs4(dens%proton)
@@ -399,21 +399,21 @@ contains
 !     end do find_cutOff_loop
 !     A=A*4.*pi
 !     dr=r_cutoff/float(size(pot,dim=1)-1)
-! 
-! 
+!
+!
 !     do index=lbound(pot,dim=1),ubound(pot,dim=1)
 !        r=float(index)*dr
 !        pot(index)=eval_pot(r)
 !     end do
-! 
+!
 !     contains
-! 
+!
 !       real function eval_pot(r)
 !         real, intent(in) :: r
-!         eval_pot=0. ! Not yet finished        
+!         eval_pot=0. ! Not yet finished
 !       end function eval_pot
-!     
+!
 !   end subroutine tabulate_CoulPot
-  
+
 
 end module CoulombKorrektur

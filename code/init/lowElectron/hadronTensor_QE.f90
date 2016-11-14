@@ -3,7 +3,7 @@
 ! NAME
 ! module hadronTensor_QE
 ! PURPOSE
-! * Evaluates the hadron tensor for gamma N -> N'  
+! * Evaluates the hadron tensor for gamma N -> N'
 ! * For details see the notes about this in the PhD of Oliver Buss
 !*****************************************************************************
 
@@ -24,7 +24,7 @@ module hadronTensor_QE
   logical, save :: extraTerm=.true.
   !
   ! PURPOSE
-  ! Switch to take out the extra term which preserves charge conservation in 
+  ! Switch to take out the extra term which preserves charge conservation in
   ! case of a momentum dependend mass.
   !*************************************************************************
 
@@ -46,7 +46,7 @@ contains
 
     write(*,*) 'Charge conservation term included?', extraTerm
     write(*,*) 'Debugging?', debug
-    
+
     call Write_ReadingInput('hadronTensorQE',1)
 
   end subroutine initInput
@@ -90,7 +90,7 @@ contains
 
     q=pout-pin
 
-    call formfactors_QE(-SP(q,q),EM,nucleonCharge,F1,F2) 
+    call formfactors_QE(-SP(q,q),EM,nucleonCharge,F1,F2)
 
     if((max(mu,nu).gt.3).or.(min(mu,nu).lt.0)) then
        write(*,*) 'Error in hadronic tensor for QE: indices not well defined'
@@ -114,7 +114,7 @@ contains
     if(mf.lt.0.000001) then
        write(*,*) 'mF is 0 in  hadronTensor_QE', mf
     end if
-  
+
 
     alpha = F1 + F2*(mi+mf)/(2*mN)
     if(extraTerm) then

@@ -57,7 +57,7 @@ contains
     Proc2piCharge(1, 2, 2, 1:3) = (/1, 1, 0/)
     Proc2piCharge(1, 2, 3, 1:3) = (/9, 9, 9/) ! does not exist
 
-    
+
     ! antiCC:
 
     RelFak2pi( 0,-2, 1:3 ) = (/ 1./3., 1./3., 0. /)
@@ -69,7 +69,7 @@ contains
     Proc2piCharge(1,-2, 1, 1:3) = (/0, 0, 0/)
     Proc2piCharge(1,-2, 2, 1:3) = (/0, 1,-1/)
     Proc2piCharge(1,-2, 3, 1:3) = (/1,-1, 0/)
-    
+
 
 
     call Write_ReadingInput('neutrino2piBack',0)
@@ -122,7 +122,7 @@ contains
     call eNeV_GetKinV(eN, nu,Q2,W,Wfree,eps,fT)
 
 !    write(*,*) 'Wfree, Q2: ', Wfree, Q2
-   
+
 
     if (Wfree.gt.1.7) return
 
@@ -197,13 +197,13 @@ contains
 
     OutPart(1:3)%perWeight=XS
 
-    
+
 !    write(*,*) ' ----> XS = ',XS
 
 
   end subroutine DoNu2piBack
 
-  
+
 
 
 end module neutrino2piBack

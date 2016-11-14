@@ -1,4 +1,3 @@
-
 !***************************************************************************
 !****m* /nu_MatrixElementRS
 ! NAME
@@ -7,9 +6,9 @@
 ! PURPOSE
 ! This module calculates the squared spin summed and averaged Rein-Sehgal
 ! matrix element for lepton induced resonance excitation.
-! 
+!
 !***************************************************************************
- 
+
 
 module nu_MatrixElementRS
   implicit none
@@ -24,7 +23,7 @@ module nu_MatrixElementRS
   logical, save :: axial_FF_switch=.true.
 
 
-  PUBLIC :: nu_MaEl_RS 
+  PUBLIC :: nu_MaEl_RS
 
 
 contains
@@ -49,13 +48,13 @@ contains
   end subroutine readInput_nu_MatrixElementRS
 
 
-  real function nu_MaEl_RS(process_ID,finalstate_ID,charge_in,k_in,k_out,p_in,p_out) 
+  real function nu_MaEl_RS(process_ID,finalstate_ID,charge_in,k_in,k_out,p_in,p_out)
     use idtable, only : nucleon,delta,pion, &
                         P11_1440,S11_1535,S11_1650,D13_1520,D13_1700,D15_1675,P11_1710,P13_1720,F15_1680,F17_1990,S31_1620, &
                         D33_1700,P31_1910,P33_1600,P33_1920,F35_1905,F37_1950
     use constants, only: alphaQED,coscab,GF,mN,pi,sinsthweinbg
     use ParticleProperties, only: hadron
-    use minkowski, only : SP,abs4 
+    use minkowski, only : SP,abs4
     use neutrino_IDTable
     use leptonicID
 
@@ -97,7 +96,7 @@ contains
     Mi=abs4(p_in)
     Mf=abs4(p_out)
     M=mN
- 
+
     Qs=-t_in
 
 
@@ -113,7 +112,7 @@ contains
     omega=1.05
     root_half_omega=sqrt(omega/2.)
 
-    m_target=Mi  !MNucleon? 
+    m_target=Mi  !MNucleon?
     w=Mf
 
 
@@ -121,8 +120,8 @@ contains
 
     xi = sinsthweinbg
 
-    MV=MVRS 
-    MA=MARS 
+    MV=MVRS
+    MA=MARS
 
 
     n=2
@@ -136,11 +135,11 @@ contains
     ffcorr=sqrt(1.+Qs/(4.*M**2))
     gv=ffcorr**(1-2*n)*(1./(1.+Qs/MV**2))**2
     ga=ffcorr**(1-2*n)*(1./(1.+Qs/MA**2))**2
- 
+
 
     if(.not.vector_FF_switch) gv=0.
     if(.not.axial_FF_switch) ga=0.
-   
+
 
     lambda=(m_target*qq)/w/root_half_omega
     tv=root_half_omega*gv/(3.*w)
@@ -154,12 +153,12 @@ contains
     c=(z/(6.*m_target*qq))*(w**2-m_target**2+n*omega*(abs(w**2-m_target**2+qsq)/((w+m_target)**2-qsq)))*ga
 
     rminus=-(rv-ra)
-    rplus=-(rv+ra) 
+    rplus=-(rv+ra)
     tminus=-(tv-ta)
-    tplus=-(tv+ta) 
+    tplus=-(tv+ta)
 
 
-    !note the different sign!!! in U and V in contrast to Rein Sehgal, 
+    !note the different sign!!! in U and V in contrast to Rein Sehgal,
     !but in agreement with Nuance and Neugen, data and my former calculation
     if(process_ID.gt.0)  then !neutrino
        U=(enu+elepton-qq)/(2.*enu)
@@ -171,13 +170,13 @@ contains
 
 
     select case (process_ID)
-    case (NC,antiNC) 
+    case (NC,antiNC)
        coupling=GF**2/4.
 
        if(charge_in.eq.proton) nu_MaEl_RS=nu_MaEl_NCprot()
        if(charge_in.eq.neutron) nu_MaEl_RS=nu_MaEl_NCneut()
 
-    case (CC) 
+    case (CC)
        coupling=GF**2/4.*coscab**2
 
        if(process_ID.gt.0) then
@@ -201,7 +200,7 @@ contains
        end if
 
 
-    case (EM) 
+    case (EM)
      !  coupling=(4.*pi*alphaQED)**2/Qs**2*1./4.
 
        coupling=64.*pi**2*alphaQED**2*Mf**2/Qs/(1.-epsilon)
@@ -214,7 +213,7 @@ contains
     nu_MaEl_RS=coupling*nu_MaEl_RS
 
 
-  contains 
+  contains
 
     real function nu_MaEl_NCprot()
 
@@ -229,7 +228,7 @@ contains
          f0Minus =  2.*sqrt(2.) * c
          f0Plus  =   f0Minus
 
-      case (S11_1535) 
+      case (S11_1535)
 
          at       = sqrt(3./2.) * (1.-2.*xi) * Lambda * S
          bt       = Sqrt(2./3.) * (Lambda * c - 3*b)
@@ -242,20 +241,20 @@ contains
          f0Plus  =  at + bt
 
 
-      case (D13_1520) 
+      case (D13_1520)
 
          at       = Sqrt(3.) * (1.-2*xi) * Lambda * S
          bt       = (2./Sqrt(3.)) * Lambda * c
 
          fMinus1 = sqrt(3./2.) * (Tminus + 2*xi*T) - sqrt(4./3.) * Lambda * (Rminus + 3*xi*R)
          fPlus1  = sqrt(3./2.) * (Tplus  + 2*xi*T) - sqrt(4./3.) * Lambda * (Rplus  + 3*xi*R)
-         fMinus3 = 3./Sqrt(2.) * (Tminus + 2*xi*T) 
+         fMinus3 = 3./Sqrt(2.) * (Tminus + 2*xi*T)
          fPlus3  = 3./Sqrt(2.) * (Tplus  + 2*xi*T)
          f0Minus = -at + bt
          f0Plus  = -at - bt
 
 
-      case (S11_1650) 
+      case (S11_1650)
 
          fMinus1 =  1./Sqrt(24.) * Lambda * Rminus
          fPlus1  = -1./Sqrt(24.) * Lambda * Rplus
@@ -265,7 +264,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (D13_1700) 
+      case (D13_1700)
 
          fMinus1 =  1./Sqrt(120.) * Lambda * Rminus
          fPlus1  =  1./Sqrt(120.) * Lambda * Rplus
@@ -275,7 +274,7 @@ contains
          f0Plus  =  -1.* f0Minus
 
 
-      case (D15_1675) 
+      case (D15_1675)
 
          fMinus1 = -Sqrt(3./40.) * Lambda * Rminus
          fPlus1  =  Sqrt(3./40.) * Lambda * Rplus
@@ -284,7 +283,7 @@ contains
          f0Minus =  Sqrt(3./10.) * Lambda * c
          f0Plus  =  f0Minus
 
-      case (S31_1620) 
+      case (S31_1620)
 
          at       = sqrt(3./2.) * (1.-2.*xi) * Lambda * S
          bt       = 1./Sqrt(6.) * (Lambda * c - 3*b)
@@ -310,7 +309,7 @@ contains
          f0Plus  = -at+bt
 
 
-      case (P11_1440) 
+      case (P11_1440)
 
          at       = 0.25 * Sqrt(3.) * (1-4*xi) * Lambda**2 * S
          bt       = (5./12.)*Sqrt(3.) * (Lambda**2 * c - 2 * Lambda * b)
@@ -323,7 +322,7 @@ contains
          f0Plus  = -at-bt
 
 
-      case (P33_1600) 
+      case (P33_1600)
 
          fMinus1 =  1./Sqrt(6.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  = -1./Sqrt(6.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -333,7 +332,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P13_1720) 
+      case (P13_1720)
 
          at       = Sqrt(3./20.) * (1.-4*xi) * Lambda**2 * S
          bt       = Sqrt(5./12.) * (Lambda**2 * c - 5 * Lambda * b)
@@ -359,7 +358,7 @@ contains
          f0Plus  =  at + bt
 
 
-      case (P31_1910) 
+      case (P31_1910)
 
          fMinus1 = -1./Sqrt(15.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  = -1./Sqrt(15.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -369,7 +368,7 @@ contains
          f0Plus  = -1.* f0Minus
 
 
-      case (P33_1920) 
+      case (P33_1920)
 
          fMinus1 =  1./Sqrt(15.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  = -1./Sqrt(15.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -389,7 +388,7 @@ contains
          f0Plus  =  -1. * f0Minus
 
 
-      case (F37_1950) 
+      case (F37_1950)
 
          fMinus1 =  -Sqrt(6./35.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  =   Sqrt(6./35.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -399,7 +398,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P11_1710) 
+      case (P11_1710)
 
          at       = Sqrt(3./8.) * (1.-2*xi) *  Lambda**2 * S
          bt       = 1./Sqrt(6.) * (Lambda**2 * c - 2 * Lambda * b)
@@ -412,7 +411,7 @@ contains
          f0Plus  =  at+bt
 
 
-      case (F17_1990) 
+      case (F17_1990)
 
          fMinus1 = 0.
          fPlus1  = 0.
@@ -445,7 +444,7 @@ contains
 
       select case (finalstate_ID)
 
-      case (delta) 
+      case (delta)
 
          fMinus1 =  -sqrt(2.) * (rminus + 2 * xi * R)
          fPlus1  =   sqrt(2.) * (rplus  + 2 * xi * R)
@@ -455,7 +454,7 @@ contains
          f0Plus  =   f0Minus
 
 
-      case (S11_1535) 
+      case (S11_1535)
 
          at       = sqrt(3./2.) * (1.-2*xi) * Lambda * S
          bt       = Sqrt(2./3.) * (Lambda * c - 3*b)
@@ -468,7 +467,7 @@ contains
          f0Plus  = -at-bt
 
 
-      case (D13_1520) 
+      case (D13_1520)
 
          at       = Sqrt(3.) * (1.-2*xi) * Lambda * S
          bt       = sqrt(4./3.) * Lambda * c
@@ -481,7 +480,7 @@ contains
          f0Plus  =  at + bt
 
 
-      case (S11_1650) 
+      case (S11_1650)
 
          fMinus1 = -1./Sqrt(24.) * Lambda * (Rminus + 4* xi * R)
          fPlus1  =  1./Sqrt(24.) * Lambda * (Rplus  + 4* xi * R)
@@ -491,7 +490,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (D13_1700) 
+      case (D13_1700)
 
          fMinus1 = -1./Sqrt(120.) * Lambda * (Rminus + 4* xi * R)
          fPlus1  = -1./Sqrt(120.) * Lambda * (Rplus  + 4* xi * R)
@@ -501,7 +500,7 @@ contains
          f0Plus  =  -1.* f0Minus
 
 
-      case (D15_1675) 
+      case (D15_1675)
 
          fMinus1 =  Sqrt(3./40.) * Lambda * (Rminus + 4* xi * R)
          fPlus1  = -Sqrt(3./40.) * Lambda * (Rplus  + 4* xi * R)
@@ -511,7 +510,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (S31_1620) 
+      case (S31_1620)
 
          at       = sqrt(3./2.) * (1.-2.*xi) * Lambda * S
          bt       = 1./Sqrt(6.) * (Lambda * c - 3*b)
@@ -537,7 +536,7 @@ contains
          f0Plus  = -at+bt
 
 
-      case (P11_1440) 
+      case (P11_1440)
 
          at       = 0.25*Sqrt(3.) * Lambda**2 * S
          bt       = (5./12.)*Sqrt(3.) * (Lambda**2 * c - 2 * Lambda * b)
@@ -550,7 +549,7 @@ contains
          f0Plus  = at + bt
 
 
-      case (P33_1600) 
+      case (P33_1600)
 
          fMinus1 =  1./Sqrt(6.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  = -1./Sqrt(6.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -560,7 +559,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P13_1720) 
+      case (P13_1720)
 
          at       = Sqrt(3./20.) * Lambda**2 * S
          bt       = Sqrt(5./12.) * (Lambda**2 * c - 5 * Lambda * b)
@@ -573,7 +572,7 @@ contains
          f0Plus  =  at+bt
 
 
-      case (F15_1680) 
+      case (F15_1680)
 
          at       = 3./Sqrt(40.) * Lambda**2 * S
          bt       = Sqrt(5./8.)  * Lambda**2 * c
@@ -586,7 +585,7 @@ contains
          f0Plus  =  -at-bt
 
 
-      case (P31_1910) 
+      case (P31_1910)
 
          fMinus1 = -1./Sqrt(15.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  = -1./Sqrt(15.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -596,7 +595,7 @@ contains
          f0Plus  = -1.* f0Minus
 
 
-      case (P33_1920) 
+      case (P33_1920)
 
          fMinus1 =  1./Sqrt(15.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  = -1./Sqrt(15.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -616,7 +615,7 @@ contains
          f0Plus  =  -1. * f0Minus
 
 
-      case (F37_1950) 
+      case (F37_1950)
 
          fMinus1 =  -Sqrt(6./35.) * Lambda**2 * (Rminus + 2*xi*R)
          fPlus1  =   Sqrt(6./35.) * Lambda**2 * (Rplus  + 2*xi*R)
@@ -626,7 +625,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P11_1710) 
+      case (P11_1710)
 
          at       = Sqrt(3./8.) * (1.-2*xi) * Lambda**2 * S
          bt       = 1./Sqrt(6.) * (Lambda**2 * c - 2 * Lambda * b)
@@ -639,7 +638,7 @@ contains
          f0Plus  = -at-bt
 
 
-      case (F17_1990) 
+      case (F17_1990)
 
          fMinus1 = 0.
          fPlus1  = 0.
@@ -672,7 +671,7 @@ contains
 
       select case (finalstate_ID)
 
-      case (delta) 
+      case (delta)
 
          fMinus1 = sqrt(2.) * Rminus
          fPlus1  = -sqrt(2.) * Rplus
@@ -682,7 +681,7 @@ contains
          f0Plus  = f0Minus
 
 
-      case (S11_1535) 
+      case (S11_1535)
 
          fMinus1 =  2.*Sqrt(3.) * Tminus + 4./Sqrt(6.) * Lambda * Rminus
          fPlus1  = -2.*Sqrt(3.) * Tplus  - 4./Sqrt(6.) * Lambda * Rplus
@@ -692,7 +691,7 @@ contains
          f0Plus  =  Sqrt(6.) * Lambda * S+2 * Sqrt(2./3.) * (Lambda * c - 3.* b)
 
 
-      case (D13_1520) 
+      case (D13_1520)
 
          at = 2.* Sqrt(3.) * Lambda * S
          bt = (4./Sqrt(3.))* Lambda * c
@@ -705,7 +704,7 @@ contains
          f0Plus  =  -at-bt
 
 
-      case (S11_1650) 
+      case (S11_1650)
 
          fMinus1 =  1./Sqrt(6.) * Lambda * Rminus
          fPlus1  = -1./Sqrt(6.) * Lambda * Rplus
@@ -715,7 +714,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (D13_1700) 
+      case (D13_1700)
 
          fMinus1 =  1./Sqrt(30.) * Lambda * Rminus
          fPlus1  =  1./Sqrt(30.) * Lambda * Rplus
@@ -725,7 +724,7 @@ contains
          f0Plus  =  -1. * f0Minus
 
 
-      case (D15_1675) 
+      case (D15_1675)
 
          fMinus1 = -Sqrt(3./10.) * Lambda * Rminus
          fPlus1  =  Sqrt(3./10.) * Lambda * Rplus
@@ -735,7 +734,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (S31_1620) 
+      case (S31_1620)
 
          at = sqrt(3./2.) * Lambda * S
          bt = 1./Sqrt(6.) * (Lambda * c - 3.* b)
@@ -748,7 +747,7 @@ contains
          f0Plus  = -at+bt
 
 
-      case (D33_1700) 
+      case (D33_1700)
 
          at = Sqrt(3.)   * Lambda * S
          bt = 1./Sqrt(3.) * Lambda * c
@@ -761,7 +760,7 @@ contains
          f0Plus  =  at - bt
 
 
-      case (P11_1440) 
+      case (P11_1440)
 
          at  = Sqrt(3./4.) * Lambda**2 * S
          bt  = 5.*Sqrt(3.)/6. * (Lambda**2 * c - 2 * Lambda * b)
@@ -774,7 +773,7 @@ contains
          f0Plus  =  -at-bt
 
 
-      case (P33_1600) 
+      case (P33_1600)
 
          fMinus1 = -1./Sqrt(6.) * Lambda**2 * Rminus
          fPlus1  =  1./Sqrt(6.) * Lambda**2 * Rplus
@@ -784,7 +783,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P13_1720) 
+      case (P13_1720)
 
          at       = Sqrt(3./5.) * Lambda**2 * S
          bt       = Sqrt(5./3.) * (Lambda**2 * c - 5 * Lambda * b)
@@ -797,7 +796,7 @@ contains
          f0Plus  =  -at-bt
 
 
-      case (F15_1680) 
+      case (F15_1680)
 
          at   = Sqrt(9./10.) * Lambda**2 * S
          bt   = Sqrt(5./2.)  * Lambda**2 * c
@@ -810,7 +809,7 @@ contains
          f0Plus  =  at + bt
 
 
-      case (P31_1910) 
+      case (P31_1910)
 
          fMinus1 =  1./Sqrt(15.) * Lambda**2 * Rminus
          fPlus1  =  1./Sqrt(15.) * Lambda**2 * Rplus
@@ -820,7 +819,7 @@ contains
          f0Plus  = -1.* f0Minus
 
 
-      case (P33_1920) 
+      case (P33_1920)
 
          fMinus1 = -1./Sqrt(15.) * Lambda**2 * Rminus
          fPlus1  =  1./Sqrt(15.) * Lambda**2 * Rplus
@@ -830,7 +829,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (F35_1905) 
+      case (F35_1905)
 
          fMinus1 =  -1./Sqrt(35.)  * Lambda**2 * Rminus
          fPlus1  =  -1./Sqrt(35.)  * Lambda**2 * Rplus
@@ -840,7 +839,7 @@ contains
          f0Plus  =  -1.* f0Minus
 
 
-      case (F37_1950) 
+      case (F37_1950)
 
          fMinus1 =  Sqrt(6./35.)  * Lambda**2 * Rminus
          fPlus1  = -Sqrt(6./35.)  * Lambda**2 * Rplus
@@ -850,7 +849,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P11_1710) 
+      case (P11_1710)
 
          at  = sqrt(3./2.) * Lambda**2 * S
          bt  = Sqrt(2./3.) * (Lambda**2 * c - 2 * Lambda * b)
@@ -863,7 +862,7 @@ contains
          f0Plus  = at + bt
 
 
-      case (F17_1990) 
+      case (F17_1990)
 
          fMinus1 =  -Sqrt(3./35.) * Lambda**2 * Rminus
          fPlus1  =   Sqrt(3./35.) * Lambda**2 * Rplus
@@ -878,7 +877,7 @@ contains
 
          !write(*,*) 'not implemented -> STOP'
          nu_MaEl_CC=0.
-         return     
+         return
 
       end select
 
@@ -897,7 +896,7 @@ contains
 
       select case (finalstate_ID)
 
-      case (delta) 
+      case (delta)
 
          fPlus1  =  Sqrt(2.) * R
          fPlus3  =  Sqrt(6.) * R
@@ -907,7 +906,7 @@ contains
          f0Plus  =  0.
 
 
-      case (S11_1535) 
+      case (S11_1535)
 
          fMinus1 =  Sqrt(3.) * T + sqrt(3./2.) * Lambda * R
          f0Minus = -sqrt(3./2.) * Lambda * S
@@ -917,7 +916,7 @@ contains
          fPlus3  =  0.
 
 
-      case (D13_1520) 
+      case (D13_1520)
 
          fMinus1 =  sqrt(3./2.) * T - Sqrt(3.) * Lambda * R
          fMinus3 =  3./Sqrt(2.) * T
@@ -927,7 +926,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (S11_1650) 
+      case (S11_1650)
 
          fMinus1 = 0.
          fPlus1  = 0.
@@ -937,7 +936,7 @@ contains
          f0Plus  = 0.
 
 
-      case (D13_1700) 
+      case (D13_1700)
 
          fMinus1 = 0.
          fPlus1  = 0.
@@ -947,7 +946,7 @@ contains
          f0Plus  = 0.
 
 
-      case (D15_1675) 
+      case (D15_1675)
 
          fMinus1 = 0.
          fPlus1  = 0.
@@ -957,7 +956,7 @@ contains
          f0Plus  = 0.
 
 
-      case (S31_1620) 
+      case (S31_1620)
 
          fMinus1 =  Sqrt(3.) * T - 1./Sqrt(6.) * Lambda * R
          f0Minus = -sqrt(3./2.) * Lambda * S
@@ -967,7 +966,7 @@ contains
          fPlus3  = 0.
 
 
-      case (D33_1700) 
+      case (D33_1700)
 
          fMinus1 =  sqrt(3./2.) * T + 1./Sqrt(3.) * Lambda * R
          fMinus3 =  3./Sqrt(2.) * T
@@ -977,7 +976,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P11_1440) 
+      case (P11_1440)
 
          fMinus1 = -0.5*Sqrt(3.) * Lambda**2 * R
          fPlus1  =  fMinus1
@@ -987,7 +986,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P33_1600) 
+      case (P33_1600)
 
          fMinus1 = 1./Sqrt(6.) * Lambda**2 * R
          fMinus3 = 1./Sqrt(2.) * Lambda**2 * R
@@ -997,7 +996,7 @@ contains
          f0Plus  = 0.
 
 
-      case (P13_1720) 
+      case (P13_1720)
 
          fMinus1 = -Sqrt(27./10.) * Lambda * T - Sqrt(3./5.) * Lambda**2 * R
          fMinus3 =  3./Sqrt(10.) * Lambda * T
@@ -1007,7 +1006,7 @@ contains
          f0Plus  = -1. * f0Minus
 
 
-      case (F15_1680) 
+      case (F15_1680)
 
          fMinus1 =  -3./Sqrt(5.)  * Lambda * T + 3./Sqrt(10.) * Lambda**2 * R
          fMinus3 =  -Sqrt(18./5.) * Lambda * T
@@ -1017,7 +1016,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P31_1910) 
+      case (P31_1910)
 
          fMinus1 = -1./Sqrt(15.) * Lambda**2 * R
          fPlus1  = fMinus1
@@ -1027,7 +1026,7 @@ contains
          f0Plus  = 0.
 
 
-      case (P33_1920) 
+      case (P33_1920)
 
          fMinus1 =  1./Sqrt(15.) * Lambda**2 * R
          fMinus3 = -1./Sqrt(5.)  * Lambda**2 * R
@@ -1037,7 +1036,7 @@ contains
          f0Plus  =  0.
 
 
-      case (F35_1905) 
+      case (F35_1905)
 
          fMinus1 = 1./Sqrt(35.)  * Lambda**2 * R
          fMinus3 = Sqrt(18./35.) * Lambda**2 * R
@@ -1047,7 +1046,7 @@ contains
          f0Plus  = 0.
 
 
-      case (F37_1950) 
+      case (F37_1950)
 
          fMinus1 = -Sqrt(6./35.) * Lambda**2 * R
          fMinus3 = -Sqrt(2./7.)  * Lambda**2 * R
@@ -1057,7 +1056,7 @@ contains
          f0Plus  = 0.
 
 
-      case (P11_1710) 
+      case (P11_1710)
 
          fMinus1 = Sqrt(3./8.) * Lambda**2 * R
          f0Minus = Sqrt(3./8.) * Lambda**2 * S
@@ -1067,7 +1066,7 @@ contains
          fPlus3  = 0.
 
 
-      case (F17_1990) 
+      case (F17_1990)
 
          fMinus1 = 0.
          fPlus1  = 0.
@@ -1094,7 +1093,7 @@ contains
       sigp=0.5*(fPlus3**2+fPlus1**2)
       sign=epsilon*Qs/qq**2*Mf**2/Mi**2*(f0Plus**2+f0Minus**2)
       nu_MaEl_EMprot=sigm+sigp+sign
-      
+
 
 
     end function nu_MaEl_EMprot
@@ -1106,7 +1105,7 @@ contains
 
       select case (finalstate_ID)
 
-      case (delta) 
+      case (delta)
 
          fPlus1  =  sqrt(2.) * R
          fPlus3  =  sqrt(6.) * R
@@ -1116,7 +1115,7 @@ contains
          f0Plus  =  0.
 
 
-      case (S11_1535) 
+      case (S11_1535)
 
          fPlus1  =  sqrt(3.) * T + 1./sqrt(6.) * Lambda * R
          f0Minus =  sqrt(3./2.) * Lambda * S
@@ -1127,7 +1126,7 @@ contains
 
 
 
-      case (D13_1520) 
+      case (D13_1520)
 
          fMinus1 = -sqrt(3./2.) * T + sqrt(1./3.) * Lambda * R
          fMinus3 = -sqrt(9./2.) * T
@@ -1137,7 +1136,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (S11_1650) 
+      case (S11_1650)
 
          fPlus1  =  sqrt(1./6.) * Lambda * R
          fMinus1 = -1 * fPlus1
@@ -1147,7 +1146,7 @@ contains
          f0Plus  =  0.
 
 
-      case (D13_1700) 
+      case (D13_1700)
 
          fMinus1 = -(1./Sqrt(30.)) * Lambda * R
          fMinus3 = -(3./Sqrt(10.)) * Lambda * R
@@ -1157,7 +1156,7 @@ contains
          f0Plus  =  0.
 
 
-      case (D15_1675) 
+      case (D15_1675)
 
          fMinus1 = sqrt(3./10.) * Lambda * R
          fMinus3 = sqrt(3./5.)  * Lambda * R
@@ -1167,7 +1166,7 @@ contains
          f0Plus  =  0.
 
 
-      case (S31_1620) 
+      case (S31_1620)
 
          fMinus1 =  sqrt(3.) * T - sqrt(1./6.) * Lambda * R
          f0Minus = -sqrt(3./2.) * Lambda * S
@@ -1177,7 +1176,7 @@ contains
          fPlus3  = 0.
 
 
-      case (D33_1700) 
+      case (D33_1700)
 
          fMinus1 =  sqrt(3./2.) * T + sqrt(1./3.) * Lambda * R
          fMinus3 =  sqrt(9./2.) * T
@@ -1187,7 +1186,7 @@ contains
          f0Plus  =  f0Minus
 
 
-      case (P11_1440) 
+      case (P11_1440)
 
          fMinus1 = sqrt(1./3.) * Lambda**2 * R
          fPlus1  = fMinus1
@@ -1197,7 +1196,7 @@ contains
          f0Plus  =  0.
 
 
-      case (P33_1600) 
+      case (P33_1600)
 
          fMinus1 = sqrt(1./6.) * Lambda**2 * R
          fMinus3 = sqrt(1./2.) * Lambda**2 * R
@@ -1207,7 +1206,7 @@ contains
          f0Plus  = 0.
 
 
-      case (P13_1720) 
+      case (P13_1720)
 
          fMinus1 = sqrt(4./15.) * Lambda**2 * R
          fPlus1  = -1 * fMinus1
@@ -1217,7 +1216,7 @@ contains
          f0Plus  =  0.
 
 
-      case (F15_1680) 
+      case (F15_1680)
 
          fMinus1 =  -sqrt(2./5.) * Lambda**2 * R
          fPlus1  =  fMinus1
@@ -1227,7 +1226,7 @@ contains
          f0Plus  =  0.
 
 
-      case (P31_1910) 
+      case (P31_1910)
 
          fMinus1 =  -sqrt(1./15.) * Lambda**2 * R
          fPlus1  =  fMinus1
@@ -1237,7 +1236,7 @@ contains
          f0Plus  =  0.
 
 
-      case (P33_1920) 
+      case (P33_1920)
 
          fMinus1 =  sqrt(1./15.) * Lambda**2 * R
          fMinus3 = -sqrt(1./5.)  * Lambda**2 * R
@@ -1247,7 +1246,7 @@ contains
          f0Plus  =  0.
 
 
-      case (F35_1905) 
+      case (F35_1905)
 
          fMinus1 = sqrt(1./35.)  * Lambda**2 * R
          fMinus3 = sqrt(18./35.) * Lambda**2 * R
@@ -1257,7 +1256,7 @@ contains
          f0Plus  = 0.
 
 
-      case (F37_1950) 
+      case (F37_1950)
 
          fMinus1 = -Sqrt(6./35.) * Lambda**2 * R
          fMinus3 = -Sqrt(2./7.) * Lambda**2 * R
@@ -1267,7 +1266,7 @@ contains
          f0Plus  = 0.
 
 
-      case (P11_1710) 
+      case (P11_1710)
 
          fMinus1 = -Sqrt(1./24.) * Lambda**2 * R
          f0Minus = -Sqrt(3./8.)  * Lambda**2 * S
@@ -1278,7 +1277,7 @@ contains
 
 
 
-      case (F17_1990) 
+      case (F17_1990)
 
          fMinus1 = Sqrt(3./35.) *  Lambda**2 * R
          fPlus1  = -1 * fMinus1
@@ -1296,7 +1295,7 @@ contains
 
       end select
 
- 
+
 !      sigm=U**2*Qs/qq**2*(fMinus3**2+fMinus1**2)
 !      sigp=V**2*Qs/qq**2*(fPlus3**2+fPlus1**2)
 !      sign=2.*U*V*Mi**2/Mf**2*(f0Plus**2+f0Minus**2)
@@ -1306,7 +1305,7 @@ contains
       sigp=0.5*(fPlus3**2+fPlus1**2)
       sign=epsilon*Qs/qq**2*Mf**2/Mi**2*(f0Plus**2+f0Minus**2)
       nu_MaEl_EMneut=sigm+sigp+sign
-  
+
 
 
     end function nu_MaEl_EMneut
@@ -1319,4 +1318,3 @@ contains
   end function nu_MaEl_RS
 
 end module nu_MatrixElementRS
-

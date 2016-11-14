@@ -1,4 +1,3 @@
-
 !***************************************************************************
 !****m* /cl_splines
 ! NAME
@@ -20,7 +19,7 @@ module cl_splines
   ! Type which contains all information of the splines.
   ! SOURCE
   !
-  type tspline 
+  type tspline
      real, dimension(:)  , Allocatable :: X
      real, dimension(:,:), Allocatable :: Y
      real, dimension(:,:), Allocatable :: A,B,C,D
@@ -45,7 +44,7 @@ contains
   !
   ! INPUTS
   ! * real, dimension(:),intent(in) :: x,y  -- x and y values of the data points. X and y must have same size!
-  ! * integer,intent(in), optional :: splineMode --  1=second derivative of spline vanishes at end-points, 
+  ! * integer,intent(in), optional :: splineMode --  1=second derivative of spline vanishes at end-points,
   !   2=second derivative is constant in between first (last) and second (last but one) point
   !
   ! OUTPUT
@@ -150,12 +149,12 @@ contains
   !
   ! * logical, intent(out) :: successFlag !.true. if spline was evaluated within bounds
   !
-  ! * integer, intent(out) :: errorCode 
+  ! * integer, intent(out) :: errorCode
   !
   ! NOTES
   ! * errorCode= 0 -> no error
   ! * errorCode=-1 -> x is lower   than any data point used for the spline
-  ! * errorCode= 1 -> x is greater than any data point used for the spline 
+  ! * errorCode= 1 -> x is greater than any data point used for the spline
   !
   !*************************************************************************
   real function cl_spline(s,x,successFlag,errorCode)
@@ -199,7 +198,7 @@ contains
           stop
        end if
     end if
-  contains 
+  contains
     real function eval(k)
       implicit none
       integer, intent(in) :: k
@@ -223,7 +222,7 @@ contains
   ! NOTES
   ! * errorCode= 0 -> no error
   ! * errorCode=-1 -> x is lower   than any data point used for the spline
-  ! * errorCode= 1 -> x is greater than any data point used for the spline 
+  ! * errorCode= 1 -> x is greater than any data point used for the spline
   !
   !*************************************************************************
   subroutine cl_error(error,name,x)

@@ -7,12 +7,12 @@
 ! Implemented are the following reactions:
 !   * kaon Lambda -> X
 ! Public routines:
-!   * kaonLambda 
+!   * kaonLambda
 !****************************************************************************
 module kaonLambda_resonance
 
   implicit none
-  Private 
+  Private
 
   ! Debug-flags
   logical,parameter :: debugFlag=.false.
@@ -36,19 +36,19 @@ contains
   ! RESULT
   ! * real, intent(out)                                        :: sigmaTot         ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 2 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! outgoing particles
-  ! 
+  !
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   ! * 2-particle : pi N, pi Delta
   !****************************************************************************
-  
+
   subroutine kaonLambda(srts,teilchenIN,mediumATcollision,momentumLRF,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
 
     use idTable, only: nucleon, delta, pion, kaon, lambda, nbar
@@ -75,7 +75,7 @@ contains
 
 
     !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ! CrossSections named according to final states 
+    ! CrossSections named according to final states
     !real ::  lambdaKaon
     real, dimension  (-1:1)  :: piN             ! index = charge of final state pion
     real, dimension (-1:1)  :: piDelta          ! index = charge of final state kaon
@@ -84,13 +84,13 @@ contains
 
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
-    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
-    type(particle) :: kaon_particle, lambda_particle    
+    type(particle) :: kaon_particle, lambda_particle
     logical :: antiParticleInput, failFlag
 
     ! partial cross sections for kaon Lamba -> R
-    real, dimension(Delta:nbar) :: sigmaRes      
+    real, dimension(Delta:nbar) :: sigmaRes
     ! Field to store the resonance masses
     real , dimension(Delta:nbar) :: massRes      ! Resonance masses
 
@@ -111,8 +111,8 @@ contains
 
     If(lambda_particle%antiParticle.and.kaon_particle%antiParticle) then
        ! Both are antiparticles: s=0 scattering channel
-       ! 
-       ! Invert all particles in antiparticles 
+       !
+       ! Invert all particles in antiparticles
        lambda_particle%Charge        =  -lambda_particle%Charge
        lambda_particle%antiparticle  = .false.
        kaon_particle%Charge          =  -kaon_particle%Charge
@@ -203,12 +203,12 @@ contains
       real :: sigmaHuangLamd
       !logical :: background,propagated
       real,dimension(0:3)                 :: momentum_vacuum        ! Total Momentum in vacuum
-      real, dimension(1:3) :: position 
-      logical :: perturbative 
+      real, dimension(1:3) :: position
+      logical :: perturbative
 
       integer:: pionCharge, deltaCharge
 
-  
+
       real :: pInitial, pFinal, detailedBalanceFactor
 
 
@@ -229,7 +229,7 @@ contains
 
 
       !*****************************************************************************************************
-      ! -> pion N 
+      ! -> pion N
       !*****************************************************************************************************
 
       piN=0.
@@ -244,13 +244,13 @@ contains
             write(*,*) 'Lambda:'
             call writeparticle(6,0,0,lambda_Particle)
             detailedBalanceFactor= 0.
-         else  
-            detailedBalanceFactor= (pFinal/pInitial)**2 
+         else
+            detailedBalanceFactor= (pFinal/pInitial)**2
          end if
 
          ! huangLam gives : pi^{-} p -> Lambda Kaon^{0}
          sigmaHuangLam = huangLam(srts) * detailedBalanceFactor
-   
+
          ! Subtract resonance contribution
          sigmaHuangLam=Max(0.,sigmaHuangLam-barMes_R_barMes(kaon,lambda,pion,nucleon, 0,0,-1,1,.false.,.true.,&
                     & Vacuum,momentum_vacuum,kaon_particle%Mass,lambda_particle%Mass, &
@@ -290,14 +290,14 @@ contains
             write(*,*) 'Lambda:'
             call writeparticle(6,0,0,lambda_Particle)
             detailedBalanceFactor= 0.
-         else  
+         else
             detailedBalanceFactor= (pFinal/pInitial)**2  *2.
             ! factor 2  because of spins
          end if
 
          ! hunaglamd gives : delta^{++} pi- -> Lambda Kaon^{+}
          sigmaHuangLamd = huangLamd(srts) * detailedBalanceFactor
-         
+
          do pionCharge=-1,1
             deltaCharge=lambda_particle%charge+kaon_particle%charge-pionCharge
             If((deltaCharge.le.2).and.(deltaCharge.ge.-1)) then
@@ -309,7 +309,7 @@ contains
 
       If(debugFlag) write(*,*) 'piDelta=',piDelta
       !*******************************************************************************************
-      ! -> R 
+      ! -> R
       !*****************************************************************************************
 
       ! Full resonance contribution in the medium
@@ -322,7 +322,7 @@ contains
       !###################################################################################################
 
       sigmaElast=barMes_R_barMes(kaon,lambda,kaon,lambda,&
-           & kaon_particle%Charge,lambda_particle%Charge,kaon_particle%Charge,lambda_particle%Charge, & 
+           & kaon_particle%Charge,lambda_particle%Charge,kaon_particle%Charge,lambda_particle%Charge, &
            & .false.,.false.,MediumAtCollision,momentumLRF,kaon_particle%Mass,lambda_particle%Mass, &
            & position,perturbative,srts)
 
@@ -346,7 +346,7 @@ contains
       ! Be careful since sigma elast is already included in the partial cross sections, therefore it is not
       ! included in the total cross section
 
-      sigmaTot=Sum(piDelta) +Sum ( piN ) + sum (sigmaRes )   
+      sigmaTot=Sum(piDelta) +Sum ( piN ) + sum (sigmaRes )
 
 
     end subroutine evaluateXsections
@@ -358,7 +358,7 @@ contains
     ! subroutine MakeDecision
     ! PURPOSE
     ! Decides on the final state which is returned via teilchenOut by Monte-Carlo.
-    !  * Assigns charges and ID's. 
+    !  * Assigns charges and ID's.
     !  * Only for resonance-production also the mass is assigned, since the mass of the resonance needed to be calculated earlier.
     ! The Monte-Carlo routine is adding up channels until the sum is exceeding x*sigma(total). x has a flat distribution in [0,1].
     ! The last added channel is then the one which is chosen for the event. After choosing a channel, the subroutine is returning to
@@ -424,14 +424,14 @@ contains
       cut=cut-Sum(piDelta)
 
 
-      write (*,*) 'Error in makeDecision : No decision made', & 
+      write (*,*) 'Error in makeDecision : No decision made', &
            & cut,    sum(piDelta) , teilchenOut(:)%ID,teilchenOut(:)%Charge,sigmaTot
 
       Stop
 
     end subroutine MakeDecision
-    
-    
+
+
     !*****************************************************************************************
     !****s* kaonLambda/makeOutput
     ! NAME
@@ -439,7 +439,7 @@ contains
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV].
     ! Filenames:
-    ! * 'kaonLambda_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'kaonLambda_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'kaonLambda_nonstrangeProd.dat'     : non strangeness production
     ! * 'kaonLambda_resProd.dat'            : Baryon resonance production
     !*****************************************************************************************

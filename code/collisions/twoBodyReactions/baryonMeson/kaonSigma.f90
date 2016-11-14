@@ -10,12 +10,12 @@
 ! * kaonSigma
 ! NOTES
 ! Resonances are included into the model of Huang et al for calculating
-! the cross sections. After this, the treatment is done as for 2 -> 2 reactions.  
+! the cross sections. After this, the treatment is done as for 2 -> 2 reactions.
 !****************************************************************************
 module kaonSigma_resonance
 
   implicit none
-  Private 
+  Private
 
   ! Debug-flags
   logical,parameter :: debugFlag=.false.
@@ -41,18 +41,18 @@ contains
   ! * type(particle),dimension(1:2), intent(in)  :: teilchenIn            ! colliding particles
   !
   ! Debugging:
-  ! * logical, intent(in),optional               :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional               :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! RESULT
   ! * real, intent(out)                          :: sigmaTot         ! total Xsection
   ! * real, intent(out)                          :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! colliding particles
-  ! 
+  !
   ! NOTES
   ! Possible final states are :
   ! * 2-particle : pi N, piDelta
@@ -90,9 +90,9 @@ contains
 
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
-    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
-    type(particle) :: kaon_particle, sigma_particle    
+    type(particle) :: kaon_particle, sigma_particle
     logical :: antiParticleInput, failFlag
 
     antiParticleINPUT=.false. ! .true. if antiparticle in the input
@@ -112,8 +112,8 @@ contains
 
     If(sigma_particle%antiParticle.and.kaon_particle%antiParticle) then
        ! Both are antiparticles: s=0 scattering channel
-       ! 
-       ! Invert all particles in antiparticles 
+       !
+       ! Invert all particles in antiparticles
        sigma_particle%Charge        =  -sigma_particle%Charge
        sigma_particle%antiparticle  = .false.
        kaon_particle%Charge          =  -kaon_particle%Charge
@@ -156,7 +156,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.sigma_particle%charge+kaon_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,kaon_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,kaon_particle%Charge, &
             & sigma_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -169,14 +169,14 @@ contains
     end if
 
   contains
-    
+
     !**************************************************************
     !****s* kaonSigma/evaluateXsections
     ! NAME
     ! subroutine evaluateXsections
     !
     ! PURPOSE
-    ! Evaluates kaon sigma -> anything cross sections 
+    ! Evaluates kaon sigma -> anything cross sections
     !
     ! NOTES
     ! There are no resonance contributions to kaon Sigma scattering. The contributions
@@ -207,7 +207,7 @@ contains
       !*******************************************************************************************
       ! kaon Sigma -> pi N
       !*****************************************************************************************
-      ! piN = cross section by Huang (pi N-> kaon Sigma) by detailed balance 
+      ! piN = cross section by Huang (pi N-> kaon Sigma) by detailed balance
 
       pFinal   = pCM(srts,mPi,mN)
       pInitial = pCM(srts,kaon_particle%mass,sigma_PARTICLE%mass)
@@ -219,8 +219,8 @@ contains
          write(*,*) 'Sigma:'
          call writeparticle(6,0,0,sigma_Particle)
          detailedBalanceFactor= 0.
-      else  
-         detailedBalanceFactor= (pFinal/pInitial)**2        
+      else
+         detailedBalanceFactor= (pFinal/pInitial)**2
       end if
 
       sigmaHuang = huang(srts) * detailedBalanceFactor
@@ -279,8 +279,8 @@ contains
          write(*,*) 'Sigma:'
          call writeparticle(6,0,0,sigma_Particle)
          detailedBalanceFactor= 0.
-      else  
-         detailedBalanceFactor= (pFinal/pInitial)**2        
+      else
+         detailedBalanceFactor= (pFinal/pInitial)**2
       end if
       ! factor of 2 due to different spin in initial and final state
       sigmaHuangDelta=sigmaHuangDelta*detailedBalanceFactor
@@ -288,10 +288,10 @@ contains
       do pionCharge=-1,1
           isoZ_delta=kaon_particle%charge+sigma_particle%charge-pionCharge-0.5
           if(abs(isoZ_delta).lt.1.51) then
-             piDelta(pionCharge)=sigmaHuangDelta*clebschSquared(1.5,1.,0.5,isoZ_delta,real(pionCharge)) 
+             piDelta(pionCharge)=sigmaHuangDelta*clebschSquared(1.5,1.,0.5,isoZ_delta,real(pionCharge))
           end if
       end do
- 
+
       !###################################################################################################
       ! evaluate elastic Xsection
       !###################################################################################################
@@ -312,7 +312,7 @@ contains
       !###################################################################################################
       ! Sum up everything for the total cross section
       !###################################################################################################
- 
+
       sigmaTot=sum( piN ) + sum(piDelta)
 
     end subroutine evaluateXsections
@@ -323,7 +323,7 @@ contains
     !**************************************************************
     !****s* kaonSigma/makeDecision
     ! NAME
-    ! subroutine makeDecision 
+    ! subroutine makeDecision
     !
     ! PURPOSE
     ! ...
@@ -345,7 +345,7 @@ contains
       !############################################################
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piN(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=nucleon
@@ -358,7 +358,7 @@ contains
       end do
 
       ! pi Delta production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piDelta(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=Delta
@@ -375,17 +375,17 @@ contains
       stop
 
     end subroutine makeDecision
-    
+
     !********************************************************************************************
     !****s* kaonSigma/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV]
     ! .
     ! Filenames:
-    ! * 'kaonSigma_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'kaonSigma_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'kaonSigma_nonStrange.dat'         : non-strange meson in final state
     !********************************************************************************************
     subroutine makeOutPut

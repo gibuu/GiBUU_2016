@@ -3,7 +3,7 @@
 ! NAME
 ! module barBar_BarHypKaon
 ! PURPOSE
-! Administrates the calculation of cross sections for strangeness production 
+! Administrates the calculation of cross sections for strangeness production
 ! from BB->BYK collisions (with B=N,Delta and Y=Lambda,Sigma,Lambda*,Sigma*).
 ! The properties of the final-state channels are calculated as well.
 ! NOTES
@@ -17,6 +17,8 @@
 module barBar_BarHypKaon
 
   use preEventDefinition
+  use CallStack, only: Traceback
+
   implicit none
   PRIVATE
 
@@ -314,7 +316,7 @@ module barBar_BarHypKaon
     ! Defines the elements of the type(PreEvent) function
     ! INPUTS
     ! integer, intent(in) :: InChan -- Number of final channel
-    ! OUTPUT 
+    ! OUTPUT
     ! type(preEvent), dimension(1:3) :: parts
     !*******************************************************************************
     function get_Channels_BYK (InChan) result (parts)
@@ -361,7 +363,7 @@ module barBar_BarHypKaon
          write(*,*) 'STOP'
          STOP
       endif
-         
+
       Select Case (species)
       Case(nucleon,Lambda,Kaon,lambda_1405)
          iso_out = iso_in
@@ -451,16 +453,16 @@ module barBar_BarHypKaon
     ! * integer :: isohf0 -- isospin-state of hyperon Y in BYK^{0}
     ! * integer :: isobf0 -- isospin-state of the baryon B in BYK^{0}
     ! NOTES
-    ! * Notation: 
+    ! * Notation:
     !   B : p,n,\DELTA^{-},\DELTA^{0},\DELTA^{+},\DELTA^{++}
     !   Y : \Lambda^{0},\Sigma^{-},\Sigma^{0},\Sigma^{+}
     !   K : Kaon^{+},Kaon^{0}
-    ! * This is a partial copy of the Munich-RBUU code. For this reason we 
-    !   use here - and only here - local variables for the different isospin-states 
-    !   of the considered particle species, which may differ from those used 
-    !   in the GiBUU code. Please, DO NOT USE THE FOLLOWING PRESCRIPTIONS OUTSIDE 
+    ! * This is a partial copy of the Munich-RBUU code. For this reason we
+    !   use here - and only here - local variables for the different isospin-states
+    !   of the considered particle species, which may differ from those used
+    !   in the GiBUU code. Please, DO NOT USE THE FOLLOWING PRESCRIPTIONS OUTSIDE
     !   OF THIS ROUTINE!!!
-    ! * Relation between local variables and baryon/meson isospin states, 
+    ! * Relation between local variables and baryon/meson isospin states,
     !   used in this routine:
     ! * PROTONS     = 1
     ! * NEUTRONS    = 0
@@ -488,7 +490,7 @@ module barBar_BarHypKaon
       real,    dimension(1:10), intent(out) :: fac,fac0
       ! Local variables
       integer :: isob1,isob2,isot
-      ! treat N* like nucleons 
+      ! treat N* like nucleons
       isob1 = mod(iso1,20)
       isob2 = mod(iso2,20)
       isot = isob1 + isob2  ! total charge of incoming particles
@@ -528,7 +530,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! pp --> BYK^{+} & BYK^{0} channels
-      !---------------------------------------------------------------------------- 
+      !----------------------------------------------------------------------------
       if (isot==2) then      ! pp
          nexit      = 10
          iexit(1:10) = (/  1,  3,  7,  0,     8,     9,  9,    29,    30, 30 /)
@@ -545,7 +547,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! n\Delta^{-} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------  
+      !----------------------------------------------------------------------------
       if (isot==10) then     ! nD-
          nexit    = 1
          iexit(1) = 15
@@ -562,7 +564,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! n\Delta^{0},p\Delta^{-} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------  
+      !----------------------------------------------------------------------------
       if (isot==11) then
          if (isob1==0 .or. isob2==0) then    ! nD0
             nexit      = 4
@@ -593,7 +595,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! n\Delta^{+},p\Delta^{0} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------  
+      !----------------------------------------------------------------------------
       if (isot==12) then
          if (isob1==0 .or. isob2==0) then    ! nD+
             nexit      = 7
@@ -624,7 +626,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! n\Delta^{++},p\Delta^{+} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------  
+      !----------------------------------------------------------------------------
       if (isot==13) then
          if (isob1==0 .or. isob2==0) then    ! nD++
             nexit      = 7
@@ -655,7 +657,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! p\Delta^{++} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------   
+      !----------------------------------------------------------------------------
       if (isot==14) then                ! pD++
          nexit      = 4
          iexit(1:4) = (/  0,   21, 12, 18 /)
@@ -672,7 +674,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{-}\Delta^{-} --> no final channel
-      !----------------------------------------------------------------------------   
+      !----------------------------------------------------------------------------
       if (isot==20) then                ! D-D-
          nexit  = 0
          nexit0 = 0
@@ -680,7 +682,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{-}\Delta^{0} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------     
+      !----------------------------------------------------------------------------
       if (isot==21) then                ! D-D0
          nexit    = 1
          iexit(1) = 26
@@ -697,7 +699,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{-}\Delta^{+},\Delta^{0}\Delta^{0} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------   
+      !----------------------------------------------------------------------------
       if (isot==22) then
          if (isob1==10 .or. isob2==10) then   ! D-D+
             nexit      = 3
@@ -728,7 +730,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{-}\Delta^{++},\Delta^{0}\Delta^{+} --> BYK^{+} & BYK^{0} channels
-      !----------------------------------------------------------------------------           
+      !----------------------------------------------------------------------------
       if (isot==23) then
          if (isob1==10 .or. isob2==10) then   ! D-D++
             nexit      = 3
@@ -759,7 +761,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{0}\Delta^{++},\Delta^{+}\Delta^{+} --> BYK^{+} & BYK^{0} channels
-      !---------------------------------------------------------------------------- 
+      !----------------------------------------------------------------------------
       if (isot==24) then
          if (isob1==11 .or. isob2==11) then   ! D0D++
             nexit      = 4
@@ -790,7 +792,7 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{+}\Delta^{++} --> BYK^{+} & BYK^{0} channels
-      !---------------------------------------------------------------------------- 
+      !----------------------------------------------------------------------------
       if (isot==25) then     ! D+D++
          nexit      = 3
          iexit(1:3) = (/  0, 22,  26 /)
@@ -807,21 +809,19 @@ module barBar_BarHypKaon
       endif
       !----------------------------------------------------------------------------
       ! \Delta^{++}\Delta^{++} --> no valid final channel
-      !---------------------------------------------------------------------------- 
+      !----------------------------------------------------------------------------
       if (isot==26) then                ! D++D++
          nexit  = 0
          nexit0 = 0
          return
       endif
-      !----------------------------------------------------------------------------   
+      !----------------------------------------------------------------------------
       ! Final check: if everything is fine, the simulation should not arrive here...
-      !----------------------------------------------------------------------------   
-      write(*,*) 'Module barBar_BarHypKaon_Main, routine get_ChannelParameters:'
+      !----------------------------------------------------------------------------
       write(*,*) 'No final channel found??? something is going wrong...'
-      write(*,*) 'Charges of initial channel: iso1,iso2,iso1,iso2,isot = ', & 
+      write(*,*) 'Charges of initial channel: iso1,iso2,iso1,iso2,isot = ', &
            & iso1,iso2,isob1,isob2,isot
-      write(*,*) '!!! Termination of the program !!!'
-      STOP
+      call Traceback()
 
     end subroutine get_ChannelParameters
 

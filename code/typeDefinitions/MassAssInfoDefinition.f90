@@ -57,7 +57,7 @@ module MassAssInfoDefinition
   !
   ! PURPOSE
   ! The storage of density dependent information in the meson and baryon
-  ! modules. 
+  ! modules.
   !
   ! see tMassAssInfo for further information
   !*************************************************************************
@@ -102,7 +102,7 @@ contains
   !*************************************************************************
   subroutine ResetMassAssInfo(MAI)
     type(tMassAssInfo), intent(inout) :: MAI
-    
+
     MAI%IsStable = .false.
     MAI%IsMomDep = .false.
     MAI%Mass0    = 0.0
@@ -123,7 +123,7 @@ contains
   ! INPUTS
   ! * MAI%Mass0 and MAI%Gamma0 have to be set
   ! OUTPUT
-  ! * MAI 
+  ! * MAI
   !*************************************************************************
   subroutine SetMassAssInfo_Stable(MAI)
     use CALLSTACK, only : TRACEBACK
@@ -146,7 +146,7 @@ contains
     MAI%Q = 1.0
     MAI%M = MAI%Mass0
     MAI%Y = 0.0
-    
+
   end subroutine SetMassAssInfo_Stable
 
   !*************************************************************************
@@ -193,16 +193,16 @@ contains
        iB1 = MAIarr%n1(iG)
        iB2 = MAIarr%n2(iG)
     end if
-       
+
     nB = iB2-iB1 + 1
     allocate(MAI%W(nB))
     allocate(MAI%Q(nB))
     allocate(MAI%M(nB+1))
     allocate(MAI%Y(nB+1))
 
-    if (mixG>0.0) then 
+    if (mixG>0.0) then
        ! linear interpolation of all values:
-       
+
        MAI%W = (1-mixG)*MAIarr%W(iG,iB1:iB2) + mixG*MAIarr%W(iG+1,iB1:iB2)
        MAI%Q = (1-mixG)*MAIarr%Q(iG,iB1:iB2) + mixG*MAIarr%Q(iG+1,iB1:iB2)
        MAI%M = (1-mixG)*MAIarr%M(iG,iB1:iB2+1) + mixG*MAIarr%M(iG+1,iB1:iB2+1)
@@ -227,7 +227,7 @@ contains
   ! containing the cut the upper boundary is set to the max value. Also
   ! The weight W (and Y) is adjusted. If the Q value stored for the bin
   ! was negative, also this value is adjusted (negative Q indicates, that
-  ! the maximum was at the upper boundary). 
+  ! the maximum was at the upper boundary).
   ! INPUTS
   ! * type(tMassAssInfo) :: MAI -- the Info to be set
   ! * real :: maxmass -- the upper limit of the mass range
@@ -270,7 +270,7 @@ contains
        nBin=nBin-1
 
     end do
-    
+
 !    if ((MAI%M(nBin).gt.maxmass).or.(MAI%M(nBin+1).lt.maxmass)) then
 !       call TRACEBACK('something strange')
 !    end if
@@ -333,7 +333,7 @@ contains
   ! NAME
   ! subroutine readInput
   ! PURPOSE
-  ! Reads input in jobcard out of namelist "MassAssInfo". 
+  ! Reads input in jobcard out of namelist "MassAssInfo".
   !************************************************************************
   subroutine readInput
     use output, only: Write_ReadingInput
@@ -348,16 +348,16 @@ contains
     ! * UseMassAssInfo
     !*************************************************************************
     NAMELIST /MassAssInfo/ UseMassAssInfo
-    
+
     call Write_ReadingInput('MassAssInfo',0)
     rewind(5)
     read(5,nml=MassAssInfo,IOSTAT=IOS)
     call Write_ReadingInput('MassAssInfo',0,IOS)
-    
+
     write(*,*) 'UseMassAssInfo = ',UseMassAssInfo
-    
+
     call Write_ReadingInput('MassAssInfo',1)
-    
+
     initFlag=.false.
   end subroutine readInput
 
@@ -389,5 +389,5 @@ contains
     end if
     UseMassAssInfo = value
   end subroutine Set_UseMassAssInfo
-    
+
 end module MassAssInfoDefinition

@@ -1,3 +1,4 @@
+!***************************************************************************
 !****m* /annihilation_channels
 ! NAME
 ! module annihilation_channels
@@ -12,7 +13,7 @@ module annihilation_channels
   PRIVATE
 
   !*************************************************************************
-  !****t* annihilation_channels/anni_channel 
+  !****t* annihilation_channels/anni_channel
   ! SOURCE
   !
   Type anni_channel
@@ -59,16 +60,16 @@ module annihilation_channels
   !****g* annihilation_channels/pbarn_channels_eDep
   ! SOURCE
   !
-  Type(anni_channel), Allocatable, dimension(:), save :: pbarn_channels_eDep 
+  Type(anni_channel), Allocatable, dimension(:), save :: pbarn_channels_eDep
   ! PURPOSE
   ! Stores the information for all possible channels of antiproton-neutron
   ! annihilation at the given beam energy.
   !*************************************************************************
 
-  integer, save :: n_pbarp_atRest, n_pbarn_atRest   ! Sizes of arrays pbarp_channels_atRest 
-                                                    ! and pbarn_channels_atRest respectively.    
-  integer, save :: n_pbarp_eDep, n_pbarn_eDep       ! Sizes of arrays pbarp_channels_eDep 
-                                                    ! and pbarn_channels_eDep respectively.  
+  integer, save :: n_pbarp_atRest, n_pbarn_atRest   ! Sizes of arrays pbarp_channels_atRest
+                                                    ! and pbarn_channels_atRest respectively.
+  integer, save :: n_pbarp_eDep, n_pbarn_eDep       ! Sizes of arrays pbarp_channels_eDep
+                                                    ! and pbarn_channels_eDep respectively.
 
   PUBLIC :: choose_channel
 
@@ -81,7 +82,7 @@ contains
   ! NAME
   ! subroutine choose_channel(srts,antibar,bar,time,finalState,success)
   ! PURPOSE
-  ! Selects randomly the outgoing channel (id's and charges only) for 
+  ! Selects randomly the outgoing channel (id's and charges only) for
   ! a given antibaryon-baryon annihilating pair.
   ! INPUTS
   ! * real, intent(in)           ::  srts                         ! inv. energy
@@ -91,7 +92,7 @@ contains
   ! OUTPUT
   ! * type(particle), intent(inout), dimension(:) :: finalState   ! Array of the final state particles
   !                                                               ! (only id's and charges are determined)
-  ! * logical, intent(out) ::        success                      ! .true. if the channel choice was 
+  ! * logical, intent(out) ::        success                      ! .true. if the channel choice was
   !                                                               ! successfull
   ! NOTES
   !*************************************************************************
@@ -101,7 +102,7 @@ contains
     use IdTable, only: getAntiMeson
     use ParticleProperties, only : hadron
     use random
-    use inputGeneral, only : eventtype 
+    use inputGeneral, only : eventtype
     use eventtypes, only : elementary
 
     real, intent(in)           ::  srts                         ! inv. energy
@@ -110,7 +111,7 @@ contains
     real, intent(in)           ::  time                         ! current time step (fm/c)
     type(particle), intent(inout), dimension(:) :: finalState   ! Array of the final state particles
                                                                 ! (only id's and charges are determined)
-    logical, intent(out) ::        success                      ! .true. if the channel choice was 
+    logical, intent(out) ::        success                      ! .true. if the channel choice was
                                                                 ! successfull
 
     integer :: totalCharm, totalStrangeness, totalCharge, i, k, antiID, antiCharge
@@ -118,17 +119,17 @@ contains
 
     Type(anni_channel), Allocatable, dimension(:) :: pbarp_channels, pbarn_channels ! Working arrays
 
-    integer :: n_pbarp, n_pbarn                                 ! Sizes of arrays pbarp_channels 
-                                                                ! and pbarn_channels respectively. 
+    integer :: n_pbarp, n_pbarn                                 ! Sizes of arrays pbarp_channels
+                                                                ! and pbarn_channels respectively.
 
     logical, parameter :: flagEnergyDependent=.true.            ! If .true. -- use srts-dependent tables
-                                                                ! of channels, .false. -- use tables for 
+                                                                ! of channels, .false. -- use tables for
                                                                 ! annihilation at rest.
-    real, parameter :: srts_min=1.876                           ! Minimum possible value of srts (GeV) 
+    real, parameter :: srts_min=1.876                           ! Minimum possible value of srts (GeV)
                                                                 ! in annihilation.
     real, parameter :: srts_max=2.6                             ! Maximum value of srts up to which
                                                                 ! channel tables at rest are still contributing
-                                                                ! (above srts_max pure Unitary Model tables 
+                                                                ! (above srts_max pure Unitary Model tables
                                                                 !  are used).
 
     real, save :: srtsAverage=0., srtsAverage_previous=-100., time_previous=-100.
@@ -137,16 +138,16 @@ contains
 
     totalCharm= hadron(bar%Id)%charm - hadron(antibar%Id)%charm
 
-    if(totalCharm.ne.0) then  ! Annihilation with nonvanishing total charm 
+    if(totalCharm.ne.0) then  ! Annihilation with nonvanishing total charm
                               ! is not implemented
        success=.false.
        return
-    end if    
+    end if
 
     totalStrangeness=  hadron(bar%Id)%strangeness - hadron(antibar%Id)%strangeness
 
-    if(totalStrangeness.ne.0) then  ! Annihilation with nonvanishing total strangeness 
-                                    ! is not implemented yet here (see, however, DoColl_BaB) 
+    if(totalStrangeness.ne.0) then  ! Annihilation with nonvanishing total strangeness
+                                    ! is not implemented yet here (see, however, DoColl_BaB)
        success=.false.
        return
     end if
@@ -168,7 +169,7 @@ contains
 
     if(.not.flagEnergyDependent) then  ! Use channel tables at rest
 
-       n_pbarp=n_pbarp_atRest       
+       n_pbarp=n_pbarp_atRest
        n_pbarn=n_pbarn_atRest
        allocate(pbarp_channels(1:n_pbarp),pbarn_channels(1:n_pbarn))
        pbarp_channels=pbarp_channels_atRest
@@ -189,40 +190,40 @@ contains
           nCalls=0
        end if
        time_previous=time
- 
+
        nCalls=nCalls+1
        srtsAverage=srtsAverage+srts
 
-       !write(*,'(1x,A21,1x,e13.6,1x,i5,1x,e13.6)') ' time, nCalls, srts: ', time, nCalls, srts 
+       !write(*,'(1x,A21,1x,e13.6,1x,i5,1x,e13.6)') ' time, nCalls, srts: ', time, nCalls, srts
 
        ! "Probability" for the tables at rest:
-       Prob=1.-(srts-srts_min)/(srts_max-srts_min) 
- 
+       Prob=1.-(srts-srts_min)/(srts_max-srts_min)
+
        if(rn().lt.Prob) then
-          n_pbarp=n_pbarp_atRest       
+          n_pbarp=n_pbarp_atRest
           n_pbarn=n_pbarn_atRest
           allocate(pbarp_channels(1:n_pbarp),pbarn_channels(1:n_pbarn))
           pbarp_channels=pbarp_channels_atRest
           pbarn_channels=pbarn_channels_atRest
        else
-          n_pbarp=n_pbarp_eDep       
+          n_pbarp=n_pbarp_eDep
           n_pbarn=n_pbarn_eDep
           allocate(pbarp_channels(1:n_pbarp),pbarn_channels(1:n_pbarn))
           pbarp_channels=pbarp_channels_eDep
-          pbarn_channels=pbarn_channels_eDep          
-       end if 
+          pbarn_channels=pbarn_channels_eDep
+       end if
 
     end if
 
     ! Monte-Carlo decision:
- 
+
     x=rn()
 
     if(totalCharge.eq.0) then
 
        sum=0.
        i=0
-       do 
+       do
           i=i+1
           if(i.gt.n_pbarp) then
              write(*,*)'In choose_channel pbarp: no channel found'
@@ -231,8 +232,8 @@ contains
           sum=sum+pbarp_channels(i)%probability
           if(sum.gt.x) exit
        end do
-       
-       do k=1,6   
+
+       do k=1,6
           if(pbarp_channels(i)%Id(k).gt.0) then
              finalState(k)%Id=pbarp_channels(i)%Id(k)
              finalState(k)%charge=pbarp_channels(i)%charge(k)
@@ -248,7 +249,7 @@ contains
 
        sum=0.
        i=0
-       do 
+       do
           i=i+1
           if(i.gt.n_pbarn) then
              write(*,*)'In choose_channel pbarn: no channel found'
@@ -257,8 +258,8 @@ contains
           sum=sum+pbarn_channels(i)%probability
           if(sum.gt.x) exit
        end do
-       
-       do k=1,6   
+
+       do k=1,6
           if(pbarn_channels(i)%Id(k).gt.0) then
              finalState(k)%Id=pbarn_channels(i)%Id(k)
              finalState(k)%charge=pbarn_channels(i)%charge(k)
@@ -268,19 +269,19 @@ contains
        end do
 
        if(totalCharge.eq.1) then
-          do k=1,6 
+          do k=1,6
              if(finalState(k)%Id.gt.0) then
                 call getAntiMeson(finalState(k)%Id,finalState(k)%charge,antiID,antiCharge)
-                finalState(k)%Id=antiID             
+                finalState(k)%Id=antiID
                 finalState(k)%charge=antiCharge
              else
                 exit
              end if
           end do
        end if
-            
+
        success=.true.
-       return       
+       return
 
     end if
 
@@ -325,14 +326,14 @@ contains
 
     if (verbose) write(*,*)'srts, plab:', srts, PLAB
     if (verbose) write(*,*)'number of pbarp and pbarn annihilation channels :', &
-              & n_pbarp_eDep,n_pbarn_eDep 
+              & n_pbarp_eDep,n_pbarn_eDep
 
     if(allocated(pbarp_channels_eDep)) deallocate(pbarp_channels_eDep)
     if(allocated(pbarn_channels_eDep)) deallocate(pbarn_channels_eDep)
 
     allocate(pbarp_channels_eDep(1:n_pbarp_eDep),pbarn_channels_eDep(1:n_pbarn_eDep))
-    
-    j=0   
+
+    j=0
     do i=1,n_pbarp_eDep
        IF (FWP(I).GT.9.999999E-05) THEN
          j=j+1
@@ -351,7 +352,7 @@ contains
 
     j=0
     do i=1,n_pbarn_eDep
-       IF (FWN(I).GT.9.999999E-05) THEN 
+       IF (FWN(I).GT.9.999999E-05) THEN
          j=j+1
          do k=1,6
            call decode_to_GiBUU(ICG(k,i,3),id,iz)
@@ -408,7 +409,7 @@ contains
     if (verbose) open(2,file='empir_table_chk.fnp',status='unknown')
 
     i=0
-    do 
+    do
        read(1,405,end=5,err=10) num, id_anni(1:6), symb(1:6), w
        i=i+1
 !       if (verbose) write(2,405) num, id_anni(1:6), symb(1:6), w
@@ -438,8 +439,8 @@ contains
 !    if (verbose) open(2,file='um0_0_chk.fnn',status='new')
     open(1,file=trim(path_to_input)//'/annihilation/empir_table.fnn',status='old',iostat=ios)
     if (verbose) open(2,file='empir_table_chk.fnn',status='unknown')
-    i=0          
-    do 
+    i=0
+    do
        read(1,405,end=15,err=20) num, id_anni(1:6), symb(1:6), w
        i=i+1
        if (verbose) write(2,405) num, id_anni(1:6), symb(1:6), w
@@ -473,13 +474,13 @@ contains
   ! NAME
   ! subroutine decode_to_GiBUU(id_input,id,iz)
   ! PURPOSE
-  ! Transform the internal particle coding of Igor Pshenichnov's annihilation code 
+  ! Transform the internal particle coding of Igor Pshenichnov's annihilation code
   ! to GiBUU coding.
   ! INPUTS
   ! * integer, intent(in)         ::  id_input             ! Id in Pshenichnov's coding
   ! OUTPUT
   ! * integer, intent(out)        ::  id                   ! Id in GiBUU coding
-  ! * integer, intent(out)        ::  iz                   ! charge of particle    
+  ! * integer, intent(out)        ::  iz                   ! charge of particle
   ! NOTES
   ! Only mesons are considered.
   !*************************************************************************
@@ -489,7 +490,7 @@ contains
 
     integer, intent(in)         ::  id_input             ! Id in Pshenichnov's coding
     integer, intent(out)        ::  id                   ! Id in GiBUU coding
-    integer, intent(out)        ::  iz                   ! charge of particle 
+    integer, intent(out)        ::  iz                   ! charge of particle
 
     select case(id_input)
 
@@ -537,13 +538,13 @@ contains
       iz=0
     case(15)
       id=kaonStarBar
-      iz=0  
+      iz=0
     case(16)
       id=rho
-      iz=0  
+      iz=0
     case(17)
       id=omegaMeson
-      iz=0 
+      iz=0
     case(18)
       id=phi
       iz=0

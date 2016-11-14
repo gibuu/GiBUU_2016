@@ -28,6 +28,9 @@
 #
 # ARCH:
 # * ARCH = 32
+#
+# ARGS:
+# * ARGS = "..."
 #*******************************************************************************
 
 
@@ -87,7 +90,7 @@ export PATH_TO_INPUT='../buuinput'
 
 # The variable "allSrcFiles" includes :
 # * path of all the source files which are linked to objects
-# * path to the main file. 
+# * path to the main file.
 SRCf90 := $(wildcard objects/*.f90)
 SRCF90 := $(wildcard objects/*.F90)
 SRCf77 := $(wildcard objects/*.f)
@@ -133,6 +136,9 @@ EMPTY =
 
 ### do dynamic linking by default
 STATIC = 0
+
+### build with optimizations by default
+MODE = opt
 
 FPE = 3
 
@@ -303,10 +309,10 @@ endif
 ifeq ($(findstring lfc,$(FORT_NOPATH)),lfc)
   FORTVERS=`$(FORT) lfc --version  2>&1|head -1`
   # -chkglobal would be nice, however --chk x does not work with Pythia
-  # FLAGSF90= --chk --chkglobal 
-  FLAGSF90= --chk   
+  # FLAGSF90= --chk --chkglobal
+  FLAGSF90= --chk
   FLAGSF77=
-  FLAGSFORALL=--static --staticlink -Cpp 
+  FLAGSFORALL=--static --staticlink -Cpp
   FLAGSDOUBLE=-CcdRR8
 endif
 #########################################################
@@ -384,6 +390,10 @@ ifeq ($(MODE),callGraph)
 endif
 #########################################################
 
+### Adding some flags given at the command line
+FLAGSFORALL += $(ARGS)
+
+
 export FORT
 export FORT_NOPATH
 export FORTVERS
@@ -425,8 +435,8 @@ code/Makefile:
 # Black and white compiling. Useful for piping compilation output to a log file.
 #*******************************************************************************
 .PHONY : bw
-bw: 
-	@$(MAKE) StartHeader= EndHeader= StartHeader_green= StartHeader_red= blue= endBlue= 
+bw:
+	@$(MAKE) StartHeader= EndHeader= StartHeader_green= StartHeader_red= blue= endBlue=
 
 
 .PHONY : quick
@@ -443,7 +453,7 @@ ifeq ($(FORTPATH),$(EMPTY))
 else
 	@echo "The compiler " $(FORT_NOPATH) " is used (" $(FORTPATH) ")."
 	@echo $(FORTVERS)
-endif 
+endif
 
 .PHONY : print
 print:
@@ -456,7 +466,7 @@ subdirs:
 	@$(ECHO) $(StartHeader)Collecting all source code information...$(EndHeader)
 	@for X in $(SUBDIR); do \
 	  (cd $$X && $(MAKE) $(noPrintDirectory) iterate;)\
-	done	
+	done
 	@$(MAKE) printFinished $(noPrintDirectory)
 
 .PHONY : printFinished
@@ -568,7 +578,7 @@ veryclean: clean cleanEXE cleanOBJ
 # NAME
 # make superclean
 # PURPOSE
-# First calls the target "veryclean", 
+# First calls the target "veryclean",
 # then removes all "fort.*" files from the tree.
 #*******************************************************************************
 .PHONY : superclean
@@ -651,7 +661,7 @@ showDoku:
 svnupdate:
 	@$(ECHO) 'Updating source code via SVN'
 	@svn update
-	@$(ECHO) 'Updating input files via SVN' 
+	@$(ECHO) 'Updating input files via SVN'
 	@if [ -d $(PATH_TO_INPUT) ]; then \
 	  svn update $(PATH_TO_INPUT) ;\
 	else \
@@ -734,7 +744,7 @@ MAKEFILEclean: veryclean
 # directories added or deleted etc you should call
 # "make renew" before you call "make".
 #
-# This target implies a call of "veryclean". Then 
+# This target implies a call of "veryclean". Then
 # in every directory the corresponding local Makefile is
 # deleted and finally updated.
 #*******************************************************************************
@@ -826,8 +836,8 @@ ModGraph:
 version: objects/version.f90
 #	@$(MAKE) objects/version.f90
 
-objects/version.f90 : $(allSrcFiles) 
-	@echo 'module version'                                           >  ./code/inputOutput/version.f90 
+objects/version.f90 : $(allSrcFiles)
+	@echo 'module version'                                           >  ./code/inputOutput/version.f90
 	@echo ' contains  '                                              >> ./code/inputOutput/version.f90
 	@echo ' subroutine PrintVersion '                                >> ./code/inputOutput/version.f90
 	@echo ' implicit none '                                          >> ./code/inputOutput/version.f90

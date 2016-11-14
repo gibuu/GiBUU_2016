@@ -3,7 +3,7 @@
 ! NAME
 ! module NucDLDA
 ! PURPOSE
-! This module calculates the ground state density based on a local 
+! This module calculates the ground state density based on a local
 ! density approximation without charge or symmetry energy
 ! AUTHOR
 ! Birger Steinmüller
@@ -30,7 +30,7 @@ contains
 !!$  ! This function calculates the energy per particle using only volume
 !!$  ! and surface energy terms
 !!$  ! INPUTS
-!!$  ! * real :: A -- Mass as a real number since the routines used in this 
+!!$  ! * real :: A -- Mass as a real number since the routines used in this
 !!$  !                module calculate it this way
 !!$  ! OUTPUT
 !!$  ! Energy per particle in MeV
@@ -43,7 +43,7 @@ contains
 !!$    ao=18.33;
 !!$
 !!$    betheweizs=(av*A-ao*A**(2./3.))/A;
-!!$    
+!!$
 !!$  end function betheweizs
 
   !**********************************************************************
@@ -65,9 +65,9 @@ contains
   real function diffeq(rho,rhop,r,ck,a,e0f,b1,b2,b3)
 
     real, intent(in)::rho,rhop,r,ck,a,e0f,b1,b2,b3
-    
+
     diffeq=-2./r*rhop+5./6.*ck/a*rho**(2./3.)-e0f/(2*a)+b1/a*rho+7./6.*b2/a*rho**(4./3.)+8./6.*b3/a*rho**(5./3.)
-    
+
   end function diffeq
 
   !**********************************************************************
@@ -165,7 +165,7 @@ contains
   ! * real :: laplacerho --div(grad(density))
   ! * real :: p2 -- 3-momentum**2 (in GeV**2)
   ! OUTPUT
-  ! Energy in units of MeV, 1st component total energy, 2nd kinetic energy, 
+  ! Energy in units of MeV, 1st component total energy, 2nd kinetic energy,
   ! 3rd volume energy and 4th surface energy
   !**********************************************************************
 
@@ -194,7 +194,7 @@ contains
     Etemp = Etemp*hbarc*1000
 
   end subroutine getEParticleLaplace
-  
+
 
   !**********************************************************************
   !****s* NucDLDA/Aapprox
@@ -207,7 +207,7 @@ contains
   ! given Mass (Massin)
   ! INPUTS
   ! * real :: rhostart -- starting density for the search
-  ! * real :: rhopstart -- first derivative of the density 
+  ! * real :: rhopstart -- first derivative of the density
   ! * real :: deltarho -- starting stepsize wrt density
   ! * integer :: depth -- searching depth in rho direction
   ! * real :: deltat -- stepsize for solving the differential equation
@@ -220,7 +220,7 @@ contains
   ! * real :: Massout -- Mass of the nucleus (calculated)
   ! * real :: ystart -- calculated starting density of this nucleus
   ! * real :: e0f -- calculated Lagrange multiplier
-  ! * real :: energy -- calculated total binding energy 
+  ! * real :: energy -- calculated total binding energy
   !**********************************************************************
 
   subroutine Aapprox(b3,ck,a,b1,b2,E0,rhostart,rhopstart,deltarho,steps,depth,&
@@ -231,7 +231,7 @@ contains
     real::e0fstart,deltae0f,deltatemp,maxdelta,mindelta,totalmin,maxe0f,&
          & mine0f,e0ftemp,Masstemp,ytemp,energytemp!,ylast,minA,maxA
     integer::e0fsteps,i,j
-    
+
     e0fstart=0.645
     deltae0f=0.27
     e0fsteps=50
@@ -259,7 +259,7 @@ contains
              mine0f=e0ftemp
              !minA=Masstemp
           end if
-          
+
           if (abs(deltatemp)>totalmin) then
              totalmin=abs(deltatemp)
              e0f=e0ftemp
@@ -268,11 +268,11 @@ contains
              energy=energytemp
           end if
        end do
-       
+
        e0fstart=min(maxe0f,mine0f)
        deltae0f=abs(maxe0f-mine0f)
     end do
-    
+
   end subroutine Aapprox
 
   !**********************************************************************
@@ -336,7 +336,7 @@ contains
   ! mulitplier e0f to get a smooth density distribution
   ! INPUTS
   ! * real :: rhostart -- starting density for the search
-  ! * real :: rhopstart -- first derivative of the density 
+  ! * real :: rhopstart -- first derivative of the density
   ! * real :: deltarho -- starting stepsize wrt density
   ! * integer :: depth -- searching depth in rho direction
   ! * real :: deltat -- stepsize for solving the differential equation
@@ -346,7 +346,7 @@ contains
   ! OUTPUT
   ! * real :: Mass -- Mass of the nucleus (calculated)
   ! * real :: ystart -- calculated starting density of this nucleus
-  ! * real :: energy -- calculated total binding energy  
+  ! * real :: energy -- calculated total binding energy
   !**********************************************************************
 
   subroutine rhostepsearch(b3,ck,a,b1,b2,E0,rhostart,rhopstart,deltarho,steps,depth,e0f,deltat,maxr,Mass,ystart,energy)
@@ -355,19 +355,19 @@ contains
     integer, intent(in)::steps,depth
     integer::i
     real::Massmin,ystartmin,rhostart1,deltarho1
-    
+
     rhostart1=rhostart
     deltarho1=deltarho
-    
+
     do i=1,depth,1
        call shootinput(b3,ck,a,b1,b2,E0,rhostart1,rhopstart,deltarho1,steps,e0f,deltat,maxr,Massmin,ystartmin,energy)
        rhostart1=ystartmin
        deltarho1=deltarho1/steps*1.2
     end do
-    
+
     Mass=Massmin
     ystart=ystartmin
-    
+
   end subroutine rhostepsearch
 
 !!$  !**********************************************************************
@@ -375,11 +375,11 @@ contains
 !!$  ! NAME
 !!$  ! subroutine shoot(y0,yp0,tstart,tend,delta,fileout,ck,a,e0f,b1,b2,b3,Mass,ylast,energy)
 !!$  ! PURPOSE
-!!$  ! A first order Euler method for solving the equation diffeq with the 
+!!$  ! A first order Euler method for solving the equation diffeq with the
 !!$  ! starting parameters and prints it into a file
 !!$  ! INPUTS
 !!$  ! * real :: y0 -- starting density
-!!$  ! * real :: yp0 -- first derivative of the density 
+!!$  ! * real :: yp0 -- first derivative of the density
 !!$  ! * real :: tstart -- point at which to start
 !!$  ! * real :: tend -- maximum distance for which the diff. eq. is solved
 !!$  ! * real :: delta -- stepsize for solving the differential equation
@@ -389,7 +389,7 @@ contains
 !!$  ! OUTPUT
 !!$  ! * real :: Mass -- Mass of the nucleus (calculated)
 !!$  ! * real :: ylast -- density at the point after the last one which is used
-!!$  ! * real :: energy -- calculated total binding energy 
+!!$  ! * real :: energy -- calculated total binding energy
 !!$  !**********************************************************************
 !!$
 !!$
@@ -400,14 +400,14 @@ contains
 !!$    real, intent(out)::Mass,ylast,energy
 !!$    character(15), intent(in)::fileout
 !!$    real::tnow,ynow,ypnow,tnext,ynext,ypnext
-!!$    
+!!$
 !!$    open(1,file=fileout)
 !!$    tnow=tstart
-!!$    ynow=y0  
+!!$    ynow=y0
 !!$    ypnow=yp0
 !!$    Mass=0.
 !!$    energy=0
-!!$    
+!!$
 !!$    do while ((tnow<(tend-delta)).and.(ypnow<=0).and.(ynow>=0))
 !!$       write(1,100) tnow,ynow,ypnow
 !!$       100  FORMAT(1X,F12.8,1x,F12.8,1x,F12.8)
@@ -434,11 +434,11 @@ contains
   ! NAME
   ! subroutine subroutine shootfillarray(y0,yp0,tstart,tend,delta,ck,a,e0f,b1,b2,b3,factor,nucleus)
   ! PURPOSE
-  ! A first order Euler method for solving the equation diffeq with the 
+  ! A first order Euler method for solving the equation diffeq with the
   ! starting parameters and fills the density array of nucleus with it
   ! INPUTS
   ! * real :: y0 -- starting density
-  ! * real :: yp0 -- first derivative of the density 
+  ! * real :: yp0 -- first derivative of the density
   ! * real :: tstart -- point at which to start
   ! * real :: tend -- maximum distance for which the diff. eq. is solved
   ! * real :: delta -- stepsize for solving the differential equation
@@ -448,7 +448,7 @@ contains
   ! OUTPUT
   ! * real :: Mass -- Mass of the nucleus (calculated)
   ! * real :: ylast -- density at the point after the last one which is used
-  ! * real :: energy -- calculated total binding energy 
+  ! * real :: energy -- calculated total binding energy
   !**********************************************************************
 
   subroutine shootfillarray(y0,yp0,tstart,tend,delta,ck,a,e0f,b1,b2,b3,factor,nucleus)
@@ -458,9 +458,9 @@ contains
     type(tnucleus),pointer::nucleus
     real::tnow,ynow,ypnow,tnext,ynext,ypnext
     integer::i
-    
+
     tnow=tstart
-    ynow=y0  
+    ynow=y0
     ypnow=yp0
     nucleus%densTab(0,1)=factor*ynow
     nucleus%densTab(0,2)=(1.-factor)*ynow
@@ -485,12 +485,12 @@ contains
   ! NAME
   ! subroutine shootinput(b3,ck,a,b1,b2,E0,rhoat0,rhopat0,deltarho,step,e0f,deltat,maxr,Massmin,ystartmin,energy)
   ! PURPOSE
-  ! This searches a given interval of the densityfor the best density at 
+  ! This searches a given interval of the densityfor the best density at
   ! the center for a given Lagrange mulitplier e0f to get a smooth
   ! density distribution
   ! INPUTS
   ! * real :: rhoat0 -- starting density for the search
-  ! * real :: rhopat0 -- first derivative of the density 
+  ! * real :: rhopat0 -- first derivative of the density
   ! * real :: deltarho -- starting stepsize wrt density
   ! * real :: deltat -- stepsize for solving the differential equation
   ! * real :: maxr -- maximum distance from the centre
@@ -499,7 +499,7 @@ contains
   ! OUTPUT
   ! * real :: Massmin -- Mass of the nucleus (calculated)
   ! * real :: ystartmin -- calculated starting density of this nucleus
-  ! * real :: energy -- calculated total binding energy  
+  ! * real :: energy -- calculated total binding energy
   !**********************************************************************
 
   subroutine shootinput(b3,ck,a,b1,b2,E0,rhoat0,rhopat0,deltarho,step,&
@@ -514,7 +514,7 @@ contains
     ystartmin=0
     ymin=100
     tstart=deltat
-    
+
     do i=0,step,1
        ystart=rhoat0+deltarho*i
        Massout=0
@@ -537,7 +537,7 @@ contains
   ! Just like shoot without writing into a file
   ! INPUTS
   ! * real :: y0 -- starting density
-  ! * real :: yp0 -- first derivative of the density 
+  ! * real :: yp0 -- first derivative of the density
   ! * real :: tstart -- point at which to start
   ! * real :: tend -- maximum distance for which the diff. eq. is solved
   ! * real :: delta -- stepsize for solving the differential equation
@@ -546,7 +546,7 @@ contains
   ! OUTPUT
   ! * real :: Mass -- Mass of the nucleus (calculated)
   ! * real :: ylast -- density at the point after the last one which is used
-  ! * real :: energy -- calculated total binding energy 
+  ! * real :: energy -- calculated total binding energy
   !**********************************************************************
 
   subroutine shootnowrite(y0,yp0,tstart,tend,delta,ck,a,e0f,b1,b2,b3,Mass,ylast,energy)
@@ -555,13 +555,13 @@ contains
     real, intent(in)::y0,yp0,tstart,tend,delta,ck,a,e0f,b1,b2,b3
     real, intent(out)::Mass,ylast,energy
     real::tnow,ynow,ypnow,tnext,ynext,ypnext
-    
+
     tnow=tstart
-    ynow=y0  
+    ynow=y0
     ypnow=yp0
     Mass=0.
     energy=0
-    
+
     do while ((tnow<(tend-delta)).and.(ypnow<=0).and.(ynow>=0))
        tnext=tnow+delta
        ypnext=ypnow+diffeq(ynow,ypnow,tnow,ck,a,e0f,b1,b2,b3)*delta
@@ -618,10 +618,10 @@ contains
     a4=4*rho0**(2./3.)
     x1=E0-ck*rho0**(2./3.)-b3*rho0**(5./3.)
     x2=-2*ck-5*b3*rho0
-    
+
     b2=(x2-a3*x1/a1)/(a4-a2*a3/a1)
     b1=(x1-a2*b2)/a1
-    
+
   end subroutine startcond
 
   !**********************************************************************
@@ -683,7 +683,7 @@ contains
 
     pf=(3./2.*pi**2*rho)**(1./3.)
     welkeexpect=3.*pf/lambda - 1./2.*lambda/pf + 1./8.*(12.*lambda/pf+&
-         &lambda**3/pf**3)*log((lambda**2+4*pf**2)/lambda**2)-4*atan(2*pf/lambda) 
+         &lambda**3/pf**3)*log((lambda**2+4*pf**2)/lambda**2)-4*atan(2*pf/lambda)
 
   end function welkeexpect
 
@@ -737,7 +737,7 @@ contains
     b3=2.4
     eta=12.8
     rho0=0.15
-   
+
     E0=-15.84/(hbarc*1000)
     ck=0.3*(1/M)*(3./2.*pi**2)**(2./3.)
     a=eta/(8*M)
@@ -750,10 +750,10 @@ contains
     a4=4*rho0**(2./3.)
     x1=E0-ck*rho0**(2./3.)-b3*rho0**(5./3.)-alpha*welkeexpect(rho0,lambda)
     x2=-2*ck-5*b3*rho0-3*alpha*rho0**(1./3.)*welkediff(rho0,lambda)
-    
+
     b2=(x2-a3*x1/a1)/(a4-a2*a3/a1)
     b1=(x1-a2*b2)/a1
-    
+
   end subroutine startcondWelke
 
 
@@ -765,7 +765,7 @@ contains
     real::e0fstart,deltae0f,deltatemp,maxdelta,mindelta,totalmin,maxe0f,&
          & mine0f,e0ftemp,Masstemp,ytemp,energytemp!,ylast,minA,maxA
     integer::e0fsteps,i,j
-    
+
     e0fstart=0.645
     deltae0f=0.27
     e0fsteps=50
@@ -793,7 +793,7 @@ contains
              mine0f=e0ftemp
              !minA=Masstemp
           end if
-          
+
           if (abs(deltatemp)>totalmin) then
              totalmin=abs(deltatemp)
              e0f=e0ftemp
@@ -802,13 +802,13 @@ contains
              energy=energytemp
           end if
        end do
-       
+
        e0fstart=min(maxe0f,mine0f)
        deltae0f=abs(maxe0f-mine0f)
     end do
-    
+
   end subroutine AapproxWelke
-  
+
 
   subroutine rhostepsearchWelke(b3,ck,a,b1,b2,E0,lambda,alpha,rhostart,rhopstart,deltarho,steps,&
        & depth,e0f,deltat,maxr,Mass,ystart,energy)
@@ -817,20 +817,20 @@ contains
     integer, intent(in)::steps,depth
     integer::i
     real::Massmin,ystartmin,rhostart1,deltarho1
-    
+
     rhostart1=rhostart
     deltarho1=deltarho
-    
+
     do i=1,depth,1
-       call shootinputWelke(b3,ck,a,b1,b2,E0,lambda,alpha,rhostart1,rhopstart,deltarho1,steps,e0f, & 
+       call shootinputWelke(b3,ck,a,b1,b2,E0,lambda,alpha,rhostart1,rhopstart,deltarho1,steps,e0f, &
             & deltat,maxr,Massmin,ystartmin,energy)
        rhostart1=ystartmin
        deltarho1=deltarho1/steps*1.2
     end do
-    
+
     Mass=Massmin
     ystart=ystartmin
-    
+
   end subroutine rhostepsearchWelke
 
 
@@ -846,7 +846,7 @@ contains
     ystartmin=0
     ymin=100
     tstart=deltat
-    
+
     do i=0,step,1
        ystart=rhoat0+deltarho*i
        Massout=0
@@ -867,13 +867,13 @@ contains
     real, intent(in)::y0,yp0,tstart,tend,delta,ck,a,e0f,b1,b2,b3,lambda,alpha
     real, intent(out)::Mass,ylast,energy
     real::tnow,ynow,ypnow,tnext,ynext,ypnext
-    
+
     tnow=tstart
-    ynow=y0  
+    ynow=y0
     ypnow=yp0
     Mass=0.
     energy=0
-    
+
     do while ((tnow<(tend-delta)).and.(ypnow<=0).and.(ynow>=0))
        tnext=tnow+delta
        ypnext=ypnow+diffeqWelke(ynow,ypnow,tnow,ck,a,e0f,b1,b2,b3,lambda,alpha)*delta
@@ -896,10 +896,10 @@ contains
   real function diffeqWelke(rho,rhop,r,ck,a,e0f,b1,b2,b3,lambda,alpha)
 
     real, intent(in)::rho,rhop,r,ck,a,e0f,b1,b2,b3,lambda,alpha
-    
+
     diffeqWelke=-2./r*rhop+5./6.*ck/a*rho**(2./3.)-e0f/(2*a)+b1/a*rho+7./6.*b2/a*rho**(4./3.)&
          & +8./6.*b3/a*rho**(5./3.)+alpha*welkefordiffeq(rho,lambda)/(2.*a)
-    
+
   end function diffeqWelke
 
 
@@ -916,9 +916,9 @@ contains
     type(tnucleus),pointer::nucleus
     real::tnow,ynow,ypnow,tnext,ynext,ypnext
     integer::i
-    
+
     tnow=tstart
-    ynow=y0  
+    ynow=y0
     ypnow=yp0
     nucleus%densTab(0,1)=factor*ynow
     nucleus%densTab(0,2)=(1.-factor)*ynow

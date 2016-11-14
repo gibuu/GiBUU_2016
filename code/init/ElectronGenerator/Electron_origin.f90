@@ -4,7 +4,7 @@
 ! module Electron_origin
 !
 ! PURPOSE
-! Stores & returns the type of event for electron nucleon scattering 
+! Stores & returns the type of event for electron nucleon scattering
 ! according to %firstEvent
 !
 ! The numbering scheme is:
@@ -27,7 +27,7 @@
 ! * 0410 : gamma N -> pi0 eta ...! == explicit channels
 ! * ... (free entries)
 ! * 0510 : gamma N N -> N N      ! == 2p2h
-! * 0520 : gamma N N -> N Delta 
+! * 0520 : gamma N N -> N Delta
 ! * ... (free entries)
 ! * 0810 : gamma N -> pi N       ! == Background
 ! * 0820 : gamma N -> pi pi N
@@ -62,8 +62,8 @@ module Electron_origin
   integer, parameter :: origin_singlePi    =  810 ! gamma N -> pi N
   integer, parameter :: origin_doublePi    =  820 ! gamma N -> pi pi N
   integer, parameter :: origin_DIS         = 2004 ! DIS
-  integer, parameter :: origin_vecmes      =  100 ! gamma N -> V N 
-  integer, parameter :: origin_vecmes_rho  =  101 ! 
+  integer, parameter :: origin_vecmes      =  100 ! gamma N -> V N
+  integer, parameter :: origin_vecmes_rho  =  101 !
   integer, parameter :: origin_vecmes_omega=  102 !
   integer, parameter :: origin_vecmes_phi  =  103 !
   integer, parameter :: origin_vecmes_Delta=  200 ! gamma N -> V Delta
@@ -101,17 +101,17 @@ contains
   !
   ! PURPOSE
   ! Stores & returns the type of event according to %firstEvent
-  ! 
+  !
   ! INPUTS
   ! * integer :: index
   ! * integer,optional :: info
   ! * integer :: switch
-  ! 
+  !
   ! USAGE
   ! If switch= ... :
   ! * 0 -- initialize the subroutine
-  ! * 1 -- store the information ("info") of the type of event for  firstEvent=index 
-  ! * 2 -- returne the information ("info") of the type of event for  firstEvent=index 
+  ! * 1 -- store the information ("info") of the type of event for  firstEvent=index
+  ! * 2 -- returne the information ("info") of the type of event for  firstEvent=index
   !*************************************************************************
   subroutine le_whichOrigin(Switch,index,info)
 
@@ -174,7 +174,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a resonance event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************
@@ -198,7 +198,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a pi^0 eta production event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************
@@ -220,7 +220,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a 2pi production event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************
@@ -242,7 +242,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a omega production event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************
@@ -262,7 +262,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a phi production event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************
@@ -284,7 +284,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a DIS event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************
@@ -305,7 +305,7 @@ contains
   !
   ! PURPOSE
   ! Returns .true. if the event with %firstEvent=firstEvent was a rho production event, else .false. .
-  ! 
+  !
   ! INPUTS
   ! integer, intent(in) :: firstEvent
   !*************************************************************************

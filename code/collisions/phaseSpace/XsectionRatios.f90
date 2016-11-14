@@ -3,9 +3,9 @@
 ! NAME
 ! module XsectionRatios
 ! NOTES
-! Computes and stores the ratios of the in-medium 
+! Computes and stores the ratios of the in-medium
 ! and vacuum BB -> BB + mesons cross sections
-! (see M. Wagner et al., PRC 71, 034910 (2005). 
+! (see M. Wagner et al., PRC 71, 034910 (2005).
 !*******************************************************************************
 module XsectionRatios
 
@@ -28,7 +28,7 @@ module XsectionRatios
   real, save, allocatable, dimension(:) :: rat_abs_max  ! array of absolute maximum cross section ratios
   !(for fixed mass shift only)
 
-  real, save, allocatable, dimension(:,:) :: SigmaTotal ! total in-medium pp cross section (mbarn) 
+  real, save, allocatable, dimension(:,:) :: SigmaTotal ! total in-medium pp cross section (mbarn)
 
 
   !**********************************************************************
@@ -100,7 +100,7 @@ contains
     type(particle), dimension(1:2), intent(in) :: pair         ! incoming particles
     real, intent(in) :: sigma                                  ! not screened cross section
 
-    real, parameter :: y = 1.2    ! coefficient at rho**(-2/3) in the maximal cross section 
+    real, parameter :: y = 1.2    ! coefficient at rho**(-2/3) in the maximal cross section
     real, dimension(1:3)  :: position, beta
     real, dimension(0:3)  :: j_baryon, momentumStar
     type(dichte) :: density
@@ -131,7 +131,7 @@ contains
 
     if( j_baryon(0) > 1.e-03 ) then
        sigma_0 = 10. * y / j_baryon(0)**0.666667
-       getSigmaScreened = sigma_0 * tanh( sigma / sigma_0 ) 
+       getSigmaScreened = sigma_0 * tanh( sigma / sigma_0 )
     else
        getSigmaScreened = sigma
     end if
@@ -158,7 +158,7 @@ contains
 
     type(particle), dimension(1:2), intent(in) :: pair         ! incoming particles
 
-    real :: sqrtsStar, threshold, Q, shift 
+    real :: sqrtsStar, threshold, Q, shift
     real, dimension(0:3) :: momentumStar
     real, dimension(1:2) :: mstar
     integer :: i, iQ, ishift
@@ -168,19 +168,19 @@ contains
        iniFlag = .false.
     end if
 
-    if(isMeson(pair(1)%ID) .or. isMeson(pair(2)%ID)) then  
+    if(isMeson(pair(1)%ID) .or. isMeson(pair(2)%ID)) then
        ! Use asympotic high energy value of the pi^+ p total cross section:
        getSigmaTotal = 20.
        return
     end if
 
-    if( .not.flagInMedium ) then  
+    if( .not.flagInMedium ) then
        ! Use asympotic high energy value of the pp total cross section:
        getSigmaTotal = 40.
        return
     end if
 
-    ! Determine the sqrtsStar bin number: 
+    ! Determine the sqrtsStar bin number:
 
     momentumStar(0:3) = pair(1)%momentum(0:3) + pair(2)%momentum(0:3)
     sqrtsStar = momentumStar(0)**2 - Dot_Product(momentumStar(1:3),momentumStar(1:3))
@@ -195,7 +195,7 @@ contains
     iQ = nint(Q/SrtsStarBin)
     iQ = max(1,min(iQ,nSrtsStar))
 
-    ! Determine the mass shift bin number: 
+    ! Determine the mass shift bin number:
 
     shift = pair(1)%mass - mstar(1)
     ishift = nint(shift/MshiftBin)
@@ -236,7 +236,7 @@ contains
 
     type(particle), dimension(1:2), intent(in) :: pair         ! incoming particles
 
-    real :: sqrtsStar, threshold, Q, shift 
+    real :: sqrtsStar, threshold, Q, shift
     real, dimension(0:3) :: momentumStar
     real, dimension(1:2) :: mstar
     integer :: i, iQ, ishift
@@ -283,7 +283,7 @@ contains
        return
     end if
 
-    ! Determine the sqrtsStar bin number: 
+    ! Determine the sqrtsStar bin number:
 
     momentumStar(0:3) = pair(1)%momentum(0:3) + pair(2)%momentum(0:3)
     sqrtsStar = momentumStar(0)**2 - Dot_Product(momentumStar(1:3),momentumStar(1:3))
@@ -298,7 +298,7 @@ contains
     iQ = nint(Q/SrtsStarBin)
     iQ = max(1,min(iQ,nSrtsStar))
 
-    ! Determine the mass shift bin number: 
+    ! Determine the mass shift bin number:
 
     if( .not. eventtype==elementary ) then
 
@@ -325,7 +325,7 @@ contains
     !getRatio = rat_max(ishift,iQ)
 
 !    getRatio = rat_abs_max(ishift)
-   getRatio=1. 
+   getRatio=1.
 
   end function getRatio
 
@@ -358,11 +358,11 @@ contains
     real, optional :: sqrts_ini      ! initial sqrts of colliding pair
     ! (before modifications by a 3-body collision)
 
-    real :: sqrtsStar, threshold, Q, Q_ini, shift 
+    real :: sqrtsStar, threshold, Q, Q_ini, shift
     real :: ratio_ini, ratio1, factor
     real, dimension(0:3) :: momentumStar
     real, dimension(1:2) :: mstar
-    
+
     integer :: nFinal, nBaryon, nMeson, nPion, nStrangeMeson, k, iQ, iQ_ini, ishift, i
 
     integer, parameter :: nBaryonFinal=2, nMesonFinal=20
@@ -370,7 +370,7 @@ contains
     integer, dimension(1:nBaryonFinal) :: idBaryon    ! Id's of outgoing baryons
     integer, dimension(1:nMesonFinal) :: idMeson     ! Id's of outgoing mesons
 
-    real, dimension(1:nBaryonFinal+nMesonFinal) :: mstar_final    
+    real, dimension(1:nBaryonFinal+nMesonFinal) :: mstar_final
 
     if( iniFlag ) then
        call init
@@ -443,7 +443,7 @@ contains
           nBaryon = nBaryon + 1
           if( nBaryon <= nBaryonFinal ) then
              idBaryon(nBaryon) = finalState(i)%Id
-          else 
+          else
              !  No medium modifications implemented for more than 2 outgoing baryons
              !  (this also must be baryon-antibaryon pair production):
              accept_event = .true.
@@ -455,7 +455,7 @@ contains
           nMeson = nMeson + 1
           if( nMeson <= nMesonFinal ) then
              idMeson(nMeson) = finalState(i)%Id
-          else 
+          else
              !  No medium modifications implemented:
              accept_event = .true.
              return
@@ -500,7 +500,7 @@ contains
        return
     end if
 
-    ! Choose outgoing channel: 
+    ! Choose outgoing channel:
 
     if( hadron(idBaryon(1))%strangeness == 0 .and. &
          &hadron(idBaryon(2))%strangeness == 0 ) then
@@ -537,7 +537,7 @@ contains
           else if( nPion == 1 ) then
              k = 6    ! heavy meson + pi production
           else if( nStrangeMeson == 0 ) then
-             k = 9    ! 2 heavy nonstrange meson production 
+             k = 9    ! 2 heavy nonstrange meson production
           else if( max(idMeson(1),idMeson(2)).le.kaonBar ) then
              k = 25   ! K Kbar production
           else
@@ -553,7 +553,7 @@ contains
           else if( nPion == 1 ) then
              if( nStrangeMeson == 0 ) then
                 k = 10   ! pi + 2 heavy nonstrange meson production
-             else 
+             else
                 k = 26   ! pi + 2 strange meson production
              end if
           else
@@ -572,7 +572,7 @@ contains
              k = 8    ! 3 pi + heavy nonstrange meson production
           else if( nPion == 2 ) then
              if( nStrangeMeson == 0 ) then
-                k = 11 ! 2 pi + 2 heavy nonstrange meson production     
+                k = 11 ! 2 pi + 2 heavy nonstrange meson production
              else
                 k = 27 ! 2 pi + 2 strange meson production
              end if
@@ -600,7 +600,7 @@ contains
 
        end select
 
-    else 
+    else
 
        ! outgoing nonstrange baryon + hyperon:
 
@@ -613,7 +613,7 @@ contains
              write(*,*)' In accept_event: wrong reaction B B -> B Y + nonstr meson', &
                   &pair(:)%Id, finalState(1:nFinal)%Id
              stop
-          else           
+          else
              if( idMeson(1) == kaon ) then
                 k = 15     ! kaon production
              else
@@ -647,9 +647,9 @@ contains
        else if( nMeson == 4 ) then
           if( nPion == 3 ) then
              k = 18     ! strange meson + 3 pi production
-          else if( nPion == 2 ) then  
+          else if( nPion == 2 ) then
              k = 21     ! strange meson + heavy nonstrange meson + 2 pi production
-          else if( nPion == 1 ) then 
+          else if( nPion == 1 ) then
              if( nStrangeMeson == 1 ) then
                 k = 23   ! strange meson + 2 heavy nonstrange mesons + pi production
              else if( nStrangeMeson == 3 ) then
@@ -695,7 +695,7 @@ contains
 
     do i = 1,2
        mstar(i) = pair(i)%momentum(0)**2 - dot_product( pair(i)%momentum(1:3),&
-            & pair(i)%momentum(1:3) ) 
+            & pair(i)%momentum(1:3) )
        mstar(i) = sqrt( max(0.,mstar(i)) )
     end do
     threshold = mstar(1) + mstar(2)
@@ -712,7 +712,7 @@ contains
     iQ = nint(Q/SrtsStarBin)
     iQ = max(1,min(iQ,nSrtsStar))
 
-    ! Determine the mass shift bin number: 
+    ! Determine the mass shift bin number:
 
     if( .not. eventtype==elementary ) then
 
@@ -733,14 +733,14 @@ contains
     end if
 
 
-    ! Accept the event with a probability equal to the factor 
+    ! Accept the event with a probability equal to the factor
     ! sigma_med / sigma_vac / rat_max :
 
     if(pair(1)%antiparticle.neqv.pair(2)%antiparticle) then
        ratio_ini = 1.
     else
-       !ratio_ini = rat_max(ishift,iQ_ini)      
-       ! ratio_ini = rat_abs_max(ishift)      
+       !ratio_ini = rat_max(ishift,iQ_ini)
+       ! ratio_ini = rat_abs_max(ishift)
        ratio_ini = 1.
     end if
 
@@ -753,7 +753,7 @@ contains
 
 !    ratio1 = rat(ishift,iQ,k)
 
-    do i = 1,nFinal  
+    do i = 1,nFinal
        mstar_final(i)=finalState(i)%momentum(0)**2 &
                       & - dot_product( finalState(i)%momentum(1:3),&
                       &                finalState(i)%momentum(1:3) )
@@ -767,7 +767,7 @@ contains
         accept_event = .true.
         return
     end if
-        
+
     factor = ratio1 / ratio_ini
 
     if( factor > 1 ) then
@@ -810,7 +810,7 @@ contains
     ! NAMELIST /XsectionRatios_input/
     ! PURPOSE
     ! Includes the switches:
-    ! * flagScreen 
+    ! * flagScreen
     ! * flagInMedium
     ! * flagTabulate
     ! * shift0
@@ -847,7 +847,7 @@ contains
 
           write(*,*)' Cross section ratio tabulation starts ...'
           call TabulateRatio
-          write(*,*)' Cross section ratio tabulation is finished' 
+          write(*,*)' Cross section ratio tabulation is finished'
           open(1,file='XsectionRatios.dat',status='unknown')
           do i = 1,nMshift
              shift = MshiftBin * float(i)
@@ -863,7 +863,7 @@ contains
 
           write(*,*)' Cross section ratio read-in starts ...'
           ios=0
-          open(1,file=trim(path_to_input)//'/XsectionRatios.dat',status='old',iostat=ios)          
+          open(1,file=trim(path_to_input)//'/XsectionRatios.dat',status='old',iostat=ios)
           do i = 1,nMshift
              read(1,*) dummy1, dummy2, shift
              do j = 1,nSrtsStar
@@ -919,7 +919,7 @@ contains
        ! Read-in the total in-medium pp cross section:
        write(*,*)' Total in-medium pp cross section read-in starts ...'
        ios=0
-       open(1,file=trim(path_to_input)//'/XsectionTotal.dat',status='old',iostat=ios)          
+       open(1,file=trim(path_to_input)//'/XsectionTotal.dat',status='old',iostat=ios)
        do i = 0,nMshift
           read(1,*) dummy1, dummy2, shift
           do j = 1,nSrtsStar
@@ -927,7 +927,7 @@ contains
           end do
        end do
        close(1)
-       write(*,*)' Total in-medium pp cross section read-in is successfully finished'  
+       write(*,*)' Total in-medium pp cross section read-in is successfully finished'
 
        !         open(1,file='XsectionTotal_chk.dat',status='unknown')
        !         do i = 0,nMshift
@@ -976,7 +976,7 @@ contains
 
     Loop_over_massShift : do i = 1,nMshift
 
-       shift = MshiftBin * float(i) 
+       shift = MshiftBin * float(i)
 
        Loop_over_SrtsStar : do j = 1,nSrtsStar
 
@@ -991,7 +991,7 @@ contains
                 mStar(1:4) = mass(1:4) - shift
                 mass(5) = mPi
                 mStar(5) = mass(5)
-                rat(i,j,k) = Ratio(SrtsStar,mStar(1:5),mass(1:5))             
+                rat(i,j,k) = Ratio(SrtsStar,mStar(1:5),mass(1:5))
              else if( k == 2 ) then !***** N_1 N_2 -> N_3 N_4 pi_5 pi_6
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
@@ -1015,7 +1015,7 @@ contains
                 mStar(1:4) = mass(1:4) - shift
                 mass(5) = hadron(rho)%mass
                 mStar(5) = mass(5)
-                rat(i,j,k) = Ratio(SrtsStar,mStar(1:5),mass(1:5)) 
+                rat(i,j,k) = Ratio(SrtsStar,mStar(1:5),mass(1:5))
              else if( k == 6 ) then !***** N_1 N_2 -> N_3 N_4 rho_5 pi_6
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
@@ -1082,7 +1082,7 @@ contains
                 mStar(1:4) = mass(1:4) - shift
                 mass(5) = mK
                 mStar(5) = mass(5)
-                rat(i,j,k) = Ratio(SrtsStar,mStar(1:5),mass(1:5))    
+                rat(i,j,k) = Ratio(SrtsStar,mStar(1:5),mass(1:5))
              else if( k == 16 ) then !***** N_1 N_2 -> N_3 Y_4 K_5 pi_6
                 mass(1:3) = mN
                 mass(4) = hadron(Lambda)%mass
@@ -1161,43 +1161,43 @@ contains
              else if( k == 25 ) then !***** N_1 N_2 -> N_3 N_4 K_5 Kbar_6
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
-                mass(5:6) = mK 
+                mass(5:6) = mK
                 mStar(5:6) = mass(5:6)
                 rat(i,j,k) = Ratio(SrtsStar,mStar(1:6),mass(1:6))
              else if( k == 26 ) then !***** N_1 N_2 -> N_3 N_4 K_5 Kbar_6 pi_7
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
-                mass(5:6) = mK 
-                mass(7) = mPi 
+                mass(5:6) = mK
+                mass(7) = mPi
                 mStar(5:7) = mass(5:7)
                 rat(i,j,k) = Ratio(SrtsStar,mStar(1:7),mass(1:7))
              else if( k == 27 ) then !***** N_1 N_2 -> N_3 N_4 K_5 Kbar_6 pi_7 pi_8
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
-                mass(5:6) = mK 
-                mass(7:8) = mPi 
+                mass(5:6) = mK
+                mass(7:8) = mPi
                 mStar(5:8) = mass(5:8)
                 rat(i,j,k) = Ratio(SrtsStar,mStar(1:8),mass(1:8))
              else if( k == 28 ) then !***** N_1 N_2 -> N_3 N_4 K_5 Kbar_6 rho_7
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
-                mass(5:6) = mK 
-                mass(7) = hadron(rho)%mass 
+                mass(5:6) = mK
+                mass(7) = hadron(rho)%mass
                 mStar(5:7) = mass(5:7)
                 rat(i,j,k) = Ratio(SrtsStar,mStar(1:7),mass(1:7))
              else if( k == 29 ) then !***** N_1 N_2 -> N_3 N_4 K_5 Kbar_6 rho_7 pi_8
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
-                mass(5:6) = mK 
-                mass(7) = hadron(rho)%mass 
-                mass(8) = mPi 
+                mass(5:6) = mK
+                mass(7) = hadron(rho)%mass
+                mass(8) = mPi
                 mStar(5:8) = mass(5:8)
                 rat(i,j,k) = Ratio(SrtsStar,mStar(1:8),mass(1:8))
              else if( k == 30 ) then !***** N_1 N_2 -> N_3 N_4 K_5 Kbar_6 rho_7 rho_8
                 mass(1:4) = mN
                 mStar(1:4) = mass(1:4) - shift
-                mass(5:6) = mK 
-                mass(7:8) = hadron(rho)%mass  
+                mass(5:6) = mK
+                mass(7:8) = hadron(rho)%mass
                 mStar(5:8) = mass(5:8)
                 rat(i,j,k) = Ratio(SrtsStar,mStar(1:8),mass(1:8))
              else if( k == 31 ) then !***** N_1 N_2 -> N_3 Delta_4
@@ -1247,9 +1247,9 @@ contains
   ! NAME
   ! real function Ratio(srtsStar,mStar,mass)
   ! PURPOSE
-  ! Compute the ratio of the in-medium and vacuum 
+  ! Compute the ratio of the in-medium and vacuum
   ! B_1 + B_2 -> B_3 + B_4 + M_5 + M_6 + M_7 + M_8  cross sections
-  ! INPUT: 
+  ! INPUT:
   ! * real, intent(in) :: srtsStar                  ! c.m. energy (GeV),
   ! * real, intent(in), dimension(:) :: mStar, mass ! Dirac and vacuum masses of all particles (GeV)
   ! OUTPUT:
@@ -1325,8 +1325,8 @@ contains
   ! real function Ratio_BaB(pair,finalState)
   ! PURPOSE
   ! Compute the ratio of the in-medium and vacuum cross sections
-  ! baryon + antibaryon -> mesons  
-  ! INPUT: 
+  ! baryon + antibaryon -> mesons
+  ! INPUT:
   ! * type(particle), dimension(1:2), intent(in) :: pair         ! incoming particles
   ! * type(particle), dimension(:), intent(in) :: finalState     ! outgoing particles
   ! OUTPUT:
@@ -1380,18 +1380,18 @@ contains
        srtS_vacuum=sqrtS_free(pair)
        srtS=srtS_star
     else
-       srtS_vacuum  = srtS_star - mstar1 - mstar2 + pair(1)%mass + pair(2)%mass 
+       srtS_vacuum  = srtS_star - mstar1 - mstar2 + pair(1)%mass + pair(2)%mass
        call Particle4Momentum_RMF(pair(1),momentum1)
        call Particle4Momentum_RMF(pair(2),momentum2)
        ! Compute srtS with canonical momenta:
        momentum_tot(0:3) = momentum1(0:3) + momentum2(0:3)
        srtS = momentum_tot(0)**2 - dot_product(momentum_tot(1:3),momentum_tot(1:3))
-       srtS = sqrt(max(0.,srtS))      
+       srtS = sqrt(max(0.,srtS))
     end if
 
     if (debugFlag) then
-       write(*,*)' In Ratio_BaB: incoming particles: ', pair%Id,pair%antiparticle,pair%charge 
-       write(*,*)' In Ratio_BaB: srtS_star, srtS, srtS_vacuum: ', srtS_star, srtS, srtS_vacuum 
+       write(*,*)' In Ratio_BaB: incoming particles: ', pair%Id,pair%antiparticle,pair%charge
+       write(*,*)' In Ratio_BaB: srtS_star, srtS, srtS_vacuum: ', srtS_star, srtS, srtS_vacuum
        write(*,*)' In Ratio_BaB: outgoing particles: ', finalState(1:n)%Id
        write(*,*)' In Ratio_BaB: sum of outgoing masses: ', sum(finalState(1:n)%mass)
     end if
@@ -1417,7 +1417,7 @@ contains
     if (debugFlag) then
        write(*,*)' In Ratio_BaB: mstar1, mstar2: ', mstar1, mstar2
        write(*,*)' In Ratio_BaB: Ifac_vacuum, Ifac: ',Ifac_vacuum, Ifac
-       write(*,*)' In Ratio_BaB: phaseSpace_vacuum, phaseSpace: ', phaseSpace_vacuum, phaseSpace  
+       write(*,*)' In Ratio_BaB: phaseSpace_vacuum, phaseSpace: ', phaseSpace_vacuum, phaseSpace
        write(*,*)' In Ratio_BaB: Ratio_BaB', Ratio_BaB
     end if
 

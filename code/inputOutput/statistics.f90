@@ -1,15 +1,17 @@
+!*******************************************************************************
+!****m* /statistics
+! NAME
+! module statistics
+! PURPOSE
+! This module is used to store statistical information about the particles.
+! Calling "saveInfo" saves the information of
+! the particle with %number and ensemble being the ordering scheme.
+! Calling "getInfo(ensemble,number,...)" returns the information.
+! This info is not included in the particleDefinition, since it would blow up
+! the memory usage. If this module is used, and only then,
+! memory is allocated for this information.
+!*******************************************************************************
 module statistics
-  !****s* /statistics
-  ! NAME
-  ! module statistics
-  ! PURPOSE
-  ! This module is used to store statistical information about the particles. Calling "saveInfo" saves the information of 
-  ! the particle with %number and ensemble being the ordering scheme. Calling "getInfo(ensemble,number,...)" returns the 
-  ! information.
-  ! This info is not included in the particleDefinition, since it would blow up the memory usage. If this module is used, and only then,
-  ! memory is allocated for this information.
-  !***
-
   PRIVATE
 
   type info
@@ -34,13 +36,13 @@ contains
   !*******************************************************************************************************
   !****s* statistics/splashInfo
   ! NAME
-  ! subroutine splashInfo    
+  ! subroutine splashInfo
   ! INPUTS
   ! NONE
   ! PURPOSE
   ! This subroutine sets the module back to normal and deallocates the information vector, if allocated.
   !*******************************************************************************************************
-  subroutine splashInfo    
+  subroutine splashInfo
     implicit none
     initSave=.true.
     initFlag=.true.
@@ -82,7 +84,7 @@ contains
     If(.not.Allocated(infoVec)) call enlargeInfoVec
 
     ! Write input information to infoVec
-    do 
+    do
        if(ubound(infoVec,dim=2).ge.index(ensemble)) then
           infoVec(ensemble,index(ensemble))%number=number
           infoVec(ensemble,index(ensemble))%productionPlace=place
@@ -105,7 +107,7 @@ contains
   ! This subroutine returns given information out of a vector. The information is stored by number and ensemble of the particle.
   ! INPUTS
   ! integer, intent(in) :: number ! number of particle
-  ! integer, intent(in) :: ensemble ! ensemble of particle     
+  ! integer, intent(in) :: ensemble ! ensemble of particle
   ! integer, dimension(1:3), intent(out) :: producingParticles ! particles which produced the particle
   ! real, dimension(1:3) , intent(in) :: prodPlace ! place where particle was produced
   ! AUTHOR
@@ -181,7 +183,7 @@ contains
        Allocate(infoVec(1:numEnsembles,1:dim_InfoVec))
        initFlag=.false.
        write(*,*) '############################################################################################################'
-       write(*,'(A,F9.3,A)') 'WARNING in  enlargeInfoVec: Enlarging infoVec. New size=', & 
+       write(*,'(A,F9.3,A)') 'WARNING in  enlargeInfoVec: Enlarging infoVec. New size=', &
             & numensembles*dim_InfoVec*(16*3+4*4)/(1024.**2),'MB'
        write(*,*) '############################################################################################################'
        if(debug) write(*,*) 'enlargeInfoVec: Initialising'
@@ -215,7 +217,7 @@ contains
     dim_InfoVec=dim_InfoVec*3
     Allocate(infoVec(1:numEnsembles,1:dim_InfoVec))
     write(*,*) '############################################################################################################'
-    write(*,'(A,F9.3,A)') 'WARNING in  enlargeInfoVec: Enlarging infoVec. New size=', & 
+    write(*,'(A,F9.3,A)') 'WARNING in  enlargeInfoVec: Enlarging infoVec. New size=', &
          & numensembles*dim_InfoVec*(16*3+4*4)/(1024.**2),'MB'
     write(*,*) 'dim_infovec=', dim_infoVec
     write(*,*) '############################################################################################################'

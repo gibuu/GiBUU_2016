@@ -4,15 +4,15 @@
 ! module determineSource
 !
 ! PURPOSE
-! Administrates the determination of the source(s) which will 
+! Administrates the determination of the source(s) which will
 ! undergo multifragmentation.
 ! NOTES
-! * 3 Methods of source-selection added through the variable "SelectionMethod 
-!   controlled from NAMELIST (see sourceAnalysis_main.f90). 
-! * This step has been neccessary to performe the analysis in the same way 
+! * 3 Methods of source-selection added through the variable "SelectionMethod
+!   controlled from NAMELIST (see sourceAnalysis_main.f90).
+! * This step has been neccessary to performe the analysis in the same way
 !   as in the experiment (ALADIN/INDRA experiment currently used).
-! * This module works in both, relativistic RMF- and non-relativistic Skyrme-mode. 
-! 
+! * This module works in both, relativistic RMF- and non-relativistic Skyrme-mode.
+!
 !***************************************************************************
 module determineSource
 
@@ -26,7 +26,7 @@ module determineSource
   !
   type(quelle), allocatable, dimension(:,:), SAVE :: TheSource
   ! PURPOSE
-  ! The variable "type(quelle) TheSource", in which the major properties 
+  ! The variable "type(quelle) TheSource", in which the major properties
   ! are stored, e.g. mass,charge,energy,flow,position,velocity.
   !*************************************************************************
 
@@ -63,7 +63,7 @@ module determineSource
   !
   real,allocatable,dimension(:,:) ,SAVE :: TeilchenPosX
   ! PURPOSE
-  ! Field to store x-positions of particles at time=0fm/c. Important only 
+  ! Field to store x-positions of particles at time=0fm/c. Important only
   ! if SelectionMethod==2 (geometrical selection).
   !*************************************************************************
 
@@ -72,20 +72,20 @@ module determineSource
   PUBLIC :: Get_FragmentingSource,deallocate_source,Get_InitialPosX
   PUBLIC :: TheSource,MaxNumSources
 
-contains 
+contains
 
   !***********************************************************************
   !****s* determineSource/Get_FragmentingSource
   ! NAME
-  ! subroutine Get_FragmentingSource(numEnsemples,numParticles,& 
-  !       &  SelectionMethod,betaChoice,hyperSource,& 
-  !       &  particleVector,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, & 
+  ! subroutine Get_FragmentingSource(numEnsemples,numParticles,&
+  !       &  SelectionMethod,betaChoice,hyperSource,&
+  !       &  particleVector,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, &
   !       &  Numsources,sourceType,&
   !       &  targetNuc,projectileNuc)
   ! PURPOSE
   ! * hadron-nucleus collisions: only one source (compound nucleus).
   ! * Heavy-Ion collisions:  three possibilities (fireball,spectators).
-  !   Separation between different sources based on number of 
+  !   Separation between different sources based on number of
   !   successfull collisions and on rapidity.
   ! INPUTS
   ! *   type(particle), dimension(:,:), intent(in) :: particleVector
@@ -103,9 +103,9 @@ contains
   ! *   integer, dimension(1:numEnsemples,1:numParticles), intent(out) :: sourceType
   !
   !***********************************************************************
-  subroutine Get_FragmentingSource(numEnsemples,numParticles,& 
-       &  SelectionMethod,betaChoice,hyperSource,& 
-       &  particleVector,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, & 
+  subroutine Get_FragmentingSource(numEnsemples,numParticles,&
+       &  SelectionMethod,betaChoice,hyperSource,&
+       &  particleVector,Spectator_cutoff,rho_cutoff,A_cutoff,stossParameter, &
        &  Numsources,sourceType,&
        &  targetNuc,projectileNuc)
     !***********************************************************************
@@ -155,7 +155,7 @@ contains
        startFlag = .false.
     endif
 
-    
+
     !---------------------------------------------------------------------
     if(SelectionMethod <= 2) then
 
@@ -192,7 +192,7 @@ contains
           end do Loop_Particles1
        end do Loop_Ensemples1
 
-       !in hadron-nucleus collisions: 
+       !in hadron-nucleus collisions:
        if (SelectionMethod==0) then !the source=one residual nucleus
           NumSources(:) = 1
           MaxNumSources = 1
@@ -257,7 +257,7 @@ contains
        MaxNumSources = get_MaxNumber(NumEnsemples,NumSources)
 
     else
-        
+
        write(*,*)' wrong fragment-source selection method: ', SelectionMethod
        stop
 
@@ -315,7 +315,7 @@ contains
             if ( (float(stossZahl) < Spectator_cutoff) .and. &
                  &  (ypart > 0.) ) then
                sourceType(i,j) = 2 !projectile-source
-            else if ( (float(stossZahl) < Spectator_cutoff) .and. & 
+            else if ( (float(stossZahl) < Spectator_cutoff) .and. &
                  &  (ypart < 0.) ) then
                sourceType(i,j) = 1 !target-source
             else if( float(stossZahl) > Spectator_cutoff ) then
@@ -333,7 +333,7 @@ contains
             else
                sourceType(i,j) = 3 !fireball-source
             endif
-         else 
+         else
             write(*,*) 'Module determineSource,routine setParticlesToSources:'
             write(*,*) 'Invalid input for SelectionMethod:',SelectionMethod
             write(*,*) 'Termination of the program'
@@ -351,7 +351,7 @@ contains
       use potentialModule,       only : trueEnergy !non-relativistic Skyrme
       use baryonPotentialModule, only : getPotentialEQSType
       use densitymodule,         only : true4Momentum_RMF,boostToLRF
-      use coulomb,               only : emfoca  
+      use coulomb,               only : emfoca
       use RMF,                   only : getRMF_flag
 
       implicit none
@@ -394,7 +394,7 @@ contains
 
             if (isSource == 999) cycle
 
-            Pstar_tot(0:3,isSource) = Pstar_tot(0:3,isSource) + & 
+            Pstar_tot(0:3,isSource) = Pstar_tot(0:3,isSource) + &
                  &                    ParticleVector(m,l)%momentum(0:3)
 
             Ort(1:3)  = ParticleVector(m,l)%position(1:3)
@@ -418,15 +418,15 @@ contains
 
 
             if (isSource < 3) then
-               SourcePosition(:,isSource) = SourcePosition(:,isSource) + & 
+               SourcePosition(:,isSource) = SourcePosition(:,isSource) + &
                     & ParticleVector(m,l)%mass*Ort(:)
             else
                if (divideFireball_flag) then
-                  SourcePosition(1,isSource) = SourcePosition(1,isSource) + & 
+                  SourcePosition(1,isSource) = SourcePosition(1,isSource) + &
                        & sqrt( Ort(1)**2 + Ort(2)**2 + Ort(3)**2 )*ParticleVector(m,l)%mass
                   SourcePosition(2:3,isSource) = 0.0
                else
-                  SourcePosition(:,isSource) = SourcePosition(:,isSource) + & 
+                  SourcePosition(:,isSource) = SourcePosition(:,isSource) + &
                        & ParticleVector(m,l)%mass*Ort(:)
                endif
             endif
@@ -437,7 +437,7 @@ contains
                if (isSource .le. 2) then !spectators do not experience radial expansion.
                   teilchenLRF%momentum(1:3) = 0.0 !force it to 0
                   teilchenLRF%momentum(0) = ParticleVector(m,l)%mass !just to not divide below by 0
-               else 
+               else
                   teilchenLRF = ParticleVector(m,l)
                endif
             else
@@ -446,14 +446,14 @@ contains
 
             !average radial flow velocity:
             rsq     = sqrt( dot_product(Ort(1:3),Ort(1:3)) )
-            v_rad(isSource) = v_rad(isSource) + & 
-                 &   dot_product(Ort(1:3),teilchenLRF%momentum(1:3))& 
+            v_rad(isSource) = v_rad(isSource) + &
+                 &   dot_product(Ort(1:3),teilchenLRF%momentum(1:3))&
                  & / ( teilchenLRF%momentum(0)*rsq )
 
          end do Loop_Particles3
          !-------------------------------------------------------------------
          ! Non-Relativistic Skyrme mode:
-         ! The total energy of the source is calculated after boosting all 
+         ! The total energy of the source is calculated after boosting all
          ! momenta into the source's rest frame
          !-------------------------------------------------------------------
          SkyrmeMode : if ( .not. getRMF_flag() ) then
@@ -478,7 +478,7 @@ contains
                teilchenLRF%Mass     = ParticleVector(m,l)%mass
 
                if (getPotentialEQSType()==6) then !Birger's potential(no Coulomb)
-                  P_tot(0,isSource)   = P_tot(0,isSource) + & 
+                  P_tot(0,isSource)   = P_tot(0,isSource) + &
                        & getEnergyBirger(teilchenLRF)
                else !Skyrme+Coulomb
                   Ort(1:3)    = ParticleVector(m,l)%position(1:3)
@@ -518,17 +518,17 @@ contains
                endif
 
                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-               !Note:You have to performe in addition a groundState run with 
-               !     the source parameters (A,Z) to obtain the corresponding 
-               !     (with respect to the considered mean-field model and 
-               !     with the same number of ensemples) binding energy and 
+               !Note:You have to performe in addition a groundState run with
+               !     the source parameters (A,Z) to obtain the corresponding
+               !     (with respect to the considered mean-field model and
+               !     with the same number of ensemples) binding energy and
                !     then extract the excitation energy.
                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                Ex = P_tot(0,i) !Total energy of the source(s)(GeV/A)
 
 
                TheSource(m,i)%status      = .true.
-               TheSource(m,i)%Size        = SMass(i) 
+               TheSource(m,i)%Size        = SMass(i)
                TheSource(m,i)%Charge      = SCharge(i)
                TheSource(m,i)%nLambda     = SLambda(i)
                TheSource(m,i)%nSigma0     = SSigma0(i)
@@ -566,7 +566,7 @@ contains
 
             if(.not.TheSource(m,isSource)%status) SourceType(m,l)=999
 
-          end do            
+          end do
 
       end do Loop_Ensemples3
 
@@ -636,12 +636,12 @@ contains
   ! subroutine Fireball
   !
   ! PURPOSE
-  ! divides fireball source into smaller clusters using coalescence. We choose 
-  ! the coalescence parameter in such way to avoid the appereance 
+  ! divides fireball source into smaller clusters using coalescence. We choose
+  ! the coalescence parameter in such way to avoid the appereance
   ! of free nucleons.
   ! NOTES
-  ! The fireball-source/pieces should be as compact as possible, since 
-  ! the statistical multifragmentation model (SMM) simulates a statistical 
+  ! The fireball-source/pieces should be as compact as possible, since
+  ! the statistical multifragmentation model (SMM) simulates a statistical
   ! break-up (~coalescence), apart de-excitation.
   !
   !***********************************************************************
@@ -674,7 +674,7 @@ contains
     fsource(:,:) = 999
     Source_save(:,:) = SourceType(:,:)
     !---------------------------------------------------------------------
-    ! Do coalescence. The fireball source is divided in radial cells of 
+    ! Do coalescence. The fireball source is divided in radial cells of
     ! unique radial flow expansion energy.
     !---------------------------------------------------------------------
     Loop_Ensemples1 : do i=1,numEnsemples
@@ -690,7 +690,7 @@ contains
 
           Loop_Particles1 : do j=1,numParticles
 
-             if (pv(i,j)%ID == 0) cycle Loop_Particles1 
+             if (pv(i,j)%ID == 0) cycle Loop_Particles1
              if (pv(i,j)%ID < 0) cycle Loop_Particles1
 
              isSource = SourceType(i,j)
@@ -717,13 +717,13 @@ contains
     end do Loop_Ensemples1
     !---------------------------------------------------------------------
     ! update the variable "sourceType(:,:)".
-    ! Reminder: in the variable "sourceType(:,:)" we store the iformation, 
+    ! Reminder: in the variable "sourceType(:,:)" we store the iformation,
     ! in which source (target,projectile,fireball) each particle belonges.
     !---------------------------------------------------------------------
     Loop_Ensemples3 : do i=1,numEnsemples
        Loop_Particles3 : do j=1,numParticles
 
-          if (pv(i,j)%ID == 0) cycle 
+          if (pv(i,j)%ID == 0) cycle
           if (pv(i,j)%ID < 0) exit
 
           if (source_save(i,j) < 3) cycle !only fireball particles here!!!
@@ -745,7 +745,7 @@ contains
   !
   ! PURPOSE
   ! Exctract the possible max. values for number and size of sources.
-  ! Needed for allocation of the "type(quelle) TheSource" and of 
+  ! Needed for allocation of the "type(quelle) TheSource" and of
   ! the variables which characterizes the source (sourceProperties.f90 module).
   !
   !***********************************************************************
@@ -775,7 +775,7 @@ contains
   !
   ! PURPOSE
   ! Exctract the possible max. values for number and size of sources.
-  ! Needed for allocation of the "type(quelle) TheSource" and of 
+  ! Needed for allocation of the "type(quelle) TheSource" and of
   ! the variables which characterizes the source (sourceProperties.f90 module).
   !
   !***********************************************************************
@@ -813,8 +813,8 @@ contains
   ! subroutine deallocate_source
   !
   ! PURPOSE
-  ! deallocates the type(quelle) TheSource, if allocated. 
-  ! This is needed, since the size of the type(quelle) TheSource is 
+  ! deallocates the type(quelle) TheSource, if allocated.
+  ! This is needed, since the size of the type(quelle) TheSource is
   ! variable for each time step.
   !
   !***********************************************************************
@@ -853,6 +853,3 @@ contains
 
 
 end module determineSource
-
-
-

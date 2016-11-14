@@ -22,8 +22,8 @@ module leptonicID
   integer, parameter :: antiEM = -1
   integer, parameter :: antiCC = -2
   integer, parameter :: antiNC = -3
-  
-  
+
+
   !values for charge
   integer, parameter :: proton = 1
   integer, parameter :: neutron = 0

@@ -4,7 +4,7 @@
 ! module leptonKinematics
 !
 ! PURPOSE
-! This module includes routines, which deal with kinematics of 
+! This module includes routines, which deal with kinematics of
 ! lepton-nucleon scattering.
 !
 !***************************************************************************
@@ -23,7 +23,7 @@ module leptonKinematics
        & evaluate_W, &
        & evaluate_energy_lf,&
        & buildElectrons
-  
+
 ! evaluate_energy_lf(Qsquared,theta_lf,energy_li,W)
 ! evaluate_theta_lf(QSquared,energy_li,energy_lf)
 
@@ -39,18 +39,18 @@ contains
   ! function evaluate_energy_lf(Qsquared,theta_lf,energy_li,W) result(energy_lf)
   !
   ! PURPOSE
-  ! * Evaluates final energy of a lepton 
+  ! * Evaluates final energy of a lepton
   ! * Either (QSquared, energy_li, W) must be given or (theta_lf, energy_li, W)
   ! * Assumes leptons to be massless
-  ! 
+  !
   ! INPUTS
   ! * real, intent (in),optional :: theta_lf          -- lepton scattering angle in degrees
   ! * real, intent (in),optional :: energy_li         -- initial lepton energy in GeV
   ! * real, intent (in),optional :: W                 -- center of mass energy at the hadronic vertex assuming resting nucleon
   ! * real, intent (in),optional :: Qsquared          -- photon momentum transfer Q^2
-  ! 
+  !
   ! NOTES
-  ! * ATTENTION: All inputs are optional, so you MUST use identifiers in the call-statement to specify your input! 
+  ! * ATTENTION: All inputs are optional, so you MUST use identifiers in the call-statement to specify your input!
   !   E.g.:    x=evaluate_energy_lf  (Qsquared=a,energy_li=b,W=c)
   !
   !
@@ -74,7 +74,7 @@ contains
        energy_lf=(mN**2+2.*mN*energy_li-W**2)/(2.*mN+2.*energy_li*(1-cos(radian(theta_lf))))
     else
        write(*,*) 'Not enough input to evaluate_energy_lf!'
-       write(*,*)  present(Qsquared), present(theta_lf), present(energy_li), present(W) 
+       write(*,*)  present(Qsquared), present(theta_lf), present(energy_li), present(W)
        write(*,*) 'STOP!'
        call traceback()
        stop
@@ -90,7 +90,7 @@ contains
   ! PURPOSE
   ! * Evaluates epsilon for given final and initial lepton energy and given lepton scattering angle.
   ! * Assumes leptons to be massless
-  ! 
+  !
   ! INPUTS
   ! * real, intent (in) :: theta_lf          -- lepton scattering angle in degrees
   ! * real, intent (in) :: energy_li         -- initial lepton energy in GeV
@@ -104,17 +104,17 @@ contains
 
     real, intent (in) :: theta_lf,energy_li,energy_lf
     real :: QS,vec_q_squared
-    
+
     QS=evaluate_QSquared(theta_lf,energy_li,energy_lf)
 
-    ! We use vec(q)=(energy_lf * sin(theta), 0., energy_li-energy_lf*cos(theta) ) 
+    ! We use vec(q)=(energy_lf * sin(theta), 0., energy_li-energy_lf*cos(theta) )
     ! =>
     vec_q_squared=energy_lf**2+energy_li**2-2.*energy_li*energy_lf*cos(radian(theta_lf))
 
     ! \epsilon=\left(1+2\frac{\vec{q}\;^2}{Q^2} \tan ^2\left(\frac{\theta_f}{2} \right)  \right)^{-1}
     ! =>
     evaluate_epsilon=    1./(1.+2. * vec_q_squared/QS * (tan(radian(theta_lf/2.)))**2)
-    
+
   end function evaluate_epsilon
 
 
@@ -126,7 +126,7 @@ contains
   ! PURPOSE
   ! * Evaluates W for given final and initial lepton energy and given lepton scattering angle.
   ! * Assumes resting nucleon and leptons to be massless
-  ! 
+  !
   ! INPUTS
   ! * real, intent (in) :: theta_lf          -- lepton scattering angle in degrees
   ! * real, intent (in) :: energy_li         -- initial lepton energy in GeV
@@ -150,7 +150,7 @@ contains
   ! PURPOSE
   ! * Evaluates QSquared for given final and initial lepton energy and given lepton scattering angle.
   ! * Assumes leptons to be massless
-  ! 
+  !
   ! INPUTS
   ! * real, intent (in) :: theta_lf          -- lepton scattering angle in degrees
   ! * real, intent (in) :: energy_li         -- initial lepton energy in GeV
@@ -173,7 +173,7 @@ contains
   ! PURPOSE
   ! * Evaluates lepton scattering angle for given QSquared and  given final and initial lepton energy.
   ! * Assumes leptons to be massless
-  ! 
+  !
   ! INPUTS
   ! * real, intent (in) :: QSquared          -- virtual photon Q^2 in GeV^2
   ! * real, intent (in) :: energy_li         -- initial lepton energy in GeV
@@ -205,7 +205,7 @@ contains
   ! * Calculate 4-momenta of an electron pair for given scattering angles theta,phi and given energies
   !   energy_in,energy_out. Direction_in denotes a space-vector pointing in the direction of the
   !   incoming electron.
-  ! 
+  !
   ! INPUTS
   ! * real, intent(in)                  :: theta_lf [radian],phi_MC [radian],energy_li [GeV],energy_lf [GeV]
   ! * real, dimension(1:3), intent(in)  :: direction_in

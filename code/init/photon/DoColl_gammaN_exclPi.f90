@@ -24,14 +24,14 @@ contains
   !
   ! PURPOSE
   ! generate a exclusive pion production event
-  ! 
+  !
   ! INPUTS
   ! * type(electronNucleon_event) :: eNev     -- electron nucleon kinematics
   ! * integer :: ExclPiCharge -- charge of pion to be produced
   !
   ! OUTPUT
   ! * logical   :: FlagOK  -- .true. if event was successfull
-  ! * real      :: XS_Tot  -- total cross section 
+  ! * real      :: XS_Tot  -- total cross section
   ! * type(particle), dimension(:)  :: OutPart -- Final State particle vector
   ! NOTES
   ! * The returned Cross Section 'XS_Tot' is

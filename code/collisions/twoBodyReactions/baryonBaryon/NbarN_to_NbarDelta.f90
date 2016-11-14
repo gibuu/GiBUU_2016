@@ -7,7 +7,7 @@
 ! NOTES:
 ! This module has a similar structure as the module dimi.
 ! AUTHOR:
-! Alexei Larionov, 04.2008 
+! Alexei Larionov, 04.2008
 !*******************************************************************************
 module NbarN_to_NbarDelta
   implicit none
@@ -30,9 +30,9 @@ module NbarN_to_NbarDelta
   ! SOURCE
   !
   real, save :: delta_mass=0.01
-  ! 
+  !
   ! PURPOSE
-  ! * grid step on a delta mass (GeV)  
+  ! * grid step on a delta mass (GeV)
   !***
 
 
@@ -40,9 +40,9 @@ module NbarN_to_NbarDelta
   ! SOURCE
   !
   integer, save :: maxPoints_mass=150
-  ! 
+  !
   ! PURPOSE
-  ! * number of the grid points on the delta mass  
+  ! * number of the grid points on the delta mass
   !***
 
 
@@ -50,9 +50,9 @@ module NbarN_to_NbarDelta
   ! SOURCE
   !
   real, save :: delta_srts=0.01
-  ! 
+  !
   ! PURPOSE
-  ! * grid step on an invariant energy (GeV)  
+  ! * grid step on an invariant energy (GeV)
   !***
 
 
@@ -60,9 +60,9 @@ module NbarN_to_NbarDelta
   ! SOURCE
   !
   integer, save :: maxPoints_srts=100
-  ! 
+  !
   ! PURPOSE
-  ! * number of the grid points on the invariant energy   
+  ! * number of the grid points on the invariant energy
   !***
 
 
@@ -116,7 +116,7 @@ contains
   ! PURPOSE
   ! Evaluates masses in Nbar N -> Nbar Delta process using NbarN_to_NbarDelta_dm
   ! This is done by a Monte-Carlo process utilizing dsigma/dm.
-  ! NOTES 
+  ! NOTES
   !*****************************************************************************
   function massNbarN_NbarDelta(srts) result(massDelta)
 
@@ -139,7 +139,7 @@ contains
     indexMass=0
     sum_dsdm=0.
     x=rn()
-    do 
+    do
        massDelta=minimal_Mass+float(indexMass)*delta_Mass
        call NbarN_to_NbarDelta_dm(dsdm,dsdm_Integrated,sigma,srts,massDelta)
        sum_dsdm=sum_dsdm+dsdm*delta_Mass
@@ -165,15 +165,15 @@ contains
         if(massDelta > srts-mN) then
           write(*,*) 'problems in massNbarN_NbarDelta:',srts,massDelta,indexMass
           stop
-        end if 
+        end if
       end if
-    end if 
+    end if
 
   end function massNbarN_NbarDelta
 
 
   !*****************************************************************************
-  !****s* NbarN_to_NbarDelta/NbarN_to_NbarDelta_Integrated 
+  !****s* NbarN_to_NbarDelta/NbarN_to_NbarDelta_Integrated
   ! NAME
   ! subroutine NbarN_to_NbarDelta_Integrated(dsdm_Integrated,srts)
   ! PURPOSE
@@ -189,7 +189,7 @@ contains
 
 
   !*****************************************************************************
-  !****s* NbarN_to_NbarDelta/NbarDelta_to_NbarN 
+  !****s* NbarN_to_NbarDelta/NbarDelta_to_NbarN
   ! NAME
   ! subroutine NbarDelta_to_NbarN(sigma,srts,mdel)
   ! PURPOSE
@@ -214,12 +214,12 @@ contains
   ! real srts =sqrt(s) in the process
   ! real mdel= mass of delta
   ! RESULT
-  ! real :: sigma= total cross section (for reaction with incoming delta) 
-  ! real :: dsdm= mass differential cross section as function of mdel and srts 
-  !               (for reaction with outgoing delta)  
-  ! real :: dsdm_Integrated= mass differential cross section integrated over mass as function 
-  !                          of srts (for reaction with outgoing delta) 
-  ! NOTES 
+  ! real :: sigma= total cross section (for reaction with incoming delta)
+  ! real :: dsdm= mass differential cross section as function of mdel and srts
+  !               (for reaction with outgoing delta)
+  ! real :: dsdm_Integrated= mass differential cross section integrated over mass as function
+  !                          of srts (for reaction with outgoing delta)
+  ! NOTES
   ! Actual cross section is computed by subroutine calculate below.
   !*****************************************************************************
   subroutine NbarN_to_NbarDelta_dm(dsdm,dsdm_Integrated,sigma,srts,mdel)
@@ -237,7 +237,7 @@ contains
   real, allocatable, dimension(:,:), save  :: sigma_save
 
   integer :: srts_Index, mass_Index
-  real :: mass, wurzelS, delta_mass_new 
+  real :: mass, wurzelS, delta_mass_new
 
   dsdm=0.
   dsdm_Integrated=0.
@@ -322,9 +322,9 @@ contains
    ! real srts =sqrt(s) in the process
    ! real mdel= mass of delta
    ! RESULT
-   ! real :: sigma= total cross section (for reaction with incoming delta) 
-   ! real :: dsdm= mass differential cross section as function of mdel and srts 
-   !               (for reaction with outgoing delta)  
+   ! real :: sigma= total cross section (for reaction with incoming delta)
+   ! real :: dsdm= mass differential cross section as function of mdel and srts
+   !               (for reaction with outgoing delta)
    !****************************************************************************
    subroutine calculate(dsdm,sigma,srts,mdel)
 
@@ -360,11 +360,11 @@ contains
       if(mdel.lt.mn+mpi) then
          f=0.
       else
-        g=FullWidthBaryon(delta,mdel)           
+        g=FullWidthBaryon(delta,mdel)
 !        q=sqrt(max((mdel**2+mpi**2-mn**2)**2/(4.*mdel**2)-mpi**2,0.))
 !        q0=sqrt(max((dmass**2+mpi**2-mn**2)**2/(4.*dmass**2)-mpi**2,0.))
 !        g=0.118*(q/q0)**3*(0.2**2+q0**2)/(0.2**2+q**2)
-         f=1./pi*mdel*g/((mdel**2-dmass**2)**2+(mdel*g)**2)     
+         f=1./pi*mdel*g/((mdel**2-dmass**2)**2+(mdel*g)**2)
       end if
 
       if(qf2.gt.0.) then
@@ -375,12 +375,12 @@ contains
         nt = 1
         dcost = 1.
       end if
-      
+
       if(debug) then
-        write(*,*)'In NbarN_to_NbarDelta/calculate srts, mdel, dcost:' 
-        write(*,*) srts, mdel, dcost       
-        write(*,*)'qi2, qf2:', qi2, qf2 
-     end if  
+        write(*,*)'In NbarN_to_NbarDelta/calculate srts, mdel, dcost:'
+        write(*,*) srts, mdel, dcost
+        write(*,*)'qi2, qf2:', qi2, qf2
+     end if
 
      dsdm=0.
      sigma=0.
@@ -444,10 +444,10 @@ contains
            dsigdt = 0.0
            return
         end if
-  
+
         qi2=s/4.-mn**2
         qi=sqrt(max(qi2,0.))
-        E1 = sqrt(mn**2+qi2) 
+        E1 = sqrt(mn**2+qi2)
 !         E2 = E1
 
         t0 = 2.*mn**2 - 2.*E1*mn
@@ -462,24 +462,24 @@ contains
           qf = B - sqrt(C)
         else
           qf = -B + sqrt(C)
-        end if 
-        
-        mass_max = (sqrt(s)-sqrt(mn**2+qf**2))**2 - qf**2 
+        end if
+
+        mass_max = (sqrt(s)-sqrt(mn**2+qf**2))**2 - qf**2
         if(mass_max.lt.0.) then
           write(*,*)' In NbarN_to_NbarDelta/calculate1: mass_max.lt.0., this must not happen !!!'
           stop
         end if
-        mass_max = sqrt(mass_max)        
+        mass_max = sqrt(mass_max)
         mass_min = mn + mpi
 
         dm=0.001
         nmass=max(1,nint((mass_max-mass_min)/dm))
-        dm = (mass_max-mass_min)/Real(nmass)        
+        dm = (mass_max-mass_min)/Real(nmass)
 
         if(debug) then
           write(*,*)'In NbarN_to_NbarDelta/calculate1 srts, t, mass_min, mass_max, dm:'
           write(*,*) sqrt(s), t, mass_min, mass_max, dm
-        end if  
+        end if
 
         dsigdt = 0.
 
@@ -494,15 +494,15 @@ contains
            if(mdel.lt.mn+mpi) then
               f=0.
            else
-              g=FullWidthBaryon(delta,mdel)           
+              g=FullWidthBaryon(delta,mdel)
 !              q=sqrt(max((mdel**2+mpi**2-mn**2)**2/(4.*mdel**2)-mpi**2,0.))
 !              q0=sqrt(max((dmass**2+mpi**2-mn**2)**2/(4.*dmass**2)-mpi**2,0.))
 !              g=0.118*(q/q0)**3*(0.2**2+q0**2)/(0.2**2+q**2)
-              f=1./pi*mdel*g/((mdel**2-dmass**2)**2+(mdel*g)**2)     
+              f=1./pi*mdel*g/((mdel**2-dmass**2)**2+(mdel*g)**2)
            end if
 
 !****      Relativistic matrix element^2 :
-           melem2 = mNbarN_to_NbarD2(t,mn,mn,mn,mdel) 
+           melem2 = mNbarN_to_NbarD2(t,mn,mn,mn,mdel)
 
            fac=1.
            if(i.eq.0 .or. i.eq.nmass) fac=0.5
@@ -511,7 +511,7 @@ contains
         end do
 
         dsigdt = dsigdt/qi2
-        
+
       end subroutine calculate1
 
 
@@ -519,9 +519,9 @@ contains
     !****s* NbarN_to_NbarDelta/mNbarN_to_NbarD2
     ! NAME
     ! real function mNbarN_to_NbarD2 (t, m_1, m_2, m_3, m_4)
-    ! PURPOSE 
-    ! Matrix element squared and averaged over initial and summed over 
-    ! final spins for pbar_1 n_2 -> nbar_3 delta_4^- 
+    ! PURPOSE
+    ! Matrix element squared and averaged over initial and summed over
+    ! final spins for pbar_1 n_2 -> nbar_3 delta_4^-
     ! within OPEM with effective nucleon and delta masses.
     ! INPUTS
     !  * t=(p1-p3)^2      -- Mandelstam variable (GeV^2)
@@ -538,7 +538,7 @@ contains
       ! Coupling constants from V. Dmitriev et al, NPA 459, 503 (1986):
       real, parameter :: fps=2.202d0,fp=1.008d0
       real, parameter :: lambda= 0.50d0  ! readjusted by A.L.
-      real, parameter :: kappa =0.2d0      
+      real, parameter :: kappa =0.2d0
 
       logical, parameter :: debugflag = .false.
 
@@ -551,7 +551,7 @@ contains
       q2t=(m_4**2+m_2**2-t)**2/(4.d0*m_4**2)-m_2**2
       zt=(qr2t+kappa**2)/(q2t+kappa**2)
 
-      if (debugflag) print *,'ft,qr2t,q2t,zt:', ft,qr2t,q2t,zt 
+      if (debugflag) print *,'ft,qr2t,q2t,zt:', ft,qr2t,q2t,zt
 
 
       mNbarN_to_NbarD2 = 2. * (fp*fps*ft**2)**2*zt/mpi**4 / (t-mpi**2)**2 &

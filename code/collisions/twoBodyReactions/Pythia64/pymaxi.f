@@ -1,7 +1,7 @@
 c===================================================================
 c This is a modified version of original PYTHIA-PYMAXI (v6.419)
 c
-c * output of some "warnings" (FORMAT 5100,5300) commented out
+c * output of some "warnings" (FORMAT 5100,5300,6400) commented out
 c===================================================================
 
 C*********************************************************************
@@ -1156,7 +1156,7 @@ C...Print summary table.
           WRITE(MSTU(11),5900)
           CALL PYSTOP(1)
         ELSE
-          WRITE(MSTU(11),6400)
+!          WRITE(MSTU(11),6400) ! [GiBUU]
           MSTI(53)=1
         ENDIF
       ENDIF

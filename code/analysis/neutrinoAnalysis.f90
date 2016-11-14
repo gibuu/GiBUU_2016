@@ -12,8 +12,8 @@ module neutrinoAnalysis
   use histf90
   use hist2Df90
   use initNeutrino, only : max_Hist, includeHist, K2Hist, numberOfExperiments,&
-      get_init_namelist,OSCLENGTH,OSC,process_ID 
-  use AnaEventDefinition    
+      get_init_namelist,OSCLENGTH,OSC,process_ID
+  use AnaEventDefinition
   use CALLSTACK
 
   implicit none
@@ -75,7 +75,7 @@ module neutrinoAnalysis
   ! If .true. then also the detailed output of differential cross sections is
   ! produced
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* neutrinoAnalysis/forDbar
   ! SOURCE
@@ -83,8 +83,8 @@ module neutrinoAnalysis
   ! PURPOSE
   ! If .true. then also the detailed output of differential cross sections is
   ! produced
-  !*************************************************************************** 
-   
+  !***************************************************************************
+
   !***************************************************************************
   !****g* neutrinoAnalysis/forDs_plus
   ! SOURCE
@@ -93,7 +93,7 @@ module neutrinoAnalysis
   ! If .true. then also the detailed output of differential cross sections is
   ! produced
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* neutrinoAnalysis/forDs_minus
   ! SOURCE
@@ -129,7 +129,7 @@ module neutrinoAnalysis
   ! If .true. then also the detailed output of differential cross sections is
   ! produced
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* neutrinoAnalysis/forXi
   ! SOURCE
@@ -138,7 +138,7 @@ module neutrinoAnalysis
   ! If .true. then also the detailed output of differential cross sections is
   ! produced
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* neutrinoAnalysis/forOmegaResonance
   ! SOURCE
@@ -154,7 +154,7 @@ module neutrinoAnalysis
   !
   logical, save :: include_W_dist=.false.
   ! PURPOSE
-  ! If .true. then the invariant mass distributions for events with 1 pion and 
+  ! If .true. then the invariant mass distributions for events with 1 pion and
   ! 1 nucleon in the final state are produced
   !***************************************************************************
 
@@ -352,7 +352,7 @@ module neutrinoAnalysis
   !
   real, save :: kineticEnergyDetectionThreshold_nucleon=0.0
   ! PURPOSE
-  ! kineticEnergyDetectionThreshold 
+  ! kineticEnergyDetectionThreshold
   ! lower detection threshold for nucleon kinetic energies
   !***************************************************************************
 
@@ -380,7 +380,7 @@ module neutrinoAnalysis
   !
   real, save :: kineticEnergyDetectionThreshold_lepton=0.0
   ! PURPOSE
-  ! kineticEnergyDetectionThreshold 
+  ! kineticEnergyDetectionThreshold
   ! only lepton kinetic energies above this threshold can be detected
   !***************************************************************************
 
@@ -630,7 +630,7 @@ module neutrinoAnalysis
   !
   ! values can be changed in the namelist nl_specificEvent
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* neutrinoAnalysis/excl_hadron
   ! SOURCE
@@ -647,8 +647,8 @@ module neutrinoAnalysis
   !
   ! value can be changed in the namelist nl_specificEvent
   !***************************************************************************
-  
-  integer, parameter ::  max_SpeEvent=19     
+
+  integer, parameter ::  max_SpeEvent=19
   ! maximum number of special Events for which detailed analysis is being done
   ! special events in file  'includeSpeEvent'
 
@@ -723,7 +723,7 @@ module neutrinoAnalysis
        & dE_hists_Delta_2X,dE_hists_highRes_2X,dE_hists_gen0_2X,dE_hists_1piBG_2X, &
        & dE_hists_2piBG_2X,dE_hists_DIS_2X,dE_hists_2p2h_2X
 
-  ! used for ZeroPion_analysis=.true.  for kinetic energy distributions of nucleons 
+  ! used for ZeroPion_analysis=.true.  for kinetic energy distributions of nucleons
   ! in events with 0 pions
   type(histogram),save,dimension(1:numStableParts,-2:2) :: dE_hists_0pions, dE_hists_QE_0pions, &
        & dE_hists_Delta_0pions,dE_hists_highRes_0pions, dE_hists_2p2h_0pions, &
@@ -780,7 +780,7 @@ module neutrinoAnalysis
        &dcostheta_hists_Delta, &
        & dcostheta_hists_highRes, dcostheta_hists_gen0,dcostheta_hists_1piBG, &
        & dcostheta_hists_2piBG,dcostheta_hists_DIS
-  type(histogram),save,dimension(1:numStableParts,-2:2) :: dcostheta_hists_MULTI, & 
+  type(histogram),save,dimension(1:numStableParts,-2:2) :: dcostheta_hists_MULTI, &
        & dcostheta_hists_QE_MULTI, &
        & dcostheta_hists_Delta_MULTI, dcostheta_hists_highRes_MULTI, dcostheta_hists_gen0_MULTI,&
        & dcostheta_hists_1piBG_MULTI, dcostheta_hists_2piBG_MULTI, dcostheta_hists_DIS_MULTI
@@ -839,7 +839,7 @@ contains
                                 calorimetric_analysis, &
                                 radialScale, reconstruct_neutrino_energy, &
                                 kineticEnergyDetectionThreshold_lepton, &
-                                AngleUpperDetectionThresholdDegrees_lepton, & 
+                                AngleUpperDetectionThresholdDegrees_lepton, &
                                 outputEvents, specificEvent_analysis
 
     !*************************************************************************
@@ -971,8 +971,8 @@ contains
             &'    Dmeson=  ',forDmeson,&
             &'    Dbar=    ',forDbar,&
             &'    Ds+=     ',forDs_plus,&
-            &'    Ds-=     ',forDs_minus 
-            
+            &'    Ds-=     ',forDs_minus
+
        call Write_ReadingInput('detailed_diff',1)
     end if
 
@@ -1027,14 +1027,14 @@ contains
             & '    n_no_pi=      ', n_no_pi, &
             & '    Xn_no_pi=     ', Xn_no_pi, &
             & '    excl_hadron   ', excl_hadron
-            
+
  ! The switch excl_hadron selects truly exclusive 1-meson events
- ! ie. exactly 1 meson with fixed charged and no other mesons of any kind          
-       
- 
+ ! ie. exactly 1 meson with fixed charged and no other mesons of any kind
+
+
        call Write_ReadingInput('nl_specificEvent',1)
-    end if   
-    
+    end if
+
     call set_Exclusive(excl_hadron)
     if(excl_hadron .eqv. .true.) then
        excl_pi0 = .true.
@@ -1042,15 +1042,15 @@ contains
        excl_piplus = .true.
        piplus = .false.
        pi0 = .false.
-    end if    
+    end if
 
     includeSpeEvent = (/no_pi,p_Xn_no_pi,piplus,pi0,pi0_MULTI,piplus_MULTI, &
          & pp_no_pi, pn_no_pi, nn_no_pi, pp_Xn_no_pi, nn_Xp_no_pi, &
          & ppp_Xn_no_pi, pppp_Xn_no_pi,p_no_pi, n_no_pi, Xn_no_pi,&
          & excl_pi0,excl_piplus,excl_piminus/)
-    
+
   end subroutine readinput
-  
+
 
   subroutine cleanUp
     integer :: i,j
@@ -1165,7 +1165,7 @@ contains
        call RemoveHist(dW_mupi_hists(j))
        call RemoveHist(dW_muN_hists(j))
     end do
-    
+
     do j=1,max_speEvent
        do i=1,max_Hist
           call RemoveHist(dEnu_hist(j,i))
@@ -1174,7 +1174,7 @@ contains
           call RemoveHist(dQ2lepton_hist(j,i))
        end do
     end do
-    
+
   end subroutine cleanUp
 
 
@@ -1236,7 +1236,7 @@ contains
     real  :: dTheta ! Delta(theta) for dsigma/dOmega
 
     real :: theta, phi
-    
+
     real :: ekin_lepton
 
     real :: raiseFlagVariable
@@ -1274,12 +1274,12 @@ contains
     real,dimension(-1:1,0:200),save :: sum_tksigmapion=0.
     real,dimension(-1:1),save :: sum_tsigmanucleon=0. ! in DIS antiproton are also possible
                                                       ! in final states
-    real,dimension(-1:1,0:200),save :: sum_tksigmanucleon=0.  ! in DIS antiproton are also 
+    real,dimension(-1:1,0:200),save :: sum_tksigmanucleon=0.  ! in DIS antiproton are also
                                                               ! possible in final states
 
     real,dimension(0:200) :: Emiss_Fissum=0.
-    real,dimension(0:200),save ::  sum_Emiss_Fissum=0. 
-    
+    real,dimension(0:200),save ::  sum_Emiss_Fissum=0.
+
 !     real :: cost=0, cosuppert=0
 
     integer :: numberofneutrons_tot=0
@@ -1288,7 +1288,7 @@ contains
     integer :: numberofneutrons_out=0
     integer :: numberofprotons_out=0
     integer :: numberofANTIprotons_out=0
-    integer,dimension(-1:1,0:max_generation) :: numberofnucleons_out  ! in DIS antiproton are 
+    integer,dimension(-1:1,0:max_generation) :: numberofnucleons_out  ! in DIS antiproton are
                                                                     !also possible in final states
 
 
@@ -1316,14 +1316,14 @@ contains
     character*(10) :: Prefix_MultAna
     character(100) :: filename
     character(13) :: filename1
-   
+
 
     real :: L, Posc_mumu,Posc_mue,Posc_mue_max,Posc_mue_antimax  ! used for oscillation analysis
     type(histogram),save :: Oscmumu_enu_real(1:max_speEvent,0:max_Hist), &
        & Oscmumu_enu_rec(1:max_speEvent,0:max_Hist)
     type(histogram),save :: Oscmuemax_enu_real(1:max_speEvent,0:max_Hist), &
        & Oscmuemax_enu_rec(1:max_speEvent,0:max_Hist)
-    type(histogram),save :: Oscmue_enu_real(1:max_speEvent,0:max_Hist), & 
+    type(histogram),save :: Oscmue_enu_real(1:max_speEvent,0:max_Hist), &
        & Oscmue_enu_rec(1:max_speEvent,0:max_Hist)
     type(histogram),save :: Oscmueantimax_enu_real(1:max_speEvent,0:max_Hist), &
        & Oscmueantimax_enu_rec(1:max_speEvent,0:max_Hist)
@@ -1352,10 +1352,10 @@ contains
 
        printFlags=.false.
 
-!  Now switches for printout of cross sections for various hadrons       
+!  Now switches for printout of cross sections for various hadrons
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  indices in printflags(i) refer to ordering in field particleIds in module AnaEvent
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!       
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
        if (forpion) printFlags(1)=.true. ! pion
        if (foreta) printFlags(2)=.true. ! eta
        if (forkaon) printFlags(3)=.true. ! kaon
@@ -1722,7 +1722,7 @@ contains
        if(reconstruct_neutrino_energy .and. specificEvent_Analysis) then
           if(binsizeQ2.lt.0.001) binsizeQ2=0.02
           if(binsizeEnu.lt.0.001) binsizeEnu=0.01
-          
+
           do m=1, max_speEvent
              if (.not.includeSpeEvent(m)) cycle
              do iHist=0, max_Hist
@@ -1745,12 +1745,12 @@ contains
                 if (nuExp>0) call CreateHist2D(H_enu_rec_versus_real(m,iHist), &
                      'reconstructed Enu versus real Enu for a specific event', &
                      (/0.,0./),(/maxEnu,maxEnu/),  (/binsizeEnu,binsizeEnu/))
-                
+
                 ! oscillations:  nu_mu survival, nu_e appearence
                 if (OSC(nuEXP)) then
-                   call CreateHist(Oscmumu_enu_real(m,iHist), &  
+                   call CreateHist(Oscmumu_enu_real(m,iHist), &
                         'nu_mu survival versus true energy',0.,maxEnu,binsizeEnu)
-                   call CreateHist(Oscmumu_enu_rec(m,iHist) , &  
+                   call CreateHist(Oscmumu_enu_rec(m,iHist) , &
                         'nu_mu survival versus reconstructed energy',0.,maxEnu,binsizeEnu)
                    call CreateHist(Oscmuemax_enu_real(m,iHist), &
                         & 'nu_e appearence versus true energy for delta_CP=pi/2',0., &
@@ -1769,22 +1769,22 @@ contains
                         &  'nu_e appearence versus reconstructed energy for delta_CP=-pi/2', &
                         & 0.,maxEnu,binsizeEnu)
                 end if
-                
+
              end do !iHist
           end do !m
        end if
-       
-       
+
+
        call CreateHist(hNucleonVacuumMass, 'mass of nucleons', 0.65,1.2,0.001)
 
        call Multiplicity_Reset
 
     end if
-    
+
     call getNeutrinoInfo(raiseFlagVariable)
-    
+
     numberOfCalls=numberOfCalls+1
-    
+
     initHists = (numberOfCalls.eq.1) ! whether we initialize the histograms
 
 
@@ -1825,13 +1825,13 @@ contains
     Q2rec=0.
     Enurec=0.
 
-! Now loops over all ensembles (dim=1) and all particles (dim=2) 
+! Now loops over all ensembles (dim=1) and all particles (dim=2)
 
     do i=lBound(Particles,dim=1),uBound(Particles,dim=1)
        do j=lBound(Particles,dim=2),uBound(Particles,dim=2)
           if (Particles(i,j)%ID.le.0) cycle
-          
-   ! The following 'if' selects only nucleons      
+
+   ! The following 'if' selects only nucleons
           if (Particles(i,j)%ID.eq.1) then
              call AddHist(hNucleonVacuumMass,Particles(i,j)%mass,Particles(i,j)%perweight)
              select case(Particles(i,j)%charge)
@@ -1846,30 +1846,30 @@ contains
 
           if(IsBound(particles(i,j))) cycle
           if(IsBelowThreshold(particles(i,j))) cycle
-          
+
    ! The following call to function neutrinoProdInfo_Get retrieves information on the production
    ! process for particle j in ensemble i
-          
+
           if(.not.neutrinoProdInfo_Get(Particles(i,j)%firstEvent,prod_id,&
                                        dummy,lepIn_mom,lep_mom,boson_mom, nuc_mom, Chrg_Nuc)) then
              call TRACEBACK('error in getting production info')
-          end if 
-          
+          end if
+
  ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  ! Now acceptance cuts in kinetic energy and angle for outgoing lepton
  ! Events are accepted only if
  ! ekin_lepton > threshold energy and lepton-angle < threshold angle
  !
-          ekin_lepton=lep_mom(0)-sqrt( max(0.,abs4Sq(lep_mom)) ) 
+          ekin_lepton=lep_mom(0)-sqrt( max(0.,abs4Sq(lep_mom)) )
           if(ekin_lepton.lt.kineticEnergyDetectionThreshold_lepton) cycle
-          
+
           if( lep_mom(3)/absVec(lep_mom(1:3)) &
           & .lt. cos(radian(AngleUpperDetectionThresholdDegrees_lepton)) ) cycle
  ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-          
+
           tkin=Particles(i,j)%momentum(0)-Particles(i,j)%mass
           if(tkin.lt.0.) tkin = 0.  !only relevant if inclusiveAnalysis=.true.
-          
+
           ntk=min(int(tkin/dEkin),200)
 
  !apply history information
@@ -1887,9 +1887,9 @@ contains
              tksigmapion(Particles(i,j)%charge,ntk)=&
                   & Particles(i,j)%perweight/dEkin   &
                   & +tksigmapion(Particles(i,j)%charge,ntk)
-             
+
           case (nucleon)
-             
+
              select case(Particles(i,j)%charge)
              case (-1)
                 numberofANTIprotons_out=numberofANTIprotons_out+1
@@ -1903,7 +1903,7 @@ contains
              & =numberofnucleons_out(Particles(i,j)%charge,generation)+1
 
              !total cross section
-             
+
              tsigmanucleon(Particles(i,j)%charge)  &
              & =tsigmanucleon(Particles(i,j)%charge)+Particles(i,j)%perweight
 
@@ -1912,7 +1912,7 @@ contains
                   &Particles(i,j)%perweight/dEkin  &
                   & +tksigmanucleon(Particles(i,j)%charge,ntk)
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Fissum analysis for O16(e,e'p) data, Phys.Rev.C70:034606,2004
 
              if(Fissum_analysis) then
@@ -2029,7 +2029,7 @@ contains
   ! and production process
 
 ! (1) Setting up the particles into the events
-  
+
   ! This is done with the help of %firstEvent:
   ! Particles stemming from the same event get in the init the same %firstEvent entry.
   ! During the run %firstEvent stays constant and is inherited during collisions.
@@ -2083,23 +2083,23 @@ contains
           call TRACEBACK('error in getting perweight')
        end if
 
- ! Analyze events separately for first interaction: QE, Delta, DIS, .....       
- 
+ ! Analyze events separately for first interaction: QE, Delta, DIS, .....
+
  ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  ! Now acceptance cuts in kinetic energy and angle for outgoing lepton
  ! Events are accepted only if
  ! ekin_lepton > threshold energy and lepton-angle < threshold angle
  !
- 
-       ekin_lepton=lepton(i)%momentum(0)-sqrt( max(0.,abs4Sq(lepton(i)%momentum)) ) 
+
+       ekin_lepton=lepton(i)%momentum(0)-sqrt( max(0.,abs4Sq(lepton(i)%momentum)) )
        if(ekin_lepton.lt.kineticEnergyDetectionThreshold_lepton) cycle
        if( lepton(i)%momentum(3)/absVec(lepton(i)%momentum(1:3)) &
           & .lt. cos(radian(AngleUpperDetectionThresholdDegrees_lepton)) ) cycle
-          
- ! lepton is added to event only if its energy and angle have been accepted 
+
+ ! lepton is added to event only if its energy and angle have been accepted
  ! cuts affect FinalEvents.dat
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
+
  !  Now put leptons into specific event types (QE, Delta, ..)
        particlePointer=>lepton(i)
 
@@ -2138,19 +2138,19 @@ contains
 
     end do
 
- 
+
  !
  ! Now put all other particles into specific event types
  !
 
- ! Now loops over all ensembles (dim=1) and all particles (dim=2) 
+ ! Now loops over all ensembles (dim=1) and all particles (dim=2)
 
     do i=lBound(Particles,dim=1),uBound(Particles,dim=1)
        do j=lBound(Particles,dim=2),uBound(Particles,dim=2)
           if (Particles(i,j)%ID.le.0) cycle
 
           first=Particles(i,j)%firstEvent
-     !  first is the number of the first event which belongs to the particle j in ensemble i            
+     !  first is the number of the first event which belongs to the particle j in ensemble i
 
           if(IsBound(particles(i,j))) cycle
           if(IsBelowThreshold(particles(i,j))) cycle
@@ -2158,22 +2158,22 @@ contains
  ! Now acceptance cuts in kinetic energy and angle for outgoing lepton
  ! Events are accepted only if
  ! ekin_lepton > threshold energy and lepton-angle < threshold angle
-        
-          ekin_lepton=lepton(first)%momentum(0)-sqrt( max(0.,abs4Sq(lepton(first)%momentum)) ) 
+
+          ekin_lepton=lepton(first)%momentum(0)-sqrt( max(0.,abs4Sq(lepton(first)%momentum)) )
           if(ekin_lepton.lt.kineticEnergyDetectionThreshold_lepton) cycle
           if( lepton(first)%momentum(3)/absVec(lepton(first)%momentum(1:3)) &
-          & .lt. cos(radian(AngleUpperDetectionThresholdDegrees_lepton)) ) cycle 
-          
+          & .lt. cos(radian(AngleUpperDetectionThresholdDegrees_lepton)) ) cycle
+
  ! lepton is added to event only if its energy and angle have been accepted
- ! cuts affect FinalEvents.dat 
+ ! cuts affect FinalEvents.dat
  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
+
     !     tkin=Particles(i,j)%momentum(0)-Particles(i,j)%mass
 
           particlePointer=>Particles(i,j)
-          
+
     ! Add particle to the event with its firstEvent index.
-    
+
           call event_add(events(first),particlePointer)
 
           !apply history information
@@ -2184,10 +2184,10 @@ contains
           end if
 
           if(generation.ge.max_generation) generation=max_generation
-          
-    ! to simplify output individual resonance contributions are all lumped together in 
+
+    ! to simplify output individual resonance contributions are all lumped together in
     ! the highRes component, this is controlled by array K2Hist in initneutrino.f90
-    
+
     ! now generation is the real particle generation and prod_id contains
     ! the information, in which process the particle was produced (QE=1, Delta=2, highRES=3:31,
     ! BG=32:33)
@@ -2233,7 +2233,7 @@ contains
 
 ! (2) Use the list "events" to evaluate cross sections
 
-    call event_sigma(events,sigma,initHists,numberOfCalls,identifier=raiseFlagVariable)   
+    call event_sigma(events,sigma,initHists,numberOfCalls,identifier=raiseFlagVariable)
     call event_sigma(events_QE,sigma_QE,initHists,numberOfCalls,identifier=raiseFlagVariable)
     call event_sigma(events_Delta,sigma_Delta,initHists,numberOfCalls,identifier=raiseFlagVariable)
     call event_sigma(events_highRES,sigma_highRES,initHists,numberOfCalls, &
@@ -2245,7 +2245,7 @@ contains
     call event_sigma(events_gen0,sigma_gen0,initHists,numberOfCalls,identifier=raiseFlagVariable)
     call event_sigma(events_gen1,sigma_gen1,initHists,numberOfCalls,identifier=raiseFlagVariable)
     call event_sigma(events_gen2,sigma_gen2,initHists,numberOfCalls,identifier=raiseFlagVariable)
-    call event_sigma(events_gen3ormore,sigma_gen3ormore,initHists,numberOfCalls, & 
+    call event_sigma(events_gen3ormore,sigma_gen3ormore,initHists,numberOfCalls, &
        &identifier=raiseFlagVariable)
 
 
@@ -2274,9 +2274,9 @@ contains
          'neutrino_total_Xsection_multiplicities_gen3ormore.dat', sigma_gen3ormore)
 
 
-    
+
  ! extra channels for ZeroPion analysis
- 
+
     if(ZeroPion_analysis) then
        call event_sigma_0pions(events,sigma_0pions,initHists,numberOfCalls, &
           & identifier=raiseFlagVariable)
@@ -2312,14 +2312,14 @@ contains
        call PrintVals10((include2p2hQE .or. include2p2hDelta), raiseFlagVariable, numberOfCalls,&
             'neutrino_0pions_2p2h.dat', sigma_2p2h_0pions)
     end if
-    
+
 
     if(calorimetric_analysis) then
        call event_hadronicEnergy(events,numin,numax,nubin,Ehad_versusNu_hist, &
             & dSigdNu_hist, dSigdEhad_hist, &
             Enumin, Enumax, Enubin, Enurestored_versusEnu, dSigdEnu, dSigdEnurestored)
     end if
-    
+
 
 
 
@@ -2330,7 +2330,7 @@ contains
     !
     ! with:
     ! * ZZZ denotes the origin (the first interaction vertex) of the event (see description
-    !   in neutrino.EprimeCostplaneSX.ZZZ.dat, if ZZZ is missing the total cross section 
+    !   in neutrino.EprimeCostplaneSX.ZZZ.dat, if ZZZ is missing the total cross section
     !   (sum over all primary events) is given, otherwise ZZZ=Delta, DIS, ....
     ! * XXX=000, 001, 002 --- the first, second, third and so on values of
     !   the "raised variable"
@@ -2338,7 +2338,7 @@ contains
     !   Elepton for nuXsectionMode=2=dSigmadQsdElepton  and so on)
     ! * HADRON = pion, N, K, K~, Lambda, SigmaResonance, eta
     !   only those are shown, for which the switches in the namelist
-    !   "detailed_diff" are set to .true. 
+    !   "detailed_diff" are set to .true.
     !   possible hadrons are contained in the field particleIDs defined in AnaEvent.f90
     ! * CHARGE = charge of the outgoing hadron
     !
@@ -2472,14 +2472,14 @@ contains
     if(detailed_diff_output) then
 
        ! Here we fill the histograms with the appropriate event types
-       
+
        call event_dSigma_dE(events,EkinMin,EkinMax,dEkin,&
             & 'diff_'//trim(intToChar(numberofFinals)),numberOfCalls, &
             & dE_hists,initHists,sameFileNameIn=.true., &
             & histsMulti=dE_hists_Multi,hists1X=dE_hists_1X,hists2X=dE_hists_2X)
        call event_dSigma_dOmega(events,dTheta,dPhi,&
             & 'diff_'//trim(intToChar(numberofFinals)),numberOfCalls,  &
-            & dTheta_hists, dPhi_hists, dOmega_hists,initHists,sameFileNameIn=.true.)           
+            & dTheta_hists, dPhi_hists, dOmega_hists,initHists,sameFileNameIn=.true.)
        call event_dSigma_dEcostheta(events,EcosthetaMin,EcosthetaMax,dEcostheta,'diff_'// &
             & trim(intToChar(numberofFinals)),numberOfCalls,dEcostheta_hists,dcostheta_hists,&
             & dEcostheta_hists_MULTI,dcostheta_hists_MULTI, initHists,sameFileNameIn=.true.)
@@ -2545,7 +2545,7 @@ contains
                & initHists,sameFileNameIn=.true.)
           call event_dSigma_dEcostheta(events_1piBG,EcosthetaMin,EcosthetaMax,dEcostheta, &
                & 'diff_1piBG_'// &
-               & trim(intToChar(numberofFinals)),numberOfCalls,dEcostheta_hists_1piBG, & 
+               & trim(intToChar(numberofFinals)),numberOfCalls,dEcostheta_hists_1piBG, &
                & dcostheta_hists_1piBG,&
                & dEcostheta_hists_1piBG_MULTI,dcostheta_hists_1piBG_MULTI,initHists, &
                & sameFileNameIn=.true.)
@@ -2635,7 +2635,7 @@ contains
     !   and specific final states in the namelist "nl_specificEvent" are
     !   set to .true.
     !
-    ! The file shows the cross sections for a specific final state versus kinetic energy of the 
+    ! The file shows the cross sections for a specific final state versus kinetic energy of the
     ! outgoing lepton
     !
     ! Units:
@@ -2840,7 +2840,7 @@ contains
 
     if (outputEvents) then
        write(*,*) 'Writing events to file'
-       
+
        !**********************************************************************
        !****o* neutrinoAnalysis/FinalEvents.dat
        ! NAME
@@ -2898,79 +2898,79 @@ contains
     ! RECONSTRUCTION
 
     if(reconstruct_neutrino_energy .and. specificEvent_Analysis) then
-       
+
        do j=lBound(events,dim=1),uBound(events,dim=1)
           if(.not.neutrinoProdInfo_Get(j,prod_id,perweight,lepIn_mom,lep_mom,boson_mom,nuc_mom,Chrg_Nuc)) then
              write(*,*) j,prod_id,perweight
              call TRACEBACK('error in getting perweight, stop')
           end if
-          
-          
+
+
           do m=1, max_speEvent
              if (.not.includeSpeEvent(m)) cycle
              if (.not.IfPass_SpecificEvent(m,events(j))) cycle
              Q2real=-abs4Sq(boson_mom)
              Enureal=lep_mom(0)+boson_mom(0)
-             
+
              select case (m)
              case(1) ! events with 0 pions,
                 Q2rec=CCQE_recQs(lep_mom)           !CCQE QE-like reconstruction
                 Enurec=CCQE_recEnergy(lep_mom)
-                
+
              case(2,7:16) ! events with 0 pions and 1 proton and X neutrons,
                 Q2rec=K2K_recQs(lep_mom)                 ! K2K QE-like reconstruction
                 Enurec=K2K_recEnergy(lep_mom)
-                
+
              case(3,4) ! events with 1 pi+,  the same for 1pi0
-                Q2rec=CCQE_recQs_Delta(lep_mom)         ! CCQE energy reconstruction assuming 
+                Q2rec=CCQE_recQs_Delta(lep_mom)         ! CCQE energy reconstruction assuming
                 Enurec=CCQE_recEnergy_Delta(lep_mom)    ! Delta mass
-                
+
              case(5,6) ! events with at least 1 pi0 (as K2K),   the same for at least 1pi+
-                Q2rec=K2K_recQs(lep_mom,1.483)               ! K2K  energy reconstruction 
+                Q2rec=K2K_recQs(lep_mom,1.483)               ! K2K  energy reconstruction
                 Enurec=K2K_recEnergy(lep_mom,1.483)          ! assuming DIS with W=1.483
-                
+
              case default
              end select
-             
-             
+
+
              call AddHist(H_Q2_real(m,0),H_Q2_real(m,K2Hist(prod_id)), Q2real,perweight/ &
                 & float(num_runs_sameEnergy))
              call AddHist(H_Q2_rec(m,0), H_Q2_rec(m,K2Hist(prod_id)),  Q2rec, perweight/ &
                 & float(num_runs_sameEnergy))
-             
+
              if (nuEXP>0) call AddHist(H_enu_real(m,0),H_enu_real(m,K2Hist(prod_id)), &
                   & Enureal,perweight/float(num_runs_sameEnergy))
              call AddHist(H_enu_rec(m,0), H_enu_rec(m,K2Hist(prod_id)),  Enurec, perweight/ &
                 & float(num_runs_sameEnergy))
-             
+
              call AddHist2D(H_Q2_rec_versus_real(m,0),H_Q2_rec_versus_real(m,K2Hist(prod_id)), &
                   & (/Q2real,Q2rec/),  perweight/float(num_runs_sameEnergy))
              if (nuEXP>0) call AddHist2D(H_enu_rec_versus_real(m,0), &
                   & H_enu_rec_versus_real(m,K2Hist(prod_id)), &
                   & (/Enureal,Enurec/),perweight/float(num_runs_sameEnergy))
-             
+
              !! add oscillated muon disappearance  H_Enu_rec_muonDisappear
              !! add oscillated electron appearance for various CP violation phases
              if (OSC(nuEXP)) then
                 L=OSCLENGTH(nuEXP)
                 call oscillationProbability(Enureal,L,0.,Posc_mumu,Posc_mue,Posc_mue_max, &
                    & Posc_mue_antimax)
-                
+
                 call AddHist(Oscmumu_enu_real(m,0),Oscmumu_enu_real(m,K2Hist(prod_id)), &
                      &  Enureal,Posc_mumu*perweight/float(num_runs_sameEnergy))
                 call AddHist(Oscmumu_enu_rec(m,0), Oscmumu_enu_rec(m,K2Hist(prod_id)),  &
                      & Enurec, Posc_mumu*perweight/float(num_runs_sameEnergy))
-                
+
                 call AddHist(Oscmue_enu_real(m,0),Oscmue_enu_real(m,K2Hist(prod_id)), &
                      & Enureal,Posc_mue*perweight/float(num_runs_sameEnergy))
                 call AddHist(Oscmue_enu_rec(m,0), Oscmue_enu_rec(m,K2Hist(prod_id)),  &
                      & Enurec, Posc_mue*perweight/float(num_runs_sameEnergy))
-                
+
                 call AddHist(Oscmuemax_enu_real(m,0),Oscmuemax_enu_real(m,K2Hist(prod_id)), &
                      & Enureal,Posc_mue_max*perweight/float(num_runs_sameEnergy))
                 call AddHist(Oscmuemax_enu_rec(m,0), Oscmuemax_enu_rec(m,K2Hist(prod_id)),  &
                      & Enurec, Posc_mue_max*perweight/float(num_runs_sameEnergy))
-                
+
                 call AddHist(Oscmueantimax_enu_real(m,0), &
                      & Oscmueantimax_enu_real(m,K2Hist(prod_id)),&
                      & Enureal,Posc_mue_antimax*perweight/float(num_runs_sameEnergy))
@@ -2978,9 +2978,9 @@ contains
                      & Oscmueantimax_enu_rec(m,K2Hist(prod_id)),&
                      & Enurec, Posc_mue_antimax*perweight/float(num_runs_sameEnergy))
              end if
-          
+
           end do ! m
-          
+
        end do ! j
 
 
@@ -3046,7 +3046,7 @@ contains
                      & file='oscillations_mue_real_'//trim(filename1)//"."// &
                      & trim(intToChar(iHist))//'.dat')
                 call writeHist(Oscmue_enu_rec(m,iHist), &
-                     & file='oscillations_mue_rec_'//trim(filename1)//"."// & 
+                     & file='oscillations_mue_rec_'//trim(filename1)//"."// &
                      & trim(intToChar(iHist))//'.dat')
                 call writeHist(Oscmueantimax_enu_real(m,iHist), &
                      & file='oscillations_mue_antimax_real_'//trim(filename1)//"."// &
@@ -3054,13 +3054,13 @@ contains
                 call writeHist(Oscmueantimax_enu_rec(m,iHist), &
                      & file='oscillations_mue_antimax_rec_'//trim(filename1)// &
                      & "."//trim(intToChar(iHist))//'.dat')
-                
+
              end if
           end do ! iHist
        end do ! m
-       
+
     end if ! reconstruct_neutrino_energy .and. specificEvent_Analysis
-    
+
 
     !**************************************************************************
     !****o* neutrinoAnalysis/reconstruction_Enureal_PPP.ZZZ.dat
@@ -3081,8 +3081,8 @@ contains
     ! * #3: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #4: statistical-error of #2
     !**************************************************************************
-    
-    
+
+
     !**************************************************************************
     !****o* neutrinoAnalysis/reconstruction_Enurec_PPP.ZZZ.dat
     ! NAME
@@ -3097,7 +3097,7 @@ contains
     !
     ! PURPOSE
     ! The file shows the event distribution (normalized flux times xsec)
-    ! versus reconstructed neutrino energy (see arXiv:1208.3678 [nucl-th]) 
+    ! versus reconstructed neutrino energy (see arXiv:1208.3678 [nucl-th])
     ! for a specific final state
     !
     ! Reconstruction method depends on a specific process;
@@ -3114,7 +3114,7 @@ contains
     !
     ! Units:
     ! * For eventtype=5  and process_ID=CC and NC: 10^{-38} cm^2/GeV
-    ! * For eventtype=5  and process_ID=EM: nanobarns=10^{-33}cm^2/GeV 
+    ! * For eventtype=5  and process_ID=EM: nanobarns=10^{-33}cm^2/GeV
     ! * All x-sec per particle (1/A)
     !
     ! Columns:
@@ -3123,8 +3123,8 @@ contains
     ! * #3: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #4: statistical-error of #2
     !**************************************************************************
-    
-    
+
+
     !**************************************************************************
     !****o* neutrinoAnalysis/reconstruction_Enu_rec_versus_real_PPP.ZZZ.dat
     ! NAME
@@ -3140,7 +3140,7 @@ contains
     ! (in the namelist "neutrino_induced" nuXsectionMode > 10, nuExp>0)
     !
     ! Units:
-    ! * For event_type=5 and process_ID=CC and NC: 10^{-38} cm^2/GeV^2 
+    ! * For event_type=5 and process_ID=CC and NC: 10^{-38} cm^2/GeV^2
     ! * All xsec per particle (1/A)
     !
     ! Columns:
@@ -3154,7 +3154,7 @@ contains
     ! up to normalization this is "migration matrix" between true and
     ! reconstructed energies
     !**************************************************************************
-    
+
     !**************************************************************************
     !****o* neutrinoAnalysis/reconstruction_Q2real_PPP.ZZZ.dat
     ! NAME
@@ -3163,14 +3163,14 @@ contains
     ! PURPOSE
     ! Similar to reconstruction_Enurec_PPP.ZZZ.dat, but for the true Q2
     !
-    ! The file contains the flux averaged cross section dsigma/dQ2, 
-    ! i.e. integral  \int \Phi(E) dsigma/dQ2 (E) dE,  
+    ! The file contains the flux averaged cross section dsigma/dQ2,
+    ! i.e. integral  \int \Phi(E) dsigma/dQ2 (E) dE,
     ! versus true Q2 for a specific final state
     !
     ! Units:
     ! * For eventtype=5 and process_ID=CC and NC:  10^{-38} cm^2/GeV^2
     ! * For eventtype=5 and process_ID=EM (one can run it, but makes no
-    !   physical sense): nanobarns=10^{-33}cm^2/GeV^2 
+    !   physical sense): nanobarns=10^{-33}cm^2/GeV^2
     ! * All xsec per particle (1/A)
     !
     ! Columns:
@@ -3179,7 +3179,7 @@ contains
     ! * #3: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #4: xsec-statistical-error
     !**************************************************************************
-    
+
     !**************************************************************************
     !****o* neutrinoAnalysis/reconstruction_Q2rec_PPP.ZZZ.dat
     ! NAME
@@ -3189,15 +3189,15 @@ contains
     ! Similar to reconstruction_Enurec_PPP.ZZZ.dat, but for the reconstructed Q2
     ! (see arXiv:1208.3678 [nucl-th])
     !
-    ! The file contains the flux averaged cross section dsigma/dQ2, 
-    ! i.e. integral  \int \Phi(E) dsigma/dQ2 (E) dE,  
+    ! The file contains the flux averaged cross section dsigma/dQ2,
+    ! i.e. integral  \int \Phi(E) dsigma/dQ2 (E) dE,
     ! versus reconstructed Q2 for a specific final state
     !
     !
     ! Units:
     ! * For eventtype=5 and process_ID=CC and NC: 10^{-38} cm^2/GeV^2
     ! * For eventtype=5 and process_ID=EM (one can run it, but makes no
-    !   physical sense): nanobarns=10^{-33}cm^2/GeV^2  
+    !   physical sense): nanobarns=10^{-33}cm^2/GeV^2
     ! * All xsec per particle (1/A)
     !
     ! Columns:
@@ -3206,7 +3206,7 @@ contains
     ! * #3: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #4: xsec-statistical-error
     !**************************************************************************
-    
+
     !**************************************************************************
     !****o* neutrinoAnalysis/reconstruction_Q2_rec_versus_real_PPP.ZZZ.dat
     ! NAME
@@ -3231,10 +3231,10 @@ contains
     ! * #4: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #5: xsec-statistical-error
     !**************************************************************************
-    
-    
-    
-    
+
+
+
+
     !**************************************************************************
     !****o* neutrinoAnalysis/oscillations_UUU_real_PPP.ZZZ.dat
     ! NAME
@@ -3263,9 +3263,9 @@ contains
     ! * #3: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #4: xsec-statistical-error
     !**************************************************************************
-    
-    
-    
+
+
+
     !**************************************************************************
     !****o* neutrinoAnalysis/oscillations_UUU_rec_PPP.ZZZ.dat
     ! NAME
@@ -3294,22 +3294,22 @@ contains
     ! * #3: number of events contributed  (only for internal use, you can safely neglect it)
     ! * #4: xsec-statistical-error
     !**************************************************************************
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     !########################################################
     ! energy-reconstruction/oscillation  ANALYSIS END
     !########################################################
-    
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+
     ! (3) Clear the list "events" to clear the memory
     do i=firstEvents(1),firstEvents(2)
        call event_clear(events(i))
@@ -3425,20 +3425,20 @@ contains
   !***************************************************************************
   subroutine oscillationProbability(Enu,L,deltaCP,Posc_mumu,Posc_mue,Posc_mue_max, &
      & Posc_mue_antimax)
-    
+
     implicit none
-    
+
     real, intent(in) :: enu ! neutrino energy  (GeV)
-    real, intent(in)  :: L ! distance (in km) from the near to the far detector ! 
+    real, intent(in)  :: L ! distance (in km) from the near to the far detector !
                            ! defined in initNeutrino
     real, optional, intent(in) :: deltaCP ! CP violating phase
     real, intent(out) :: Posc_mumu, Posc_mue, Posc_mue_max,Posc_mue_antimax
 
-    !! parameters take from arXiv:1203.4090[hep-ex] Bishai, Diwan, ... 
+    !! parameters take from arXiv:1203.4090[hep-ex] Bishai, Diwan, ...
     !! "Neutrino Oscillations in the Precision Era"
     !! formulas are from the same reference, but adapted for V=0 (correspondingly hat{A}=0)
     !! sin(x) ~ x for small x has been used
-    !! numerical factor 1.267 in oscillation expressions comes from conversion of 
+    !! numerical factor 1.267 in oscillation expressions comes from conversion of
     !! units in deltaM2 * L/(4E)
 
 
@@ -3476,8 +3476,8 @@ contains
     if(process_ID < -1) then
        pid = -1
     else if(process_ID > +1) then
-       pid = +1   
-    else if(process_ID == +1 .or. process_ID == -1) then 
+       pid = +1
+    else if(process_ID == +1 .or. process_ID == -1) then
        call TRACEBACK('oscillation for electrons makes no sense')
     end if
 

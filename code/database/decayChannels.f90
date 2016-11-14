@@ -3,8 +3,8 @@
 ! NAME
 ! Module decayChannels
 ! PURPOSE
-! Defines possible Decay channels for for baryons and mesons. 
-! After initialization all the information can be found in the 
+! Defines possible Decay channels for for baryons and mesons.
+! After initialization all the information can be found in the
 ! file "./DecayChannels.tex".
 !***************************************************************************
 Module DecayChannels
@@ -114,7 +114,7 @@ contains
   ! NAME
   ! subroutine InitDecayChannels
   ! PURPOSE
-  ! Define the decay channels for Baryons and Mesons which are used in BUU. 
+  ! Define the decay channels for Baryons and Mesons which are used in BUU.
   !*************************************************************************
   subroutine InitDecayChannels
     use idtable
@@ -133,9 +133,9 @@ contains
     ! NAME
     ! subroutine baryon_TwoBody
     ! PURPOSE
-    ! Defines possible 2-body decay channels for for the baryons. 
+    ! Defines possible 2-body decay channels for for the baryons.
     ! We set also flags, which decide whether the final
-    ! state particles shall be treated as a stable particles. 
+    ! state particles shall be treated as a stable particles.
     ! And the angular momentum of the decay is defined.
     !*********************************************************************
     subroutine baryon_TwoBody
@@ -226,8 +226,8 @@ contains
     ! NAME
     ! subroutine meson_TwoBody
     ! PURPOSE
-    ! Defines possible 2-body decay channels for for the mesons. 
-    ! We set also flags, which decide whether the final 
+    ! Defines possible 2-body decay channels for for the mesons.
+    ! We set also flags, which decide whether the final
     ! state particles shall be treated as a stable particles.
     !*********************************************************************
     subroutine meson_TwoBody
@@ -269,7 +269,7 @@ contains
     ! NAME
     ! subroutine meson_ThreeBody
     ! PURPOSE
-    ! Defines possible 3-body decay channels for for the mesons. 
+    ! Defines possible 3-body decay channels for for the mesons.
     ! Here also the charges of the final state particles are defined
     !*********************************************************************^
     subroutine meson_ThreeBody
@@ -297,7 +297,7 @@ contains
   ! NAME
   ! subroutine readInput
   ! PURPOSE
-  ! Reads input in jobcard out of namelist "DecayChannels". 
+  ! Reads input in jobcard out of namelist "DecayChannels".
   !************************************************************************
   subroutine readInput
     use output, only: Write_ReadingInput
@@ -350,7 +350,7 @@ contains
       write(10,'(3(I3," & "),2(L6," & "),I3," & ",f5.3)') i, Decay2bodyMeson(i)%id, Decay2bodyMeson(i)%stable, &
                                                           Decay2bodyMeson(i)%angularMomentum, Decay2bodyMeson(i)%threshold
     end do
-    
+
     write(10,*)
 
     do i=1,nDecay2bodyBaryon

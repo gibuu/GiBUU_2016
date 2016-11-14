@@ -30,7 +30,7 @@ contains
   ! * po3 =     "    pion2
   !*****************************************************************
   subroutine EventGenerator(r,pi1,pi2,po1,po2,po3,mediumAtPosition,position,noBoostToLab)
-    use lorentzTrafo, only : lorentz       
+    use lorentzTrafo, only : lorentz
     use random, only : rn
     use amplitudes_2Pi, only : ampli, dos
     use mediumDefinition
@@ -53,7 +53,7 @@ contains
     real::m4,m5,s25,s24p,s24m!,m3
     real,dimension(0:3)::k,p1,p2,p4,p5,p5p,ptot,p4r,p5r!,p2r
     real,dimension(0:3,0:3)::rot
-    type(dos) :: t, td, ti 
+    type(dos) :: t, td, ti
     real :: tsq(2,2),ampl2,proba,a2max,eph
     logical::flag,flag2
     integer,parameter::nitermax=1500
@@ -114,10 +114,10 @@ contains
              write(*,*) w5min, w5max
              cycle
           end if
-          s24p=mn_fm**2+m4**2-1./2./s25*((s25-s+m4**2)*(s25+mn_fm**2-m5**2)- sqrt(kallen(s25,s,m4**2)) & 
-               & *sqrt(kallen(s25,mn_fm**2,m5**2))) 
-          s24m=mn_fm**2+m4**2-1./2./s25*((s25-s+m4**2)*(s25+mn_fm**2-m5**2)+ sqrt(kallen(s25,s,m4**2)) & 
-               & *sqrt(kallen(s25,mn_fm**2,m5**2))) 
+          s24p=mn_fm**2+m4**2-1./2./s25*((s25-s+m4**2)*(s25+mn_fm**2-m5**2)- sqrt(kallen(s25,s,m4**2)) &
+               & *sqrt(kallen(s25,mn_fm**2,m5**2)))
+          s24m=mn_fm**2+m4**2-1./2./s25*((s25-s+m4**2)*(s25+mn_fm**2-m5**2)+ sqrt(kallen(s25,s,m4**2)) &
+               & *sqrt(kallen(s25,mn_fm**2,m5**2)))
           w5minus=(s+m5**2-s24p)/2./srts
           w5plus=(s+m5**2-s24m)/2./srts
           if(w5>=w5minus.and.w5<=w5plus)flag2=.false.
@@ -133,7 +133,7 @@ contains
        !choose directions
        phi45=rn()*2.*pi
        cost4=max(min(2.*(rn()-0.5),1.),-1.)
-       sint4=sqrt(1.-cost4**2) 
+       sint4=sqrt(1.-cost4**2)
        p4r(0)=w4
        p4r(1)=p4m*sint4
        p4r(2)=0.
@@ -161,9 +161,9 @@ contains
        t%t2=td%t2+ti%t2
        tsq=matmul(t%t1,transpose(conjg(t%t1)))+   matmul(t%t2,transpose(conjg(t%t2)))
        ampl2=1./4.*(tsq(1,1)+tsq(2,2))
-       proba=ampl2/a2max 
+       proba=ampl2/a2max
        if(proba>1.)write(*,*)'problems proba Event',proba,a2max,ampl2
-       if(rn()<proba)flag=.false. 
+       if(rn()<proba)flag=.false.
        if(niter==nitermax)then
           write(*,*)'problems EventGenerator nitermax' ,niter,proba,a2max,srts,p4m,p5m
           flag=.false.
@@ -226,9 +226,9 @@ contains
     end do
     if(i>=2)then
        a2max=1.5*max(maxa(r,i),maxa(r,i-1))
-    else if(i==1) then 
+    else if(i==1) then
        a2max=1.5*maxa(r,i)
-    else 
+    else
        write(*,*) 'Error in amax of EventGenerator_TwoPi.f90. i=', i
        stop
     end if

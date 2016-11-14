@@ -1,12 +1,11 @@
-
-!***************************************************************************************************
+!******************************************************************************
 !****m* /leptonTensor
 ! NAME
 ! module leptonTensor
 ! PURPOSE
 ! * Provides the lepton-tensor for the lepton vertex in electro-weak processes
-! * NOTE: lepton tensor contains coupling constants and propagator**2 
-!****************************************************************************************************
+! * NOTE: lepton tensor contains coupling constants and propagator**2
+!******************************************************************************
 
 module leptonTensor
   PRIVATE
@@ -17,14 +16,14 @@ module leptonTensor
   real, parameter :: electronMass=0.00051099892
 
 contains
-  !*******************************************************************************************************
+  !****************************************************************************
   !****f* leptonTensor/l_munu
   ! NAME
   ! real function l_munu(mu,nu,lin,lout)
   !
   ! PURPOSE
   ! * Provides the electromagnetic lepton tensor
-  ! * Evaluates  L_mu,nu * m_e^2 =1/2 e^2/q^4 1/4 Tr[ {GS(lin)+me} gamma_mu {GS(l_f) + me}  gamma_nu ] * m_e^2 
+  ! * Evaluates  L_mu,nu * m_e^2 =1/2 e^2/q^4 1/4 Tr[ {GS(lin)+me} gamma_mu {GS(l_f) + me}  gamma_nu ] * m_e^2
   !   according to Bjorken-Drell Notation
   ! * NOTE: lepton tensor contains coupling constants and propagator**2
   !
@@ -34,7 +33,7 @@ contains
   !
   ! OUTPUT
   ! *   real function l_munu(mu,nu,lin,lout)
-  !****************************
+  !****************************************************************************
   real function l_munu(mu,nu,lin,lout)
 
     use minkowski, only : metricTensor,SP
@@ -54,14 +53,14 @@ contains
   end function l_munu
 
 
-  !*******************************************************************************************************
+  !****************************************************************************
   !****f* leptonTensor/l_munu_matrix
   ! NAME
   ! function l_munu_matrix(lin,lout) result(L)
   !
   ! PURPOSE
   ! * Provides the electromagnetic lepton tensor
-  ! * Evaluates  L_mu,nu * (2m_e)^2 e^2 =1/2 e^4/q^4 Tr[ {GS(lin)+me} gamma_mu {GS(l_f) + me}  gamma_nu ] * m_e^2 
+  ! * Evaluates  L_mu,nu * (2m_e)^2 e^2 =1/2 e^4/q^4 Tr[ {GS(lin)+me} gamma_mu {GS(l_f) + me}  gamma_nu ] * m_e^2
   !   according to Bjorken-Drell Notation
   !
   ! INPUTS
@@ -69,8 +68,8 @@ contains
   !
   ! OUTPUT
   ! * real, dimension(0:3,0:3) :: L
-  !****************************
-  function l_munu_matrix(lin,lout) result(L)
+  !****************************************************************************
+    function l_munu_matrix(lin,lout) result(L)
 
     use minkowski, only : metricTensor,SP
     use constants, only : pi
@@ -92,7 +91,7 @@ contains
 
 
 
-  !*******************************************************************************************************
+  !****************************************************************************
   !****f* leptonTensor/leptonicTensor
   ! NAME
   ! function leptonicTensor(process_ID,flavor_ID,k_in,k_out) result(matrix)
@@ -107,7 +106,7 @@ contains
   !
   ! OUTPUT
   ! * real, dimension(0:3,0:3) :: matrix
-  !******************************************************************************************************
+  !****************************************************************************
   function leptonicTensor(process_ID,k_in,k_out) result(matrix)
     use minkowski, only          : gamma,gamma5,SP,slashed
     use matrix_module, only      : unit4,dagger,trace,matrixmult
@@ -115,8 +114,8 @@ contains
     use constants, only          : pi,alphaQED,GF,coscab
     implicit none
 
-    integer, intent(in)             :: process_ID   
-    real, dimension(0:3),intent(in) :: k_in,k_out  
+    integer, intent(in)             :: process_ID
+    real, dimension(0:3),intent(in) :: k_in,k_out
 
     complex, dimension(0:3,0:3)    :: matrix
 
@@ -129,7 +128,7 @@ contains
     real                        :: a
 
 
-    if(process_ID.gt.0) then  
+    if(process_ID.gt.0) then
        a=1.
     else !anti-particle
        a=-1.
@@ -151,10 +150,10 @@ contains
 
           select case (process_ID)
 
-          case (NC,antiNC) 
+          case (NC,antiNC)
              coupling=GF**2/2.
 
-          case (CC,antiCC) 
+          case (CC,antiCC)
              coupling=GF**2/2.*coscab**2
 
           case (EM,antiEM)
@@ -176,4 +175,3 @@ contains
   end function leptonicTensor
 
 end module leptonTensor
-

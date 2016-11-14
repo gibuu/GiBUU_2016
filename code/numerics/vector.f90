@@ -5,7 +5,7 @@
 !
 ! PURPOSE
 ! This module defines functions for vector handling
-! 
+!
 !***************************************************************************
 
 
@@ -69,7 +69,7 @@ contains
   ! * real ,dimension (1:3),intent(in) :: a,b
   ! * integer,intent(in), optional :: switch
   ! OUTPUT
-  ! * real  :: theta_in 
+  ! * real  :: theta_in
   ! NOTES
   ! * If no switch is given or switch=1, then units : [degrees]
   ! * If switch=2, then units : [radian]

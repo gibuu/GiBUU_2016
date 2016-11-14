@@ -29,6 +29,7 @@
 ! * Olga Lalakulich
 ! * Ivan Lappo-Danilewski
 ! * Tina Leitner
+! * Ulrich Mosel
 ! * Birger Steinmueller
 ! * Janus Weil
 !
@@ -42,7 +43,7 @@
 ! * D-35392 Giessen
 !
 ! Telephone:
-! * +49 (0)641 99 33344
+! * +49 (0)641 99 33344   (U. Mosel)
 !
 ! SEE ALSO
 ! The full physics included in the code is described in this review paper:

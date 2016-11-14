@@ -8,10 +8,10 @@ module Coll_Fritiof
   IMPLICIT NONE
   PRIVATE
   PUBLIC :: DoColl_Fritiof
-  
+
   logical, parameter :: flag_Geiss = .false.   ! if .true., use the energy dependent
                                                ! strangeness suppression factor from
-                                               ! J. Geiss et al., NPA 644, 107 (1998) 
+                                               ! J. Geiss et al., NPA 644, 107 (1998)
 contains
 
   !*************************************************************************
@@ -23,7 +23,7 @@ contains
   ! Perform a collision of particles given in "inPart" with energy "sqrtS" and
   ! return outgoing particles in "outPart".
   ! "pcm" and "beta" are vectors used for Boost and Rotation of the event.
-  ! if "flagOK" is false, no event happened, the output in "outPart" should 
+  ! if "flagOK" is false, no event happened, the output in "outPart" should
   ! be neglected!
   !
   ! INPUTS
@@ -40,13 +40,13 @@ contains
   !
   ! cf. DoColl_Pythia
   !
-  ! in order to understand the meaning of "pcm" and "beta": 
-  ! The (Pythia-)event is done in the restframe of the two given particles. 
-  ! Then a call to PYROBO according 
+  ! in order to understand the meaning of "pcm" and "beta":
+  ! The (Pythia-)event is done in the restframe of the two given particles.
+  ! Then a call to PYROBO according
   !       phi = atan2(pcm(2),pcm(1))
   !       theta = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))
   !       call PYROBO(1,N, theta,phi, beta(1),beta(2),beta(3))
-  ! is performed in order to transform the system into the desired 
+  ! is performed in order to transform the system into the desired
   ! (Lab-) system.
   !*************************************************************************
   subroutine DoColl_Fritiof (inPart, outPart, flagOK, sqrtS, pcm, beta)
@@ -54,7 +54,7 @@ contains
     use output, only: DoPR
     use IdTable, only: nucleon, Delta
     use CollTools, only: ReduceCharge, ConvertInPartFritiof, SetSomeDefaults_FR, SetVectorFromPYJETS, CorrectChargeVector
-    use twoBodyTools, only: IsElastic, IsChargeExchange 
+    use twoBodyTools, only: IsElastic, IsChargeExchange
     use CollGetLeading, only: GetLeading_FR
     use hadronFormation, only: useJetSetVec
     use ID_translation, only: KFfromBUU

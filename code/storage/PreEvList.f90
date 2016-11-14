@@ -13,6 +13,7 @@ module PreEvList
   PRIVATE
 
   PUBLIC :: CreateSortedPreEvent
+  PUBLIC :: ComparePreEvent
   PUBLIC :: PreEvList_INIT, PreEvList_CLEAR, PreEvList_INSERT
   PUBLIC :: PreEvList_Print, PreEvList_PrintEntry
   PUBLIC :: PreEvList_GET
@@ -21,14 +22,15 @@ module PreEvList
   !*************************************************************************
   !****f* PreEvList/CreateSortedPreEvent
   ! NAME
-  ! logical function CreateSortedPreEvent(E, PreE)
-  ! logical function CreateSortedPreEvent(Parts, PreE)
+  ! logical function CreateSortedPreEvent(E, PreE, chargeZero)
+  ! logical function CreateSortedPreEvent(Parts, PreE, chargeZero)
   !
   ! PURPOSE
   ! This routine creates a sorted list of particles on the basis of
   ! type "preEvent" out of the given tEvent.
   !
   ! INPUTS
+  ! * logical, OPTIONAL :: chargeZero -- whether to set the charge to 0
   ! * type(tAnaEvent) ::              E     -- The event
   ! or
   ! * type(particle), dimension(:) :: Parts -- The Particles
@@ -51,13 +53,14 @@ contains
   !*************************************************************************
 
   !-------------------------------------------------------------------------
-  logical function CreateSortedPreEvent_E (E, preE)
+  logical function CreateSortedPreEvent_E(E, preE, chargeZero)
     use sorting, only: indexx
     use particleDefinition
     use particlePointerListDefinition
 
     type(tAnaEvent), intent(in) :: E
     type(preEvent), allocatable, dimension(:), intent(out) :: preE
+    logical, intent(in), OPTIONAL :: chargeZero
 
     integer, parameter :: nPartMax0=40
     real, dimension(1:nPartMax0) :: idCodes
@@ -65,11 +68,18 @@ contains
     type(tParticleListNode),dimension(1:nPartMax0) :: pPartx
     type(tParticleListNode), POINTER  :: pNode
     integer :: i,nPart
+    logical :: doZero
+
 
     CreateSortedPreEvent_E = .false.
 
     nPart = E%particleList%nEntries
     if (nPart<1 .or. nPart>nPartMax0) return
+
+    doZero = .false.
+    if (present(chargeZero)) then
+       doZero = chargeZero
+    end if
 
     i = 1
     pNode => E%particleList%first
@@ -77,7 +87,11 @@ contains
        if (.not. ASSOCIATED(pNode)) exit
        pPartx(i)%V => pNode%V
 
-       idCodes(i) = pNode%V%ID*100 + (pNode%V%charge+5)*10 + 2
+       if (doZero) then
+          idCodes(i) = pNode%V%ID*100 + (5)*10 + 2
+       else
+          idCodes(i) = pNode%V%ID*100 + (pNode%V%charge+5)*10 + 2
+       end if
        if (pNode%V%antiparticle) idCodes(i) = idCodes(i) - 1
 
        i = i+1
@@ -89,7 +103,11 @@ contains
     allocate(preE(1:nPart))
     do i=1,nPart
        preE(i)%ID = pPartx(ind(i))%V%ID
-       preE(i)%charge = pPartx(ind(i))%V%charge
+       if (doZero) then
+          preE(i)%charge = 0
+       else
+          preE(i)%charge = pPartx(ind(i))%V%charge
+       end if
        preE(i)%antiparticle = pPartx(ind(i))%V%antiparticle
        preE(i)%mass = idCodes(ind(i)) ! abuse of mass for storage of code
     enddo
@@ -100,19 +118,27 @@ contains
 
   !-------------------------------------------------------------------------
 
-  logical function CreateSortedPreEvent_P (Parts, preE)
+  logical function CreateSortedPreEvent_P(Parts, preE, chargeZero)
     use sorting, only: indexx
     use particleDefinition
 
     type(particle), dimension(:), intent(in) :: Parts
     type(preEvent), allocatable, dimension(:), intent(out) :: preE
+    logical, intent(in), OPTIONAL :: chargeZero
 
     integer :: i, nPart
     integer, parameter :: nPartMax0=40
     real, dimension(1:nPartMax0) :: idCodes
     integer, dimension(1:nPartMax0) :: ind
+    logical :: doZero
 
     CreateSortedPreEvent_P = .false.
+
+    doZero = .false.
+    if (present(chargeZero)) then
+       doZero = chargeZero
+    end if
+
 
     nPart = 0
     do i=1,size(Parts,dim=1)
@@ -120,7 +146,11 @@ contains
        nPart = i
        if (i>nPartMax0) exit
 
-       idCodes(i) = Parts(i)%ID*100 + (Parts(i)%charge+5)*10 + 2
+       if (doZero) then
+          idCodes(i) = Parts(i)%ID*100 + (5)*10 + 2
+       else
+          idCodes(i) = Parts(i)%ID*100 + (Parts(i)%charge+5)*10 + 2
+       end if
        if (Parts(i)%antiparticle) idCodes(i) = idCodes(i) - 1
     end do
 
@@ -131,7 +161,11 @@ contains
     allocate(preE(1:nPart))
     do i=1,nPart
        preE(i)%ID     = Parts(ind(i))%ID
-       preE(i)%charge = Parts(ind(i))%charge
+       if (doZero) then
+          preE(i)%charge = 0
+       else
+          preE(i)%charge = Parts(ind(i))%charge
+       end if
        preE(i)%antiparticle = Parts(ind(i))%antiparticle
        preE(i)%mass   = idCodes(ind(i)) ! abuse of mass for storage of code
     enddo
@@ -140,6 +174,44 @@ contains
 
   end function CreateSortedPreEvent_P
   !-------------------------------------------------------------------------
+
+  !*************************************************************************
+  !****f* PreEvList/ComparePreEvent
+  ! NAME
+  ! integer function ComparePreEvent
+  ! PURPOSE
+  ! return -1,0,1 as ordering parameter of preEvents
+  !*************************************************************************
+  integer function ComparePreEvent(preE1, preE2)
+
+    type(preEvent), dimension(:), intent(in) :: preE1, preE2
+
+    integer :: i
+
+    if (size(preE1) < size(preE2)) then
+       ComparePreEvent = -1
+       return
+    end if
+    if (size(preE1) > size(preE2)) then
+       ComparePreEvent = 1
+       return
+    end if
+
+    do i=1,size(preE1)
+       if (preE1(i)%mass < preE2(i)%mass) then
+          ComparePreEvent = -1
+          return
+       end if
+       if (preE1(i)%mass > preE2(i)%mass) then
+          ComparePreEvent = 1
+          return
+       end if
+    end do
+
+    ComparePreEvent = 0
+
+  end function ComparePreEvent
+
 
   !*************************************************************************
   !****s* PreEvList/PreEvList_INIT
@@ -335,7 +407,7 @@ contains
   !*************************************************************************
   !****s* PreEvList/PreEvList_Print
   ! NAME
-  ! subroutine PreEvList_Print (iFile, L, fak, n, iBreak, sBreak, withLN)
+  ! subroutine PreEvList_Print (iFile, L, fak, n, iBreak, sBreak, withLN, doSort)
   ! PURPOSE
   ! Write the list "L" to file "iFile". Multiply the written weights
   ! by the factor "fak". As a side effect, the list is being sorted (before printing).
@@ -347,12 +419,13 @@ contains
   ! * integer,OPTIONAL :: iBreak -- some string is inserted after entry nnn
   ! * character*(*),OPTIONAL :: sBreak -- string to insert
   ! * logical, OPTIONAL :: withLN -- print with line numbers
+  ! * logical, OPTIONAL :: doSort -- switch sorting on/off
   ! OUTPUT
   ! witten to file "iFile"
   ! NOTES
   ! The format is not very clean.
   !*************************************************************************
-  subroutine PreEvList_Print (iFile, L, fak, n, iBreak, sBreak, withLN)
+  subroutine PreEvList_Print (iFile, L, fak, n, iBreak, sBreak, withLN, doSort)
     use ParticleProperties, only: isStrange
 
     integer,          intent(IN) :: iFile
@@ -361,19 +434,23 @@ contains
     integer,OPTIONAL, intent(IN) :: n, iBreak
     character*(*),OPTIONAL, intent(IN) :: sBreak
     logical,OPTIONAL, intent(IN) :: withLN
+    logical,OPTIONAL, intent(IN) :: doSort
 
     type(tPreEvListNode), POINTER :: pNode
     integer :: j,ii
     real,dimension(0:1,0:3) :: Sum
-    logical :: flagS,doLN
+    logical :: flagS,doLN,doS
     real :: W
 
     doLN = .false.
     if (present(withLN)) doLN = withLN
 
+    doS = .true.
+    if (present(doSort)) doS = doSort
+
     write(iFile,*) "PreEvList_Print: nEntries     = ", L%nEntries
 
-    call PreEvList_Sort (L)  ! sort before printing
+    if (doS) call PreEvList_Sort(L)  ! sort before printing
 
     Sum = 0
     pNode => L%first
@@ -409,7 +486,7 @@ contains
   !*************************************************************************
   !****s* PreEvList/PreEvList_PrintEntry
   ! NAME
-  ! subroutine PreEvList_PrintEntry(iFile,E,fak,n,iBreak,sBreak,iLN)
+  ! subroutine PreEvList_PrintEntry(iFile,E,fak,n,iBreak,sBreak,iLN,doWeight,noAdvance)
   ! PURPOSE
   ! Print a tPreEvListEntry to output.
   ! INPUTS
@@ -419,14 +496,16 @@ contains
   ! * integer,OPTIONAL :: n -- number of columns to print
   ! * integer,OPTIONAL :: iBreak -- some string is inserted after entry nnn
   ! * character*(*),OPTIONAL :: sBreak -- string to insert
-  ! * integer, OPTIONAL :: withLN -- line number to print
+  ! * integer, OPTIONAL :: iLN -- line number to print
+  ! * logical, OPTIONAL :: doWeight -- print weight or not
+  ! * logical, OPTIONAL :: noAdvance -- print line feed or not
   ! OUTPUT
   ! witten to file "iFile"
   !
   ! NOTES
   ! The format is not very clean.
   !*************************************************************************
-  subroutine PreEvList_PrintEntry(iFile,E,fak,n,iBreak,sBreak,iLN)
+  subroutine PreEvList_PrintEntry(iFile,E,fak,n,iBreak,sBreak,iLN,doWeight,noAdvance)
     use ParticleProperties, only: PartName
 
     integer,          intent(IN) :: iFile
@@ -436,6 +515,8 @@ contains
     integer,OPTIONAL, intent(IN) :: iBreak
     character*(*),OPTIONAL, intent(IN) :: sBreak
     integer, OPTIONAL, intent(IN) :: iLN
+    logical, OPTIONAL, intent(IN) :: doWeight
+    logical, OPTIONAL, intent(IN) :: noAdvance
 
     character*(15), dimension(20) :: AA
     integer :: nAA
@@ -443,13 +524,19 @@ contains
     character*(100) :: BUF,ssB
     character*(1000):: BUF2
     real :: W
-    logical :: doLN
+    logical :: doLN, doW, noAdv
 
     nAA = 8 ! default value
-    if (present(n))  nAA = min(n,20)
+    if (present(n)) nAA = min(n,20)
 
     doLN = .false.
     if (present(iLN)) doLN = .true.
+
+    doW = .true.
+    if (present(doWeight)) doW = doWeight
+
+    noAdv = .false.
+    if (present(noAdvance)) noAdv = noAdvance
 
     iiB = 0 ! default value
     if (present(iBreak)) iiB = iBreak
@@ -457,23 +544,14 @@ contains
     if (iiB.gt.0) then
        ssB = ' : '
        if (present(sBreak)) ssB = trim(sBreak)
-       if (DoLN) then
-          write(BUF,1011) iiB,trim(ssB)
-       else
-          write(BUF,1001) iiB,trim(ssB)
-       endif
+       write(BUF,1001) iiB,trim(ssB)
     else
-       if (DoLN) then
-          write(BUF,1010)
-       else
-          write(BUF,1000)
-       endif
+       write(BUF,1000)
     endif
 
-1000 format ("(f12.5,20A16)")
-1001 format ("(f12.5,",i2,"A16,'",A,"',20A16)")
-1010 format ("(i9,f12.5,20A16)")
-1011 format ("(i9,f12.5,",i2,"A16,'",A,"',20A16)")
+
+1000 format ("(20A16)")
+1001 format ("(",i2,"A16,'",A,"',20A16)")
 
 !    write(*,*) 'PreEvList_PrintEntry: BUF=#',trim(BUF),'#'
 
@@ -484,13 +562,17 @@ contains
     enddo
     W = E%weight * fak
 
+    if (doLN) write(iFile, '(i9)', advance='no') iLN
 
-    if (DoLN) then
-       write(BUF2,BUF) iLN,W,AA
+    if (doW) write(iFile, '(f12.5)', advance='no') W
+
+    write(BUF2,BUF) AA
+
+    if (noAdv) then
+       write(iFile,'(A)',advance='no') trim(BUF2)
     else
-       write(BUF2,BUF) W,AA
-    endif
-    write(iFile,'(A)') trim(BUF2)
+       write(iFile,'(A)') trim(BUF2)
+    end if
 
   end subroutine PreEvList_PrintEntry
 

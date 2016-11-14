@@ -22,7 +22,7 @@ contains
   ! PURPOSE
   ! Monte-Carlo decision according to eq. 5.43-5.44 of Oliver Buss' thesis:
   ! * Given an array of weigths (which do not have to be normalized or positive),
-  !   this routine chooses one channel and calculates the weight which this event should 
+  !   this routine chooses one channel and calculates the weight which this event should
   !   then be assigned.
   ! INPUTS
   ! real, dimension(:), intent(in) :: a    -- Array of weights
@@ -52,7 +52,7 @@ contains
        x=x+abs(a(i))
        if (r<=x) then
           if (present(total)) total = sign(tot,a(i))
-          MonteCarloChoose = i 
+          MonteCarloChoose = i
           return
        end if
     end do
@@ -70,7 +70,7 @@ contains
   ! PURPOSE
   ! Monte-Carlo decision according to eq. 5.43-5.44 of Oliver Buss' thesis:
   ! * Given an array of weigths (which do not have to be normalized or positive),
-  !   this routine chooses one channel and calculates the weight which this event should 
+  !   this routine chooses one channel and calculates the weight which this event should
   !   then be assigned.
   ! INPUTS
   ! real, dimension(1:,1:), intent(in) :: a    -- Array of weights
@@ -98,7 +98,7 @@ contains
           x=x+abs(a(i,j))
           if (r<=x) then
              if (present(total_out)) total_out = sign(total,a(i,j))
-             channel=(/i,j/) 
+             channel=(/i,j/)
              return
           end if
        end do

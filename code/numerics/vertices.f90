@@ -25,7 +25,7 @@ module vertices
 
 contains
 
-    
+
   subroutine readInput
     use output, only: Write_ReadingInput
 
@@ -62,8 +62,8 @@ contains
   ! function vertex_gammaN_to_spin3_2(q,p,resID,resCharge) result(vertex)
   !
   ! PURPOSE
-  ! * Provides the vertex for gamma N -> spin 3/2 resonance 
-  !  
+  ! * Provides the vertex for gamma N -> spin 3/2 resonance
+  !
   ! INPUTS
   ! * real, dimension(0:3), intent(in) :: q,p        -- photon and nucleon momenta
   ! * integer             , intent(in) :: resID      -- ID of the resonance
@@ -122,16 +122,16 @@ contains
 
 
 
-    
+
     term=C(3)/mN * slashed(q) + (C(4)/mN**2 * SP(pf,q) + C(5)/mN**2 * SP(pi,q) + C(6))* unit4
     do lambda=0,3
        do nu=0,3
           helper=  metricTensor(lambda,nu)*  term &
-               & - q(lambda)* ( C(3)/mN * gamma(:,:,nu)  + (C(4)/mN**2 * pf(nu) + C(5)/mN**2 * pi(nu)         )* unit4 ) 
+               & - q(lambda)* ( C(3)/mN * gamma(:,:,nu)  + (C(4)/mN**2 * pf(nu) + C(5)/mN**2 * pi(nu)         )* unit4 )
           Select Case(resParity)
           case(-1)
              vertex(lambda,nu,:,:)  =  helper
-          case(1) 
+          case(1)
              ! Multiply by gamma(5)
              vertex(lambda,nu,:,:)  =  MatMul(helper,gamma(:,:,5))
           Case default
@@ -139,7 +139,7 @@ contains
           end Select
        end do
     end do
-        
+
   end function vertex_gammaN_to_spin3_2
 
 

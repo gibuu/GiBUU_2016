@@ -4,8 +4,8 @@
 ! module FragmentNucleons
 !
 ! PURPOSE
-! This does a fragmentation according SMM and deletes bound nucleons and 
-! inserts nucleons stemming from this fragmentation. 
+! This does a fragmentation according SMM and deletes bound nucleons and
+! inserts nucleons stemming from this fragmentation.
 !***************************************************************************
 module FragmentNucleons
 
@@ -13,7 +13,7 @@ module FragmentNucleons
   PRIVATE
 
   !*************************************************************************
-  !****g* 
+  !****g*
   ! SOURCE
   !
   integer, save :: BoundMethod = 1
@@ -25,7 +25,7 @@ module FragmentNucleons
   !*************************************************************************
 
   !*************************************************************************
-  !****g* 
+  !****g*
   ! SOURCE
   !
   logical, save :: DoRemoveBound = .true.
@@ -46,8 +46,8 @@ contains
   ! OUTPUT
   ! ...
   ! NOTES
-  ! * we assume, that the run was in parallel mode. (This is no 
-  !   restriction, since the real part vector is only modified in 
+  ! * we assume, that the run was in parallel mode. (This is no
+  !   restriction, since the real part vector is only modified in
   !   real-real collisions, and here we have no 'local/full' mode yet.)
   ! * At the moment, we assume only ONE single source. (cf.
   !   module sourceAnalysis how one should extent this.)
@@ -92,7 +92,7 @@ contains
     write(*,'("B(N=",i3,",Z=",i3,") = ",f12.4,"MeV")') &
          & targetNuc%mass-targetNuc%charge,targetNuc%charge-1,&
          & 1000*BWformula( (/real(targetNuc%mass-targetNuc%charge),real(targetNuc%charge-1)/) )/(targetNuc%mass-1)
-    
+
 
     do iEns = 1,size(Part,dim=1)
        Source = Source0
@@ -168,7 +168,7 @@ contains
              mom(0:3) = Part(iEns,iPart)%momentum(0:3)
              call lorentz(Source%velocity,mom) ! boost to SRF
              PartSRF%momentum = mom
-             
+
              SourceMom(0) = SourceMom(0) + trueEnergy(PartSRF)
           end do
           SourceMom(1:3) = 0.0
@@ -178,21 +178,21 @@ contains
        end if
 
        ! Step 3: Remove bound nucleons from particle vector, if desired
-       
+
        if (DoRemoveBound) then
           do iPart=1,size(Part,dim=2)
              if (Part(iEns,iPart)%Id <  0) exit
              if (Part(iEns,iPart)%Id.ne.1) cycle ! no nucleon
              if (Part(iEns,iPart)%antiparticle) cycle
              if (.not.IsBound()) cycle
-             
+
              Part(iEns,iPart)%Id = 0 ! delete particle
           end do
 
           call GarbageCollection(Part, iiEns = iEns)
        end if
 
-       ! Step 4: 
+       ! Step 4:
 
        Source%status=.true.
        Source%ExEnergy = SourceMom(0)
@@ -218,7 +218,7 @@ contains
       type(dichte)    :: LocalDens
 
       IsBound = .false.
-      
+
       select case(BoundMethod)
       case (1)
          IsBound = (Part(iEns,iPart)%momentum(0) < Part(iEns,iPart)%mass)
@@ -228,7 +228,7 @@ contains
       case DEFAULT
          call TRACEBACK('wrong BoundMethod')
       end select
-      
+
     end function IsBound
 
 
@@ -241,7 +241,7 @@ contains
       N = A(1)
       Z = A(2)
 
-      BWformula = av*M - a0*M**(2./3.) - ac*Z*(Z-1.)*M**(-0.33333333) - & 
+      BWformula = av*M - a0*M**(2./3.) - ac*Z*(Z-1.)*M**(-0.33333333) - &
            & as*(N-Z)**2/M
 
       BWformula = abs(BWformula/1000.)
@@ -249,5 +249,5 @@ contains
     end function BWformula
 
   end subroutine DoAddFragmentNucleons
-  
+
 end module FragmentNucleons

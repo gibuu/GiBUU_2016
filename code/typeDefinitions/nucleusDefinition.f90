@@ -94,14 +94,14 @@ contains
     write(*,*)'::: Surface of nucleus =',Nuc%surface
     write(*,*)'::: Central density    =',Nuc%density
   end subroutine WriteNucleus
-  
+
 
   !*************************************************************************
   !****s* nucleusDefinition/WriteNucleusStaticDens
   ! NAME
   ! subroutine WriteNucleusStaticDens(name,nuc)
   ! PURPOSE
-  ! write the static density to file 
+  ! write the static density to file
   !*************************************************************************
   subroutine WriteNucleusStaticDens (name, nuc)
     character*(*), intent(in) :: name

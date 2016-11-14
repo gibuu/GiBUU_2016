@@ -5,7 +5,7 @@
 ! PURPOSE
 ! Includes the cross sections for phi-nucleon scattering in the resonance regime.
 ! Public routines:
-! * phiNuc 
+! * phiNuc
 !****************************************************************************
 module phiNucleon
   implicit none
@@ -36,34 +36,34 @@ contains
   ! * type(medium), intent(in)                      :: mediumATcollision     ! Medium informations at the position of the collision
   !
   ! High energy matching:
-  ! * logical,intent(in)                            :: useHiEnergy            
+  ! * logical,intent(in)                            :: useHiEnergy
   ! * .true. if High-Energy cross sections are given by paramBarMesHE
-  ! * real,intent(in)                               :: HiEnergySchwelle      
+  ! * real,intent(in)                               :: HiEnergySchwelle
   ! * threshold sqrt(s) for paramBarMesHE, i.e. at which energy the cross sections of paramBarMesHE are used
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! OUTPUT
   ! * real, intent(out)                                        :: sigmaTot         ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! colliding particles
-  ! 
-  ! The cross sections are based upon a parametrization by Golubeva. See routine golub_phi in 
+  !
+  ! The cross sections are based upon a parametrization by Golubeva. See routine golub_phi in
   ! parametrizationBarMes.
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   ! * 2-particle : pi N, phi N, pi pi N
   !****************************************************************************
   subroutine phiNuc (srts, teilchenIN, mediumATcollision, teilchenOUT, sigmaTot, sigmaElast, &
                      useHiEnergy, HiEnergySchwelle, plotFlag)
- 
+
     use idTable
     use particleDefinition
     use mediumDefinition
@@ -95,20 +95,20 @@ contains
 
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
-    real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities
                                  ! in the medium compared to the vacuum
-    type(particle) :: phi_particle, nucleon_particle    
+    type(particle) :: phi_particle, nucleon_particle
     logical :: antiParticleInput, failFlag
 
 
 
     ! partial cross sections for phi N -> R
-    !real , dimension(:),Allocatable :: sigmaRes      
+    !real , dimension(:),Allocatable :: sigmaRes
 
     ! Field to store the resonance masses
     !real , dimension(:),Allocatable ::massRes      ! Resonance masses
-    !Allocate(sigmaRes(lBound(baryon,dim=1):uBound(baryon,dim=1))) 
-    !Allocate(massRes(lBound(baryon,dim=1):uBound(baryon,dim=1))) 
+    !Allocate(sigmaRes(lBound(baryon,dim=1):uBound(baryon,dim=1)))
+    !Allocate(massRes(lBound(baryon,dim=1):uBound(baryon,dim=1)))
 
 
     antiParticleINPUT=.false. ! .true. if antiparticle in the input
@@ -132,7 +132,7 @@ contains
     end if
 
     If(nucleon_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        nucleon_particle%Charge        =  -nucleon_particle%Charge
        nucleon_particle%antiparticle  = .false.
        phi_particle%Charge          =  -phi_particle%Charge
@@ -168,7 +168,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.nucleon_particle%charge+phi_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,phi_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,phi_particle%Charge, &
             & nucleon_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -187,7 +187,7 @@ contains
     ! NAME
     ! subroutine evaluateXsections
     ! PURPOSE
-    ! Evaluates phi Nucleon -> anything cross sections 
+    ! Evaluates phi Nucleon -> anything cross sections
     ! NOTES
     ! There are no resonance contributions to phi N scattering.
     ! The contributions are given by Golubeva (see golub_phi).
@@ -217,7 +217,7 @@ contains
       !*******************************************************************************************
       ! phi N -> pi N
       !*****************************************************************************************
-      ! piN = cross section by Golubeva (pi^- p-> phi N) by detailed balance - vacuum cross section by resonances 
+      ! piN = cross section by Golubeva (pi^- p-> phi N) by detailed balance - vacuum cross section by resonances
 
       pFinal=pcm(srts,mPi,mN)
       pInitial=pcm(srts,phi_particle%mass,nucleon_particle%mass)
@@ -228,8 +228,8 @@ contains
          write(*,*) 'nucleon:'
          call writeparticle(6,0,0,nucleon_Particle)
          detailedBalanceFactor= 0.
-      else  
-         detailedBalanceFactor= 1./3.*(pFinal/pInitial)**2        
+      else
+         detailedBalanceFactor= 1./3.*(pFinal/pInitial)**2
          ! given by detailed balance: factor 1/3 due to (2j+1)-Terms in cross section and different
          ! spins in initial and final state
       end if
@@ -299,7 +299,7 @@ contains
       !###################################################################################################
       ! Sum up everything for the total cross section
       !###################################################################################################
- 
+
       sigmaTot=phiN + sum( piN ) + pipiN
 
     end subroutine evaluateXsections
@@ -341,7 +341,7 @@ contains
       cut=cut-phiN
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piN(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=nucleon
@@ -390,7 +390,7 @@ contains
     ! NAME
     ! subroutine makeOutput
     ! PURPOSE
-    ! Writes all cross sections to file as function of srts and plab [GeV]. 
+    ! Writes all cross sections to file as function of srts and plab [GeV].
     ! Filenames:
     ! * 'phiN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'phiN_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state

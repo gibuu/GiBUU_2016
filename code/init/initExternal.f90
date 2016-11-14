@@ -24,8 +24,8 @@ module initExternal
   ! SOURCE
   logical, save :: DoPerturbative = .false.
   ! PURPOSE
-  ! if true, the particles will be inserted into the perturbative particle 
-  ! vector, the real particles have to be initialized via some nucleus 
+  ! if true, the particles will be inserted into the perturbative particle
+  ! vector, the real particles have to be initialized via some nucleus
   ! definition
   !***************************************************************************
 
@@ -35,7 +35,7 @@ module initExternal
   integer, save :: NumberingScheme = 1
   ! PURPOSE
   ! The way, how particles%event will be numbered:
-  ! * 1: event = iPart, i.e. the particle number in the ensemble 
+  ! * 1: event = iPart, i.e. the particle number in the ensemble
   !   (historical, but does not work for fullensemble)
   ! * 2: event = -999 (should work for perturbative init)
   !***************************************************************************
@@ -69,7 +69,7 @@ contains
 
     !*************************************************************************
     !****n* initExternal/externalSystem
-    ! NAME 
+    ! NAME
     ! NAMELIST externalSystem
     ! PURPOSE
     ! Includes the switches:
@@ -96,7 +96,7 @@ contains
   ! NAME
   ! subroutine initializeExternal(PartsReal,PartsPert)
   ! PURPOSE
-  ! Read the particles from the file 
+  ! Read the particles from the file
   !***************************************************************************
   subroutine initializeExternal(PartsReal,PartsPert)
     use particleDefinition

@@ -43,12 +43,12 @@ module AnaEvent
   implicit none
 
   PRIVATE
-  
+
   logical :: debug=.false.
   logical :: exclusive_hadron
 
   integer, parameter, public:: dimSigma=120      ! number of possible channels
-  
+
   !*************************************************************************
   !****ig* AnaEvent/particleIDs_flag
   ! SOURCE
@@ -56,7 +56,7 @@ module AnaEvent
   logical, dimension(1:numStableParts),save :: particleIDs_flag=.true.
   ! PURPOSE
   ! Flags to switch on/off output of special ID's,
-  ! e.g. particleIDs_flag(1)=.false. means that there is no output for pions 
+  ! e.g. particleIDs_flag(1)=.false. means that there is no output for pions
   ! The array particleIDs is set in module AnaEventDefinition.f90
   !*************************************************************************
 
@@ -72,7 +72,7 @@ module AnaEvent
   public :: exclusive_hadron
   public :: set_Exclusive
 
- 
+
 contains
 
   !*************************************************************************
@@ -243,7 +243,7 @@ contains
     integer :: outLeptonID, outLeptoncharge
 
     call get_init_namelist(outLepton_ID=outLeptonID, outLepton_charge=outLeptoncharge)
-    
+
     channel=0
     sigma_name(:,1)=' '
     sigma_name(:,2)=' '
@@ -298,15 +298,15 @@ contains
           eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)
              ! (2) Count contributions of any particles in the event with charge="charge"
              !     and ID="particleIDs(i):
-                      
+
            if(( E(j)%numberParticles(i,charge).eq.1)  .and.  &
-                & ( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1)) then                                           
-                
+                & ( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1)) then
+
                 if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                    sigma(channel,1)=sigma(channel,1)+part%perweight
                 else
                    write(*,*) j,i,charge, E(j)%numberParticles(i,charge)
-                   write(*,*) particleIDs(i) 
+                   write(*,*) particleIDs(i)
                    write(*,*) ParticleIDs
                    fname = 'SpecialEvent'
                    call event_dump(1,E,fname)
@@ -911,11 +911,11 @@ contains
                 if( ((i <= numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1)  &
                   &  .and.( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1))        &
                ! so far exclusive 1 meson in final state, no other mesons
-               ! now exclusive 1 baryon in final state, plus mesons   
+               ! now exclusive 1 baryon in final state, plus mesons
                   &          .or.                                          &
                   &  ((i > numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1) &
-                  &  .and.( sum(E(j)%numberParticles(i,:)).eq.1)) )   then 
-                  
+                  &  .and.( sum(E(j)%numberParticles(i,:)).eq.1)) )   then
+
                       if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                          call get_phi_Theta(part%momentum(1:3),theta,phi)
                    !                    theta=degrees(theta)
@@ -927,8 +927,8 @@ contains
                          write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
                          call Traceback()
                       end if
-                end if  
-          else 
+                end if
+          else
              if((E(j)%numberParticles(i,charge).eq.1).and.( sum(E(j)%numberParticles(i,:)).eq.1))&
                 & then
                 if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
@@ -943,7 +943,7 @@ contains
                    call Traceback()
                 end if
              end if
-           end if  
+           end if
           end do eventLoop
 
           ! Output histograms
@@ -1041,9 +1041,9 @@ contains
     use particleProperties, only: validCharge_ID, PartName
     use output, only : intTochar_pm,intToChar
     use histf90
-   
 
-    logical , intent(in), optional ::sameFileNameIn ! .true. = always print to same filenames., 
+
+    logical , intent(in), optional ::sameFileNameIn ! .true. = always print to same filenames.,
                                                     !.false. = different files for different runs
     logical , intent(in), optional ::makeOutputIn ! Flag to switch off output: .false. = no output
     real, intent(in) :: eMin, eMax, dE
@@ -1053,7 +1053,7 @@ contains
     type(particle) :: part
     type(histogram) :: dsigma_dE,dsigma_dE_multi, dsigma_dE_1X, dsigma_dE_2X
     integer :: charge,i,j, particle_number
-    character(80) :: filename,filename1X,filename2X,filenameMulti,name,name1  
+    character(80) :: filename,filename1X,filename2X,filenameMulti,name,name1
  !   character(100) :: fname
     real :: ekin
     type(histogram),optional, intent(inout),dimension(1:numStableParts,-2:2) :: hists
@@ -1080,15 +1080,15 @@ contains
 
     If(runNumber.lt.1) then
        call Traceback('Error in event_dSigma_dE. runNumber.lt.1')
-    end if 
-    
+    end if
+
  ! first loop over all particles (mesons and baryons) in IDTABLE
-    idLoop: Do i=lBound(particleIDs,dim=1),uBound(particleIDs,dim=1) 
-       if(.not.particleIDs_flag(i)) cycle 
-       
- ! then loop over individual charge states     
-       chargeLoop: do charge=-2,2  
-          if(.not.validCharge_ID(particleIDs(i),charge)) cycle  
+    idLoop: Do i=lBound(particleIDs,dim=1),uBound(particleIDs,dim=1)
+       if(.not.particleIDs_flag(i)) cycle
+
+ ! then loop over individual charge states
+       chargeLoop: do charge=-2,2
+          if(.not.validCharge_ID(particleIDs(i),charge)) cycle
 
           ! Initialize histogram
           makeInitHists=.true.
@@ -1096,7 +1096,7 @@ contains
              if(.not.initHists) makeInitHists=.false.
           end if
 
-          name = PartName(particleIds(i),charge,.false.) 
+          name = PartName(particleIds(i),charge,.false.)
           name1 = name
           if(i <= numStableMesons .and. exclusive_hadron) name1 = trim('excl'//name)
           if(makeInitHists) then
@@ -1126,7 +1126,7 @@ contains
          name1 = name
          if(i <= numStableMesons .and. exclusive_hadron) name1 = trim('excl'//name)
           if(sameFileName) then
-             filename=trim(string)//'_dSigma_dEkin_'// trim(name1)//'_charge_'//  & 
+             filename=trim(string)//'_dSigma_dEkin_'// trim(name1)//'_charge_'//  &
              &  intTochar_pm(charge) //'.dat'
              filename1X=trim(string)//'_dSigma_dEkin_'// trim(name)//'_charge_'//  &
              &  intTochar_pm(charge) //'_1X.dat'
@@ -1147,17 +1147,17 @@ contains
                   & //'_charge_'//intTochar_pm(charge) //'.' //trim(intTochar(runNumber))//  &
                   &  '_MULTI.dat'
           end if
-          
-      
+
+
       ! Find out whether there are any particles in the event 'j' with charge="charge"
       ! and ID="particleIDs(i)
-      
+
           eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)
-     
+
       ! Now exclusive X-sections for hadrons. 
       ! For mesons (i <= numStableMesons) there is exactly
       ! 1 meson of given flavor 'i' and charge 'charge' and no other particles
-      
+
       ! So far, events are checked for exclusivity only for 'stable particles', as defined
       ! earlier in AnaEvent im array ParticleIDs. It could thus be that an 'exclusive event'
       ! still contains in addition a particle that is not included in ParticleIDs. These are
@@ -1211,20 +1211,21 @@ contains
           
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! event selection check
-!   if (charge == -1 .and. i == 1 .and. (trim(string) == 'diff_000')) then     
+!   if (charge == -1 .and. i == 1 .and. (trim(string) == 'diff_000')) then
 !    fname = 'SpecialEvent'
-!    call event_dump(1,E,fname)     
+!    call event_dump(1,E,fname)
 !    write(*,111) 'SECOND i= ',i,'   j= ',j,ekin,part%momentum(0),part%perweight, &
 !    & E(j)%numberParticles(i,charge),&
 !    & E(j)%numberParticles(1:numStableMesons,-2),E(j)%numberParticles(1:numStableMesons,-1), &
 !    & E(j)%numberParticles(1:numStableMesons,0),&
 !    & E(j)%numberParticles(1:numStableMesons,+1), &
 !    & E(j)%numberParticles(1:numStableMesons,+2), sum(E(j)%numberParticles(1,:)), &
-!    & sum(E(j)%numberParticles(1:numStableMesons,:))  
-!    111 Format(2(A,I5),3F10.3, I5/6I5/6I5/6I5/6I5/6I5/2I5)      
+!    & sum(E(j)%numberParticles(1:numStableMesons,:))
+!    111 Format(2(A,I5),3F10.3, I5/6I5/6I5/6I5/6I5/6I5/2I5)
 !    stop
 !   end if
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
 
 
@@ -1287,7 +1288,7 @@ contains
                    end if
                 end do
              end if
-             
+
           end do eventLoop
 
 
@@ -1371,9 +1372,9 @@ contains
           call RemoveHist(dsigma_dE_multi)
 
        end Do chargeLoop
-       
+
     end do idLoop
-    
+
   end subroutine event_dSigma_dE
 
 
@@ -1457,8 +1458,8 @@ contains
        &   dsigma_dcostheta_MULTI
     integer :: charge,i,j, particle_number
     character(80) :: name, name1, filename_Ecostheta, filename_costheta, &
-       & filename_Ecostheta_MULTI, filename_costheta_MULTI  
-!    character(100) :: fname   
+       & filename_Ecostheta_MULTI, filename_costheta_MULTI
+!    character(100) :: fname
     logical :: makeInitHists
 
     real :: Ecostheta,costheta
@@ -1489,7 +1490,7 @@ contains
     If(runNumber.lt.1) then
        call TraceBack('runNumber.lt.1')
     end if
-   
+
     idLoop: Do i=lBound(particleIDs,dim=1),uBound(particleIDs,dim=1)
        if(.not.particleIDs_flag(i)) cycle
        chargeLoop: do charge=-2,2
@@ -1557,20 +1558,20 @@ contains
 
              ! Count contributions of any particles in the event with charge="charge"
              ! and ID="particleIDs(i):
-             
-             eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)          
-             ! single particle events 
+
+             eventLoop: do j=lBound(E,dim=1),uBound(E,dim=1)
+             ! single particle events
 
     excl: if(exclusive_hadron) then
-                                 
+
          sel:  if( ((i <= numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1)  &
                   &  .and.( sum(E(j)%numberParticles(1:numStableMesons,:)).eq.1))        &
                ! so far exclusive 1 meson in final state, no other mesons
-               ! now exclusive 1 baryon in final state, plus mesons   
+               ! now exclusive 1 baryon in final state, plus mesons
                   &          .or.                                          &
                   &  ((i > numStableMesons) .and. ( E(j)%numberParticles(i,charge).eq.1) &
-                  &  .and.( sum(E(j)%numberParticles(i,:)).eq.1)) )   then 
- 
+                  &  .and.( sum(E(j)%numberParticles(i,:)).eq.1)) )   then
+
          getpart:  if( event_GetParticle(E(j),particleIDs(i),charge,1,part)) then
                         If(dot_product(part%momentum(1:3),part%momentum(1:3)).gt.0) then
                            costheta=part%momentum(3)/sqrt(dot_product(part%momentum(1:3), &
@@ -1578,19 +1579,19 @@ contains
                         else
                            costheta=0.
                         end if
-   
+
                       Ecostheta=part%momentum(0)*(1.-costheta)
                       call addHist(dsigma_dEcostheta, Ecostheta ,part%perweight)
-                      call addHist(dsigma_dcostheta, costheta ,part%perweight) 
-                       
+                      call addHist(dsigma_dcostheta, costheta ,part%perweight)
+
                    else  getpart
                       write(*,*) 'numberParticles =',E(j)%numberParticles(i,charge)
                       call Traceback()
                    end if  getpart
                  end if   sel
-  
+
           else excl
-          
+
               if((E(j)%numberParticles(i,charge).eq.1) .and.  &
                 &  ( sum(E(j)%numberParticles(i,:)).eq.1))&
                 &  then
@@ -1610,8 +1611,8 @@ contains
                    end if
               end if
           end if excl
-          
-                  
+
+
              ! multi particle events
              if(E(j)%numberParticles(i,charge).ge.1) then
                do particle_number=1,E(j)%numberParticles(i,charge)
@@ -1786,7 +1787,7 @@ contains
        &  dW_muN,Wmin_muN,Wmax_muN
     logical, intent(in),optional :: initHists
     logical , intent(in), optional ::makeOutputIn ! Flag to switch off output : .false. = no output
-    logical , intent(in), optional ::sameFileNameIn ! .true. = always print to same filenames., 
+    logical , intent(in), optional ::sameFileNameIn ! .true. = always print to same filenames.,
                                                     ! .false. = different files for different runs
 
     type(particle) :: part_pion, part_nucleon, part_muon
@@ -1879,7 +1880,7 @@ contains
           ! search for event with 1 pion  and 1 nucleon (and 1 muon automatically)
           if((          E(j)%numberParticles(1,charge).eq.1) .and. &  ! in numberParticles pion=1
                & sum(E(j)%numberParticles(1,:)).eq.1      .and. &
-               & sum(E(j)%numberParticles(numStableMesons+1,:)).eq.1       ) then 
+               & sum(E(j)%numberParticles(numStableMesons+1,:)).eq.1       ) then
                  ! in numberParticles nucleon=numStableMesons + 1
 
              !write(*,'(A,I5)') 'Event number j=',j
@@ -2050,12 +2051,12 @@ contains
   ! * logical, intent(in) :: sameFileNameIn  --
   !   .true. = always print to same filenames,
   !   .false. = different files for different runs
-  ! * integer, intent(in) :: specificEvent  -- specify final state 
+  ! * integer, intent(in) :: specificEvent  -- specify final state
   !   (see subroutine SpecificEvent_Name)
   !
   ! These optional input variables return the evaluated histograms.
   ! In hist_E you will find the dsigma_dE(kinetic energy of the outgoing lepton).
-  ! In hist_cos you will find the dsigma_dcostheta(angle of the outgoing lepton 
+  ! In hist_cos you will find the dsigma_dcostheta(angle of the outgoing lepton
   ! relative to incoming neutrino).
   ! In hist_Q2 you will find the dsigma_dQ^2.
   !
@@ -2863,7 +2864,7 @@ contains
           list_numPhotons(numPhotons,1) =list_numPhotons(numPhotons,1)+1.
           ! Sum of perweights
           if(numPhotons.ne.0) then
-             list_numPhotons(numPhotons,2) =list_numPhotons(numPhotons,2) & 
+             list_numPhotons(numPhotons,2) =list_numPhotons(numPhotons,2) &
                 & +minval(perweight(1:numPhotons))
           else
              list_numPhotons(numPhotons,2) =list_numPhotons(numPhotons,2)+default_perweight
@@ -2972,7 +2973,7 @@ contains
   ! * type(tAnaEvent),dimension(:) :: L -- The eventlist
   ! * real                      :: numin, numax, nubin  --  min, max and bin for the
   !                                nu,Ehad-related  histograms
-  ! * real                      :: Enumin, Enumax, Enubin  --  min, max and bin for the 
+  ! * real                      :: Enumin, Enumax, Enubin  --  min, max and bin for the
   !                                Enu,Enurestored-related histograms
   !
   ! OUTPUT
@@ -2995,10 +2996,10 @@ contains
     use initNeutrino, only       : K2Hist, max_Hist, includeHist
 
     type(tAnaEvent),dimension(:), intent(in) :: L
-    real, intent(in) :: numin, numax, nubin ! boundaries for the hystograms 
-                                            ! in the namelist "nl_calorimetric_analysis" 
+    real, intent(in) :: numin, numax, nubin ! boundaries for the hystograms
+                                            ! in the namelist "nl_calorimetric_analysis"
                                             ! in neutrinoAnalysis.f90
-    real, intent(in) :: Enumin, Enumax, Enubin ! boundaries for the hystograms 
+    real, intent(in) :: Enumin, Enumax, Enubin ! boundaries for the hystograms
                                                ! in the namelist "nl_calorimetric_analysis"
     type(histogram2D),dimension(0:max_Hist), intent(inout) :: Ehad_versusNu, Enurestored_versusEnu
     type(histogram), dimension(0:max_Hist),intent(inout) :: dSigdNu, dSigdEhad, dSigdEnu, &
@@ -3072,7 +3073,7 @@ contains
           if( isBaryon(pNode%V%ID) ) then
              ! for baryons add  energy-nucleon mass, for antybaryons energy+nucleon mass
              if (pNode%V%antiparticle) then
-                Ehad=Ehad+pNode%V%momentum(0)+mN !antibaryon energy 
+                Ehad=Ehad+pNode%V%momentum(0)+mN !antibaryon energy
                                                  ! + compensation for an accompaning baryon
              else
                 Ehad=Ehad+pNode%V%momentum(0)-mN
@@ -3138,8 +3139,8 @@ contains
     end do
 
   end subroutine event_hadronicEnergy
-  
-      
+
+
 
   subroutine SpecificEvent_Name(specificEvent,name)
     integer, intent(in) :: specificEvent
@@ -3176,13 +3177,13 @@ contains
     case (15)
        name = 'n_no_pi'
     case (16)
-       name = 'Xn_no_pi' 
-    case (17) 
+       name = 'Xn_no_pi'
+    case (17)
        name = 'excl_pi0'
     case (18)
        name = 'excl_piplus'
     case (19)
-       name = 'excl_piminus'         
+       name = 'excl_piminus'
     case default
        write(*,*) 'In SpecificEvent_Name WRONG specificEvent=', specificEvent, 'STOP'
        stop
@@ -3265,11 +3266,11 @@ contains
 
  ! This subroutine sets the switch 'exclusive_hadron' for truly exclusive 1 meson production
  ! The calling variable 'A' is read in in neutrinoAnalysis
- 
+
    subroutine set_Exclusive(A)
    logical, intent(in) :: A
    exclusive_hadron = A
    end subroutine set_Exclusive
- 
+
 
 end module AnaEvent

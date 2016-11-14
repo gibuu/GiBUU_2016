@@ -7,7 +7,7 @@
 ! Contains output routines for the hadron induced reactions
 ! NOTES
 ! The routines of this module do not influence the physical processes.
-! For some purposes also routines from the module HeavyIonAnalysis 
+! For some purposes also routines from the module HeavyIonAnalysis
 ! can be useful.
 !*****************************************************************************
 module hadronAnalysis
@@ -36,7 +36,7 @@ module hadronAnalysis
   ! becomes for the first time less than the cut values pCut1 and pCut2
   ! (files DoHadronAnalysisTime1.dat and  DoHadronAnalysisTime2.dat)
   ! and if it becomes bound (DoHadronAnalysisTime3.dat)
-  ! 
+  !
   ! NOTES
   ! Presently feasible only for real particle simulations.
   !***************************************************************************
@@ -46,14 +46,14 @@ module hadronAnalysis
   ! NAME
   ! type particle
   ! PURPOSE
-  ! The type definition only for the output purposes. 
+  ! The type definition only for the output purposes.
   ! SOURCE
   !
   Type hadron
      integer               :: ID=0
      integer               :: charge=0
      integer               :: event=0
-     real                  :: mass=0.                
+     real                  :: mass=0.
      real, dimension (1:3) :: position=0.
      real, dimension (1:3) :: momentum=0.
   End Type hadron
@@ -64,7 +64,7 @@ module hadronAnalysis
   type(hadron), save, dimension(:,:), allocatable :: hadrons
 
 
-  PUBLIC :: DoHadronAnalysisTime,cleanUp 
+  PUBLIC :: DoHadronAnalysisTime,cleanUp
 
 
 contains
@@ -89,7 +89,7 @@ contains
     read(5,nml=HadronAnalysis,iostat=ios)
     call Write_ReadingInput('HadronAnalysis',0,ios)
     if(flagAnalysis) then
-      write(*,*) ' Analysing output for hadron-induced reaction will be performed:' 
+      write(*,*) ' Analysing output for hadron-induced reaction will be performed:'
     end if
     call Write_ReadingInput('HadronAnalysis',1)
 
@@ -101,17 +101,17 @@ contains
   ! NAME
   ! subroutine DoHadronAnalysisTime (realparticles, time, finalFlag)
   !
-  ! PURPOSE 
+  ! PURPOSE
   ! Makes the output of the particle of the same type as incoming hadron
   ! (same isBaryon flag and same antiparticle flag) on the disk.
   !
   ! INPUTS
   ! * type(particle), dimension(:,:), intent(in)  :: realparticles   ! real particle vector
   ! * real, intent(in) :: time                                       ! current time step
-  ! * logical, intent (in)     :: finalFlag   ! .true. if it is the last call for one specific 
+  ! * logical, intent (in)     :: finalFlag   ! .true. if it is the last call for one specific
   !   energy, therefore final output must be made.
   ! RESULT
-  ! See the ouput file DoHadronAnalysisTime.dat for details. 
+  ! See the ouput file DoHadronAnalysisTime.dat for details.
   !***************************************************************************
   subroutine DoHadronAnalysisTime (realparticles, time, finalFlag)
 
@@ -149,7 +149,7 @@ contains
     if(.not.flagAnalysis) return
 
     if(finalFlag) then
-       isu=isu+1 
+       isu=isu+1
        open(30,file='DoHadronAnalysisTime.dat',position='Append')
        do i = 1,numEnsembles
          if(hadrons(i,0)%Id.ne.0) then
@@ -189,7 +189,7 @@ contains
             end if
           end do
        end if
-       hadrons(:,:)%Id=0 
+       hadrons(:,:)%Id=0
        return
     end if
 
@@ -204,17 +204,17 @@ contains
          end if
 !          if(        realParticles(i,j)%Id.eq.particleId &
 !              &.and. (realParticles(i,j)%antiparticle.eqv.antiparticle) &
-!              &.and. realParticles(i,j)%charge.eq.particleCharge ) then 
+!              &.and. realParticles(i,j)%charge.eq.particleCharge ) then
           if(        (isBaryon(realParticles(i,j)%Id).eqv.isBaryon(particleId)) &
-              &.and. (realParticles(i,j)%antiparticle.eqv.antiparticle) ) then 
+              &.and. (realParticles(i,j)%antiparticle.eqv.antiparticle) ) then
             !**** Select the particle if it exists:
             hadrons(i,0)%Id=realParticles(i,j)%Id
-            if(realParticles(i,j)%antiparticle) hadrons(i,0)%Id=-hadrons(i,0)%Id           
+            if(realParticles(i,j)%antiparticle) hadrons(i,0)%Id=-hadrons(i,0)%Id
             hadrons(i,0)%charge=realParticles(i,j)%charge
             hadrons(i,0)%event=realParticles(i,j)%event(1)
             hadrons(i,0)%mass=realParticles(i,j)%mass
             hadrons(i,0)%position=realParticles(i,j)%position
-            hadrons(i,0)%momentum(1:3)=realParticles(i,j)%momentum(1:3)   
+            hadrons(i,0)%momentum(1:3)=realParticles(i,j)%momentum(1:3)
             times(i,0)=time
             p=sqrt(dot_product(realParticles(i,j)%momentum(1:3),&
                               &realParticles(i,j)%momentum(1:3)))
@@ -223,23 +223,23 @@ contains
             !**** Select the particle if its momentum gets less than pCut1:
             if(p.lt.pCut1 .and. r.lt.rCut .and. hadrons(i,1)%Id.eq.0) then
                 hadrons(i,1)%Id=realParticles(i,j)%Id
-                if(realParticles(i,j)%antiparticle) hadrons(i,1)%Id=-hadrons(i,1)%Id           
+                if(realParticles(i,j)%antiparticle) hadrons(i,1)%Id=-hadrons(i,1)%Id
                 hadrons(i,1)%charge=realParticles(i,j)%charge
                 hadrons(i,1)%event=realParticles(i,j)%event(1)
                 hadrons(i,1)%mass=realParticles(i,j)%mass
                 hadrons(i,1)%position=realParticles(i,j)%position
-                hadrons(i,1)%momentum(1:3)=realParticles(i,j)%momentum(1:3)   
+                hadrons(i,1)%momentum(1:3)=realParticles(i,j)%momentum(1:3)
                 times(i,1)=time
             end if
             !**** Select the particle if its momentum gets less than pCut2:
             if(p.lt.pCut2 .and. r.lt.rCut .and. hadrons(i,2)%Id.eq.0) then
                 hadrons(i,2)%Id=realParticles(i,j)%Id
-                if(realParticles(i,j)%antiparticle) hadrons(i,2)%Id=-hadrons(i,2)%Id           
+                if(realParticles(i,j)%antiparticle) hadrons(i,2)%Id=-hadrons(i,2)%Id
                 hadrons(i,2)%charge=realParticles(i,j)%charge
                 hadrons(i,2)%event=realParticles(i,j)%event(1)
                 hadrons(i,2)%mass=realParticles(i,j)%mass
                 hadrons(i,2)%position=realParticles(i,j)%position
-                hadrons(i,2)%momentum(1:3)=realParticles(i,j)%momentum(1:3)   
+                hadrons(i,2)%momentum(1:3)=realParticles(i,j)%momentum(1:3)
                 times(i,2)=time
             end if
             !**** Select the particle if its binding energy becomes positive:
@@ -249,15 +249,15 @@ contains
                E = momentum(0) + emfoca(place,(/0.,0.,0./),realParticles(i,j)%charge,realParticles(i,j)%ID)
                if(E.lt.realParticles(i,j)%mass) then
                    hadrons(i,3)%Id=realParticles(i,j)%Id
-                   if(realParticles(i,j)%antiparticle) hadrons(i,3)%Id=-hadrons(i,3)%Id           
+                   if(realParticles(i,j)%antiparticle) hadrons(i,3)%Id=-hadrons(i,3)%Id
                    hadrons(i,3)%charge=realParticles(i,j)%charge
                    hadrons(i,3)%event=realParticles(i,j)%event(1)
                    hadrons(i,3)%mass=realParticles(i,j)%mass
                    hadrons(i,3)%position=realParticles(i,j)%position
-                   hadrons(i,3)%momentum(1:3)=realParticles(i,j)%momentum(1:3)   
+                   hadrons(i,3)%momentum(1:3)=realParticles(i,j)%momentum(1:3)
                    times(i,3)=time
                end if
-            end if  
+            end if
           exit
           end if
        end do ParticleLoop1

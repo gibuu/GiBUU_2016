@@ -290,6 +290,9 @@ contains
   ! Namelist 'nl_neutrinoxsection' is read in always.
   ! All other namelist are read depending on the value of
   ! nuXsectionmode.
+  ! If a nuXsectionmode for a particular experiment is chosen, with inherent
+  ! flux integration, the parameter enu must be set to some dummy, but
+  ! reasonable value > 0
   !***************************************************************************
   subroutine readinput(nuXsectionmode)
     use output
@@ -553,6 +556,7 @@ contains
        read(5,nml=nl_dSigmadElepton,IOSTAT=IOS)
        call Write_ReadingInput('nl_dSigmadElepton',0,IOS)
        if(enu.lt.0..or.elepton.lt.0..or.delta_elepton.lt.0.) then
+   !      write(*,*) 'enu=',enu,'elepton=',elepton,'delta_elepton=',delta_elepton
           write(*,*) 'input error in neutrinoXsection'
           write(*,*) 'stop'
           stop
@@ -648,7 +652,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -708,7 +712,7 @@ contains
        initFlag = .false.
 
        if(flux_enu.gt.0.0) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -774,7 +778,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -831,7 +835,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -943,7 +947,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -1084,7 +1088,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -1182,7 +1186,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -1287,7 +1291,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if
@@ -1423,7 +1427,7 @@ contains
        initFlag = .false.
 
        if(present(flux_enu)) then
-          write(*,*) 'enu from experiment'
+          write(*,*) 'enu from experimental flux', flux_enu
        else
           write(*,'(a,F12.4)') 'enu= ', enu
        end if

@@ -6,11 +6,11 @@
 ! This module contains routines handling the formation process of particles
 ! INPUTS
 ! namelist "hadronformation"
-! 
+!
 ! NOTES
 ! 1) Old Concept:
 !
-! Between Creation time and tauForma*gamma, the XS is scaled by 
+! Between Creation time and tauForma*gamma, the XS is scaled by
 ! #leading quarks/#quarks
 ! (i.e. 0/2,1/2,2/2 for mesons and 0/3,1/3,2/3,3/3 for baryons).
 ! After tauForma*gamma, the original XS is restored.
@@ -19,24 +19,24 @@
 ! 2) New Concept: (GetJetSetVec)
 !
 ! We have 4 times:
-! - (hard) interaction (INT), 
-! - production of first quark (P1), 
-! - production of second quark (P2), 
+! - (hard) interaction (INT),
+! - production of first quark (P1),
+! - production of second quark (P2),
 ! - formation of hadron (F). (i.e. first meeting point of YoYo-Lines)
 ! According to input, 2 times are selected. Before time 1, the XS is zero.
 ! Between the two times, the cross section evolves according to a given power
 ! of the time variable. If zero is given, the XS is scaled by a given factor.
 ! After time 2 the XS is set to 1
-! 
-! Unfortunately, GetJetSetVec works not for all particles but produces 
-! some "funny" numbers for some particles (e.g. tau_F < tau_P1, tau_P2) 
+!
+! Unfortunately, GetJetSetVec works not for all particles but produces
+! some "funny" numbers for some particles (e.g. tau_F < tau_P1, tau_P2)
 ! [approx 10% of particles]
 ! In this case, Concept 1) is used for these particles (!!! ATTENTION !!!)
 !
 ! 3) Enhanced New Concept
 !
 ! as concept 2), but the cross section do not start at 0 for leading
-! particles, but at a value ~ 1/Q2, where Q2 has to be defined 
+! particles, but at a value ~ 1/Q2, where Q2 has to be defined
 ! process dependent.
 !***************************************************************************
 
@@ -62,7 +62,7 @@ module hadronFormation
 
   implicit none
   PRIVATE
-  
+
   !*************************************************************************
   !****g* hadronFormation/useJetSetVec
   ! SOURCE
@@ -80,7 +80,7 @@ module hadronFormation
   !****g* hadronFormation/useJetSetVec_Q
   ! SOURCE
   !
-  logical,save, PUBLIC :: useJetSetVec_Q = .TRUE. 
+  logical,save, PUBLIC :: useJetSetVec_Q = .TRUE.
   ! PURPOSE
   ! if useJetSetVec, then also use Q2 as measure for XS-pedestal, i.e.
   ! select concept 3) instead of concept 2)
@@ -90,7 +90,7 @@ module hadronFormation
   !****g* hadronFormation/useJetSetVec_R
   ! SOURCE
   !
-  logical,save, PUBLIC :: useJetSetVec_R = .TRUE. 
+  logical,save, PUBLIC :: useJetSetVec_R = .TRUE.
   ! PURPOSE
   ! if not useJetSetVec_Q, then use rLead as measure for XS-pedestal
   !*************************************************************************
@@ -101,7 +101,7 @@ module hadronFormation
   !
   real,save :: tauProda    = 0.5
   ! PURPOSE
-  ! in formation time concept 2) and 3) for "error particles": 
+  ! in formation time concept 2) and 3) for "error particles":
   ! production time of non-leading in rest frame of hadron (in fm)
   !*************************************************************************
 
@@ -111,7 +111,7 @@ module hadronFormation
   !
   real,save :: tauForma    = 0.8
   ! PURPOSE
-  ! in formation time concept 1) and in concept 2),3) for "error particles": 
+  ! in formation time concept 1) and in concept 2),3) for "error particles":
   ! formation time in rest frame of hadron (in fm)
   !*************************************************************************
 
@@ -121,7 +121,7 @@ module hadronFormation
   !
   real,save :: tauFormaFak = 1.0
   ! PURPOSE
-  ! in formation time concept 1): 
+  ! in formation time concept 1):
   ! scale factor for constituent quark model,
   ! rescales #(lead quarks)/#quarks
   !*************************************************************************
@@ -197,7 +197,7 @@ contains
     NAMELIST /hadronFormation/ tauProda,tauForma,tauFormaFak, &
          useJetSetVec, powerCS, useTimeFrom, useTimeTo, &
          GuessDiffrTimes, useJetSetVec_Q, useJetSetVec_R, pedestalCS
-    
+
     common /DataGJV/ Arr(3,4,200),EArr(6,200),verb,AtOrigin
     ! Arr(3,4,nArrMax),    ! 3* 4D-Vertizes
     ! EArr(6,nArrMax),     ! errFlag, rank
@@ -212,13 +212,13 @@ contains
     integer useTimeCode
 
     character*(*), dimension (0:3), parameter :: tN = (/'t_int ','tP_min','tP_max','tF    '/)
-    
+
     integer :: ios
     real :: h_powerCS
 
     verb = 0
     AtOrigin = .TRUE.
-    
+
     ! save some defaults:
     h_powerCS = powerCS
     powerCS = -99.9
@@ -238,13 +238,13 @@ contains
     end if
 
     if (useJetSetVec_Q) then
-       if (pedestalCS < 0.0001) then 
+       if (pedestalCS < 0.0001) then
           pedestalCS = 1.0
           write(*,*) '            --- Value of pedestalCS changed !!!'
        end if
        write(*,1001) ' ... power of time : ',powerCS,'   pedestal= r_Lead/Q^2 * ',pedestalCS
     else if (useJetSetVec_R) then
-       if (pedestalCS < 0.0001) then 
+       if (pedestalCS < 0.0001) then
           pedestalCS = 1.0
           write(*,*) '            --- Value of pedestalCS changed !!!'
        end if
@@ -281,7 +281,7 @@ contains
        stop
     endif
 
-    
+
 1000 FORMAT(A,f7.3,A)
 1001 FORMAT(A,f7.3,A,f7.3)
 
@@ -289,11 +289,11 @@ contains
     call SetSwitchPYSTRF(useJetSetVec)
 !    call SetSwitchLUSTRF(.FALSE.)
     call SetSwitchLUSTRF(useJetSetVec)
-    
+
     call Write_ReadingInput('hadronFormation',1)
-    
+
   end subroutine readInput
-  
+
   !*************************************************************************
   !****s* hadronFormation/forceInitFormation
   ! NAME
@@ -318,9 +318,9 @@ contains
   !*************************************************************************
   subroutine formation(PertPart,RealPart,time,finalFlag)
     use particleDefinition
-    
-    type(particle),intent(inOUT),dimension(:,:) :: RealPart ! real particles 
-    type(particle),intent(inOUT),dimension(:,:) :: PertPart ! perturbative particles 
+
+    type(particle),intent(inOUT),dimension(:,:) :: RealPart ! real particles
+    type(particle),intent(inOUT),dimension(:,:) :: PertPart ! perturbative particles
     real, intent(in) :: time
     logical, intent(in) :: finalFlag
 
@@ -331,20 +331,20 @@ contains
        call readInput
        initFlag=.false.
     end if
-    
+
     numberEnsembles=size(RealPart,dim=1)
 
 !!$    If (size(PertPart,dim=1).ne.size(RealPart,dim=1)) then
-!!$       write(*,*) 'Number of ensembles in real and perturbative particle vectors do not fit' 
+!!$       write(*,*) 'Number of ensembles in real and perturbative particle vectors do not fit'
 !!$       Write(*,*) 'Real :' , size(RealPart,dim=1)
 !!$       Write(*,*) 'Perturbative :' , size(PertPart,dim=1)
 !!$       Write(*,*) 'Critical Error in FormationMain! Stop!'
 !!$       Stop
 !!$    end if
-    
+
     size_real_dim2=size(RealPart,dim=2)
     size_pert_dim2=size(PertPart,dim=2)
-    
+
     ensemble_loop : Do ensemble=1,numberEnsembles             !loops over ensemble
        !--- real particle formation ---
        index_loop_real : Do index=1,size_real_dim2
@@ -367,23 +367,23 @@ contains
   ! subroutine performFormation(Part,time,finalFlag)
   !
   ! PURPOSE
-  ! Set the Flag "in_Formation" and the scaling of the CrossSection 
+  ! Set the Flag "in_Formation" and the scaling of the CrossSection
   ! "ScaleCS" according to the "formation time concept": cf. top of the module
   !
-  ! NOTES 
-  ! scaleCS should be set to something like 
+  ! NOTES
+  ! scaleCS should be set to something like
   !   (#leading quarks/#quarks) * tauformaFak
   !*************************************************************************
   subroutine performFormation(Part,time,finalFlag)
     use particleDefinition
 
-    type(particle),intent(inOUT) :: Part 
+    type(particle),intent(inOUT) :: Part
     real,intent(in) :: time
     logical,intent(in) :: finalFlag
     real :: tForma, timefak, CS0
-    
+
     if (finalflag) Part%in_Formation=.false. ! Force to hadronize NOW
-    
+
     if(.not.Part%in_Formation) then
        Part%scaleCS=1.
        return
@@ -394,14 +394,14 @@ contains
        return
     end if
 
-    ! If there was a problem in GetJetSetVec, we have set the 
+    ! If there was a problem in GetJetSetVec, we have set the
     ! FormationTime of the Particle to something <0.
     ! Therefore, also the reported production times are not in use.
 
     if (useJetSetVec.and.Part%formationTime.ge.0.0) then
        tForma = Part%formationTime
     else
-       ! This is called for particles with: 
+       ! This is called for particles with:
        ! useJetSetVec = .FALSE. or formationTime < 0,
        ! but only if in_Formation=.TRUE. !!!
        tForma=Part%productionTime+freeEnergy(Part)/Part%mass*tauForma
@@ -411,7 +411,7 @@ contains
 
        CS0 = pedestalCS
        if (useJetSetVec_Q.or.useJetSetVec_R) call CalcSC0_UseQ()
-       
+
        if (powerCS==0.0) then
           Part%scaleCS = CS0
        else
@@ -423,13 +423,13 @@ contains
        Part%in_Formation=.false.
        if (Part%formationTime.lt.0.0)  Part%formationTime = time
     endif
-    
+
   contains
     subroutine CalcSC0_UseQ()
       use PIL_nLead
 
       real    :: r
-      
+
       if (PIL_nLead_GET(Part%number, r)) then
          CS0 = r * pedestalCS
 !         write(*,*) '...GET:',Part%number, r
@@ -452,7 +452,7 @@ contains
   ! INPUTS
   ! * type(particle) :: Part
   ! * integer        :: iPart
-  ! * real           :: HardScaleQ2 -- the Q2 value of the production 
+  ! * real           :: HardScaleQ2 -- the Q2 value of the production
   !   process connected to this particle
   ! * integer        :: nLead -- number of leading quarks (0...3)
   !
@@ -469,7 +469,7 @@ contains
     integer, intent(in)          :: iPart
     real, intent(in)             :: HardScaleQ2
     integer, intent(in)          :: nLead
-    
+
     common /DataGJV/ Arr(3,4,200),EArr(6,200),verb,AtOrigin
     ! Arr(3,4,nArrMax),    ! 3* 4D-Vertizes
     ! EArr(6,nArrMax),     ! errFlag, rank
@@ -514,19 +514,19 @@ contains
        call PIL_FormInfo_PUT(Part%number, h)
 
        ! this is just a bad way to get the "time" when the event happened:
-       time = Part%productionTime 
-       
+       time = Part%productionTime
+
        if ((EArr(3,iPart)==6).and. .not.GuessDiffrTimes) then
           Part%in_Formation=.false.
           Part%scaleCS=1.
           return
        endif
-       
+
        select case(EArr(2,iPart))
        case (0) ! ----- no problems with times:
-          
+
           call CalcTimeOrder
-          
+
           select case (useTimeFrom)
           case (0)
              Part%productionTime = time                       ! interaction time
@@ -537,7 +537,7 @@ contains
           case (3)
              Part%productionTime = time + Arr(3,4,iPart)          ! formation time
           end select
-          
+
           select case (useTimeTo)
           case (0)
              Part%formationTime = time                       ! interaction time
@@ -548,11 +548,11 @@ contains
           case (3)
              Part%formationTime = time + Arr(3,4,iPart)          ! formation time
           end select
-          
+
        case default ! ----- some severe problems with times:
-          
+
           gamma = freeEnergy(Part)/Part%mass
-          
+
           select case (useTimeFrom)
           case (0)
              Part%productionTime = time                  ! interaction time
@@ -567,7 +567,7 @@ contains
           case (3)
              Part%productionTime = time + gamma*tauForma ! formation time
           end select
-          
+
           select case (useTimeTo)
           case (0)
              Part%formationTime = time                  ! interaction time
@@ -582,7 +582,7 @@ contains
           case (3)
              Part%formationTime = time + gamma*tauForma ! formation time
           end select
-          
+
        end select
     end if
 
@@ -595,7 +595,7 @@ contains
     else if (useJetSetVec_R) then
        call SetQ_UseQ(1.0)
     end if
-    
+
     call performFormation(Part,time,.FALSE.)
 
   contains
@@ -608,7 +608,7 @@ contains
     ! set "iSmaller" to 1 or 2 according 4D points Arr(i,1:4,iPart)
     !
     ! Time ordering is defined to be according: tau
-    ! 
+    !
     !***********************************************************************
     subroutine CalcTimeOrder
       if (Arr(1,4,iPart)**2-Arr(1,1,iPart)**2-Arr(1,2,iPart)**2-Arr(1,3,iPart)**2 .lt. &
@@ -656,8 +656,8 @@ contains
 !      write(*,*) 'SetQ_UseQ(): Q2 = ',ScaleQ2
 
     end subroutine SetQ_UseQ
-    
-    
+
+
   end subroutine SetJSVFormation
 
   !***********************************************************************
@@ -665,4 +665,3 @@ contains
 
 
 end module hadronFormation
-

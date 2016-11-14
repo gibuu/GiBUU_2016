@@ -22,7 +22,7 @@ module PythiaSpecFunc
 !   !
 !   real, save :: srtFreeVMMass
 !   ! NOTES
-!   ! Needed by VM_Mass, so one needs to set this parameter before 
+!   ! Needed by VM_Mass, so one needs to set this parameter before
 !   ! PYTHIA/FRITIOF is called.
 !   !*************************************************************************
 
@@ -33,7 +33,7 @@ module PythiaSpecFunc
   !
   type(medium), save :: mediumAtCollision
   ! NOTES
-  ! Needed by VM_Mass, so one needs to set this parameter before 
+  ! Needed by VM_Mass, so one needs to set this parameter before
   ! PYTHIA/FRITIOF is called.
   !*************************************************************************
 
@@ -51,7 +51,7 @@ contains
   ! NAME
   ! subroutine Init_VM_Mass(srts,position)
   ! PURPOSE
-  ! Initialize the parameters srtFreeVMMass and mediumAtCollision before 
+  ! Initialize the parameters srtFreeVMMass and mediumAtCollision before
   ! calling VM_Mass.
   ! INPUTS
   ! * real          :: srts          -- sqrt(s) of collision
@@ -79,7 +79,7 @@ contains
   ! PURPOSE
   ! Select mass of vector mesons for Pythia/Fritiof (function pymass/ulmass)
   ! according to a relativistic Breit-Wigner with mass-dependent width.
-  ! 
+  !
   ! Used for rho, omega and phi mesons.
   ! INPUTS
   ! * integer :: kfa  -- KF code of the particle
@@ -181,7 +181,7 @@ contains
   ! PURPOSE
   ! Select mass of vector mesons for Pythia/Fritiof (function pymass/ulmass)
   ! according to a relativistic Breit-Wigner with mass-dependent width.
-  ! 
+  !
   ! Used for rho, omega and phi mesons.
   !
   ! This is the internal routine, which is called, if UseMassAssInfo is set false
@@ -282,7 +282,7 @@ contains
 
     do i=1,nB-1
        bweight(i)=(bweight(i+1)-bweight(i))
-       bmaxbwd(i) = max(bmaxbwd(i),bmaxbwd(i+1)) 
+       bmaxbwd(i) = max(bmaxbwd(i),bmaxbwd(i+1))
        bweight(i) = bweight(i) * bmaxbwd(i) ! modify the Cauchy weights
     enddo
 
@@ -302,7 +302,7 @@ contains
        ymin=2.*atan2(2*(mbound(iB)-mres0),gamres0)
        maxbwd = bmaxbwd(iB)
 
-       ! STEP 2: generate random value according Cauchy with constant width 
+       ! STEP 2: generate random value according Cauchy with constant width
 
        y=ymin+rn()*(ymax-ymin)
        m=.5*tan(y/2.)*gamres0+mres0
@@ -425,7 +425,7 @@ contains
 
     do i=1,nB-1
        bweight(i)=(bweight(i+1)-bweight(i))
-       bmaxbwd(i) = max(bmaxbwd(i),bmaxbwd(i+1)) 
+       bmaxbwd(i) = max(bmaxbwd(i),bmaxbwd(i+1))
        bweight(i) = bweight(i) * bmaxbwd(i) ! modify the Cauchy weights
     enddo
 
@@ -445,7 +445,7 @@ contains
        ymin=2.*atan2(2*(mbound(iB)-mres0),gamres0)
        maxbwd = bmaxbwd(iB)
 
-       ! STEP 2: generate random value according Cauchy with constant width 
+       ! STEP 2: generate random value according Cauchy with constant width
 
        y=ymin+rn()*(ymax-ymin)
        m=.5*tan(y/2.)*gamres0+mres0

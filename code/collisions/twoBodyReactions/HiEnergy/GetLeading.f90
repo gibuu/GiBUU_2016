@@ -4,7 +4,7 @@
 ! Recontruct the number of leading quraks for a JetSet fragmentation
 !***************************************************************************
 module CollGetLeading
-  
+
   IMPLICIT NONE
   PRIVATE
 
@@ -24,7 +24,7 @@ contains
   ! Try to reconstruct for every outgoing partice of a Jetset fragmentation
   ! the number of leading quarks of this particle. i.e. the number of
   ! quarks contained in the final partickle, which already spanned the
-  ! fragmented string. 
+  ! fragmented string.
   !
   ! INPUTS
   ! The Pythia common blocks have to be set (no PYEDIT!)
@@ -36,7 +36,7 @@ contains
   !*************************************************************************
 
   subroutine GetLeading_PY
-    
+
     !...common blocks:
 
     COMMON/PYJETS/N,NPAD,K(4000,5),P(4000,5),V(4000,5)
@@ -67,7 +67,7 @@ contains
 
     integer i,j
     integer iQ1,iQ2,iQ3,iQA1,iQA2
-    integer nQ1, nQ2 
+    integer nQ1, nQ2
     integer pL1C              ! saves CODE(pL1) = K(pL1,1)
     integer iS
 
@@ -181,18 +181,18 @@ contains
                   !...========================
 
        call GL_ERR('unknown code',0,iL)
-       
+
     end select
-    
+
 990 continue
     iL = cL2
 
-999 if (iL.lt.N) goto 100  ! loop: find next string 
+999 if (iL.lt.N) goto 100  ! loop: find next string
 
 
   contains
     !=================================================================
-    ! Check, whether particle in line 'iL' and/or the following/preceeding 
+    ! Check, whether particle in line 'iL' and/or the following/preceeding
     ! lines (depending on 'dir') may contain the quark content given by the
     ! parent line 'parLine'.
     ! This routine treats the case that we have 3 or more output particles.
@@ -200,7 +200,7 @@ contains
     subroutine Check3(parLine, iL, dir)
 
       integer parLine,iL,dir
-      
+
       !...internal variables:
       integer pQ, iQ1, iQ2
       integer, parameter :: iDiWeight=1  ! splitted diquark counts/counts not
@@ -209,7 +209,7 @@ contains
 
       pQ = CalcParQuarks(K(parLine,2),iQ1,iQ2)
       if (pQ.eq.0) return
-      
+
       if (pQ.eq.1) then ! quark
          if (QQQeP(K(iL,2),iQ1,0,0)) then
             K(iL,4) = 1
@@ -242,10 +242,10 @@ contains
                call GL_ERR('must fit (1c)',0,iL)
             end if
          end if
-         
+
       end if
     end subroutine Check3
-    
+
   end subroutine GetLeading_PY
 
   !***************************************************************************
@@ -253,14 +253,14 @@ contains
 
 
   subroutine GetLeading_FR
-    
+
     !...common blocks:
 
     COMMON/PYJETS/N,NPAD,K(4000,5),P(4000,5),V(4000,5)
     integer N,NPAD,K
     double precision P,V
     SAVE /PYJETS/
-    
+
     COMMON/LUDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
     integer MSTU,MSTJ
     real PARU,PARJ
@@ -279,7 +279,7 @@ contains
 
     integer i,j
     integer iQ1,iQ2,iQ3,iQA1,iQA2
-    integer nQ1, nQ2 
+    integer nQ1, nQ2
     integer pL1C              ! saves CODE(pL1) = K(pL1,1)
     integer iS
     integer, parameter :: MSTI4 = 0
@@ -406,12 +406,12 @@ contains
 990 continue
     iL = cL2
 
-999 if (iL.lt.N) goto 100  ! loop: find next string 
+999 if (iL.lt.N) goto 100  ! loop: find next string
 
 
   contains
     !=================================================================
-    ! Check, whether particle in line 'iL' and/or the following/preceeding 
+    ! Check, whether particle in line 'iL' and/or the following/preceeding
     ! lines (depending on 'dir') may contain the quark content given by the
     ! parent line 'parLine'.
     ! This routine treats the case that we have 3 or more output particles.
@@ -485,10 +485,10 @@ contains
     else if (mod(abs(parKF)/10,10).eq.0) then
        CalcParQuarks = 2      ! diquark, max 2 leading quarks
        call SplitDiquark(parKF,parQ1,parQ2)
-    else if (parKF.eq.21) then 
+    else if (parKF.eq.21) then
        CalcParQuarks = 0      ! GLUON !
        !         call GL_MSG_L('parent is gluon',0,0)
-    else if (parKF.eq.88) then 
+    else if (parKF.eq.88) then
        CalcParQuarks = 0      ! Junction !
     else
        write(*,*) 'CalcParQuarks: unknown quark content of ',parKF,'. STOP.'
@@ -560,7 +560,7 @@ contains
 
     select case(aKFP)
 
-    case(111,113,115,223) !... pi0,rho0,omega,115=a_20: 
+    case(111,113,115,223) !... pi0,rho0,omega,115=a_20:
 
        if (abs(aKFQ1).gt.2) return
        if ((aKFQ2.ne.0).and.(aKFQ1.ne.-aKFQ2)) return
@@ -641,10 +641,10 @@ contains
   !     nA,  nB : number of quarks from parent A, B
   !     QA1, QA2: quarks from parent A
   !     QB1, QB2: quarks from parent B
-  ! OUTPUT: 
+  ! OUTPUT:
   !     n1,  n2 : number of leading quarks in particle 1, 2
   !
-  ! assumed: nA,nB > 0; ... 
+  ! assumed: nA,nB > 0; ...
 
   logical function QQQePP(P1,P2, nA,nB, QA1,QA2, QB1,QB2, n1,n2)
 
@@ -799,17 +799,17 @@ contains
 !
 !     character*(*) Text
 !     integer iLevel,iL
-! 
+!
 !     write(*,1001) iLevel,iL,Text
-! 
+!
 !     if (UseWithPYTHIA) then
 !        call PYLIST(1)
 !     else
 !        call LULIST(1)
 !     endif
-! 
+!
 ! 1001 FORMAT('GetLeading:Message[',i1,'] (L',i2,'): ',A)
-! 
+!
 !   end subroutine GL_MSG_L
 
   !=================================================================
@@ -818,4 +818,3 @@ contains
 
 
 end module CollGetLeading
-

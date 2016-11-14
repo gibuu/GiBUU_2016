@@ -15,8 +15,8 @@ module barAntiBar
   !
   real, save :: fact_LambdaBar=1.
   ! PURPOSE
-  ! Enhancement factor of pbar p -> Lambda LambdaBar cross section 
-  ! (for larger statistics) 
+  ! Enhancement factor of pbar p -> Lambda LambdaBar cross section
+  ! (for larger statistics)
   !*************************************************************************
 
   !*************************************************************************
@@ -25,7 +25,7 @@ module barAntiBar
   !
   real, save :: fact_JPsi=1.
   ! PURPOSE
-  ! Enhancement factor of pbar p -> J/Psi cross section (for larger statistics) 
+  ! Enhancement factor of pbar p -> J/Psi cross section (for larger statistics)
   !*************************************************************************
 
   !*************************************************************************
@@ -34,9 +34,17 @@ module barAntiBar
   !
   real, save :: fact_JPsi_width=1.
   ! PURPOSE
-  ! Enhancement factor of the J/Psi total width (for larger statistics) 
+  ! Enhancement factor of the J/Psi total width (for larger statistics)
   !*************************************************************************
 
+  !*****************************************************************************
+  !****g* barAntiBar/useAnni
+  ! SOURCE
+  !
+  logical,save :: useAnni = .true.
+  ! PURPOSE
+  ! Flag whether to perform Baryon-Antibarion annihilation or not at all
+  !*****************************************************************************
 
 
   logical, save :: initFlag=.true.
@@ -50,7 +58,7 @@ contains
   ! NAME
   ! subroutine init
   ! PURPOSE
-  ! Reads in namelist "barAntiBar_input"                 
+  ! Reads in namelist "barAntiBar_input"
   ! INPUTS
   ! * (none)
   ! OUTPUT
@@ -70,8 +78,10 @@ contains
     ! * fact_LambdaBar
     ! * fact_JPsi
     ! * fact_JPsi_width
+    ! * useAnni
     !*************************************************************************
-    NAMELIST /barAntiBar_input/ fact_LambdaBar,fact_JPsi,fact_JPsi_width
+    NAMELIST /barAntiBar_input/ fact_LambdaBar,fact_JPsi,fact_JPsi_width, &
+         useAnni
 
     call Write_ReadingInput('barAntiBar_input',0)
     rewind(5)
@@ -93,6 +103,7 @@ contains
        write(*,*) ' is rescaled by a factor of ', fact_JPsi_width
     end if
 
+    write(*,*) 'use Anni: ',useAnni
 
     call Write_ReadingInput('barAntiBar_input',1)
 
@@ -106,33 +117,46 @@ contains
   ! subroutine sigmaBarAntiBar(srts,teilchenIN,mediumATcollision,sigTotal,
   ! sigElastic,sigChEx,sigAnnihilation,
   ! sigProduction,sigHyperon,sigLambdaBar,sigSigmaBar,sigXiBar,
-  ! sigJPsi)
+  ! sigOmegaBar,sigJPsi)
   !
   ! PURPOSE
-  ! Computes total, elastic and other cross sections for baryon+antibaryon collisions.
+  ! Computes total, elastic and other cross sections for baryon+antibaryon
+  ! collisions.
   ! INPUTS
-  ! * real, intent(in)   ::           srts                               ! sqrt(s) of collision (GeV)
-  ! * type(particle),dimension(1:2), intent(in)    :: teilchenIn         !-- colliding particles
-  ! * type(medium),                  intent(in)    :: mediumATcollision  ! -- medium infos at collision point
+  ! * real :: srts --- sqrt(s) of collision (GeV)
+  ! * type(particle),dimension(1:2) :: teilchenIn --- colliding particles
+  ! * type(medium) :: mediumATcollision  --- medium infos at collision point
   ! OUTPUT
-  ! * real, intent(out)  ::           sigTotal     ! total cross section (mb)
-  ! * real, intent(out)  ::           sigElastic   ! elastic cross section (mb)
-  ! * real, optional, intent(out)  :: sigChEx      ! charge exchange cross section (mb)
-  ! * real, optional, intent(out)  :: sigAnnihilation  ! annihilation into mesons cross section (mb)
-  ! * real, optional, intent(out)  :: sigProduction    ! production Bbar+B -> B+Bbar+mesons cross section (mb)
-  ! * real, optional, intent(out)  :: sigHyperon       ! (anti)hyperon production Bbar+B -> Y+Ybar+mesons,
-  !                                                      B+Ybar+Kbar, Bbar+Y+K cross section (mb)
-  ! * real, optional, intent(out)  :: sigLambdaBar     ! exclusive (anti)hyperon production Bbar+B -> Lambda+Lambdabar
-  ! * real, optional, intent(out)  :: sigSigmaBar      ! exclusive (anti)hyperon production : 
-  !                                                      Bbar+B -> Lambda+Sigma0Bar, LambdaBar+Sigma0 (mb)
-  ! * real, optional, intent(out)  :: sigXiBar         ! exclusive (anti)cascade production:
-  !                                                      Bbar+B -> Xi+XiBar
-  ! * real, optional, intent(out)  :: sigJPsi          ! J/Psi production cross section (mb):
-  !                                                    ! Bbar+B -> J/Psi
+  ! * real ::           sigTotal     --- total cross section (mb)
+  ! * real ::           sigElastic   --- elastic cross section (mb)
+  ! * real, optional :: sigChEx      ---
+  !   charge exchange cross section (mb)
+  ! * real, optional :: sigAnnihilation ---
+  !   annihilation into mesons cross section (mb)
+  ! * real, optional :: sigProduction   ---
+  !   production Bbar+B -> B+Bbar+mesons cross section (mb)
+  ! * real, optional :: sigHyperon      ---
+  !   (anti)hyperon production Bbar+B -> Y+Ybar+mesons,
+  !   B+Ybar+Kbar, Bbar+Y+K cross section (mb)
+  ! * real, optional :: sigLambdaBar ---
+  !   exclusive (anti)hyperon production:
+  !   Bbar+B -> Lambda+Lambdabar
+  ! * real, optional :: sigSigmaBar ---
+  !   exclusive (anti)hyperon production :
+  !   Bbar+B -> Lambda+Sigma0Bar, LambdaBar+Sigma0 (mb)
+  ! * real, optional :: sigXiBar ---
+  !   exclusive (anti)cascade production:
+  !   Bbar+B -> Xi+XiBar
+  ! * real, optional :: sigOmegaBar ---
+  !   exclusive (anti)Omega (S=-3) production:
+  !   Bbar+B -> Omega+OmegaBar
+  ! * real, optional :: sigJPsi ---
+  !   J/Psi production cross section (mb):
+  !   Bbar+B -> J/Psi
   !********************************************************************
   subroutine sigmaBarAntiBar(srts,teilchenIN,mediumATcollision,sigTotal, &
                            & sigElastic,sigChEx,sigAnnihilation, &
-                           & sigProduction,sigHyperon, & 
+                           & sigProduction,sigHyperon, &
                            & sigLambdaBar,sigSigmaBar,sigXiBar,sigOmegaBar, &
                            & sigJPsi)
 
@@ -140,43 +164,48 @@ contains
     use particleDefinition
     use IdTable, only : nucleon,delta,Xi,JPsi
     use constants, only : rhoNull, mN, pi
-    use twoBodyTools, only : pcm 
+    use twoBodyTools, only : pcm
     use ParticleProperties, only : hadron
 
-    real, intent(in)   ::           srts         ! sqrt(s) of collision (GeV)
-    type(particle),dimension(1:2), intent(in)    :: teilchenIn         !-- colliding particles
-    type(medium),                  intent(in)    :: mediumATcollision  ! -- medium infos at collision point
-    real, intent(out)  ::           sigTotal     ! total cross section (mb)
-    real, intent(out)  ::           sigElastic   ! elastic cross section (mb)
-    real, optional, intent(out)  :: sigChEx      ! charge exchange cross section (mb)
-    real, optional, intent(out)  :: sigAnnihilation  ! annihilation into mesons cross section (mb)
-    real, optional, intent(out)  :: sigProduction    ! production Bbar+B -> B+Bbar+mesons cross section (mb)
-    real, optional, intent(out)  :: sigHyperon       ! (anti)hyperon production Bbar+B -> Y+Ybar+mesons,
-                                                     ! B+Ybar+Kbar, Bbar+Y+K cross section (mb)
-    real, optional, intent(out)  :: sigLambdaBar     ! exclusive (anti)hyperon production : 
-                                                     ! Bbar+B -> Lambda+Lambdabar (mb)
-    real, optional, intent(out)  :: sigSigmaBar     ! exclusive (anti)hyperon production : 
-                                                     ! Bbar+B -> Lambda+Sigma0Bar, LambdaBar+Sigma0 (mb)
-    real, optional, intent(out)  :: sigXiBar         ! exclusive (anti)cascade production:
-                                                     ! Bbar+B -> Xi+XiBar
-    real, optional, intent(out)  :: sigOmegaBar      ! exclusive (anti)Omega (S=-3) production:
-                                                     ! Bbar+B -> Omega+OmegaBar
-    real, optional, intent(out)  :: sigJPsi          ! J/Psi production cross section (mb):
-                                                     ! Bbar+B -> J/Psi
+    real, intent(in)   ::           srts
+    type(particle),dimension(1:2), intent(in)    :: teilchenIn
+    type(medium),                  intent(in)    :: mediumATcollision
+    real, intent(out)  ::           sigTotal
+    real, intent(out)  ::           sigElastic
+    real, optional, intent(out)  :: sigChEx
+    real, optional, intent(out)  :: sigAnnihilation
+    real, optional, intent(out)  :: sigProduction
+    real, optional, intent(out)  :: sigHyperon
+    real, optional, intent(out)  :: sigLambdaBar
+    real, optional, intent(out)  :: sigSigmaBar
+    real, optional, intent(out)  :: sigXiBar
+    real, optional, intent(out)  :: sigOmegaBar
+    real, optional, intent(out)  :: sigJPsi
 
     real :: m1,m2,s,p,sigCEX,sigANN,sigPROD,sigY,u,exc,p12,Gamma_JPsi
     integer :: totCharge, totId, nDelta, I3_Delta
-    real, parameter :: pCut=1.85     ! momentum above which the PDG parameterization is working (GeV/c)  
+
+    ! momentum above which the PDG parameterization is working (GeV/c):
+    real, parameter :: pCut=1.85
     real :: E,v_rel
-    real, parameter :: Gamma_JPsi0=92.9e-06, Br=2.2e-03   ! J/Psi total width (GeV) and branching ratio 
-                                                          ! to pbar p (nbar n)
-    real, parameter :: Gamma_JPsi_pbarp=Gamma_JPsi0*Br    ! J/Psi partial width to pbar p (nbar n)
-    logical, parameter :: densityDependence_Oset=.false.  !If .true. then annihilation cross section
-                                                          !is medium-modified according to 
-                                                          !E. Hernandez and E. Oset, 
-                                                          !Z. Phys. A 341, 201 (1992)
+
+    ! J/Psi total width (GeV) and branching ratio to pbar p (nbar n):
+    real, parameter :: Gamma_JPsi0=92.9e-06, Br=2.2e-03
+
+    ! J/Psi partial width to pbar p (nbar n):
+    real, parameter :: Gamma_JPsi_pbarp=Gamma_JPsi0*Br
+
+    ! If .true. then annihilation cross section is medium-modified according to
+    ! E. Hernandez and E. Oset, Z. Phys. A 341, 201 (1992)
+    logical, parameter :: densityDependence_Oset=.false.
+
 
     if(initFlag) call init
+
+    sigCEX = 0.
+    sigANN = 0.
+    sigProd = 0.
+    sigY = 0.
 
     s=srts**2
     m1=teilchenIn(1)%mass
@@ -184,7 +213,7 @@ contains
     E=(s-m1**2-m2**2)/(2.*m2)       ! Energy of 1-st particle in lab frame
     p=sqrt(E**2-m1**2)              ! Momentum of 1-st particle in lab frame
     v_rel=p/E
-    p=v_rel*mN/sqrt(1-v_rel**2)  ! Momentum of antiproton for the same relative velocity 
+    p=v_rel*mN/sqrt(1-v_rel**2)  ! Momentum of antiproton for the same relative velocity
 
     p12=pcm(srts,m1,m2)   ! c.m. momentum of colliding particles
 
@@ -192,7 +221,7 @@ contains
     !p=sqrt(max(s**2/s0-s,1e-06))           ! lab. momentum
 
     totCharge= sum(teilchenIn(1:2)%charge)
-    totId= sum(teilchenIN(1:2)%ID)    
+    totId= sum(teilchenIN(1:2)%ID)
 
     if(totId.eq.3) then
        if(teilchenIN(1)%ID.eq.2) then
@@ -211,11 +240,11 @@ contains
                                    & .or.&
        &totId.eq.3 .and. abs(totCharge).ne.2 ) then
 
-       ! Parameterizations for pbar+p -> nbar+n from J. Cugnon and J. Vandermeulen, 
+       ! Parameterizations for pbar+p -> nbar+n from J. Cugnon and J. Vandermeulen,
        ! Annales de Physique (France) 14, 49 (1989);
        ! see also C.B. Dover et al., Prog. Part. Nucl. Phys. 29, 87 (1992):
 
-       if(present(sigChEx) .or. p <= pCut) then 
+       if(present(sigChEx) .or. p <= pCut) then
          if( p < 0.5 ) then
            if( p <= 0.1 ) then
              sigCEX= 0.
@@ -223,7 +252,7 @@ contains
              sigCEX= 10.9*(p-0.1)/p**1.6
            end if
          else
-           sigCEX= 7.1/p**0.9       ! This is actually not good at p > 3 GeV/c 
+           sigCEX= 7.1/p**0.9       ! This is actually not good at p > 3 GeV/c
                                     ! (above experiment)
          end if
        end if
@@ -243,16 +272,16 @@ contains
            ! from T. Armstrong et al., PRD 36, 659 (1987):
            sigANN= 41.4 + 29./p
         else
-           ! pbar+p data parameterization by A.L.:            
+           ! pbar+p data parameterization by A.L.:
            sigANN= 51.52/p**0.85 + 0.034/p**2.94
         end if
-      else if(p.lt.6.34) then                       
+      else if(p.lt.6.34) then
         sigANN=88.8/p**0.4 - 24.2             ! A.L.
       else
         sigANN= 38./p**0.5 + 24./p**1.1         ! Cugnon
       end if
       if(densityDependence_Oset.and.mediumATcollision%useMedium) then
-        u=mediumATcollision%density/rhoNull       
+        u=mediumATcollision%density/rhoNull
         sigANN=sigANN*( 1. + 4.59*u + 10.6*u**2 + 12.8*u**3 )
       end if
     end if
@@ -355,7 +384,7 @@ contains
        else
           sigXiBar=0.
        end if
-    end if 
+    end if
 
     if (PRESENT(sigOmegaBar)) then
 
@@ -384,7 +413,7 @@ contains
 
 
     if( p < 2.03 ) then
-       ! Parameterization from J. Cugnon and J. Vandermeulen, 
+       ! Parameterization from J. Cugnon and J. Vandermeulen,
        ! Annales de Physique (France) 14, 49 (1989);
        ! see also C.B. Dover et al., Prog. Part. Nucl. Phys. 29, 87 (1992):
        !       sigElastic= 42.3/p**0.54 + 4.3*exp(-(p-1.5)**2)
@@ -397,13 +426,15 @@ contains
     end if
 
 
+    if (.not.useAnni) sigANN = 0.
+
     if( p <= pCut ) then
 
       sigTotal= sigElastic + sigCEX + sigANN + sigPROD + sigY
 
     else
 
-      ! Parameterization of total cross sections from PDG, 
+      ! Parameterization of total cross sections from PDG,
       ! L. Montanet et al., PRD 50, 1173 (1994) (see p. 1335);
       ! see also T. Falter et al., PRC 70, 054609 (2004):
 

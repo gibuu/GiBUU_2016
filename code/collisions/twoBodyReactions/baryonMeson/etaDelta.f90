@@ -4,7 +4,7 @@
 ! module etaDelta_resonance
 ! PURPOSE
 ! Includes the cross sections for eta-delta scattering in the resonance regime
-! 
+!
 ! Public routines:
 ! * etaDelta
 !****************************************************************************
@@ -36,24 +36,24 @@ contains
   ! * type(particle),dimension(1:2), intent(in) :: teilchenIn       ! colliding particles
   !
   ! Debugging:
-  ! * logical, intent(in),optional              :: plotFlag         ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional              :: plotFlag         ! Switch on plotting of the  Xsections
+  !
   ! RESULT
   ! * real, intent(out)                         :: sigmaTot         ! total Xsection
   ! * real, intent(out)                         :: sigmaElast       ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut     ! colliding particles
-  ! 
+  !
   ! NOTES
   ! Possible final states are :
   ! * 2-particle : pi N
   !*****************************************************************************
   subroutine etaDelta (srts, teilchenIn, teilchenOut, sigmaTot, sigmaElast, plotFlag)
-  
+
     use idTable
     use particleDefinition
     use mediumDefinition
@@ -75,9 +75,9 @@ contains
     !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ! Local variables
     real,dimension(-1:1) :: piN            ! cross sections into pi N, index denotes pion charge
-    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities 
+    real :: fluxCorrector      ! Correction of the fluxfactor due to different velocities
                                ! in the medium compared to the vacuum
-    type(particle) :: eta_particle, delta_particle    
+    type(particle) :: eta_particle, delta_particle
     logical :: antiParticleInput, failFlag
 
     antiParticleINPUT=.false. ! .true. if antiparticle in the input
@@ -101,7 +101,7 @@ contains
     end if
 
     If(delta_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        delta_particle%Charge        =  -delta_particle%Charge
        delta_particle%antiparticle  = .false.
        eta_particle%Charge          =  -eta_particle%Charge
@@ -137,7 +137,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.delta_particle%charge+eta_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,eta_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,eta_particle%Charge, &
             & delta_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -157,10 +157,10 @@ contains
     ! subroutine evaluateXsections
     !
     ! PURPOSE
-    ! Evaluates eta Delta_resonance -> anything cross sections 
+    ! Evaluates eta Delta_resonance -> anything cross sections
     !
     ! NOTES
-    ! There are no resonance contributions to eta Delta scattering. 
+    ! There are no resonance contributions to eta Delta scattering.
     !**************************************************************
     subroutine evaluateXsections
       use pionNucleon, only : matrixDeltaEta  ! !Matrix Element for pi N <-> eta Delta
@@ -169,11 +169,11 @@ contains
 
       real :: pFinal, pInitial, isoz_nuk, piN_total
       integer :: pionCharge
-      
+
       !*******************************************************************************************
       ! eta Delta -> pi N
       !*****************************************************************************************
-      
+
       pFinal=pcm(srts,mPi,mN)
       pInitial=pcm(srts,eta_particle%mass,delta_particle%mass)
 
@@ -184,7 +184,7 @@ contains
          write(*,*) 'delta:'
          call writeparticle(6,0,0,delta_Particle)
          piN_total=0.
-      else  
+      else
          ! given by detailed balance: factor 1/2 due to (2j+1)-Terms in cross section and different
          ! spins in initial and final state
          piN_total= 0.5*matrixDeltaEta/srts**2/pinitial*pfinal
@@ -198,7 +198,7 @@ contains
             piN(pionCharge)=piN_total*clebschSquared(1.,0.5,1.5,real(pionCharge),isoZ_nuk)
          end if
       end do
-      
+
       !###################################################################################################
       ! evaluate elastic Xsection
       !###################################################################################################
@@ -218,8 +218,8 @@ contains
       !###################################################################################################
       ! Sum up everything for the total cross section
       !###################################################################################################
- 
-      sigmaTot=sum( piN ) 
+
+      sigmaTot=sum( piN )
 
     end subroutine evaluateXsections
 
@@ -245,7 +245,7 @@ contains
       !############################################################
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piN(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=nucleon
@@ -263,17 +263,17 @@ contains
 
     end subroutine makeDecision
 
-    
+
     !*****************************************************************************************
     !****s* etaDelta/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV]
-    ! . 
+    ! .
     ! Filenames:
-    ! * 'etaDelta_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'etaDelta_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'etaDelta_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state
     !*****************************************************************************************
     subroutine makeOutPut()

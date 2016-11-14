@@ -14,7 +14,7 @@ module cern_lib
      !**********************************************************************
      !****f* cern_lib/DZEROX
      ! NAME
-     ! double precision function DZEROX(A0,B0,EPS,MAXF,F,MODE) 
+     ! double precision function DZEROX(A0,B0,EPS,MAXF,F,MODE)
      ! PURPOSE
      ! Finding a Zero of a Function
      ! INPUTS
@@ -28,7 +28,7 @@ module cern_lib
      ! NOTES
      ! cf. original CERNLIB documentation
      !**********************************************************************
-     double precision function DZEROX(A0,B0,EPS,MAXF,F,MODE) 
+     double precision function DZEROX(A0,B0,EPS,MAXF,F,MODE)
        real(8), intent(in) :: A0, B0
        real(8), intent(in) :: EPS
        integer, intent(in) :: MAXF

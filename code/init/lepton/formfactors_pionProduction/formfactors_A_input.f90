@@ -1,5 +1,5 @@
 !***************************************************************************
-!****m* /formfactors_A_input 
+!****m* /formfactors_A_input
 ! NAME
 ! module formfactors_A_input
 !
@@ -11,7 +11,7 @@
 ! NAMELIST 'formfactors_pion'
 !
 ! NOTES
-! here is also the right place to define the routines 'get_i' and 
+! here is also the right place to define the routines 'get_i' and
 ! 'get_neighbors', which are multiple defined.
 !***************************************************************************
 module formfactors_A_input
@@ -75,7 +75,7 @@ contains
 
   end subroutine readInput
 
-  
+
   function get_Filename (str)
     use inputGeneral, only : path_to_input
     character(len=4), intent(in) :: str
@@ -122,7 +122,7 @@ contains
        if (DoPR(2)) write(*,'(3A)') 'WARNING: ',trim(ModName),', Q2>Q2max, but less than 10%.'
        Q2 = Q2max
     end if
-    
+
     if (W>Wmax) then
       ValidateVars = .false.
       return

@@ -29,10 +29,10 @@ module matrix_module
   ! NAME
   ! function matrixMult(a,b,c,...) result(matrix)
   ! PURPOSE
-  ! Evaluates a x b x c x ...   for matrices  
+  ! Evaluates a x b x c x ...   for matrices
   ! INPUTS
   ! * a,b,c : matrices a,b,c -- this interface excepts a number of matrices between 2 and 9
-  ! * The matrices should be complex 
+  ! * The matrices should be complex
   ! OUTPUT
   ! * complex, dimension(0:3,0:3) :: matrix
   !*************************************************************************
@@ -141,7 +141,7 @@ contains
   !*************************************************************************
   !****f* matrix/trace
   ! NAME
-  ! complex function trace(a) 
+  ! complex function trace(a)
   ! PURPOSE
   ! Evaluates Trace (a_{mu nu})
   ! INPUTS
@@ -151,9 +151,9 @@ contains
   !*************************************************************************
   function trace(a) result(c)
     complex :: c
-    complex, intent(in),  dimension(0:3,0:3) :: a 
+    complex, intent(in),  dimension(0:3,0:3) :: a
     integer :: mu
-    c=0. 
+    c=0.
     do mu=0,3
        c=c+a(mu,mu)
     end do
@@ -163,7 +163,7 @@ contains
   !*************************************************************************
   !****s* matrix/printMatrix
   ! NAME
-  ! subroutine printMatrix(A) 
+  ! subroutine printMatrix(A)
   ! PURPOSE
   ! * Prints the input matrix
   ! INPUTS
@@ -173,7 +173,7 @@ contains
   !*************************************************************************
   subroutine printMatrix(A)
     integer :: j
-    complex, intent(in),  dimension(0:3,0:3) :: a 
+    complex, intent(in),  dimension(0:3,0:3) :: a
     do j=0,3
        write(*,'(4("(",2G18.9,")"))') A(j,:)
     end do

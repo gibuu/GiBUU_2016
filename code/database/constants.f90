@@ -1,4 +1,4 @@
-module constants
+!*******************************************************************************
 !****m* /constants
 ! NAME
 ! module constants
@@ -6,6 +6,7 @@ module constants
 ! Includes constants which are useful all over the code.
 ! SOURCE
 !
+module constants
   implicit none
   public
 
@@ -45,6 +46,7 @@ module constants
   ! numerics
   integer, parameter :: singlePrecision = 4                   ! number of bytes for single precision variables
 
-!***
+!*******************************************************************************
+
 
 end module constants

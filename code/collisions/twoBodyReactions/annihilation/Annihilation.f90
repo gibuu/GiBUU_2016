@@ -16,8 +16,8 @@ module Annihilation
   !
   integer, save :: model=2
   ! PURPOSE
-  ! Switch between the models of annihilation: 
-  ! * 1 -- string based model, 
+  ! Switch between the models of annihilation:
+  ! * 1 -- string based model,
   ! * 2 -- statistical model
   !********************************************************************
 
@@ -27,8 +27,8 @@ module Annihilation
   !
   integer, save :: position_flag=1
   ! PURPOSE
-  ! Switch between the choices of position of outgoing mesons: 
-  ! * 1 -- at the c.m. of the baryon and antibaryon, 
+  ! Switch between the choices of position of outgoing mesons:
+  ! * 1 -- at the c.m. of the baryon and antibaryon,
   ! * 2 -- at the antibaryon position
   !********************************************************************
 
@@ -68,7 +68,7 @@ contains
     call Write_ReadingInput('annihilation',0,ios)
 
     write(*,*) ' Model (1 -- string-based, 2 -- statistical): ', model
-    write(*,*) ' position_flag (1 --- at c.m. , 2 --- at AntiBar position): ', position_flag 
+    write(*,*) ' position_flag (1 --- at c.m. , 2 --- at AntiBar position): ', position_flag
 
     call Write_ReadingInput('annihilation',1)
 
@@ -85,7 +85,7 @@ contains
   ! INPUTS
   ! * type(particle), intent(in) ::  antibar                      ! antibaryon particle
   ! * type(particle), intent(in) ::  bar                          ! baryon particle
-  ! * real, intent(in)                              :: time       ! current time 
+  ! * real, intent(in)                              :: time       ! current time
   ! OUTPUT
   ! * type(particle), intent(inout), dimension(:) :: finalState   ! Array of the final state particles
   ! * logical, intent(out) :: flag_anni                           ! .true. if annihilation successfull
@@ -108,7 +108,7 @@ contains
     use densitymodule, only : Particle4Momentum_RMF
     use mediumDefinition
     use energyCalc, only : energyCorrection
-    use nBodyPhaseSpace, only : momenta_in_nBodyPS 
+    use nBodyPhaseSpace, only : momenta_in_nBodyPS
     use random
     use Coll_BaB
     use hadronFormation, only : forceInitFormation
@@ -119,7 +119,7 @@ contains
 
     type(particle), intent(in) ::  antibar                      ! antibaryon particle
     type(particle), intent(in) ::  bar                          ! baryon particle
-    real, intent(in)                              :: time       ! current time 
+    real, intent(in)                              :: time       ! current time
     type(particle), intent(inout), dimension(:) :: finalState   ! Array of the final state particles
     logical, intent(out) :: flag_anni                           ! .true. if annihilation successfull
     integer, intent(out) :: HiEnergyType                        ! must be=-3 at the output
@@ -148,7 +148,7 @@ contains
 
     ncalls=ncalls+1
 
-    if(debugFlag) write(*,*) 'In annihilate: nBlocked, nTotal:', nBlocked, nTotal 
+    if(debugFlag) write(*,*) 'In annihilate: nBlocked, nTotal:', nBlocked, nTotal
 
     if(ncalls.eq.1) then
        call readInput
@@ -170,7 +170,7 @@ contains
     ! In the case of RMF mode momentum_star is the sum of the kinetic
     ! 4-momenta and betaToCV is the speed of the center-of-velocity frame:
 
-    momentum_star(0:3)= antibar%momentum(0:3) + bar%momentum(0:3) 
+    momentum_star(0:3)= antibar%momentum(0:3) + bar%momentum(0:3)
     betaToCV = lorentzCalcBeta (momentum_star, 'annihilate(1)')
 
     srtS_star = sqrtS((/antibar,bar/),"annihilate, srtS_star")
@@ -180,14 +180,14 @@ contains
       srtS_vacuum=sqrtS_free((/antibar,bar/))
       momentum_tot=momentum_star
       betaToCM=betaToCV
-      srtS=srtS_star    
+      srtS=srtS_star
 
     else   ! RMF mode:
 
       mstar_antibar = sqrtS(antibar,'annihilate, mstar_antibar')
       mstar_bar = sqrtS(bar,'annihilate, mstar_bar')
 
-      srtS_vacuum = srtS_star - mstar_antibar - mstar_bar  + antibar%mass + bar%mass 
+      srtS_vacuum = srtS_star - mstar_antibar - mstar_bar  + antibar%mass + bar%mass
 
       ! Compute canonical momenta of the antibaryon and baryon:
 
@@ -201,19 +201,19 @@ contains
       if(srtS.le.0.) then
         if(debugFlag) then
           write(*,*)'# Space-like total 4-momentum, s**2: ', srtS
-          write(*,*)'# srtS_star: ', srtS_star        
+          write(*,*)'# srtS_star: ', srtS_star
           write(*,*)'# Bar. and antibar. Dirac masses: ', mstar_bar, mstar_antibar
           write(*,*)'# baryon canonical 4-momentum: ',  momentum_bar(:)
           write(*,*)'# antibaryon canonical 4-momentum: ',  momentum_antibar(:)
           write(*,*)'# baryon kinetic 4-momentum: ', bar%momentum(:)
           write(*,*)'# antibaryon kinetic 4-momentum: ', antibar%momentum(:)
-          write(*,*)'# Vector field for the baryon: ',     momentum_bar(:)-bar%momentum(:) 
+          write(*,*)'# Vector field for the baryon: ',     momentum_bar(:)-bar%momentum(:)
           write(*,*)'# Vector field for the antibaryon: ', momentum_antibar(:)-antibar%momentum(:)
         end if
         flag_anni=.false.
-        return 
-      end if        
- 
+        return
+      end if
+
       srtS= sqrt(srtS)
 
       betaToCM = lorentzCalcBeta (momentum_tot, 'annihilate(2)')
@@ -230,7 +230,7 @@ contains
     if(abs(totalCharge).gt.1 .or. totalStrangeness.ne.0 .or. totalCharm.ne.0) then
        model1=1
     else
-       model1=model 
+       model1=model
     end if
 
     select case(position_flag)
@@ -241,7 +241,7 @@ contains
     case Default
         write(*,*)' Position of annihilation final state is not defined: ', position_flag
         stop
-    end select    
+    end select
 
     finalState%Id=0               ! Initialize output
 
@@ -250,34 +250,34 @@ contains
     case(1)  ! String-based model
 
         if( srtS .gt. 4.*mPi ) then   ! Use HiEnergy package:
-    
+
               ! Define CM - Momentum :
               p_cm=bar%momentum
               call lorentz(betaToCV, p_cm, 'annihilate(1)')
-    
+
               If(debugFlag) write (*,*)'Vor DoColl_BaB'
               call Init_VM_Mass(srtS_vacuum,position)
               call DoColl_BaB((/bar,antibar/),finalState,flag_anni,srtS_vacuum,p_cm,(/0.,0.,0./))
               If(debugFlag) write (*,*)'Nach DoColl_BaB'
 
-              call ResetPosition ! this also sets maxID 
-        
+              call ResetPosition ! this also sets maxID
+
         else if( srtS .gt. 2.*mPi ) then  ! Annihilation to 2pi or 3pi:
-    
+
               izt= antibar%charge + bar%charge
-   
+
               xx=rn()
-    
-              if( xx .lt. branching_2pi ) then 
-        
+
+              if( xx .lt. branching_2pi ) then
+
                 ! Generate  2pi final state:
-    
+
                 finalState(1:2)%ID=pion
                 finalState(1:2)%mass=mPi
-     
+
                 if(izt.eq.0) then
                   xx = rn()
-                  ! 0.82=the branching ratio of the pi^+ pi^- channel for p pbar annihilation 
+                  ! 0.82=the branching ratio of the pi^+ pi^- channel for p pbar annihilation
                   ! at rest to 2pi.
                   ! See Table VI in I.N. Mishustin et al, PRC 71, 035201 (2005)
                   if(xx.lt.0.82) then
@@ -295,17 +295,17 @@ contains
                   flag_anni=.false.
                   return
                 endif
-  
-              else if( xx .lt. branching_2pi+branching_3pi ) then 
+
+              else if( xx .lt. branching_2pi+branching_3pi ) then
 
                 ! Generate 3pi final state:
-    
+
                 finalState(1:3)%ID=pion
                 finalState(1:3)%mass=mPi
-     
+
                 if(izt.eq.0) then
                   xx = rn()
-                  ! 0.72=the branching ratio of the pi^+ pi^- pi^0 direct channel for p pbar annihilation 
+                  ! 0.72=the branching ratio of the pi^+ pi^- pi^0 direct channel for p pbar annihilation
                   ! at rest to 3pi.
                   ! See Table VI in I.N. Mishustin et al, PRC 71, 035201 (2005)
                   if(xx.lt.0.72) then
@@ -316,7 +316,7 @@ contains
                     finalState(1:3)%charge = 0
                   endif
                 else if(abs(izt).eq.1) then
-                  ! No data, thus assume equal probabilities for the different charge channels: 
+                  ! No data, thus assume equal probabilities for the different charge channels:
                   finalState(1)%charge = izt
                   xx = rn()
                   if(xx.lt.0.5) then
@@ -334,20 +334,20 @@ contains
                   flag_anni=.false.
                   return
                 end if
-    
+
               else
-    
+
                 ! srtS is too small to generate other final states
                 flag_anni=.false.
                 return
-    
+
               end if
-    
-              call ResetPosition ! this also sets maxID 
+
+              call ResetPosition ! this also sets maxID
 
               if( srtS.lt.sum(finalState(1:maxID)%mass)+0.001 ) then
                 if(debugFlag) write(*,*)' In annihilate: event is blocked: ',&
-                               & srtS,finalState(1:maxID)%Id,sum(finalState(1:maxID)%mass) 
+                               & srtS,finalState(1:maxID)%Id,sum(finalState(1:maxID)%mass)
                 nBlocked=nBlocked+1
                 flag_anni=.false.
                 return
@@ -362,12 +362,12 @@ contains
               end do
 
               flag_anni=.true.
-    
+
         else
-    
+
               maxID=0
               flag_anni =.false.
-    
+
         end if
 
 
@@ -383,14 +383,14 @@ contains
 
               call choose_channel(srtS_vacuum,antibar,bar,time,finalState,successFlag)
 
-              call ResetPosition ! this also sets maxID 
+              call ResetPosition ! this also sets maxID
 
               if(debugFlag) then
                  write(*,*)'In annihilation, before massass_nBody, srts: ', srts
                  do i=1,maxID
                    write(*,*) i, finalState(i)%Id
                  end do
-              end if           
+              end if
 
 
               if(successFlag) then
@@ -420,13 +420,13 @@ contains
         stop
 
     end select
-        
+
 
     if(debugFlag) then
         if(ncalls.eq.1) open(3,file='annihilation_event.dat',status='unknown')
         write(3,*)' Call #: ', ncalls
         write(3,*)' srtS_star, srtS, srtS_vacuum: ', srtS_star, srtS, srtS_vacuum
-        if(maxID > 0) then 
+        if(maxID > 0) then
           write(3,*)' sum final masses: ', sum(finalState(1:maxID)%mass)
           do i=1,maxID
             write(3,*) finalState(i)%Id,finalState(i)%charge,finalState(i)%mass
@@ -449,7 +449,7 @@ contains
 
     if( srtS.lt.sum(finalState(1:maxID)%mass)+0.001 ) then
          if(debugFlag) write(*,*)' In annihilate: event is blocked: ',&
-                               & srtS,finalState(1:maxID)%Id,sum(finalState(1:maxID)%mass) 
+                               & srtS,finalState(1:maxID)%Id,sum(finalState(1:maxID)%mass)
          nBlocked=nBlocked+1
          flag_anni=.false.
          return
@@ -460,12 +460,12 @@ contains
 
     if( srtS .gt. 4.*mPi ) then
 
-        !  energyCorrection takes finalState in the CM frame 
-        !  and returns it in the calculational frame  
+        !  energyCorrection takes finalState in the CM frame
+        !  and returns it in the calculational frame
 
         call energyCorrection(srtS, betaToLRF, betaToCM, mediumAtCollision, &
                              &finalState(1:maxId), successFlag)
-  
+
         if(.not.successFlag) then
           flag_anni=.false.
           if(debugFlag) write(*,*)' Energy correction failed '
@@ -492,7 +492,7 @@ contains
         finalState(1:maxID)%in_formation=.false.
     end if
 
-    do k=0,3 
+    do k=0,3
       momentum_final(k)=sum(finalState(1:maxId)%momentum(k))
     end do
 
@@ -504,7 +504,7 @@ contains
       write(*,*)' Problem with energy-momentum conservation in annihilate'
       write(*,*)' antibar%Id, antibar%charge: ', antibar%Id, antibar%charge
       write(*,*)' bar%Id, bar%charge: ', bar%Id, bar%charge
-      write(*,*)' srtS_star, srtS, srtS_vacuum: ', srtS_star, srtS, srtS_vacuum      
+      write(*,*)' srtS_star, srtS, srtS_vacuum: ', srtS_star, srtS, srtS_vacuum
       write(*,*)' momentum_tot - momentum_final: ', momentum_tot - momentum_final
     end if
 
@@ -534,7 +534,7 @@ contains
             maxID=i-1
             exit
          end if
-      end do      
+      end do
       do i=1,maxID
         finalState(i)%position=position
       end do
@@ -547,12 +547,12 @@ contains
   !*************************************************************************
   !****s* Annihilation/annihilate_to_meson
   ! NAME
-  ! subroutine annihilate_to_meson(pairIn,time,finalState,flag_anni,HiEnergyType) 
+  ! subroutine annihilate_to_meson(pairIn,time,finalState,flag_anni,HiEnergyType)
   ! PURPOSE
   ! Simulates an annihilation event of an antibaryon and a baryon into a meson.
   ! INPUTS
   ! * type(particle), dimension(1:2), intent(in) ::  pairIn       ! incoming baryon and antibaryon (order does not matter)
-  ! * real, intent(in)                              :: time       ! current time 
+  ! * real, intent(in)                              :: time       ! current time
   ! OUTPUT
   ! * type(particle), intent(inout), dimension(:) :: finalState   ! Array of the final state particles
   ! * logical, intent(out) :: flag_anni                           ! .true. if annihilation successfull
@@ -565,7 +565,7 @@ contains
     use densitymodule, only : Particle4Momentum_RMF
 
     type(particle), dimension(1:2), intent(in) ::  pairIn       ! incoming baryon and antibaryon (order does not matter)
-    real, intent(in)                              :: time       ! current time 
+    real, intent(in)                              :: time       ! current time
     type(particle), intent(inout), dimension(:) :: finalState   ! Array of the final state particles
     logical, intent(out) :: flag_anni                           ! .true. if annihilation successfull
     integer, intent(out) :: HiEnergyType                        ! must be=-3 at the output
@@ -575,7 +575,7 @@ contains
     logical, parameter :: debugFlag=.false.
 
     if(.not.getRMF_flag()) then
-       momentum_tot=pairIN(1)%momentum+pairIN(2)%momentum 
+       momentum_tot=pairIN(1)%momentum+pairIN(2)%momentum
     else
        call Particle4Momentum_RMF(pairIN(1),momentum1)
        call Particle4Momentum_RMF(pairIN(2),momentum2)
@@ -587,9 +587,9 @@ contains
     if(srtS.le.0.) then
        if(debugFlag) write(*,*)'Space-like total 4-momentum in annihilate_to_meson, s**2: ', srtS
        flag_anni=.false.
-       return 
-    end if        
- 
+       return
+    end if
+
     srtS= sqrt(srtS)
 
     finalState(1)%mass=srts
@@ -600,7 +600,7 @@ contains
     finalState(1)%scaleCS=1.
     finalState(1)%in_formation=.false.
 
-    HiEnergyType=-3    
+    HiEnergyType=-3
     flag_anni=.true.
 
   end subroutine annihilate_to_meson

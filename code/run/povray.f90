@@ -12,7 +12,7 @@ module povray
 
   implicit none
   private
-  
+
   public :: povray_output
 
 contains
@@ -53,7 +53,7 @@ contains
   ! * type(particle), dimension(:,:)           :: particles
   ! * type(particle), dimension(:,:), optional :: particles1
   ! PURPOSE
-  ! In file 'filename' a povray output according to the input vectors 
+  ! In file 'filename' a povray output according to the input vectors
   ! 'particles' and 'particles1' is generated. You can either give one or two
   ! particle vectors as input, since 'particles1' is optional.
   ! For each particle a sphere is generated around its position.
@@ -67,7 +67,7 @@ contains
     character(*), intent(in)                             :: filename
     type(particle), intent(in), dimension(:,:)           :: particles
     type(particle), intent(in), dimension(:,:), optional :: particles1
-    
+
     integer :: i,j, nWritten
     logical, save :: initflag = .true.
 
@@ -120,7 +120,7 @@ contains
           end do
        end do
     end if
-    
+
     close(77)
 
   contains
@@ -199,13 +199,13 @@ contains
     ! * neutron: red
     ! * pion  : green
     ! * other baryon : yellow (rgb<1,1,0>)
-    ! * other meson : magenta (rgb<1,0,1>)  
+    ! * other meson : magenta (rgb<1,0,1>)
     ! * antiNucleon : black
     !
     ! Radius scheme:
     ! * nucleon : 1 fm
     ! * other baryon: 1.25 fm
-    ! * meson: 0.75 fm 
+    ! * meson: 0.75 fm
     !***********************************************************************
     subroutine sphere(iPart)
       use particleProperties, only: isCharmed, isStrange
@@ -255,7 +255,7 @@ contains
     !***********************************************************************
     subroutine sphereDat(iPart)
       type(particle), intent(in) :: iPart
-      
+
       integer :: iType
       character(*), parameter :: T1 = '(1P,3e12.3,0P,i5,i3,f7.3)'
 

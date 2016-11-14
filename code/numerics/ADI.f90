@@ -9,7 +9,7 @@
 ! Can also be applied for the Yukawa or Coulomb potential calculations.
 ! Uses the Alternating Direction Implicit (ADI) iterative method, similar
 ! to the one from module yukawa.
-! (See S.Teis, PhD thesis, and the book of R.S.Varga, 
+! (See S.Teis, PhD thesis, and the book of R.S.Varga,
 ! "Matrix Iterative Analysis".)
 !*****************************************************************************
 module ADI
@@ -34,7 +34,7 @@ module ADI
        alpy, bety, &  ! for the tridiagonal inversion
        alpz, betz
 
-  real, save, dimension(:,:,:), allocatable :: U1, U2, U3 ! intermediate iterations of the field U 
+  real, save, dimension(:,:,:), allocatable :: U1, U2, U3 ! intermediate iterations of the field U
 
   integer, save :: Nx, Ny, Nz
 
@@ -47,7 +47,7 @@ contains
   ! NAME
   ! subroutine init
   ! PURPOSE
-  ! Reads input switches. Initializes fields. 
+  ! Reads input switches. Initializes fields.
   !***************************************************************************
   subroutine init
     use output
@@ -101,24 +101,24 @@ contains
   !                           + Diag(i,j,k)*U(i,j,k).
   ! with:
   ! * S(i,j,k), i=2,...,Nx-1, j=2,...,Ny-1, k=2,...,Nz-1 --- the source field.
-  ! The values of U(i,j,k) at the boundary ( i=1,Nx or j=1,Ny  or k=1,Nz ) are fixed. 
+  ! The values of U(i,j,k) at the boundary ( i=1,Nx or j=1,Ny  or k=1,Nz ) are fixed.
   !
   ! INPUTS
-  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- starting value of the field U for iterations, 
+  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- starting value of the field U for iterations,
   ! * real, dimension(:,:,:), intent(in)    :: S    ! -- the source field,
   ! * real, dimension(:,:,:), intent(in)    :: Diag ! -- diagonal coefficient field,
   ! * real, intent(in) :: eta_x          ! =(gridSpacing(3)/gridSpacing(1))**2,
-  ! * real, intent(in) :: eta_y          ! =(gridSpacing(3)/gridSpacing(2))**2 
+  ! * real, intent(in) :: eta_y          ! =(gridSpacing(3)/gridSpacing(2))**2
   ! * logical, optional, intent(in) :: CoulombFlag   ! please, set .true. when Coulomb field is computed
   ! * real, optional, intent(in)    :: rconv         ! convergence parameter
   ! * integer, optional, intent(out) :: niter_out    ! number of iterations
   ! * real, optional, intent(out) :: error_out       ! error
   ! OUTPUT
-  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- final iterated value of the field U, 
+  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- final iterated value of the field U,
   ! NOTES
-  ! Uses the Douglas Iterative Method 
+  ! Uses the Douglas Iterative Method
   ! (c.f. R.S.Varga, "Matrix Iterative Analysis")
-  ! The tridiagonal inversion procedure is explained, e.g. in 
+  ! The tridiagonal inversion procedure is explained, e.g. in
   ! S.E. Koonin, D.C. Meredith, "Computational Physics"
   !***************************************************************************
   subroutine ADI_solve_Douglas(U, S, Diag, eta_x, eta_y, CoulombFlag, rconv, niter_out, error_out)
@@ -134,7 +134,7 @@ contains
     logical, optional, intent(in) :: CoulombFlag
     real, optional, intent(in)    :: rconv
     integer, optional, intent(out) :: niter_out
-    real, optional, intent(out) :: error_out    
+    real, optional, intent(out) :: error_out
 
     real, save :: X_min, Y_min, Z_min, XYZ_min, XYZ_max
     real :: Diag_min, Diag_max, absS_max
@@ -144,7 +144,7 @@ contains
     real :: cx, cy, cz, cdia
 
     integer, SAVE :: numberIterations_max=20       ! Maximum number of iterations
-    real,    SAVE :: relativeError_max=1.e-04      ! Maximum relative error required 
+    real,    SAVE :: relativeError_max=1.e-04      ! Maximum relative error required
 
     if(flagini) then
        call init
@@ -166,7 +166,7 @@ contains
        Z_min=4.*sin(pi/(2.*(Nz-1)))**2
        if(debugADI) write(*,*) 'In ADI_solve_Douglas, X_min, Y_min, Z_min:', X_min, Y_min, Z_min
        XYZ_min=min(X_min,Y_min,Z_min)
-       XYZ_max=4.*max(eta_x,eta_y,1.)      
+       XYZ_max=4.*max(eta_x,eta_y,1.)
        !       XYZ_min=0.33
        !       XYZ_max=5.7
        flagini=.false.
@@ -180,7 +180,7 @@ contains
        relativeError_max=1.e-04
     end if
 
-    if (debugADI) write(*,'(A,i5,2x,e12.5)') 'In ADI_solve_Douglas, numberIterations_max,relativeError_max: ',& 
+    if (debugADI) write(*,'(A,i5,2x,e12.5)') 'In ADI_solve_Douglas, numberIterations_max,relativeError_max: ',&
          & numberIterations_max,relativeError_max
 
     if(present(rconv)) then
@@ -194,7 +194,7 @@ contains
        Diag_max=-1.e+06
        do ix = 2,Nx-1
           do iy = 2,Ny-1
-             do iz = 2,Nz-1    
+             do iz = 2,Nz-1
                 if(Diag(ix,iy,iz).lt.Diag_min) Diag_min=Diag(ix,iy,iz)
                 if(Diag(ix,iy,iz).gt.Diag_max) Diag_max=Diag(ix,iy,iz)
              end do
@@ -225,7 +225,7 @@ contains
     absS_max=0.
     do ix = 2,Nx-1
        do iy = 2,Ny-1
-          do iz = 2,Nz-1    
+          do iz = 2,Nz-1
              if(abs(S(ix,iy,iz)).gt.absS_max) absS_max=abs(S(ix,iy,iz))
           end do
        end do
@@ -252,7 +252,7 @@ contains
        if(debugADI) write(*,*) 'In ADI_solve_Douglas, r:', r
 
        A0x= 2. + r/eta_x
-       cx= r - 2.*eta_x - 4.*eta_y - 4. 
+       cx= r - 2.*eta_x - 4.*eta_y - 4.
 
        do iy = 2,Ny-1
           do iz = 2,Nz-1
@@ -388,7 +388,7 @@ contains
 
        if(absS_max.gt.1.e-10) error_overall=error_overall/absS_max
 
-       if(debugADI) write(*,*) 'In ADI_solve_Douglas, iteration, error:', j, error_overall 
+       if(debugADI) write(*,*) 'In ADI_solve_Douglas, iteration, error:', j, error_overall
 
        if( error_overall .lt. relativeError_max ) then
           exit
@@ -401,7 +401,7 @@ contains
     end do Loop_over_iterations
 
     if(present(niter_out)) niter_out=j
-    if(present(error_out)) error_out=error_overall 
+    if(present(error_out)) error_out=error_overall
 
   end subroutine ADI_solve_Douglas
 
@@ -420,17 +420,17 @@ contains
   !   [ tildeZ * U ](i,j,k) = - U(i,j,k-1) + 2.*U(i,j,k) -  U(i,j,k+1)
   ! with:
   ! * S(i,j,k), i=2,...,Nx-1, j=2,...,Ny-1, k=2,...,Nz-1 --- the source field.
-  ! The values of U(i,j,k) at the boundary ( i=1,Nx or j=1,Ny  or k=1,Nz ) are fixed. 
+  ! The values of U(i,j,k) at the boundary ( i=1,Nx or j=1,Ny  or k=1,Nz ) are fixed.
   ! INPUTS
-  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- starting value of the field U for iterations, 
+  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- starting value of the field U for iterations,
   ! * real, dimension(:,:,:), intent(in)    :: S    ! -- the source field,
   ! * real, intent(in) :: eta_x          ! =(gridSpacing(3)/gridSpacing(1))**2,
-  ! * real, intent(in) :: eta_y          ! =(gridSpacing(3)/gridSpacing(2))**2 
+  ! * real, intent(in) :: eta_y          ! =(gridSpacing(3)/gridSpacing(2))**2
   ! * real, optional, intent(in)    :: rconv         ! convergence parameter
   ! * integer, optional, intent(out) :: niter_out    ! number of iterations
   ! * real, optional, intent(out) :: error_out       ! error
   ! OUTPUT
-  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- final iterated value of the field U, 
+  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- final iterated value of the field U,
   ! NOTES
   ! Uses the Douglas Iterative Method (c.f. R.S. Varga "Matrix Iterative Analysis")
   ! The tridiagonal inversion procedure is explained, e.g. in S.E. Koonin, D.C. Meredith,
@@ -448,7 +448,7 @@ contains
 
     real, optional, intent(in)    :: rconv
     integer, optional, intent(out) :: niter_out
-    real, optional, intent(out) :: error_out    
+    real, optional, intent(out) :: error_out
 
     real :: absS_max
     real :: r
@@ -457,7 +457,7 @@ contains
     real :: cx, cy, cz, cdia
 
     integer, SAVE :: numberIterations_max=20       ! Maximum number of iterations
-    real,    SAVE :: relativeError_max=1.e-04      ! Maximum relative error required 
+    real,    SAVE :: relativeError_max=1.e-04      ! Maximum relative error required
 
     if(flagini) then
        call init
@@ -480,7 +480,7 @@ contains
     numberIterations_max = 600
     relativeError_max=3.e-04
 
-    if (debugADI) write(*,'(A,i5,2x,e12.5)') 'In ADI_Coulomb, numberIterations_max,relativeError_max: ',& 
+    if (debugADI) write(*,'(A,i5,2x,e12.5)') 'In ADI_Coulomb, numberIterations_max,relativeError_max: ',&
          & numberIterations_max,relativeError_max
 
     if(present(rconv)) then
@@ -493,7 +493,7 @@ contains
     absS_max=0.
     do ix = 2,Nx-1
        do iy = 2,Ny-1
-          do iz = 2,Nz-1    
+          do iz = 2,Nz-1
              if(abs(S(ix,iy,iz)).gt.absS_max) absS_max=abs(S(ix,iy,iz))
           end do
        end do
@@ -514,7 +514,7 @@ contains
     A0y= 2. + r/eta_y
     A0z= 2. + r
 
-    cx= r - 2.*eta_x - 4.*eta_y - 4. 
+    cx= r - 2.*eta_x - 4.*eta_y - 4.
     cy=  r - 2. * ( eta_x + eta_y + 2. )
     cz= r - 2. * ( eta_x + eta_y + 1. )
     cdia= 2.*(eta_x+eta_y+1.)
@@ -647,7 +647,7 @@ contains
 
        if(absS_max.gt.1.e-10) error_overall=error_overall/absS_max
 
-       if(debugADI) write(*,*) 'In ADI_Coulomb, iteration, error:', j, error_overall 
+       if(debugADI) write(*,*) 'In ADI_Coulomb, iteration, error:', j, error_overall
 
        if( error_overall .lt. relativeError_max ) then
           exit
@@ -660,7 +660,7 @@ contains
     end do Loop_over_iterations
 
     if(present(niter_out)) niter_out=j
-    if(present(error_out)) error_out=error_overall 
+    if(present(error_out)) error_out=error_overall
 
   end subroutine ADI_Coulomb
 
@@ -682,9 +682,9 @@ contains
   !                         + Diag(i,j,k)*U(i,j,k).
   ! with:
   ! * S(i,j,k), i=2,...,Nx-1, j=2,...,Ny-1, k=2,...,Nz-1 --- the source field.
-  ! The values of U(i,j,k) at the boundary ( i=1,Nx or j=1,Ny  or k=1,Nz ) are fixed. 
+  ! The values of U(i,j,k) at the boundary ( i=1,Nx or j=1,Ny  or k=1,Nz ) are fixed.
   ! INPUTS
-  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- starting value of the field U for iterations, 
+  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- starting value of the field U for iterations,
   ! * real, dimension(:,:,:), intent(in)    :: S    ! -- the source field,
   ! * real, dimension(:,:,:), intent(in)    :: Diag ! -- diagonal coefficient field,
   ! * real, intent(in)    :: Diag_min, Diag_max     ! -- min and max values of Diag,
@@ -695,7 +695,7 @@ contains
   ! * integer, optional, intent(out) :: niter_out    ! number of iterations
   ! * real, optional, intent(out) :: error_out       ! error
   ! OUTPUT
-  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- final iterated value of the field U, 
+  ! * real, dimension(:,:,:), intent(inout) :: U    ! -- final iterated value of the field U,
   ! * real, intent(out)                     :: funMax ! =max(abs(( tildeX + tildeY + tildeZ )* U - S))
   ! NOTES
   ! Uses the Peaceman-Rachford Iterative Method (c.f. R.S. Varga "Matrix Iterative Analysis")
@@ -715,7 +715,7 @@ contains
     logical, optional, intent(in) :: CoulombFlag
     real, optional, intent(in)    :: rconv
     integer, optional, intent(out) :: niter_out
-    real, optional, intent(out) :: error_out    
+    real, optional, intent(out) :: error_out
 
     real, save :: X_min, Y_min, Z_min, XYZ_min, XYZ_max
     real :: alpha, beta!, gamma
@@ -724,7 +724,7 @@ contains
     real :: Diag_min, Diag_max, absS_max
 
     integer, SAVE :: numberIterations_max=20       ! Maximum number of iterations
-    real,    SAVE :: relativeError_max=1.e-04       ! Maximum relative error required 
+    real,    SAVE :: relativeError_max=1.e-04       ! Maximum relative error required
     integer :: i, j, ix, iy, iz
 
     logical, save :: flagini=.true.
@@ -747,7 +747,7 @@ contains
        Z_min=4.*sin(pi/(2.*(Nz-1)))**2
        if (debugADI) write(*,*) 'In ADI, X_min, Y_min, Z_min:', X_min, Y_min, Z_min
        XYZ_min=min(X_min,Y_min,Z_min)
-       XYZ_max=4.*max(eta_x,eta_y,1.)      
+       XYZ_max=4.*max(eta_x,eta_y,1.)
        !       XYZ_min=0.33
        !       XYZ_max=5.7
        flagini=.false.
@@ -761,7 +761,7 @@ contains
        relativeError_max=1.e-04
     end if
 
-    if (debugADI) write(*,'(A,i5,2x,e12.5)') 'In ADI_solve, numberIterations_max,relativeError_max: ',& 
+    if (debugADI) write(*,'(A,i5,2x,e12.5)') 'In ADI_solve, numberIterations_max,relativeError_max: ',&
          & numberIterations_max,relativeError_max
 
     if(present(rconv)) then
@@ -774,7 +774,7 @@ contains
        Diag_max=-1.e+06
        do ix = 2,Nx-1
           do iy = 2,Ny-1
-             do iz = 2,Nz-1    
+             do iz = 2,Nz-1
                 if(Diag(ix,iy,iz).lt.Diag_min) Diag_min=Diag(ix,iy,iz)
                 if(Diag(ix,iy,iz).gt.Diag_max) Diag_max=Diag(ix,iy,iz)
              end do
@@ -812,7 +812,7 @@ contains
     absS_max=0.
     do ix = 2,Nx-1
        do iy = 2,Ny-1
-          do iz = 2,Nz-1    
+          do iz = 2,Nz-1
              if(abs(S(ix,iy,iz)).gt.absS_max) absS_max=abs(S(ix,iy,iz))
           end do
        end do
@@ -835,7 +835,7 @@ contains
 
        i=2-mod(j,2)
 
-       !r(i)=alpha*gamma**(2.*float(j)-1.)     
+       !r(i)=alpha*gamma**(2.*float(j)-1.)
 
        if (debugADI) write(*,*) 'In ADI_solve, r:', r
 
@@ -954,7 +954,7 @@ contains
 
        if(absS_max.gt.1.e-10) error_overall=error_overall/absS_max
 
-       if (debugADI) write(*,*) 'In ADI_solve, iteration, error:', j, error_overall 
+       if (debugADI) write(*,*) 'In ADI_solve, iteration, error:', j, error_overall
 
        if( error_overall .lt. relativeError_max ) then
           exit
@@ -967,34 +967,8 @@ contains
     end do Loop_over_iterations
 
     if(present(niter_out)) niter_out=j
-    if(present(error_out)) error_out=error_overall 
+    if(present(error_out)) error_out=error_overall
 
   end subroutine ADI_solve
 
 end module ADI
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

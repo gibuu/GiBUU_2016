@@ -24,10 +24,10 @@ module Coll_nuN
   PUBLIC :: CalcXY
 
   integer, save :: MSEL0,MSTP21,MSTP23,MSTP32,MSTP61,MSTP71,MSTP11
-  real, save :: CKIN01,CKIN05,CKIN06,CKIN39,PARP91 
+  real, save :: CKIN01,CKIN05,CKIN06,CKIN39,PARP91
   real, save :: PMAS1,PMAS2,PMAS150,PMAS152,PMAS153,PMAS156
   integer, save :: maxMSTI52
-  
+
 
 contains
   !*************************************************************************
@@ -53,12 +53,12 @@ contains
   ! * real                        :: cross    -- cross section
   !
   ! NOTES
-  ! With the PYTHIA-Option MSTP(23)=1, the routine PYREMN tries to 
+  ! With the PYTHIA-Option MSTP(23)=1, the routine PYREMN tries to
   ! keep the chosen x and Q2 values of the partonic process also for the
   ! outer hadronic process.
   !*************************************************************************
   subroutine DoColl_nuN_Py(eNev,outPart,flagOK, doMassless, cross)
-    
+
     use CollGetLeading
     use EventInfo_HiLep
     use LorentzTrafo
@@ -113,11 +113,11 @@ contains
     double precision XSEC
     SAVE /PYINT5/
 
-    
+
     integer :: SetMaxMSTI52
 
     ! internal variables:
-    
+
     real :: Wfree
     character*20 :: cTarget,cBeam,cNu(3) = (/'nu_e  ','nu_mu ','nu_tau'/)
     character*20 :: charged_lepton(3) = (/'e-  ','mu- ','tau-'/)
@@ -158,9 +158,9 @@ contains
     PMAS152 = PMAS(152,1)
     PMAS153 = PMAS(153,1)
     PMAS156 = PMAS(156,1)
-    
+
     maxMSTI52 = SetMaxMSTI52(5)
-    
+
     !...set up PYTHIA
 
     call SetSomeDefaults_PY
@@ -177,9 +177,9 @@ contains
 
     select case(eNev%idProcess)
     case (-1,1) !=== EM
-       MSTP(21) = 4  ! gamma*/Z  neutral current only 
+       MSTP(21) = 4  ! gamma*/Z  neutral current only
        MSTP(11) = 0  ! initial lepton w/o initial radiation, also unresolved because MSTP(12)=0 default
-    case (-2,2) !=== CC 
+    case (-2,2) !=== CC
        MSTP(21) = 5 ! charged current only
     case(-3,3) !=== NC
        MSTP(21) = 3 ! neutral current, Z0 only
@@ -197,7 +197,7 @@ contains
     if (2*CKIN(5).ge.Wfree) CKIN(5) = Wfree/2-1e-3
 
 !    PARP(91)=0.00 ! width intrinsic kT
-!    MSTP(61)=0    ! master: ISR (QCD/QED)  switch initial-state showers off 
+!    MSTP(61)=0    ! master: ISR (QCD/QED)  switch initial-state showers off
 !    MSTP(71)=0    ! master: FSR (QCD/QED)  switch final-state showers off
 
     if (doMassless) then
@@ -227,7 +227,7 @@ contains
     case(-2,-3)
        cBeam = trim(cNu(eNev%idFamily))//'bar'
     end select
-    
+
     !...set incoming vectors
 
     call CalcXY(eNev%lepton_in%momentum,eNev%lepton_out%momentum,&
@@ -274,12 +274,11 @@ contains
     call PYINIT('5MOM', cBeam, cTarget, eNev%lepton_in%momentum(0))
 
     if (MSTI(53).ne.0) then
-       write(*,*) 'Problems in PYINIT'
-       write(*,*) 'x = ',CKIN(23),'...',CKIN(24)
-       write(*,*) 'Q2= ',CKIN(35),'...',CKIN(36)
+       write(*,*) 'Problems in PYINIT (x=',CKIN(23),&
+            ' Q2=',CKIN(35),')'
        return ! -> FAILURE
     endif
-    
+
     do iEv=1,nEv
        if (useJetSetVec) call GetJetsetVecINIT
        call PYEVNT
@@ -330,7 +329,7 @@ contains
     end if
 
     iTry = 0
-    TryLoop: do 
+    TryLoop: do
        iTry = iTry+1
 
        if(iTry.ge.20) then
@@ -366,10 +365,10 @@ contains
           call GetJetsetVecCheckT(-1d-5)
           call GetJetsetVecPYEDIT
        end if
-       
+
        call GetLeading_PY         ! find leading particles
 
-       ! check, whether it was a "cluster->1" deacy. Then the outgoing 
+       ! check, whether it was a "cluster->1" deacy. Then the outgoing
        ! lepton was modified by the fragmentation
 
        do i=N,1,-1
@@ -410,7 +409,7 @@ contains
     call PYEDIT(1)            ! clean up event list
 
     !...Copy Particles to ouput-vector
-       
+
     call SetVectorFromPYJETS(outPart, eNev%QSquared)
 
     flagOK = .TRUE.
@@ -440,7 +439,7 @@ contains
 !!$  ! * real                        :: cross    -- cross section
 !!$  !
 !!$  ! NOTES
-!!$  ! We give as input the neutrino and the nucleon in medium and free nucleon 
+!!$  ! We give as input the neutrino and the nucleon in medium and free nucleon
 !!$  ! kinematics. We are trying to get as close as possible to the kinematics
 !!$  ! of the outgoing lepton.
 !!$  !
@@ -450,7 +449,7 @@ contains
 !!$  !
 !!$  !*************************************************************************
 !!$  subroutine DoColl_nuN_Py_fixMC(eNev,outPart,flagOK, doMassless, cross)
-!!$    
+!!$
 !!$    use constants, only: pi
 !!$    use CollGetLeading
 !!$    use EventInfo_HiLep
@@ -508,7 +507,7 @@ contains
 !!$
 !!$
 !!$    ! internal variables:
-!!$    
+!!$
 !!$    real :: Wfree
 !!$    character*20 :: cTarget,cNu(3) = (/'nu_e  ','nu_mu ','nu_tau'/)
 !!$    real, dimension(0:3) :: pB,pT
@@ -553,8 +552,8 @@ contains
 !!$    PMAS152 = PMAS(152,1)
 !!$    PMAS153 = PMAS(153,1)
 !!$    PMAS156 = PMAS(156,1)
-!!$    
-!!$    
+!!$
+!!$
 !!$    !...set up PYTHIA
 !!$
 !!$    call SetSomeDefaults_PY
@@ -568,7 +567,7 @@ contains
 !!$    case (-1,1) !=== EM
 !!$       write(*,*) 'not prepared for EM!'
 !!$       call TRACEBACK('wrong idProcess!')
-!!$    case (-2,2) !=== CC 
+!!$    case (-2,2) !=== CC
 !!$       MSTP(21) = 5 ! charged current only
 !!$    case(-3,3) !=== NC
 !!$       MSTP(21) = 3 ! neutral current, Z0 only
@@ -588,7 +587,7 @@ contains
 !!$!    PARP(91)=0.00 ! width intrinsic kT
 !!$!    MSTP(61)=0    ! master: ISR (QCD/QED)
 !!$!    MSTP(71)=0    ! master: FSR (QCD/QED)
-!!$    
+!!$
 !!$    if (doMassless) then
 !!$       PMAS(1,1)=0.010 ! Mass of d quark
 !!$       PMAS(2,1)=0.010 ! Mass of u quark
@@ -650,7 +649,7 @@ contains
 !!$    P(1,1:3) = pB(1:3)
 !!$    P(1,4)   = pB(0)
 !!$    P(1,5)   = eNev%lepton_in%mass
-!!$    
+!!$
 !!$    P(2,1:3) = pT(1:3)
 !!$    P(2,4)   = pT(0)
 !!$    P(2,5)   = eNev%nucleon_free%mass
@@ -659,7 +658,7 @@ contains
 !!$    call CalcXY(eNev%lepton_in%momentum,eNev%lepton_out%momentum,&
 !!$         & eNev%nucleon_free%momentum, x_wish, y_wish, flagXY)
 !!$    if (.not.flagXY) call TRACEBACK('Error in CalcXY')
-!!$ 
+!!$
 !!$!    write(*,*) 'wish: x,y:',x_wish,y_wish
 !!$
 !!$
@@ -695,7 +694,7 @@ contains
 !!$       pKprime = (/P(iL_lep,4),P(iL_lep,1:3)/)
 !!$
 !!$       call CalcXY((/P(1,4),P(1,1:3)/), pKprime, &
-!!$            & (/P(2,4),P(2,1:3)/),x_try, y_try, flagXY) 
+!!$            & (/P(2,4),P(2,1:3)/),x_try, y_try, flagXY)
 !!$       if (.not.flagXY) call TRACEBACK('Error in CalcXY (try)')
 !!$
 !!$       Dist = (x_try-x_wish)**2+(y_try-y_wish)**2
@@ -718,16 +717,16 @@ contains
 !!$             call GetJetsetVecCheckT(-1d-5)
 !!$             call GetJetsetVecPYEDIT
 !!$          end if
-!!$       
+!!$
 !!$          call GetLeading_PY         ! find leading particles
 !!$
-!!$          ! check, whether it was a "cluster->1" deacy. Then the outgoing 
+!!$          ! check, whether it was a "cluster->1" deacy. Then the outgoing
 !!$          ! lepton was modified by the fragmentation
 !!$
 !!$          do i=N,1,-1
 !!$             if (K(i,1).ge.10) cycle ! no final particle
 !!$             if ((K(i,4).eq.3).and.(K(i,5).eq.1)) stop
-!!$             if ((K(i,4).eq.3).and.(K(i,5).eq.1)) cycle 
+!!$             if ((K(i,4).eq.3).and.(K(i,5).eq.1)) cycle
 !!$          end do
 !!$
 !!$!          call PYLIST(2)
@@ -785,7 +784,7 @@ contains
 !!$
 !!$  end subroutine DoColl_nuN_Py_fixMC
 
-  
+
   !*************************************************************************
   !****s* Coll_nuN/DoColl_nuN_Py_Free
   ! NAME
@@ -794,7 +793,7 @@ contains
   ! PURPOSE
   ! generate a high energy neutrino event with PYTHIA
   !
-  ! Here the outgoing kinematics is free at input and is set in this routine  
+  ! Here the outgoing kinematics is free at input and is set in this routine
   !
   ! INPUTS
   ! * type(electronNucleon_event) :: eNev     -- kinematics
@@ -808,12 +807,12 @@ contains
   ! * real                        :: cross    -- cross section
   !
   ! NOTES
-  ! We give as input the neutrino and the nucleon in medium and free nucleon 
+  ! We give as input the neutrino and the nucleon in medium and free nucleon
   ! kinematics. Since we can not ask for any cuts on the outgoing
-  ! lepton/neutrino, we set the momentum of this particle as output 
+  ! lepton/neutrino, we set the momentum of this particle as output
   !*************************************************************************
   subroutine DoColl_nuN_Py_Free(eNev,outPart,flagOK, doMassless, cross)
-    
+
     use CollGetLeading
     use EventInfo_HiLep
     use LorentzTrafo
@@ -863,7 +862,7 @@ contains
 
 
     ! internal variables:
-    
+
     real :: Wfree
     character*20 :: cTarget,cNu(3) = (/'nu_e  ','nu_mu ','nu_tau'/)
     real, dimension(0:3) :: pB,pT
@@ -897,8 +896,8 @@ contains
     PMAS152 = PMAS(152,1)
     PMAS153 = PMAS(153,1)
     PMAS156 = PMAS(156,1)
-    
-    
+
+
     !...set up PYTHIA
 
     call SetSomeDefaults_PY
@@ -914,7 +913,7 @@ contains
     case (-1,1) !=== EM
        write(*,*) 'not prepared for EM!'
        call TRACEBACK('wrong idProcess!')
-    case (-2,2) !=== CC 
+    case (-2,2) !=== CC
        MSTP(21) = 5 ! charged current only
     case(-3,3) !=== NC
        MSTP(21) = 3 ! neutral current, Z0 only
@@ -934,7 +933,7 @@ contains
 !    PARP(91)=0.00 ! width intrinsic kT
 !    MSTP(61)=0    ! master: ISR (QCD/QED)
 !    MSTP(71)=0    ! master: FSR (QCD/QED)
-    
+
     if (doMassless) then
        PMAS(1,1)=0.010 ! Mass of d quark
        PMAS(2,1)=0.010 ! Mass of u quark
@@ -996,7 +995,7 @@ contains
 
     MSTP(111) = 1          ! master switch fragmentation/decay
     iTry = 0
-    TryLoop: do 
+    TryLoop: do
        iTry = iTry+1
        if(iTry.ge.100) then
           write(*,*)'DoColl_nuN: itry=',iTry
@@ -1027,10 +1026,10 @@ contains
           call GetJetsetVecCheckT(-1d-5)
           call GetJetsetVecPYEDIT
        end if
-       
+
        call GetLeading_PY         ! find leading particles
 
-       ! check, whether it was a "cluster->1" deacy. Then the outgoing 
+       ! check, whether it was a "cluster->1" deacy. Then the outgoing
        ! lepton was modified by the fragmentation
 
        do i=N,1,-1
@@ -1069,12 +1068,12 @@ contains
     eNev%W            = abs4(eNev%boson%momentum+eNev%nucleon%momentum)
     eNev%W_free       = abs4(eNev%boson%momentum+eNev%nucleon_free%momentum)
 
-!    call write_electronNucleon_event(eNev,.FALSE.,.FALSE.) 
+!    call write_electronNucleon_event(eNev,.FALSE.,.FALSE.)
 
     call PYEDIT(1)            ! clean up event list
 
     !...Copy Particles to ouput-vector
-       
+
     call SetVectorFromPYJETS(outPart, eNev%QSquared)
 
     flagOK = .TRUE.
@@ -1200,7 +1199,7 @@ contains
     x = -pQpQ/(2*pPpQ)
 
     flagOK = .true.
-    
+
   end subroutine CalcXY
 
   !*************************************************************************
@@ -1242,9 +1241,9 @@ contains
     select case( eNev%idProcess )
     case(-1,1) !=== EM
        sigma0 = 2*pi*alphaQED**2*srts2*hc2/Q2**2*(1+(1-y)**2) ! in mb !!!
-!       sigma0 = 2*pi*alphaQED**2*srts2*hc2/Q2**2*y**2/(1-eps) ! in mb !!! 
+!       sigma0 = 2*pi*alphaQED**2*srts2*hc2/Q2**2*y**2/(1-eps) ! in mb !!!
     case(-2,2) !=== CC
-       sigma0 = GF**2*srts2*hc2/(2*pi)  ! in mb !!!  
+       sigma0 = GF**2*srts2*hc2/(2*pi)  ! in mb !!!
     case(-3,3) !=== NC
        sigma0 = 0. ! === DIS not yet implemented here === !
     case default
@@ -1263,7 +1262,7 @@ contains
                &            +1 * (xq(2) + xq(-2)) &
                &            +4 * (xq(3) + xq(-3)) )/9.
        end if
-               
+
     case(-2) !=== CC, antiparticle
 
        if (eNev%nucleon%charge .gt. 0) then ! *** proton ***
@@ -1277,14 +1276,14 @@ contains
        if (eNev%nucleon%charge .gt. 0) then ! *** proton ***
           sigma = 2*sigma0 * (xq(1)+ (1-y)**2*xq(-2)) ! x(d + (1-y)**2ubar)
        else
-          sigma = 2*sigma0 * (xq(2)+ (1-y)**2*xq(-1)) ! x(u + (1-y)**2dbar) 
+          sigma = 2*sigma0 * (xq(2)+ (1-y)**2*xq(-1)) ! x(u + (1-y)**2dbar)
        end if
 
     end select
 
     ! Transform from dsigma/dxdy into dsigma/dcostdEprime:
     sigma = sigma * eNev%lepton_out%momentum(0)/(mN*eNev%boson%momentum(0))
-       
+
 
   end function AnaEstimate
 
@@ -1312,7 +1311,7 @@ contains
     real :: nu,Q2,W,Wfree,eps,fT
     real, parameter :: hc2 = 10*hbarc**2 ! = 0.389 mb GeV^2
     real :: r2GA
-    
+
     call CalcXY(eNev%lepton_in%momentum,eNev%lepton_out%momentum,&
          & eNev%nucleon_free%momentum, x, y, flagXY)
     if (.not.flagXY) call TRACEBACK('Error in CalcXY')
@@ -1326,7 +1325,7 @@ contains
          & * 4*pi*alphaQED/(Q2*(1-x))
 
     ! respect longitudinal contribution:
-    
+
     if (Q2.gt.0.35) then
        r2GA = 0.0635*(1+12*Q2*0.125**2/((Q2+1)* &
             & (0.125**2+X**2)))/log(Q2/0.04) &
@@ -1339,7 +1338,7 @@ contains
 
 !    r2GA = Q2/nu**2
     sigma = sigma*(1+eps*r2GA)
-    
+
 
     call pypdfl(2212, x,Q2,xq)
     if (eNev%nucleon%charge .gt. 0) then ! *** proton ***
@@ -1358,17 +1357,17 @@ contains
 
 
 !   subroutine GetPythiaXY(x,y)
-! 
+!
 !     real, intent(out) :: x,y
-! 
+!
 !     COMMON/PYINT1/MINT(400),VINT(400)
 !     integer MINT
 !     double precision VINT
 !     SAVE /PYINT1/
-! 
+!
 !     x = VINT(21)
 !     y = VINT(22)
-! 
+!
 !   end subroutine GetPythiaXY
 
 end module Coll_nuN

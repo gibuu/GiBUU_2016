@@ -110,7 +110,7 @@ contains
     if(fast) then
        ! Use Quadpack
        epsAbs=0.05*p_delta/e_delta !=5%*velocity of the particle
-       epsRel=0.05 ! 5% relative error 
+       epsRel=0.05 ! 5% relative error
        call qag (vrel_integrand, 0., pf,epsAbs, epsRel, 1, integral, abserr, neval, ier )
        if(ier.ne.0) then
           write(*,*) 'Problem with qag in vrel:', abserr, neval, ier

@@ -9,17 +9,17 @@ module Insertion
 
   implicit none
   PRIVATE
-  
+
   !*************************************************************************
   !****g* Insertion/minimumEnergy
   ! SOURCE
-  ! 
+  !
   real, save, PUBLIC :: minimumEnergy=0.005
   ! PURPOSE
-  ! Minimal kinetic energy in GeV for produced perturbative nucleons. 
-  ! If their energy is below this threshold, then they are not propagated, 
+  ! Minimal kinetic energy in GeV for produced perturbative nucleons.
+  ! If their energy is below this threshold, then they are not propagated,
   ! i.e. they are not inserted in the particle vector.
-  ! 
+  !
   ! NOTES
   ! This value was formerly given in the namelist "collisionterm".
   !*************************************************************************
@@ -28,10 +28,10 @@ module Insertion
   !*************************************************************************
   !****g* Insertion/propagateNoPhoton
   ! SOURCE
-  ! 
+  !
   logical, save :: propagateNoPhoton=.true.
   ! PURPOSE
-  ! If .true. then we eliminate all photons, such that they are not propagated and 
+  ! If .true. then we eliminate all photons, such that they are not propagated and
   ! do not show up in the particle vector.
   ! If .false. then photons are explicitly propagated.
   !*************************************************************************
@@ -76,7 +76,7 @@ contains
     call Write_ReadingInput('insertion',1)
 
     initFlag = .false.
-    
+
   end subroutine readInput
 
 
@@ -90,10 +90,10 @@ contains
   ! that there are no holes (i.e. entries with the special ID 'NOP') inbetween.
   ! In addition, all particles after the last one get the special ID 'EOV' in
   ! order to indicate, that no non-empty entries will follow.
-  !   
+  !
   ! INPUTS
   ! * type(particle), dimension(:,:) :: partVec
-  ! * logical, OPTIONAL :: DoCollHist -- Flag whether to do additional 
+  ! * logical, OPTIONAL :: DoCollHist -- Flag whether to do additional
   !   rearrangements
   !
   ! OUTPUT
@@ -141,7 +141,7 @@ contains
              if (partVec(iEns,i2)%ID == NOP) partVec(iEns,i2)%ID = EOV
              i2 = i2-1
           end do Loop2
-          
+
           ! find 'first hole':
           Loop1: do
              if (i1>=i2) exit Loop0 ! finished !!!
@@ -171,7 +171,7 @@ contains
   ! PURPOSE
   ! Returns the last (used) entry from particle vector particles.
   ! The particle with the next index has the special ID 'EOV'.
-  !  
+  !
   ! INPUTS
   ! * type(particle), dimension(:) :: particles -- particle vector
   !
@@ -198,7 +198,7 @@ contains
        FindLastUsed = i2
        return
     end if
-    
+
     do while(i2-i1 > 1)
        im = (i1+i2)/2
        if (particles(im)%ID>=0) then
@@ -216,18 +216,18 @@ contains
   !*************************************************************************
   !****s*  Insertion/setIntoVector
   ! NAME
-  ! subroutine setIntoVector(finalState, partVec, flagOK,numberIsSet,numbers,positions) 
+  ! subroutine setIntoVector(finalState, partVec, flagOK,numberIsSet,numbers,positions)
   !
   ! PURPOSE
-  ! This subroutine tries to find empty spaces in "partVec" and 
+  ! This subroutine tries to find empty spaces in "partVec" and
   ! sets the elements of "finalState" into these holes.
   !
   ! INPUTS
   ! * type(particle),dimension(:,:) :: partVec
   ! * type(particle),dimension(:)   :: finalState
-  ! * logical, optional             :: numberIsSet -- 
+  ! * logical, optional             :: numberIsSet --
   !   .true. if finalstate has already %number set,
-  !   .false. if this still needs to be done                                  
+  !   .false. if this still needs to be done
   !
   ! OUTPUT
   ! * logical                       :: flagOK --
@@ -236,14 +236,14 @@ contains
   !   Vector with value of %number assigned to each final state entry
   ! * integer,dimension(2,:),optional :: positions --
   !   vector with positions, where particles were inserted (iEns,iPart)
-  ! * partVec changed  
-  !                                        
+  ! * partVec changed
+  !
   ! NOTES
   ! Only particles for which the function "particlePropagated" returns true
   ! are really considered.
-  ! 
-  ! Concerning the variables "lastEnsemble, lastIndex" : 
-  ! By saving the index of the last hole in the vector we try to save time 
+  !
+  ! Concerning the variables "lastEnsemble, lastIndex" :
+  ! By saving the index of the last hole in the vector we try to save time
   ! when searching for the next hole.
   !*************************************************************************
   subroutine setIntoVector(finalState, partVec, flagOK, numberIsSet, numbers, positions)
@@ -252,10 +252,10 @@ contains
 
     type(particle), dimension(:,:), intent(inOUT) ::  partVec
     type(particle), dimension(:),   intent(in)    ::  finalState
-    logical, intent(out) :: flagOK                                           
+    logical, intent(out) :: flagOK
     integer, dimension(:),   intent(out), optional::  numbers
     integer, dimension(:,:), intent(out), optional::  positions
-    logical, optional, intent(in) :: numberIsSet                                           
+    logical, optional, intent(in) :: numberIsSet
 
     integer, save :: lastEnsemble=0
     integer, save :: lastIndex=0
@@ -273,7 +273,7 @@ contains
     finalState_Loop :do k=lBound(finalState,dim=1),uBound(finalState,dim=1)
 
        flagOK=.false.
-       
+
        ! (1) Decision if particle is propagated
        if (.not.particlePropagated(finalState(k))) then
 !          if (finalState(k)%ID > 0) write(*,*) 'skip',finalState(k)%ID
@@ -369,8 +369,8 @@ contains
   ! logical function particlePropagated (Part)
   !
   ! PURPOSE
-  ! Return .true. if "Part" is a particle which shall be propagated in 
-  ! the code: We do not propagate photons and very low-energetic 
+  ! Return .true. if "Part" is a particle which shall be propagated in
+  ! the code: We do not propagate photons and very low-energetic
   ! perturbative nucleons (cf. minimumEnergy).
   !
   ! INPUTS

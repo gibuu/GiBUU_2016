@@ -4,9 +4,9 @@
 ! module minkowski
 !
 ! PURPOSE
-! This module defines functions which are connected to Relativity: 
-! Metric Tensor, Scalar Product, Gamma matrices, ...  
-! 
+! This module defines functions which are connected to Relativity:
+! Metric Tensor, Scalar Product, Gamma matrices, ...
+!
 ! NOTES
 ! * Uses the "mostly -" metric.
 !*******************************************************************************
@@ -127,7 +127,7 @@ module minkowski
 
   complex, dimension(0:3,0:3,0:3,0:3), public, parameter :: sigma4par =     &
        reshape((/     zero4,-sigma4_01,-sigma4_02,-sigma4_03, &
-                  sigma4_01,     zero4,-sigma4_12,-sigma4_13, & 
+                  sigma4_01,     zero4,-sigma4_12,-sigma4_13, &
                   sigma4_02, sigma4_12,     zero4,-sigma4_23, &
                   sigma4_03, sigma4_13, sigma4_23,     zero4 /), (/4,4,4,4/))
 
@@ -329,7 +329,7 @@ contains
 !!$  ! PURPOSE
 !!$  ! Evaluates a^(mu nu) b_(mu nu)
 !!$  ! INPUTS
-!!$  ! complex, dimension(0:3,0:3), intent(in) :: a ! matrix a(mu nu) 
+!!$  ! complex, dimension(0:3,0:3), intent(in) :: a ! matrix a(mu nu)
 !!$  ! real, dimension(0:3,0:3), intent(in)    :: b ! matrix b^(mu nu)
 !!$  ! OUTPUT
 !!$  ! * real
@@ -361,7 +361,7 @@ contains
 !!$  ! PURPOSE
 !!$  ! Evaluates a^(mu nu) b_(mu nu)
 !!$  ! INPUTS
-!!$  ! real, dimension(0:3,0:3), intent(in) :: a ! matrix a(mu nu) 
+!!$  ! real, dimension(0:3,0:3), intent(in) :: a ! matrix a(mu nu)
 !!$  ! complex, dimension(0:3,0:3), intent(in)    :: b ! matrix b^(mu nu)
 !!$  ! OUTPUT
 !!$  ! * real
@@ -378,7 +378,7 @@ contains
   !*************************************************************************
   !****f* minkowski/sigma4
   ! NAME
-  ! complex function sigma4(a) 
+  ! complex function sigma4(a)
   ! PURPOSE
   ! Returns sigma^(mu nu)=i/2 [gamma^mu, gamma^nu]
   ! INPUTS
@@ -388,7 +388,7 @@ contains
   function sigma4(mu,nu) result(matrix)
     complex, dimension(0:3,0:3) :: matrix
     integer,intent(in) :: mu, nu
-    
+
 !    matrix=ii/2.*(MatMul(gamma(:,:,mu),gamma(:,:,nu))-MatMul(gamma(:,:,nu),gamma(:,:,mu)))
     matrix = sigma4par(:,:,mu,nu)
 
@@ -407,10 +407,10 @@ contains
   ! * complex, dimension(0:3,0:3) :: matrix
   !*************************************************************************
   function slashed(p) result(matrix)
-    real, intent(in),  dimension(0:3) :: p 
+    real, intent(in),  dimension(0:3) :: p
     complex, dimension(0:3,0:3) :: matrix
     integer :: mu
-    matrix=0. 
+    matrix=0.
     do mu=0,3
        matrix=matrix+p(mu)*metricTensor(mu,mu)*gamma(:,:,mu)
     end do
@@ -429,16 +429,16 @@ contains
   ! * complex, dimension(0:3,0:3) :: matrix
   !*************************************************************************
   function slashed5(p) result(matrix)
-    real, intent(in),  dimension(0:3) :: p 
+    real, intent(in),  dimension(0:3) :: p
     complex, dimension(0:3,0:3) :: matrix
     integer :: mu
-    matrix=0. 
+    matrix=0.
     do mu=0,3
        matrix=matrix+p(mu)*metricTensor(mu,mu)*gamma(:,:,mu+8)
     end do
   end function slashed5
 
-  
+
 
   !*************************************************************************
   !****f* minkowski/tilde

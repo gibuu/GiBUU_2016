@@ -1,12 +1,11 @@
-
-!*******************************************************************************************************
+!*****************************************************************************
 !****m* /FF_Delta_production
 ! NAME
 ! module FF_Delta_production
 !
 ! PURPOSE
-! Provides the electro-weak form factors for the process lepton nucleon -> lepton' Delta. 
-!****************************************************************************************************
+! Provides the electro-weak form factors for the process lepton nucleon -> lepton' Delta.
+!*****************************************************************************
 
 
 module FF_Delta_production
@@ -20,12 +19,12 @@ module FF_Delta_production
   !****g* FF_Delta_production/FF_Delta
   ! SOURCE
   !
-  integer, save :: FF_Delta=1   ! 0: FF taken from MAID 
+  integer, save :: FF_Delta=1   ! 0: FF taken from MAID
                                 ! (see notes of Luis Alvarez-Ruso)
-                                ! 1: FF taken from Paschos 
+                                ! 1: FF taken from Paschos
                                 ! (hep-ph/0501109 v2)
   ! PURPOSE
-  ! This switch decides whether the Paschos form factors (FF_Delta=1) or the 
+  ! This switch decides whether the Paschos form factors (FF_Delta=1) or the
   ! Maid form factors (FF_Delta=0) are used. Default is FF_Delta=1.
   !*************************************************************************
 
@@ -48,7 +47,7 @@ contains
   !****s* FF_Delta_production/readInputDeltaFormFactors
   ! NAME
   ! subroutine readInputDeltaFormFactors
-  ! 
+  !
   ! PURPOSE
   ! decide, which set of form factors is used by reading in FF_Delta.
   !
@@ -84,22 +83,22 @@ contains
   ! subroutine formfactors_Delta(Qs,W,processID,c3v,c4v,c5v,c6v,c3a,c4a,c5a,c6a)
   !
   ! PURPOSE
-  ! * Provides the electro-weak form factors for the process lepton nucleon -> lepton' Delta. 
+  ! * Provides the electro-weak form factors for the process lepton nucleon -> lepton' Delta.
   !
   ! INPUTS
   ! *  real, intent(in) ::    Qs ! =Q^2 : virtuality of gauge boson in units of GeV**2 = (-1)*Mandelstam-t
   ! *  real, intent(in) ::    W  ! invariant mass
-  ! *  integer, intent(in) :: processID         
+  ! *  integer, intent(in) :: processID
   !
   ! "processID" specifies the reaction type: EM, CC, NC
   !
   ! OUTPUT
   ! *  real, intent(out) ::c3v,c4v,c5v,c6v             ! Vector Form factors
-  ! *  real, intent(out),optional :: c3a,c4a,c5a,c6a   ! Axial Form factors 
+  ! *  real, intent(out),optional :: c3a,c4a,c5a,c6a   ! Axial Form factors
   !                                                     (not necessary as input if processID=EM)
   !
   !******************************************************************************************************
-  subroutine formfactors_Delta(Qs,W,processID,c3v,c4v,c5v,c6v,c3a,c4a,c5a,c6a) 
+  subroutine formfactors_Delta(Qs,W,processID,c3v,c4v,c5v,c6v,c3a,c4a,c5a,c6a)
     use constants,only : sinsthweinbg
     use leptonicID
 
@@ -126,7 +125,7 @@ contains
 
     if(FF_Delta.eq.0) then
     else if(FF_Delta.eq.1) then
-    else 
+    else
        write(*,*) 'nonsense input for FF_Delta in formfactors_Delta. STOP!', FF_Delta
        stop
     end if
@@ -143,7 +142,7 @@ contains
 
     case(CC,antiCC)
        if(.not.(present(c3a).and.present(c4a).and.present(c5a).and.present(c6a)))  then
-          write(*,*) 'Error in formfactors_Delta! one of the axial ff not defined'    & 
+          write(*,*) 'Error in formfactors_Delta! one of the axial ff not defined'    &
                &  ,present(c3a),present(c4a),present(c5a),present(c6a),processID
           stop
        end if
@@ -157,7 +156,7 @@ contains
 
     case(NC,antiNC)
        if(.not.(present(c3a).and.present(c4a).and.present(c5a).and.present(c6a)))  then
-          write(*,*) 'Error in formfactors_Delta! one of the axial ff not defined'    &   
+          write(*,*) 'Error in formfactors_Delta! one of the axial ff not defined'    &
                &   ,present(c3a),present(c4a),present(c5a),present(c6a),processID
           stop
        end if
@@ -203,7 +202,7 @@ contains
 
     !formfactors as in Paschos, hep-ph/0501109 v2
 
-    MA=1.05 
+    MA=1.05
 
     c5a=1.2/((1.+Qs/(3.*MA**2))*(1.+Qs/MA**2)**2)
     c4a=-c5a/4.
@@ -235,7 +234,7 @@ contains
 
   subroutine vector_FF_Maid(Qs,W,c3v,c4v,c5v)
 
-    !     This routine calculates the vector N-Delta ff for a given Qs 
+    !     This routine calculates the vector N-Delta ff for a given Qs
     !     from the helcicity amplitudes of Tiator et al. (nucl-th/0310041)
     !     input in GeV(^2) output dimensionless
 
@@ -243,11 +242,11 @@ contains
 
     use constants,only : alphaQED, pi
 
-    real,intent(in)::Qs,w   ! Qs and Delta inv. mass (in GeV) 
-    real,intent(out)::c3v,c4v,c5v 
+    real,intent(in)::Qs,w   ! Qs and Delta inv. mass (in GeV)
+    real,intent(out)::c3v,c4v,c5v
 
     real,parameter::mdel=1.232       !  delta mass
-    real,parameter::mn=.9382723   ! taken from MAID 
+    real,parameter::mn=.9382723   ! taken from MAID
 
     real::kgcm0,egcm,qcm
     real::a12,a32,s12         ! helicity amplitudes
@@ -270,7 +269,7 @@ contains
     mpw2=(mn+w)**2
     mmw2=(mn-w)**2
 
-    CALL HP33(Q2G,qcm,kgcm0,a12,a32,s12) 
+    CALL HP33(Q2G,qcm,kgcm0,a12,a32,s12)
 
 
     a12=a12*1.e-3
@@ -299,12 +298,12 @@ contains
     c5v=2.*r*(w*mn)**2/(mpw2-q2)/(mmw2-q2)*(-a12+a32/sqrt(3.) &
          & +sqrt(2.)*(w**2-mn**2+q2)/sqrt((mpw2-q2)*(mmw2-q2))*s12)
 
-    ! to be consistent with the adopted signs 
+    ! to be consistent with the adopted signs
     c3v=-c3v
     c4v=-c4v
     c5v=-c5v
 
-  contains 
+  contains
 
     subroutine HP33(Q2G,qcm,qcm0,A1,A3,S1)  ! taken from SAID
 
@@ -319,9 +318,9 @@ contains
       ! old          S10=  27.577
 
       !MAID 2005
-      A10=-137.445 
-      A30=-260.128 
-      S10=  27.577 
+      A10=-137.445
+      A30=-260.128
+      S10=  27.577
 
       A1= A10*(1.+ 0.0214486*Q2G)*Fq
       A3= A30*(1.- 0.0065431*Q2G)*Fq

@@ -85,7 +85,7 @@ contains
   ! * integer                , intent(in) :: charge_nuc  ! Charge of Nucleon
   ! * integer                , intent(in) :: frame       ! 1=theta in lab, 2=theta in CM frame
   ! OUTPUT
-  ! * real :: dsigma/dOmega    -- cross section dsigma_dOmega in mb/sr 
+  ! * real :: dsigma/dOmega    -- cross section dsigma_dOmega in mb/sr
   ! Note that the frame in which "dOmega" is calculated, is defined by the "frame" variable. E.g.: if
   ! frame=1 then dOmega=dOmega_lab or if frame=2 then dOmega=dOmega_CM
   !****************************************************************************
@@ -228,12 +228,12 @@ contains
 
     ! Evaluate sigma
 
-    matrixElementSquared=getMatrixElement() 
+    matrixElementSquared=getMatrixElement()
 
     ! dsigma/dOmega(q_out)=...
-    sigma=matrixElementSquared/(64.*pi**2)*absVec(p_out(1:3)) & 
+    sigma=matrixElementSquared/(64.*pi**2)*absVec(p_out(1:3)) &
                           & /absVec(p_in(0)*q_in(1:3)-p_in(1:3)*q_in(0))/(p_out(0)+q_out(0))
-    
+
     ! Convert Units from GeV**-2/sr to mb/sr:
     sigma=sigma/GeVSquared_times_mb
 
@@ -279,11 +279,11 @@ contains
               vertex_in_tilde (alpha,beta,:,:) =tilde( vertex_in(alpha,beta,:,:))
               ! Propagators:
               prop_low        (alpha,beta,:,:) =prop_low        (alpha,beta,:,:)* metricTensor(alpha,alpha)* metricTensor(beta,beta)
-              prop_low_tilde  (alpha,beta,:,:) =tilde(  prop_low(alpha,beta,:,:))            
+              prop_low_tilde  (alpha,beta,:,:) =tilde(  prop_low(alpha,beta,:,:))
            end do
         end do
 
-   
+
         matrix=0.
         do alpha=0,3
            do beta=0,3
@@ -295,7 +295,7 @@ contains
                           do rho=0,3
                              !if(rho.ne.mu) cycle
                              do sigma=0,3
-                                matrix=matrix+MatrixMult(proj_out,vertex_out_tilde(beta,alpha,:,:),prop_low(beta,nu,:,:),& 
+                                matrix=matrix+MatrixMult(proj_out,vertex_out_tilde(beta,alpha,:,:),prop_low(beta,nu,:,:),&
                                      &                   vertex_in(nu,mu,:,:),proj_in,vertex_in_tilde(sigma,rho,:,:), &
                                      &                   prop_low_tilde(gamma,sigma,:,:),vertex_out(gamma,delta,:,:) ) &
                                      &                   *metricTensor(alpha,delta)*metricTensor(mu,rho)
@@ -309,7 +309,7 @@ contains
         end do
 
 
-        ! Attention: Factor (1/(2mN))^2 is omitted 
+        ! Attention: Factor (1/(2mN))^2 is omitted
         getMatrixElement=1./4.*trace(matrix)*electronChargeSQ**2
 
         if(getMatrixElement.lt.0) then
@@ -319,7 +319,7 @@ contains
         end if
 
       end function getMatrixElement
-      
+
 
   end function getSigma
 

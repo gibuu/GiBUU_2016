@@ -7,6 +7,8 @@
 !***************************************************************************
 module master_2Body
 
+  use CallStack, only: Traceback
+
   implicit none
   Private
 
@@ -342,13 +344,13 @@ module master_2Body
   logical, save :: Overide_PiPi_ResIsElast=.false.
   ! PURPOSE
   ! Flag to replace the calculated cross section for pi+pi collision;
-  ! The calculated resonant cross section will be transformed into the 
-  ! elastic cross section. Thus no resonances will be propagated explicitely, 
+  ! The calculated resonant cross section will be transformed into the
+  ! elastic cross section. Thus no resonances will be propagated explicitely,
   ! but they show up in the cross section
   !
   ! We set sigma_elast = sigma_Res, sigma_Res = 0, sigma_tot = sigma_elast
   !
-  ! please note: background processes as pi pi <-> K K~ are *not* affected 
+  ! please note: background processes as pi pi <-> K K~ are *not* affected
   ! by this switch. You have to disable those additionally by hand,
   ! see mesMes_do2to2
   !********************************************************************
@@ -464,27 +466,30 @@ contains
     ! * mesMes_do2to2
     ! * mesMes_useWidth
     !********************************************************************
-    NAMELIST /master_2Body/ correctEnergy, baryonBaryonScattering, baryonMesonScattering, & 
-                            mesonMesonScattering, debug, usePythia, usePythia_BaB, &
-                            useHiEnergy, HiEnergyThresholdBarMes, HiEnergyThresholdBarMesDelta, &
-                            HiEnergyThresholdBarBar, &
-                            HiEnergyThresholdBarBarDelta, HiEnergyThresholdBarAntibar, &
-                            HiEnergyThresholdBarAntibarDelta, &
-                            useManni, ElastAngDist, flagElastBB, coarse, &
-                            bmax_nucleonNucleon, bmax_nucleonResonance, bmax_hyperonNucleon, &
-                            bmax_baryonPion, &
-                            bmax_baryonMeson, bmax_mesonMeson, correctEnergy_message, &
-                            OverideSigma_PiN, OverideSigma_RhoN, OverideSigma_PiPi,&
-                            Overide_PiPi_ResIsElast, &
-                            omega_K_factor, coulombCorrect, &
-                            mesMes_do2to2, mesMes_useWidth
+    NAMELIST /master_2Body/ &
+         correctEnergy, baryonBaryonScattering, baryonMesonScattering, &
+         mesonMesonScattering, debug, usePythia, usePythia_BaB, &
+         useHiEnergy, HiEnergyThresholdBarMes, HiEnergyThresholdBarMesDelta, &
+         HiEnergyThresholdBarBar, &
+         HiEnergyThresholdBarBarDelta, HiEnergyThresholdBarAntibar, &
+         HiEnergyThresholdBarAntibarDelta, &
+         useManni, ElastAngDist, flagElastBB, coarse, &
+         bmax_nucleonNucleon, bmax_nucleonResonance, bmax_hyperonNucleon, &
+         bmax_baryonPion, &
+         bmax_baryonMeson, bmax_mesonMeson, correctEnergy_message, &
+         OverideSigma_PiN, OverideSigma_RhoN, OverideSigma_PiPi,&
+         Overide_PiPi_ResIsElast, &
+         omega_K_factor, coulombCorrect, &
+         mesMes_do2to2, mesMes_useWidth
 
-    character(60), dimension(1:3), parameter :: NNe = (/ 'isotropic                            ', &
-                                                         'J. Cugnon et al., NPA 352, 505 (1981)', &
-                                                         'Pythia (default)                     ' /)
+    character(60), dimension(1:3), parameter :: NNe = (/ &
+         'isotropic                            ', &
+         'J. Cugnon et al., NPA 352, 505 (1981)', &
+         'Pythia (default)                     ' /)
 
-    character(12), dimension(0:1), parameter :: NNp = (/ 'use Fritiof', &
-                                                         'use Pythia ' /)
+    character(12), dimension(0:1), parameter :: NNp = (/ &
+         'use Fritiof', &
+         'use Pythia ' /)
     integer :: ios
 
     call Write_ReadingInput('master_2Body',0)
@@ -492,7 +497,8 @@ contains
     read(5,nml=master_2Body,IOSTAT=ios)
     call Write_ReadingInput('master_2Body',0,ios)
 
-    write(*,*) 'Correct energy by momentum scaling after collisions= ',correctEnergy
+    write(*,*) 'Correct energy by momentum scaling after collisions= ', &
+         correctEnergy
     write(*,*) 'Baryon-Baryon-Scattering = ',baryonBaryonScattering
     write(*,*) 'Baryon-Meson-Scattering  = ',baryonMesonScattering
     write(*,*) 'Meson-Meson-Scattering   = ',mesonMesonScattering
@@ -500,51 +506,62 @@ contains
     if(.not.correctEnergy_message) write(*,'(/,A,/)') &
          ' WARNING: You have switched off energy correction failure message in case of threshold problems!'
     write(*,*) 'use HiEnergy                     : ',useHiEnergy
-    write(*,'(A,f5.2," +-",f5.2," GeV")') ' srts threshold bar-mes    :', HiEnergyThresholdBarMes, &
-          &  HiEnergyThresholdBarMesDelta
-    write(*,'(A,f5.2," +-",f5.2," GeV")') ' srts threshold bar-bar    :', HiEnergyThresholdBarBar,  &
-          &  HiEnergyThresholdBarBarDelta
-    write(*,'(A,f5.2," +-",f5.2," GeV")') ' srts threshold bar-antibar:', HiEnergyThresholdBarAntibar, &
-                                                                          HiEnergyThresholdBarAntibarDelta
+    write(*,'(A,f5.2," +-",f5.2," GeV")') ' srts threshold bar-mes    :', &
+         HiEnergyThresholdBarMes, HiEnergyThresholdBarMesDelta
+    write(*,'(A,f5.2," +-",f5.2," GeV")') ' srts threshold bar-bar    :', &
+         HiEnergyThresholdBarBar, HiEnergyThresholdBarBarDelta
+    write(*,'(A,f5.2," +-",f5.2," GeV")') ' srts threshold bar-antibar:', &
+         HiEnergyThresholdBarAntibar, HiEnergyThresholdBarAntibarDelta
 
     write(*,*) 'use Manni                        : ',useManni
 
     if (usePythia<0 .or. usePythia>1) then
-       write(*,*) 'use PYTHIA directly              : ',usePythia,' !!!! STOP'
-       stop
+       write(*,'(A,i3," = ",A)') ' use PYTHIA directly              : ',&
+            usePythia,' !!!! STOP'
+       call Traceback()
     endif
-
-    write(*,'(A,i3," = ",A)') ' use PYTHIA directly              : ',usePythia,NNp(usePythia)
+    write(*,'(A,i3," = ",A)') ' use PYTHIA directly              : ',&
+         usePythia,NNp(usePythia)
 
     if (ElastAngDist<1.or.ElastAngDist>3) then
-       write(*,'(A,i3," = ",A)') ' Elastic Angular distribution     : ',ElastAngDist,' !!!! STOP'
-       stop
+       write(*,'(A,i3," = ",A)') ' Elastic Angular distribution     : ',&
+            ElastAngDist,' !!!! STOP'
+       call Traceback()
     end if
-    write(*,'(A,i3," = ",A)') ' Elastic Angular distribution     : ',ElastAngDist,NNe(ElastAngDist)
+    write(*,'(A,i3," = ",A)') ' Elastic Angular distribution     : ',&
+         ElastAngDist,NNe(ElastAngDist)
 
     if (usePythia_BaB<0 .or. usePythia_BaB>1) then
-       write(*,*) 'use PYTHIA directly for BaB channel : ',usePythia_BaB,' !!!! STOP'
-       stop
+       write(*,'(A,i3," = ",A)') ' BaB: use PYTHIA directly         : ',&
+            usePythia_BaB,' !!!! STOP'
+       call Traceback()
     endif
-
-    write(*,'(A,i3," = ",A)') ' BaB: use PYTHIA directly         : ',usePythia_BaB,NNp(usePythia_Bab)
+    write(*,'(A,i3," = ",A)') ' BaB: use PYTHIA directly         : ',&
+         usePythia_BaB,NNp(usePythia_Bab)
 
     write(*,*)
 
     write(*,'(A,3(1x,f5.2))') &
-       &  ' coarse maximum distances for bar-bar, bar-mes , mes-mes, fm : ',coarse
+         ' coarse maximum distances for bar-bar, bar-mes , mes-mes, fm : ',&
+         coarse
     write(*,'(A,f5.2)') &
-       &      ' max. impact parameter for nucleon-nucleon scatt.,  fm :', bmax_nucleonNucleon
+         ' max. impact parameter for nucleon-nucleon scatt.,  fm :', &
+         bmax_nucleonNucleon
     write(*,'(A,f5.2)') &
-       &       ' max. impact parameter for nucleon-resonace scatt., fm :', bmax_nucleonResonance
+         ' max. impact parameter for nucleon-resonace scatt., fm :', &
+         bmax_nucleonResonance
     write(*,'(A,f5.2)') &
-       &       ' max. impact parameter for hyperon-nucleon scatt.,  fm :', bmax_hyperonNucleon
+         ' max. impact parameter for hyperon-nucleon scatt.,  fm :', &
+         bmax_hyperonNucleon
     write(*,'(A,f5.2)') &
-       &      ' max. impact parameter for baryon-pion scatt.,      fm :', bmax_baryonPion
+         ' max. impact parameter for baryon-pion scatt.,      fm :', &
+         bmax_baryonPion
     write(*,'(A,f5.2)') &
-      &       ' max. impact parameter for baryon-meson scatt.,     fm :', bmax_baryonMeson
+         ' max. impact parameter for baryon-meson scatt.,     fm :', &
+         bmax_baryonMeson
     write(*,'(A,f5.2)') &
-      &       ' max. impact parameter for meson-meson scatt.,      fm :', bmax_mesonMeson
+         ' max. impact parameter for meson-meson scatt.,      fm :', &
+         bmax_mesonMeson
     write(*,*) 'flagElastBB: ', flagElastBB
 
     if(OverideSigma_PiN.ge.0.0) then
@@ -568,7 +585,7 @@ contains
     write(*,*)'omega_K_factor = ', omega_K_factor
     write(*,*)
     write(*,*)'CoulombCorrect = ', CoulombCorrect
-    write(*,*) 
+    write(*,*)
     write(*,*)"meson-meson: do m m' <-> K K~, K K*~ etc.: ",mesMes_do2to2
     write(*,*)"meson-meson: use width                   : ",mesMes_useWidth
 
@@ -578,7 +595,7 @@ contains
     initFlag=.false.
 
     call forceInitFormation
-    if (mesMes_useWidth) then 
+    if (mesMes_useWidth) then
        call mesMes_Tabulate
     end if
 
@@ -625,8 +642,9 @@ contains
   ! "finalState" has to be given as input with some values set properly!
   !*************************************************************************
 
-  subroutine collide_2body (pair, finalState, time, collisionFlag, HiEnergyFlag, HiEnergyType, &
-                            collision_time, weightLocal, sigTot_out, pauliIncluded_out)
+  subroutine collide_2body(pair, finalState, time, collisionFlag, &
+       HiEnergyFlag, HiEnergyType, &
+       collision_time, weightLocal, sigTot_out, pauliIncluded_out)
 
     use IdTable, only: isMeson, isBaryon
     use particleDefinition
@@ -646,7 +664,8 @@ contains
     real, optional,intent(out)                :: sigTot_out
     logical, optional, intent(out)            :: pauliIncluded_out
 
-    real :: stringFactor     ! scaling factor of cross section due to formation time effects
+    ! scaling factor of cross section due to formation time effects:
+    real :: stringFactor
     real :: sqrtS_vacuum, XShelp
     integer :: scenario
     logical :: pauliIncluded
@@ -669,7 +688,7 @@ contains
        write(*,*) pair(1)%momentum, pair(1)%velocity
        write(*,*) pair(2)%momentum, pair(2)%velocity
        write(*,*) 'stopping'
-       stop
+       call Traceback()
     else if (sqrtS_vacuum-Sum(pair%mass) < 1.e-03) then
        return
     end if
@@ -699,24 +718,27 @@ contains
     !     exclude collisions based on rough assumptions about the locality
     !     in space and time of these collisions:
     If(.not.(localEnsemble.and.fullEnsemble)) then
-       ! (4a) Use very rough collision Criteria with cut-off's which are not relativistic
+       ! (4a) Use very rough collision Criteria with cut-off's which are not
+       !      relativistic
        If(.not.check_veryRough(pair,stringFactor,numEnsembles,scenario)) return
 
-       ! (4b) Apply time criteria to ensure that collision happens at minimal distance
-       !     (similar to Kodama)
+       ! (4b) Apply time criteria to ensure that collision happens at minimal
+       !      distance (similar to Kodama)
        if(.not.kodama_time(pair,delta_T,collision_time))  return
        If(debug) write(*,*) ' After time criteria in master_2body/collide_2Body'
 
-       ! (4c) Use rough collision Criteria with cut-off's to ensure that collisions are
-       !     local in space
+       ! (4c) Use rough collision Criteria with cut-off's to ensure that
+       !      collisions are local in space
        If(.not.checkKodama_rough(pair,stringFactor,numEnsembles,scenario)) return
     end if
 
-    If(debug) write(*,*) 'Velos in master_2_body=', pair(1)%velocity, '##'  ,pair(2)%velocity
+    If(debug) write(*,*) 'Velos in master_2_body=', &
+         pair(1)%velocity, '##'  ,pair(2)%velocity
 
-    call generateFinalState (pair, finalState, stringFactor, numEnsembles, time, collisionFlag, &
-                             HiEnergyFlag, HiEnergyType, weightLocal, scenario, XShelp, &
-                           & PauliIncluded_out=PauliIncluded)
+    call generateFinalState(pair, finalState, stringFactor, numEnsembles, &
+         time, collisionFlag, &
+         HiEnergyFlag, HiEnergyType, weightLocal, scenario, XShelp, &
+         & PauliIncluded_out=PauliIncluded)
 
     if (PRESENT(sigTot_out)) then
        sigTot_out = XShelp
@@ -734,7 +756,7 @@ contains
   !*************************************************************************
   !****f* master_2Body/check_veryRough
   ! NAME
-  ! logical function check_veryRough(pair,stringFactor,numEnsembles,scenario) Result(flag)
+  ! logical function check_veryRough(pair,stringFactor,numEnsembles,scenario)
   !
   ! PURPOSE
   ! Very Rough collision criterium
@@ -768,7 +790,8 @@ contains
     flag=.true.
 
     ! First coarse approximate collision criteria for spacial distance:
-    ! (To quote the old code:) The following prescription is not covariant, but useful to save cpu time :
+    ! (To quote the old code:) The following prescription is not covariant,
+    ! but useful to save cpu time :
 
     if(((pair(1)%ID.eq.delta).or.(pair(2)%ID.eq.delta)).and. &
          & delta2Body_inMedium_treatment()) then
@@ -898,27 +921,29 @@ contains
   !
   ! INPUTS
   ! * type(particle), dimension(1:2) :: pair         -- incoming particles
-  ! * real                           :: stringFactor -- rescaling of XS
-  ! * integer                        :: numEnsembles -- number of ensembles
-  ! * real                           :: time         -- actual time step
-  ! * integer, optional              :: weightLocal  -- weight which is used for the local ensemble method.
-  !   Used for reweighting the probability in the collision criteria. Not necessary in case of 
-  !                                                                   localEnsemble=.false.
-  ! * integer, optional              :: scenario0    -- if given : BarBar,BarMes,MesMes
+  ! * real                :: stringFactor -- rescaling of XS
+  ! * integer             :: numEnsembles -- number of ensembles
+  ! * real                :: time         -- actual time step
+  ! * integer, optional   :: weightLocal  -- weight which is used for the
+  !   local ensemble method.
+  !   Used for reweighting the probability in the collision criteria.
+  !   Not necessary in case of localEnsemble=.false.
+  ! * integer, optional   :: scenario0    -- if given : BarBar,BarMes,MesMes
   !
   ! OUTPUT
   ! * type(particle), dimension(:) :: finalState     -- outgoing particles
-  ! * logical                      :: collisionFlag  -- true if collisions was okay
-  ! * logical                      :: HiEnergyFlag   -- true if HiEnergy was used
-  ! * integer                      :: HiEnergyType   -- 0:LowEnergy, 1:Fritiof, 2:Pythia
-  ! * real (OPTIONAL)              :: sigTot_out     -- total cross section
-  ! * logical,optional             :: pauliIncluded_out  -- true if Pauli blocking was already 
-  !                                                         included in the cross section evaluation
+  ! * logical            :: collisionFlag  -- true if collisions was okay
+  ! * logical            :: HiEnergyFlag   -- true if HiEnergy was used
+  ! * integer            :: HiEnergyType   -- 0:LowEnergy, 1:Fritiof, 2:Pythia
+  ! * real, optional     :: sigTot_out     -- total cross section
+  ! * logical, optional  :: pauliIncluded_out  -- true if Pauli blocking was
+  !   already included in the cross section evaluation
   !
   !*************************************************************************
-  subroutine generateFinalState (pair, finalState, stringFactor, numEnsembles, time, &
-                                 collisionFlag, HiEnergyFlag, HiEnergyType, weightLocal, scenario0, &
-                               & sigTot_out, PauliIncluded_out)
+  subroutine generateFinalState(pair, finalState, stringFactor, numEnsembles, &
+       time, &
+       collisionFlag, HiEnergyFlag, HiEnergyType, weightLocal, scenario0, &
+       & sigTot_out, PauliIncluded_out)
 
     use densitymodule, only: densityAt
     use collisionCriteria, only : kodama_position,localCollisionCriteria
@@ -994,7 +1019,7 @@ contains
        write(*,*) pair(1)%momentum, pair(1)%velocity
        write(*,*) pair(2)%momentum, pair(2)%velocity
        write(*,*) 'stopping'
-       stop
+       call Traceback()
     else if(srtS_vacuum-Sum(pair%mass).lt.1.e-03) then
        return
     end if
@@ -1034,9 +1059,10 @@ contains
        srtS_XS = srtS_corr
     end if
 
-    call XsectionMaster (srtS_XS, pair, mediumATcollision, momentum_LRF, chosenEvent, &
-                         sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar, sigmaXiBar,&
-                      &  sigmaJPsi, HiEnergyFlag, PauliIncluded_out=pauliIncluded)
+    call XsectionMaster(srtS_XS, pair, mediumATcollision, momentum_LRF, &
+         chosenEvent, &
+         sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar, &
+         sigmaXiBar, sigmaJPsi, HiEnergyFlag, PauliIncluded_out=pauliIncluded)
 
     if (present(pauliIncluded_out)) pauliIncluded_out = pauliIncluded
     If (Present(sigTot_out)) then
@@ -1470,7 +1496,7 @@ contains
     integer :: i,j
     real, parameter, dimension (1:3) ::spotOut=0. ! Neglecting possible scalar potentials !!!
     logical :: flag, successFlag, verb
-    logical :: potFailure ! set by energycorrection if there is a threshold violation due to 
+    logical :: potFailure ! set by energycorrection if there is a threshold violation due to
                           !potentials which are neglected
     integer, parameter :: maxCorrectLoop=20  ! maximal number of iterations for energy correction
 
@@ -1513,9 +1539,9 @@ contains
 
     Case Default
        Write(*,'(A)') 'Master_2Body: Error in setKinematics: No treatment of more than' &
-            &, ' a three-particle-final state implemented yet!'
+            &, ' a four-particle-final state implemented yet!'
        write(*,*) size(finalState), finalState(:)%ID
-       stop
+       call Traceback()
     End select
 
     ! set velocities in vacuum approximation
@@ -1584,7 +1610,7 @@ contains
             fehlerZaehler=fehlerzaehler+1
             If(fehlerZaehler>fehler_max) then
                write(*,*) 'too many errors in master_2Body: massass'
-               stop ' setKinematics massass'
+               call Traceback()
             endif
 
             collisionFlag=.false. ! Kill Event
@@ -1684,7 +1710,7 @@ contains
          fehlerZaehler=fehlerzaehler+1
          If(fehlerZaehler>fehler_max) then
             write(*,*) 'too many errors in master_2Body: Do3Body'
-            stop
+            call Traceback()
          endif
 
          collisionFlag=.false. ! Kill Event
@@ -1712,7 +1738,7 @@ contains
             mass(j) = hadron(finalState(j)%ID)%mass
          else
             write(*,*) 'setKinematics,Do4Body: unknown ID:',finalState(j)%ID
-            stop
+            call Traceback()
          end if
          finalState(j)%mass = mass(j)
       end do
@@ -1767,7 +1793,7 @@ contains
 !!$      do j=1,4
 !!$         call WriteParticle(6,99,j,finalState(j))
 !!$      end do
-!!$      stop
+!!$      call Traceback()
 
       If(.not.successFlag) then
          write(*,'(A,2I4,A,4I4,A,2ES12.4)') 'SetKinematics[4]: Energy correction failed.', &
@@ -1776,7 +1802,7 @@ contains
          fehlerZaehler=fehlerzaehler+1
          If(fehlerZaehler>fehler_max) then
             write(*,*) 'too many errors in master_2Body: Do4Body'
-            stop
+            call Traceback()
          endif
 
          collisionFlag=.false. ! Kill Event
@@ -2178,13 +2204,13 @@ contains
   ! * real,                         :: sigmaCEX          -- charge exchange Xsection
   ! * real,                         :: sigmaAnni         -- annihilation Xsection
   ! * real                          :: sigmaLbar         -- Lambda LambdaBar exclusive production Xsection
-  ! * real                          :: sigmaSbar         -- Lambda SigmaBar + LambdaBar Sigma 
+  ! * real                          :: sigmaSbar         -- Lambda SigmaBar + LambdaBar Sigma
   !                                                         exclusive production Xsection
   ! * real                          :: sigmaXiBar        -- Xi XiBar exclusive production Xsection
   ! * real                          :: sigmaJPsi         -- J/Psi exclusive production Xsection
   ! * logical                       :: HiEnergyFlag      -- true if HiEnergy is used to generate the
   !                                                         final state
-  ! * logical,optional              :: pauliIncluded_out     -- true if Pauli blocking was already 
+  ! * logical,optional              :: pauliIncluded_out     -- true if Pauli blocking was already
   !                                                          included in the cross section evaluation
   ! NOTES
   ! The cross sections sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar and sigmaXiBar are relevant only for
@@ -2397,6 +2423,8 @@ contains
          write(*,*) teilchenIn%ID,teilchenIn%mass,srts
       endif
 
+      if ((OverideSigma_PiPi > 0) .and. (teilchenIn(1)%ID==pion) .and. (teilchenIn(2)%ID==pion)) goto 111
+
       !    Elastic channels are not implemented yet:
       sigmaElast = 0.
 
@@ -2455,9 +2483,9 @@ contains
                ! the isospin factor must be corrected:
                if (teilchenIn(1)%ID==teilchenIn(2)%ID) isofac = 2.*isofac
 
-               width_meson = decayWidthMesonMedium(idRes, resmass, izt, pauliFlag)        
+               width_meson = decayWidthMesonMedium(idRes, resmass, izt, pauliFlag)
                ! get the in-width
-               gamtot = WidthMesonMedium(idRes, resmass, momentumLRF, mediumATcollision)  
+               gamtot = WidthMesonMedium(idRes, resmass, momentumLRF, mediumATcollision)
                ! total in-medium width (incl. collisional width)
 
                sig(idRes) = 4.*pi/pinitial2*isofac &
@@ -2511,7 +2539,7 @@ contains
       else if (teilchenIn(1)%ID>=pion .and. teilchenIn(1)%ID<=etaPrime .and. &
                teilchenIn(2)%ID>=pion .and. teilchenIn(2)%ID<=etaPrime) then
 
-         ! === nonstrange + nonstrange (other than pi pi, pi rho, rho rho) 
+         ! === nonstrange + nonstrange (other than pi pi, pi rho, rho rho)
          ! --> K + Kbar, K^* Kbar, K Kbar^*:
 
          if (srts>srts0 .and. abs(izt)<2) sigbgt = const
@@ -2533,7 +2561,7 @@ contains
 
          call kstarkbar_cross(izt,srts,pinitial2,const,msigbg,mesMes_useWidth)
 
-         sigbgt = Sum(msigbg(1:8))
+         sigbgt = Sum(msigbg)
 
       end if
 
@@ -2545,8 +2573,8 @@ contains
       end if
 
       ! here you can switch off the 2 to 2 interactions:
-      ! (could be optimized: do not calculate the cross sections, if you know you 
-      ! will throw them anyhow) 
+      ! (could be optimized: do not calculate the cross sections, if you know you
+      ! will throw them anyhow)
       if (.not.mesMes_do2to2) then
          sigbgt = 0.
       end if
@@ -2558,6 +2586,7 @@ contains
          sigbgt = 0.
       endif
 
+111   continue
 
       if ((OverideSigma_PiPi > 0) .and. (teilchenIn(1)%ID==pion) .and. (teilchenIn(2)%ID==pion)) then
          sigres = 0.0
@@ -2630,7 +2659,7 @@ contains
                write(*,*)'error in mesmes: izt=', izt
                write(*,*) teilchenIn%ID
                write(*,*) teilchenIn%charge
-               stop
+               call Traceback()
             endif
 
          else if ((teilchenIn(1)%ID==kaon .and. teilchenIn(2)%ID==kaonBar) .or. &
@@ -2825,7 +2854,7 @@ contains
 
 
       if (HiEnergyFlag) then
-         If (antiBaryon) baryonID=-baryonID     ! Setting for "paramBarMesHE" 
+         If (antiBaryon) baryonID=-baryonID     ! Setting for "paramBarMesHE"
          !                                    (old BUU scheme = antiparticles have minus sign in ID)
          call paramBarMesHE(srts,mesonID,baryonID,mesonCharge,baryonCharge,mediumAtCollision, &
                            &  sigmaTot,sigmaElast)
@@ -2899,7 +2928,7 @@ contains
             call pionDelta (srts, teilchenIN, mediumATcollision, momentumLRF, teilchenOUT(1:3), &
                            & sigmaTot, sigmaElast, plotIT)
          Case(rho)
-            call rhoDelta (srts, teilchenIN, mediumATcollision, momentumLRF, teilchenOUT(1:3), & 
+            call rhoDelta (srts, teilchenIN, mediumATcollision, momentumLRF, teilchenOUT(1:3), &
                           & sigmaTot, sigmaElast, plotIT)
          Case(eta)
             call etaDelta (srts, teilchenIN, teilchenOUT(1:3), sigmaTot, sigmaElast, plotIT)
@@ -2951,7 +2980,7 @@ contains
       Case(Sigma_1385:Sigma_1915)
          Select Case(mesonID)
          Case(pion)
-            call mesonY (srts, teilchenIN, mediumATcollision, momentumLRF, teilchenOUT(1:3), & 
+            call mesonY (srts, teilchenIN, mediumATcollision, momentumLRF, teilchenOUT(1:3), &
                         & sigmaTot, sigmaElast, plotIT)
          End Select
       Case(Xi)
@@ -2984,8 +3013,8 @@ contains
     !****s* XsectionMaster/barBar
     ! NAME
     ! subroutine barBar (srts, teilchenIn, mediumATcollision, teilchenOut,
-    ! sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar, sigmaXiBar, sigmaJPsi,&
-    ! &  PauliIncluded)
+    ! sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar,
+    ! sigmaXiBar, sigmaJPsi, PauliIncluded)
     !
     ! PURPOSE
     ! Calculate the total and elastic cross section of baryon-baryon collisions.
@@ -2997,25 +3026,25 @@ contains
     !
     ! OUTPUT
     ! * type(preEvent),dimension(1:4) :: teilchenOut       -- produced particles
-    ! * real                          :: sigmaTot          -- total Xsection
-    ! * real                          :: sigmaElast        -- elastic Xsection
-    ! * real                          :: sigmaCEX          -- charge exchange Xsection
-    ! * real                          :: sigmaAnni         -- annihilation Xsection
-    ! * real                          :: sigmaLbar         -- Lambda LambdaBar exclusive production 
-    !                                                         Xsection
-    ! * real                          :: sigmaSbar         -- Lambda SigmaBar + LambdaBar Sigma 
-    !                                                         exclusive production Xsection
-    ! * real                          :: sigmaXiBar        -- Xi XiBar exclusive production Xsection
-    ! * real                          :: sigmaJPsi         -- J/Psi exclusive production Xsection
-    ! * logical,                      :: pauliIncluded     -- true if Pauli blocking is included 
-    !                                                         when calculating the Xsection
+    ! * real     :: sigmaTot          -- total Xsection
+    ! * real     :: sigmaElast        -- elastic Xsection
+    ! * real     :: sigmaCEX          -- charge exchange Xsection
+    ! * real     :: sigmaAnni         -- annihilation Xsection
+    ! * real     :: sigmaLbar         -- Lambda LambdaBar exclusive production
+    !                                    Xsection
+    ! * real     :: sigmaSbar         -- Lambda SigmaBar + LambdaBar Sigma
+    !                                    exclusive production Xsection
+    ! * real     :: sigmaXiBar        -- Xi XiBar exclusive production Xsection
+    ! * real     :: sigmaJPsi         -- J/Psi exclusive production Xsection
+    ! * logical  :: pauliIncluded     -- true if Pauli blocking is included
+    !   when calculating the Xsection
     !
     ! NOTES
     ! the internal variable "HiEnergyFlag" is input.
     !*************************************************************************
-    subroutine barBar (srts, teilchenIn, mediumATcollision, teilchenOut, &
-                       sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar, sigmaXiBar, &
-                      & sigmaJPsi, PauliIncluded)
+    subroutine barBar(srts, teilchenIn, mediumATcollision, teilchenOut, &
+         sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, sigmaLbar, sigmaSbar, &
+         sigmaXiBar, sigmaJPsi, PauliIncluded)
 
       use mediumDefinition
       use particleDefinition
@@ -3068,50 +3097,52 @@ contains
          If (teilchenIn(1)%antiParticle.neqv.teilchenIn(2)%antiParticle) then
 
             ! Baryon-Antibaryon annihilation:
-            !            facts=0.
-            !            ! We count the number of possible q qbar pairs that could
-            !            ! annihilate, assuming that u and dBar are also allowed to
-            !            ! annihilate. Maximal number of pairs is 9
-            !            if((max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)   &
-            !                 &     .and.(min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)) then
-            !               ! S=0 and S=0
-            !               facts=1.       ! =3*3 / 9
-            !            else if((max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)   &
-            !                 &     .and.(min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1)) then
-            !               ! S=0 and S=-1
-            !               facts=2./3.    ! =(3*2)  / 9
-            !            else if((max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)   &
-            !                 &     .and.(min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2)) then
-            !               ! S=0 and S=-2
-            !               facts=1./3.    ! =(3*1) / 9
-            !            else if( (min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1) &
-            !                 .and. (max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1))    then
-            !               ! S=-1 and S=-1
-            !               facts=5./9.    !=(2*2+1) / 9
-            !            else if( (min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2) &
-            !                 .and. (max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1))   then
-            !               ! S=-1+S=-2
-            !               facts=4./9.    !=(2+2) / 9
-            !            else if( (min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2) &
-            !                 .and. (max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2))   then
-            !               ! S=-2+S=-2  !=(2*2+1) / 9
-            !               facts=5./9.
-            !            end if
+            !  facts=0.
+            !  ! We count the number of possible q qbar pairs that could
+            !  ! annihilate, assuming that u and dBar are also allowed to
+            !  ! annihilate. Maximal number of pairs is 9
+            !  if((max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)   &
+            !       &     .and.(min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)) then
+            !     ! S=0 and S=0
+            !     facts=1.       ! =3*3 / 9
+            !  else if((max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)   &
+            !       &     .and.(min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1)) then
+            !     ! S=0 and S=-1
+            !     facts=2./3.    ! =(3*2)  / 9
+            !  else if((max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.0)   &
+            !       &     .and.(min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2)) then
+            !     ! S=0 and S=-2
+            !     facts=1./3.    ! =(3*1) / 9
+            !  else if( (min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1) &
+            !       .and. (max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1))    then
+            !     ! S=-1 and S=-1
+            !     facts=5./9.    !=(2*2+1) / 9
+            !  else if( (min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2) &
+            !       .and. (max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-1))   then
+            !     ! S=-1+S=-2
+            !     facts=4./9.    !=(2+2) / 9
+            !  else if( (min(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2) &
+            !       .and. (max(hadron(teilchenIN(1)%ID)%strangeness,hadron(teilchenIN(2)%ID)%strangeness).eq.-2))   then
+            !     ! S=-2+S=-2  !=(2*2+1) / 9
+            !     facts=5./9.
+            !  end if
 
 
-            call sigmaBarAntiBar (srts, teilchenIN, mediumATcollision, sigmaTot, sigmaElast, &
-                                  sigChEx=sigmaCEX, sigAnnihilation=sigmaAnni, sigLambdaBar=sigmaLbar, &
-                                  sigSigmaBar=sigmaSbar, sigXiBar=sigmaXiBar, sigJPsi=sigmaJPsi)
+            call sigmaBarAntiBar(srts, teilchenIN, mediumATcollision, &
+                 sigmaTot, sigmaElast, &
+                 sigChEx=sigmaCEX, sigAnnihilation=sigmaAnni, &
+                 sigLambdaBar=sigmaLbar, sigSigmaBar=sigmaSbar, &
+                 sigXiBar=sigmaXiBar, sigJPsi=sigmaJPsi)
 
             if (debug) then
-               write(*,*)'sigmaTOT: ', sigmaTot
+               write(*,*)'sigmaTOT:   ', sigmaTot
                write(*,*)'sigmaElast: ', sigmaElast
-               write(*,*)'sigmaCEX: ', sigmaCEX
-               write(*,*)'sigmaAnni: ', sigmaAnni
-               write(*,*)'sigmaLbar: ', sigmaLbar
-               write(*,*)'sigmaSbar: ', sigmaSbar
+               write(*,*)'sigmaCEX:   ', sigmaCEX
+               write(*,*)'sigmaAnni:  ', sigmaAnni
+               write(*,*)'sigmaLbar:  ', sigmaLbar
+               write(*,*)'sigmaSbar:  ', sigmaSbar
                write(*,*)'sigmaXiBar: ', sigmaXiBar
-               write(*,*)'sigmaJPsi: ', sigmaJPsi
+               write(*,*)'sigmaJPsi:  ', sigmaJPsi
             end if
 
             !            sigmaTot=facts*sigmaTot
@@ -3130,27 +3161,29 @@ contains
          if(debug) write(*,*)' barBar: low energy', srts
 
          If( teilchenIN(1)%antiparticle .and. teilchenIN(2)%antiparticle ) then
-            ! At low energies there is no antibaryon-antibaryon collision- Xsection yet
+            ! At low energies there is no antibaryon-antibaryon
+            ! collision-Xsection yet
             teilchenOut%ID=0
             sigmaTot=0.
             sigmaElast=0.
          else if( teilchenIN(1)%antiparticle .or. teilchenIN(2)%antiparticle ) then
             ! Low energy cross sections for antibaryon-baryon-collisions
-            if (plotIT) then
-               call XsectionAntiBarBar (srts, teilchenIN, mediumATcollision, teilchenOut, &
-                                        sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, pauliIncluded, plotIT)
-            else
-               call XsectionAntiBarBar (srts, teilchenIN, mediumATcollision, teilchenOut, &
-                                        sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, pauliIncluded)
-            end if
+            call XsectionAntiBarBar(srts, teilchenIN, mediumATcollision, &
+                 teilchenOut, &
+                 sigmaTot, sigmaElast, sigmaCEX, sigmaAnni, pauliIncluded, &
+                 plotIT)
+
          else
             ! Low energy cross sections for baryon-baryon-collisions
             if (plotIT) then
-               call XsectionBarBar (srts, teilchenIN, mediumATcollision, teilchenOut, &
-                                    sigmaTot, sigmaElast, pauliIncluded, "BaryonBaryon_CrossSection")
+               call XsectionBarBar(srts, teilchenIN, mediumATcollision, &
+                    teilchenOut, &
+                    sigmaTot, sigmaElast, pauliIncluded, &
+                    "BaryonBaryon_CrossSection")
             else
-               call XsectionBarBar (srts, teilchenIN, mediumATcollision, teilchenOut, sigmaTot, &
-                                   & sigmaElast, pauliIncluded)
+               call XsectionBarBar(srts, teilchenIN, mediumATcollision, &
+                    teilchenOut, &
+                    sigmaTot, sigmaElast, pauliIncluded)
             end if
          end if
       end if
@@ -3190,7 +3223,7 @@ contains
     integer, intent(in) :: totalcharge
 
     real :: p,x
-    real, parameter :: B = pi/GeVSquared_times_mb/2.15**2 
+    real, parameter :: B = pi/GeVSquared_times_mb/2.15**2
 
     if (isHyperon(ID(1)) .or. isHyperon(ID(2))) then
 

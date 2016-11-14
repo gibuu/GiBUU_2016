@@ -1,4 +1,3 @@
-
 !***************************************************************************
 !****m* /findZero
 ! NAME
@@ -6,7 +5,7 @@
 !
 ! PURPOSE
 ! * This module includes routines to find roots of functions, i.e. the x for which f(x)=0.
-! 
+!
 ! METHODS
 ! * newton_findZero
 !***************************************************************************
@@ -59,7 +58,7 @@ contains
 
     do counter=1,maxSteps
        y=f(x(1))
-       ! Adapt sensible values for dx via the value of x(1) 
+       ! Adapt sensible values for dx via the value of x(1)
        dx=abs(x(1)*10E-5)
        ! Perform Newton Algorithm
        d= deriv(x(1))
@@ -73,7 +72,7 @@ contains
        if(abs(d).lt.epsilon(d)) then
           ! Derivative is zero
           write(*,*) name
-          write(*,*) 'Error: derivative=0! No SUCCESS!!! ' 
+          write(*,*) 'Error: derivative=0! No SUCCESS!!! '
           write(*,*) 'derivative=',d
           write(*,*) 'counter=',counter
           return
@@ -85,7 +84,7 @@ contains
     write(*,*) 'Error: counter > maxSteps ! No SUCCESS!!! '
 
 
-  contains 
+  contains
     real function deriv(x)
       implicit none
       real :: x
@@ -96,7 +95,7 @@ contains
 
 
 
-  
+
   !***************************************************************************
   !****f* findZero/bisection_findZero
   ! NAME
@@ -149,17 +148,17 @@ contains
     end if
 
 
-    ! First establish that y(1)*y(2)<0    
+    ! First establish that y(1)*y(2)<0
     successNegative=.false.
     if(y(1)*y(2).gt.0) then
        ! Slowly increase the grid spacings to find a sign change in f(x):
-       findNegative_loop: do n=2, maxSteps,3 ! n= Number of grid points 
+       findNegative_loop: do n=2, maxSteps,3 ! n= Number of grid points
           do i=1,n-1  ! loop over all gridpoints
              x(3)=x(1)+(x(2)-x(1))/float(n)*float(i)
              y(3)=f(x(3))
              if(y(1)*y(3).lt.0) then
-                ! The function changed sign in between x=x(1)+(x(2)-x(1))/float(n)*float(i) 
-                ! and x(1)+(x(2)-x(1))/float(n)*float(i-1) 
+                ! The function changed sign in between x=x(1)+(x(2)-x(1))/float(n)*float(i)
+                ! and x(1)+(x(2)-x(1))/float(n)*float(i-1)
                 ! => Root must be in the middle
                 successNegative=.true.
                 x(1)=x(3)-(x(2)-x(1))/float(n)
@@ -200,7 +199,7 @@ contains
        else
           write(*,*) name
           write(*,*) 'Error in bisection algorithm'
-          stop 
+          stop
        end if
        if(debug) then
           write(*,'(A,3E15.4)') 'x im loop (2)=',x

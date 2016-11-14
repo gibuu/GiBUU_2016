@@ -11,14 +11,14 @@ module barBar_to_barBar_model
   ! All units in GeV
 
   ! Couplings according to Pascalutsa and Vanderhaeghen hep-ph/0511261v1
-  real, parameter :: f_pi= 0.0924                   
+  real, parameter :: f_pi= 0.0924
   real, parameter :: g_A = 1.267
   !real, parameter :: h_A_deltaDelta = 9./5.*g_A
   real, parameter :: h_A_deltaNuc = 3./1.414213562*g_A  ! 3./sqrt(2.)*g_A     this change was required by Sun Studio 12.0
 
 
   ! Couplings according to Dmitriev/Sushkov, NPA 459 (1986)
-  real, parameter :: f_pi_dimi= 1.008                   
+  real, parameter :: f_pi_dimi= 1.008
   real, parameter :: f_pi_star_dimi = 2.202
   real, parameter :: f_pi_deltadelta_doenges=4./5.*f_pi_dimi
 
@@ -107,7 +107,7 @@ contains
     use idTable, only: nucleon, Delta
     use constants, only : pi, GeVSquared_times_mb, mN
     real, intent (in) :: srts
-    
+
     if (firstTime) call readinput
 
     NN_ND_model = 0.
@@ -139,7 +139,7 @@ contains
     real :: deltaMass_initial
     integer, dimension (1:2) :: chargeSorted_In,chargeSorted_OUT
     logical, intent(in) :: chargeSum
-    
+
     if (firstTime) call readinput
 
     ND_ND_model = 0.
@@ -152,7 +152,7 @@ contains
        chargeSorted_In = (/chargeIn(1),chargeIn(2)/)
        deltaMass_initial = massin(2)
     end if
-     
+
     if(idOUT(1)==delta) then
       chargeSorted_Out = (/chargeOut(2),chargeOut(1)/)
     else
@@ -195,7 +195,7 @@ contains
     else
        chargeSorted_In=(/chargeIn(1),chargeIn(2)/)
     end if
-       
+
     wahrscheinlichkeit=0.
     totalWahrscheinlichkeit=0.
     do deltaCharge=-1,2
@@ -238,7 +238,7 @@ contains
   ! NOTES
   ! This function  evaluates :
   ! Matrix Element^2 * p_cm(final) / p_cm(initial) * SpecFunc_Delta
-  ! for NN-> NDelta according to one-pion exchange. See Dmitriev NPA 459. 
+  ! for NN-> NDelta according to one-pion exchange. See Dmitriev NPA 459.
   ! All variables in CM System!!
   ! INPUTS
   ! * real :: srts
@@ -278,7 +278,7 @@ contains
     massLoop: do j=1,numsteps_mass
        if(.not.integrated_mass) then
           mass=mass_in
-       else 
+       else
           mass=mN+mPi+float(j)*dmass
        end if
        ! Integrate over cosTheta
@@ -291,10 +291,10 @@ contains
           end if
           MSquared_NN_ND = MSquared_NN_ND + ms_NN(theta,srts,mass)
           ! If no theta integration shall be performed, then we exit the integration loop after the first cycle
-          if(.not.integrated_theta) exit thetaLoop 
+          if(.not.integrated_theta) exit thetaLoop
        end do thetaLoop
        ! If no mass integration shall be performed, then we exit the integration loop after the first cycle
-       if(.not.integrated_mass) exit massLoop 
+       if(.not.integrated_mass) exit massLoop
     end do massLoop
 
     if(integrated_mass)  MSquared_NN_ND=MSquared_NN_ND*dmass
@@ -331,7 +331,7 @@ contains
          stop'strange couplings in barbar_to_barbar_model'
       end if
 
-      mN4=unit4*mN 
+      mN4=unit4*mN
       !call printMatrix(mn4)
       !stop
 
@@ -388,7 +388,7 @@ contains
               &       ) &
               & *trace( &
               &        MatrixMult( lambda ,(slashed(q)+mN4)) &
-              &       ) 
+              &       )
 
 
          direct=1./((mpi**2-SP(a,a))**2)*(  &
@@ -459,7 +459,7 @@ contains
            &  *trace( &
            &        MatrixMult( (slashed(pp)-mN4),slashed(a),(slashed(p)+mN4),lambda,(slashed(q)+mN4),slashed(b)) &
            &        ) &
-           &  *cutoff(SP(a,a))**2  *  cutoff(SP(b,b))**2  
+           &  *cutoff(SP(a,a))**2  *  cutoff(SP(b,b))**2
 
       ! Factor 2 in front of crossed and direct terms due to Isospin
       ! Factor -4 in front of interference is -4=-2*2 where -2 is due to isospin!!
@@ -471,7 +471,7 @@ contains
             write(*,'(4G20.5)') direct_byHand(SP(a,a),mass), real(direct_traces), direct_byHand(SP(a,a),mass)/real(direct_traces),&
                  & direct_byHand_simple(SP(a,a),mass)
       end if
-       
+
 
     end function ms_NN
 
@@ -480,7 +480,7 @@ contains
       ! Monopole form factor according to Dmitriev
       use constants, only: mPi
       real, intent(in) :: t                         ! Mandelstam t for the exchanged pion
-      real, parameter :: lambdaSquared=0.63**2      ! = Dmitriev 
+      real, parameter :: lambdaSquared=0.63**2      ! = Dmitriev
       cutoff = (lambdaSquared-mPi**2) / (lambdaSquared-t)
     end function cutoff
 
@@ -497,7 +497,7 @@ contains
     end function InterDimi
 
 
-    real function direct_byHand(t,mass) 
+    real function direct_byHand(t,mass)
       ! Direct contribution to the matrix element squared: |M_D|^2
       use constants, only: mN
       real, intent(in) :: t, mass
@@ -506,12 +506,12 @@ contains
     end function direct_byHand
 
 
-    real function direct_byHand_simple(t,mass) 
+    real function direct_byHand_simple(t,mass)
       ! Direct contribution to the matrix element squared: |M_D|^2
       ! Same as direct by hand, but simplified algebra
       use constants, only: mN
       real, intent(in) :: t, mass
-      direct_byHand_simple=-8*mn**2*t /(3* mass**2)* ( (mn+mass)**2-t )**2  * ( (mn-mass)**2-t )  
+      direct_byHand_simple=-8*mn**2*t /(3* mass**2)* ( (mn+mass)**2-t )**2  * ( (mn-mass)**2-t )
     end function direct_byHand_simple
 
   end function MSquared_NN_ND
@@ -546,16 +546,16 @@ contains
 !     real, parameter :: beta=0.2
 !     real, intent(in) :: mass
 !     real :: md,pcm_mass,pcm_pole!, gamma
-! 
-!     md=hadron(delta)%mass      
+!
+!     md=hadron(delta)%mass
 !     pcm_mass=pcm(mass,mN, mPi)
 !     pcm_pole=pcm(md  ,mN, mPi)
-! 
+!
 !     ! Alexei paper:
 !     !    deltaWidth=0.118*md/mass*(beta**2+pcm_pole**2)/(beta**2+pcm_mass**2)* &
 !     !         & pcm_mass**3/pcm_pole**3
 !     deltaWidth=0.120*(pcm_mass/pcm_pole)**3*z(mass,mPi)
-! 
+!
 !   end function deltaWidth
 
 
@@ -569,7 +569,7 @@ contains
     real :: mass     ! Mass of delta
     real :: pionmass     ! Mass of pion
 
-    real, parameter :: kappaSquared=0.2**2      ! = Dmitriev 
+    real, parameter :: kappaSquared=0.2**2      ! = Dmitriev
     real :: pcm_pole, pcm_mass
 
     pcm_pole=pcm(hadron(delta)%mass, mN , pionMass)
@@ -600,7 +600,7 @@ contains
   ! for NDelta-> NDelta according to one-pion exchange. See Effenberger Diplom!!
   ! All variables in CM System!!
   ! INPUTS
-  ! * integer, dimension (1:2) :: chargeIn,chargeOUT -- Charges of incoming and outgoing particles: 
+  ! * integer, dimension (1:2) :: chargeIn,chargeOUT -- Charges of incoming and outgoing particles:
   !   first index nucleon, second:delta
   ! * real :: srts
   ! * real :: theta_in -- angle in CM system in radians
@@ -635,7 +635,7 @@ contains
     massLoop: do j=1,numsteps_mass
        if(.not.integrated_mass) then
           mass=mass_in
-       else 
+       else
           mass=mN+mPi+float(j)*dmass
        end if
        ! Integrate over cosTheta
@@ -648,10 +648,10 @@ contains
           end if
           MSquared_ND_ND = MSquared_ND_ND + ms_ND(theta,srts,mass,mass_initial_in)
           ! If no theta integration shall be performed, then we exit the integration loop after the first cycle
-          if(.not.integrated_theta) exit thetaLoop 
+          if(.not.integrated_theta) exit thetaLoop
        end do thetaLoop
        ! If no mass integration shall be performed, then we exit the integration loop after the first cycle
-       if(.not.integrated_mass) exit massLoop 
+       if(.not.integrated_mass) exit massLoop
     end do massLoop
 
     if(integrated_mass)  MSquared_ND_ND=MSquared_ND_ND*dmass
@@ -702,7 +702,7 @@ contains
 !          stop'strange couplings in barbar_to_barbar_model'
 !       end if
 
-!       mN4=unit4*mN 
+!       mN4=unit4*mN
 
       if (srts<=mN+max(mass,massIni)+epsilon(srts)) then
         ms_ND = 0.
@@ -745,13 +745,13 @@ contains
 !       b=p-qp
 
       ms_ND = effenberger_MatrixElement(SP(a,a),massIni,mass)*spectralDelta(mass)*pcm_final/pcm_initial*2.*mass
-       
+
 !       if(debug_ms) then
-!          ! Explicit calculation 
-!          ! With the following lines I tested that the result below gives 
+!          ! Explicit calculation
+!          ! With the following lines I tested that the result below gives
 !          ! the same outcome as the line ms=... above. So the line ms=...
 !          ! above is right!!!
-! 
+!
 !          traceResult=0.
 !          do mu=0,3
 !             do nu=0,3
@@ -764,9 +764,9 @@ contains
 !               &   * trace(MatrixMult(slashed(pp)-mn4,slashed(a),slashed(p)+mn4,slashed(a))) &
 !               &   * (f_pi_deltadelta_doenges/mPi)**2    *   (f_pi_dimi/mPi)**2/8.    &
 !               &   * cutoff(SP(a,a))**4/(SP(a,a)-mpi**2)**2
-! 
+!
 !          ms_ND = 1./8.*spectralDelta(mass)*pcm_final/pcm_initial*2.*mass*traceResult
-! 
+!
 !          ! Print test output:
 !          write(*,'("(",2G18.4,")",7G18.4)') traceResult, &
 !               & effenberger_MatrixElement(SP(a,a),massIni,mass),effenberger_MatrixElement(SP(a,a),massIni,mass)/real(traceresult)
@@ -820,13 +820,13 @@ contains
   ! or table (A.4) in Oliver's PhD.
   ! INPUTS
   ! Charge of incoming and outgoing particles (first index: nucleon, 2nd: Delta) :
-  ! * integer, dimension(1:2), intent(in) :: in_input, out_input  
+  ! * integer, dimension(1:2), intent(in) :: in_input, out_input
   !***************************************************************************
    real function isospinFactor_ND_ND(in_input, out_input )
 
       ! charge of incoming and outgoing particles (first index: nucleon, 2nd: Delta) :
-      integer, dimension(1:2), intent(in) :: in_input, out_input  
-      integer, dimension(1:2) :: in, out 
+      integer, dimension(1:2), intent(in) :: in_input, out_input
+      integer, dimension(1:2) :: in, out
       isospinFactor_ND_ND=0.
       if(in_input(1).eq.0) then
          ! Rotate all isospins such that we have an incoming proton:
@@ -856,9 +856,9 @@ contains
            isospinFactor_ND_ND=4
          end if
      case(-1)
-         if((out(1).eq.1).and.out(2).eq.-1) then 
+         if((out(1).eq.1).and.out(2).eq.-1) then
             isospinFactor_ND_ND=9./4.
-         else if((out(1).eq.0).and.out(2).eq.0) then 
+         else if((out(1).eq.0).and.out(2).eq.0) then
             isospinFactor_ND_ND=3.
          end if
       end Select

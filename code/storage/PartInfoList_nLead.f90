@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PIL_nLead
-! NAME 
+! NAME
 ! module PIL_nLead
 ! PURPOSE
 ! Provide some storage method for a real valued information connected
@@ -13,7 +13,7 @@
 !
 ! INPUTS
 ! (none)
-! 
+!
 ! NOTES
 ! * "PIL" stands for "PartInfoList"
 ! * unfortunately this module does NOT store the number of leading quarks,
@@ -29,7 +29,7 @@ module PIL_nLead
 
   !*************************************************************************
   !****t* PIL_nLead/tValueEntry
-  ! NAME 
+  ! NAME
   ! type tValueEntry
   ! PURPOSE
   ! a container of the information to be stored
@@ -73,7 +73,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_nLead/PIL_nLead_DeAlloc
-  ! NAME 
+  ! NAME
   ! subroutine PIL_nLead_DeAlloc
   ! PURPOSE
   ! Deallocate the memory for this list and the corresponding index list.
@@ -86,7 +86,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_nLead/PIL_nLead_ZERO
-  ! NAME 
+  ! NAME
   ! subroutine PIL_nLead_ZERO()
   ! PURPOSE
   ! Reset the list by setting the counter of stored information to 0.
@@ -99,7 +99,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_nLead/PIL_nLead_PUT
-  ! NAME 
+  ! NAME
   ! subroutine PIL_nLead_PUT(number,r)
   ! PURPOSE
   ! Store the information "r" connected with particle "number" in the list.
@@ -118,10 +118,10 @@ contains
     iEntry = PILIndex_PUT(IndexList, number,"nLead")
 
 !    write(*,*) '###PUT: ',number,r,iEntry
-    
+
     if (iEntry>0) then      ! everything is ok
        ValueList(iEntry)%val = r
-    else 
+    else
        call PIL_nLead_Allocate() ! do (re)allocate
        ValueList(-iEntry)%val = r
     endif
@@ -130,7 +130,7 @@ contains
 
   !***************************************************************************
   !****f* PIL_nLead/PIL_nLead_GET
-  ! NAME 
+  ! NAME
   ! logical function PIL_nLead_GET(number,r)
   ! PURPOSE
   ! Get the stored information of particle "number"
@@ -166,7 +166,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_nLead/PIL_nLead_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_nLead_Allocate
   ! PURPOSE
   ! Do the allocation and reallocation of the value vector.
@@ -177,7 +177,7 @@ contains
   !***************************************************************************
   subroutine PIL_nLead_Allocate
     integer :: n0, n1
-    type(tValueEntry), allocatable :: L0(:) 
+    type(tValueEntry), allocatable :: L0(:)
 
     n1 = size(IndexList%PartNumber) ! new size
 
@@ -200,21 +200,21 @@ contains
 
   !***************************************************************************
   !****is* PIL_nLead/PIL_nLead_Print
-  ! NAME 
+  ! NAME
   ! subroutine PIL_nLead_Print(file)
   ! PURPOSE
   ! Print the list to file
   !***************************************************************************
 !   subroutine PIL_nLead_Print(file)
 !     integer, intent(IN) :: file
-! 
+!
 !     integer :: i
-! 
+!
 !     write(file,*) '****** PIL_nLead:',IndexList%nEntry
 !     do i=1,IndexList%nEntry
 !        write(file,'(i8.0,i8.0,g12.5)') i,IndexList%PartNumber(i),ValueList(IndexList%Entry(i))%val
 !     end do
-! 
+!
 !   end subroutine PIL_nLead_Print
 
 

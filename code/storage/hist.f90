@@ -4,8 +4,8 @@
 ! module histf90
 ! PURPOSE
 ! Encapsulate all routines and datas for 1D Histograms.
-! 
-! Features of Histograms provided by this module: 
+!
+! Features of Histograms provided by this module:
 ! - store paramaters of the x-binning
 ! - enable two y-values (y and y2)
 ! - track keeping of under-/over-score the given extreme values of x.
@@ -13,10 +13,10 @@
 ! - provide simple histogram arithmetic (not yet implemented)
 ! - many others...
 !
-! Every Histogram prints his own multicolumn output. 
+! Every Histogram prints his own multicolumn output.
 ! A multicolumn output of many different histograms for the same x-value
 ! is not implemented. This is done by the module "histMPf90".
-! 
+!
 ! INPUTS
 ! ...(This module needs no input)
 !***************************************************************************
@@ -127,7 +127,7 @@ contains
   ! * type(histogram) :: H          -- Histogram to be created
   ! * character*(*)   :: HName      -- Name of Histogram
   ! * real            :: xmin,xmax  -- Minimal/maximal value for x-coordinate to be considered
-  ! * real            :: bin        -- bin width 
+  ! * real            :: bin        -- bin width
   ! OUTPUT
   ! H is changed
   !***************************************************************************
@@ -223,7 +223,7 @@ contains
     H%yVal(iBin,1) = H%yVal(iBin,1)+y
     H%yVal(iBin,2) = H%yVal(iBin,2)+1.
     H%yVal(iBin,3) = H%yVal(iBin,3)+yy
-    
+
   end subroutine AddHist1
   !---------------------------------------------------------------------------
   subroutine AddHist2 (H1, H2, x ,y , y2)
@@ -231,7 +231,7 @@ contains
     type(histogram), intent(inout) :: H1,H2
     real, intent(in)               :: x, y
     real, intent(in), optional     :: y2
-    
+
     if (present(y2)) then
        call AddHist1(H1, x,y,y2)
        call AddHist1(H2, x,y,y2)
@@ -259,7 +259,7 @@ contains
   !
   ! Summing "Underflow"+"Entries"+"Overflow" gives the number of ALL calls,
   ! i.e. the integral from -infty upto +infty.
-  ! 
+  !
   ! Output of "Underflow","Entries","Overflow" is split into 3 columns,
   ! corresponding to the columns 2)..4) of the Data-Block, see below.
   !
@@ -279,7 +279,7 @@ contains
     real :: mulFak,x
     real,dimension(1:3) :: S,avg
     integer :: i,iBin,iBinMax
-    
+
     character(60), parameter :: fmt1000 = "('###',/,'### Histogram: ',A,/,'###')"
     character(300),parameter :: fmt1010 = "('### Underflow: ',3ES11.4,/, &
                                            &'### Entries  : ',3ES11.4,/, &
@@ -345,7 +345,7 @@ contains
   ! * logical         :: dump  -- if true, also dump it binary to file [OPTIONAL]
   ! OUTPUT
   ! Write to file number 'iFile'.
-  ! 
+  !
   ! 4 columns are written in the data section:
   ! * 1) x-value (i.e. middle of bin)
   ! * 2) y-value
@@ -354,16 +354,16 @@ contains
   !
   ! Columns 2)..4) are divided by the bin-width.
   !
-  ! If the (optional) parameter "add" was given, this value is added 
+  ! If the (optional) parameter "add" was given, this value is added
   ! to the written values of columns 2)...4).
   ! (E.g. this is used, if one wants to create logplots with xmgr/grace:
   ! the value "0.0" is not allowed as input and destroys everything.
   ! Therefore calling this routine with the argument "add=1e-20" prohibits
   ! writing of "0.0"-values and everything is fine.)
   !
-  ! If the (optional) parameter "mul" was given, all written values 
+  ! If the (optional) parameter "mul" was given, all written values
   ! of columns 2)...4) are multiplied by this value.
-  ! (E.g. this is used, if one wants to divide the output by a 
+  ! (E.g. this is used, if one wants to divide the output by a
   ! "number of runs" value: "mul=1./NumberOfRuns".)
   !
   ! Column 4) "y2" provides you with a simple way, to not calculate only
@@ -376,17 +376,17 @@ contains
   ! written instead.
   ! This column output is NOT divided by bin widths.
   !
-  ! Plotting programs normally neglect the header lines and 
-  ! columns 3) and 4) -- leaving us with the use of these routines 
+  ! Plotting programs normally neglect the header lines and
+  ! columns 3) and 4) -- leaving us with the use of these routines
   ! as expected.
   !
-  ! If the (optional) parameter H2 is given, the first all entries of the 
+  ! If the (optional) parameter H2 is given, the first all entries of the
   ! histogram are divided by the entries of histogram H2, column 1.
-  ! 
+  !
   ! If the (optional) parameter 'file' is given, this routine first opens
   ! the file with this name (using stream number iFile), rewinds it. The
   ! file is closed at the end of the routine.
-  ! 
+  !
   ! NOTES
   ! The histogram data is not affected!!!
   !***************************************************************************
@@ -401,7 +401,7 @@ contains
     character*(*),   intent(in), optional :: file
     logical,         intent(in), optional :: dump
 
-    integer             :: iBin, iBinMax, iFile    
+    integer             :: iBin, iBinMax, iFile
     real :: addFak, mulFak, Z, maxZ
     logical :: writeZ
     real, allocatable :: yVal(:,:)
@@ -411,7 +411,7 @@ contains
     maxZ = 99.0
     writeZ = .false.
     iFile = 65
-    
+
     if (present(add)) addFak = add
     if (present(mul)) mulFak = mul
     if (present(maxVal)) maxZ = maxVal
@@ -426,7 +426,7 @@ contains
     end if
 
     iBinMax = ubound(H%yVal,dim=1)
-    
+
     allocate(yVal(-1:iBinMax,3))
     yVal = H%yVal
 
@@ -449,7 +449,7 @@ contains
     endif
 
     call WriteHeader(H,iFile,mulFak)
-    
+
     if (writeZ) then
        do iBin=1,iBinMax
           if (yVal(iBin,2) > 0) then
@@ -488,7 +488,7 @@ contains
           end if
        end if
     end if
-    
+
   end subroutine WriteHist
 
 
@@ -546,7 +546,7 @@ contains
     end if
 
     close(iFile)
-    
+
   end subroutine WriteHist_Integrated
 
 
@@ -570,7 +570,7 @@ contains
   ! * integer         :: nPoints -- number of sub-points [OPTIONAL]
   ! OUTPUT
   ! write to file number
-  ! 
+  !
   ! cf. WriteHist
   ! NOTES
   ! The Histogram Data is not affected!!!
@@ -584,10 +584,10 @@ contains
     real,           intent(in),optional :: add
     real,           intent(in),optional :: mul
     integer,        intent(in),optional :: nPoints
-    
+
 !    real,dimension(1:3) :: S
     integer             :: iBin, iBinMax
-    
+
     real :: addFak
     real :: mulFak
     integer :: nPP
@@ -602,7 +602,7 @@ contains
     addFak = 0.
     mulFak = 1.
     nPP = 5
-    
+
     if (present(add)) addFak = add
     if (present(mul)) mulFak = mul
     if (present(nPoints)) nPP = nPoints
@@ -617,12 +617,12 @@ contains
     write(iFile,fmt1020) "SPLINE INTERPOLATION",nPP
 
     iBinMax = ubound(H%yVal,dim=1)
-    
+
     allocate(XX(iBinMax))
     allocate(YY1(iBinMax))
     allocate(YY2(iBinMax))
     allocate(YY3(iBinMax))
-    
+
     do iBin=1,iBinMax
        xx(iBin)  = H%xMin+(real(iBin)-0.5)*H%xBin
        YY1(iBin) = H%yVal(iBin,1)/H%xBin*mulFak+addFak
@@ -633,7 +633,7 @@ contains
     spline(1)=cl_initSpline(xx,YY1)
     spline(2)=cl_initSpline(xx,YY2)
     spline(3)=cl_initSpline(xx,YY3)
-    
+
     do iBin=1,iBinMax*nPP
        x = H%xMin+(real(iBin)-0.5)*H%xBin/nPP
        write(iFile,fmt2000) x, cl_spline(spline(1),x,success,error),&
@@ -643,10 +643,10 @@ contains
     deallocate(XX, YY1,YY2,YY3)
 
     close(iFile)
-    
+
   end subroutine WriteHist_Spline
-  
-  
+
+
   !***************************************************************************
   !****s* histf90/WriteHist_BSpline
   ! NAME
@@ -667,7 +667,7 @@ contains
   ! * integer         :: nPoints -- number of sub-points [OPTIONAL]
   ! OUTPUT
   ! write to file number
-  ! 
+  !
   ! cf. WriteHist
   ! NOTES
   ! The Histogram Data is not affected!!!
@@ -755,7 +755,7 @@ contains
   ! * real, OPTIONAL  :: width_in -- width of gaussian
   ! OUTPUT
   ! write to file number
-  ! 
+  !
   ! NOTES
   ! The Histogram Data is not affected!!!
   !***************************************************************************
@@ -801,7 +801,7 @@ contains
     end do
 
     close(iFile)
-    
+
   end subroutine WriteHist_Gauss
 
 
@@ -819,7 +819,7 @@ contains
   ! * real            :: w,d   -- width and skewness of Novosibirsk function
   ! OUTPUT
   ! write to file number
-  ! 
+  !
   ! NOTES
   ! The Histogram Data is not affected!!!
   !***************************************************************************
@@ -858,7 +858,7 @@ contains
     end do
 
     close(iFile)
-    
+
   end subroutine WriteHist_Novo
 
 
@@ -952,7 +952,7 @@ contains
     success = .true.
 
   end function ReadHist
-  
+
 
   !***************************************************************************
   !****s* histf90/sumHist
@@ -1030,9 +1030,9 @@ contains
        addFak = add
        WriteFaks = .true.
     endif
-    
+
     if (WriteFaks) write(iF) addFak,mulFak
-    
+
 
     close(iF)
 
@@ -1043,7 +1043,7 @@ contains
   ! NAME
   ! subroutine FetchHist(H,file,iFile, add,mul,flagOK)
   ! PURPOSE
-  ! Read in all the histogram information previously dumped unformatted 
+  ! Read in all the histogram information previously dumped unformatted
   ! (i.e. binary) to a file
   !
   ! INPUTS
@@ -1055,7 +1055,7 @@ contains
   ! * real            :: mul   -- factor to multiply [OPTIONAL]
   ! * logical         :: flagOK -- flag, if reading was okay [OPTIONAL]
   !
-  ! H is read UNFORMATTED from the given file. Sizes are calculated as in 
+  ! H is read UNFORMATTED from the given file. Sizes are calculated as in
   ! CreateHist, also memory is allocated.
   !
   ! NOTES
@@ -1067,7 +1067,7 @@ contains
     character*(*),  intent(in)          :: file
     integer,        intent(in),optional :: iFile
     real,           intent(out),optional:: add,mul
-    logical,        intent(out),optional:: flagOK 
+    logical,        intent(out),optional:: flagOK
 
     integer :: iF
     integer :: L
@@ -1117,7 +1117,7 @@ contains
     if (present(flagOK)) flagOK=.true.
 
   end subroutine FetchHist
-  
+
   !***************************************************************************
-  
+
 end module histf90

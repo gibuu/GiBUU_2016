@@ -3,8 +3,8 @@
 ! NAME
 ! module baryonWidthMedium
 ! PURPOSE
-! Basically this module calls the routines of baryonWidth and adds medium 
-! modifications to it. 
+! Basically this module calls the routines of baryonWidth and adds medium
+! modifications to it.
 ! USES
 ! module baryonWidth
 !***************************************************************************
@@ -21,7 +21,7 @@ module baryonWidthMedium
   !
   logical, save :: mediumSwitch=.false.
   ! PURPOSE
-  ! Switch on and off the in-medium width of all baryons at once. 
+  ! Switch on and off the in-medium width of all baryons at once.
   ! If .false., the vacuum width are used.
   !************************************************************************
 
@@ -48,7 +48,7 @@ module baryonWidthMedium
   ! Only meaningful if mediumSwitch=.true.:
   ! Use in-medium width according to collision term.
   ! NOTES
-  ! if set to TRUE, then also UseOffShellPotentialBaryons (see module offShellPotential) must be .true. 
+  ! if set to TRUE, then also UseOffShellPotentialBaryons (see module offShellPotential) must be .true.
   !************************************************************************
 
   !************************************************************************
@@ -155,7 +155,7 @@ contains
   ! NAME
   ! subroutine readInput
   ! PURPOSE
-  ! Reads input in jobcard out of namelist "width_baryon". 
+  ! Reads input in jobcard out of namelist "width_baryon".
   !************************************************************************
   subroutine readInput
     use baryonWidthMedium_tables, only : get_deltaOset
@@ -187,7 +187,7 @@ contains
     call Write_ReadingInput('width_Baryon',0,IOS)
 
     write(*,'(A,L8)') ' Use in medium width for the baryons         : ',mediumSwitch
-    if(.not.mediumSwitch) then 
+    if(.not.mediumSwitch) then
        mediumSwitch_coll=.false.
        mediumSwitch_Delta=.false.
        mediumSwitch_proton_neutron=.false.
@@ -198,7 +198,7 @@ contains
 
     write(*,'(A,L8)') ' Use medium width according to collision term: ',&
          & mediumSwitch_coll
-    if(mediumSwitch_coll) then 
+    if(mediumSwitch_coll) then
        mediumSwitch_delta=get_deltaOset()
        mediumSwitch_proton_neutron=.false.
        write(*,'(A,L8)') ' Use special Delta width                     : ',&
@@ -239,24 +239,24 @@ contains
   ! real function partialWidthBaryonMedium(particleID,mass,inWidth,mesonID,baryonID,momentumLRF,mediumATposition,baryonMass,mesonMass)
   !
   ! PURPOSE
-  ! This function calculates the partial width with energy dependence 
+  ! This function calculates the partial width with energy dependence
   ! and medium modifications.
-  ! If the medium modification is not yet implemented for a specific case, 
+  ! If the medium modification is not yet implemented for a specific case,
   ! partialWidthBaryon (vacuum) is called!
   !
   ! INPUTS
   ! * integer   :: particleID    -- id of resonance
-  ! * real      :: mass          -- bare mass of the resonance (offshell), 
+  ! * real      :: mass          -- bare mass of the resonance (offshell),
   !   not including the potentials!
-  ! * logical   :: inWidth       -- .true.=> in-width (only important for channels 
+  ! * logical   :: inWidth       -- .true.=> in-width (only important for channels
   !   with unstable particles); .false.=> out-width
-  ! * integer  :: mesonID, baryonID -- ID's of the decay products which one is 
+  ! * integer  :: mesonID, baryonID -- ID's of the decay products which one is
   !   interested in
   ! * type(medium) :: mediumATposition  -- Medium information
-  ! * real, dimension(0:3) :: momentumLRF -- Momentum im LRF of the resonance    
+  ! * real, dimension(0:3) :: momentumLRF -- Momentum im LRF of the resonance
   ! * real, OPTIONAL     :: baryonMass,mesonMass --
-  !   Possibility to define the masses of the incoming baryon and meson, 
-  !   needed in the case of the In-Width if one of them is off-shell. 
+  !   Possibility to define the masses of the incoming baryon and meson,
+  !   needed in the case of the In-Width if one of them is off-shell.
   !   Otherwise not relevant.
   !************************************************************************
   real function partialWidthBaryonMedium(particleID,mass,inWidth,mesonID,baryonID,momentumLRF,mediumATposition,baryonMass,mesonMass)
@@ -267,7 +267,7 @@ contains
     use CALLSTACK, only : TRACEBACK
     use baryonWidth, only: partialWidthBaryon
 
-    real,intent(in) :: mass 
+    real,intent(in) :: mass
     integer,intent(in) :: particleID
     logical,intent(in) ::  inWidth
     integer, intent(in) :: mesonID, baryonID
@@ -276,7 +276,7 @@ contains
     type(medium),intent(in) ::  mediumATposition
     real,intent(in),dimension(0:3) :: momentumLRF
 
-    real, intent(in), optional :: baryonMass,mesonMass      
+    real, intent(in), optional :: baryonMass,mesonMass
 
     real :: dens     ! density neutron+proton
 
@@ -312,7 +312,7 @@ contains
           Select Case(particleID)
 
           case(Delta)
-             ! modified P33(1232)            
+             ! modified P33(1232)
              If (mediumSwitch_Delta) then
                 ! assuming onshell pions and nucleons
                 If ( (mesonID.eq.pion).and.(baryonId.eq.nucleon) ) then
@@ -357,35 +357,35 @@ contains
   ! subroutine decayWidthBaryonMedium(particleID,mass,momentumLRF,mediumATposition, decayWidth, pauliFlag)
   !
   ! PURPOSE
-  ! This function returns the partial out-widths with energy dependence and 
+  ! This function returns the partial out-widths with energy dependence and
   ! medium modifications.
-  ! If the out-width has already Pauli blocking effects included, then 
+  ! If the out-width has already Pauli blocking effects included, then
   ! pauliFlag is set to .true. .
   !
   ! INPUTS
   ! * integer            :: particleID        -- id of resonance
-  ! * real               :: mass              -- 
+  ! * real               :: mass              --
   !   bare mass of the resonance (offshell), not including potentials!
   ! * type(medium)       :: mediumATposition  -- Medium information
-  ! * real,dimension(0:3):: momentumLRF       -- 
+  ! * real,dimension(0:3):: momentumLRF       --
   !   Momentum im LRF of the resonance
   !
   ! OUTPUT
-  ! * real, dimension(:)             :: decayWidth -- 
+  ! * real, dimension(:)             :: decayWidth --
   !   array of decay widths for all decay channels
-  ! * logical, intent(out)           :: pauliFlag  -- 
-  !   If .true. then pauli-Blocking is already considered 
+  ! * logical, intent(out)           :: pauliFlag  --
+  !   If .true. then pauli-Blocking is already considered
   !   in the decay width description
   !************************************************************************
   subroutine decayWidthBaryonMedium(particleID,mass,momentumLRF,mediumATposition, decayWidth, pauliFlag)
-    
+
     use mediumDefinition
     use particleProperties, only: nDecays
     use baryonWidth, only : decayWidthBaryon
 
-    real,intent(in) :: mass                         
+    real,intent(in) :: mass
     integer,intent(in) :: particleID
-    real, intent(out), dimension(1:nDecays)  :: decayWidth     
+    real, intent(out), dimension(1:nDecays)  :: decayWidth
     logical, intent(out) :: pauliFlag
 
     ! ONLY Needed for InMediumModifications:
@@ -407,29 +407,29 @@ contains
   ! real function WidthBaryonMedium(particleID,mass,momentumLRF,mediumATposition,outOfBounds)
   !
   ! PURPOSE
-  ! This function calculates the full width with energy dependence and 
-  ! medium modifications. 
-  ! If for a specific resonance, medium modifications are not yet implemented, 
+  ! This function calculates the full width with energy dependence and
+  ! medium modifications.
+  ! If for a specific resonance, medium modifications are not yet implemented,
   ! then WidthBaryon is called and the vacuum width is used.
   !
   ! INPUTS
   ! * integer            :: particleID        -- id of resonance
-  ! * real               :: mass              -- bare mass of the resonance 
+  ! * real               :: mass              -- bare mass of the resonance
   !   (offshell), not including potentials
   ! * type(medium)       :: mediumATposition  -- Medium at decay vertex
   ! * real,dimension(0:3):: momentumLRF       -- momentum of resonance in LRF
-  ! 
+  !
   ! OUTPUT
   ! * logical, OPTIONAL :: outOfBounds
   !
   ! NOTES
   ! For the Delta, the in-medium width 'delta_fullWidth' does not
-  ! converge to the vacuum values 'FullWidthBaryon(2)' for large M 
+  ! converge to the vacuum values 'FullWidthBaryon(2)' for large M
   ! in the limit rho->0 ! This is due to upper bound of the tabulation
   ! in both cases (for the inMedium cases, the width is kept constant
   ! for M>2GeV, while inVacuum the upper mass is larger.)
   !
-  ! In order to get a smooth behaviour, we do not respect "medium%useMedium" 
+  ! In order to get a smooth behaviour, we do not respect "medium%useMedium"
   ! anymore, if "mediumSwitch" is set: Also very tiny densities are treated
   ! as 'in-medium' and not as vacuum.
   !************************************************************************
@@ -453,7 +453,7 @@ contains
     logical :: lBounds
 
     if(present(outOfBounds)) outOfBounds=.false.
-    
+
     If(initFlag) call readInput
 
     ! Check Input
@@ -473,20 +473,20 @@ contains
           rhoP = mediumAtPosition%densityProton
           rhoN = mediumAtPosition%densityNeutron
 
-          if (mediumSwitch_coll.and.particleID.le.(nres+1)) then 
+          if (mediumSwitch_coll.and.particleID.le.(nres+1)) then
              !only implemented for non-strange resonances
              WidthBaryonMedium=get_inMediumWidth(particleID,momentumLRF,mass,&
                   & rhoN, rhoP, 3,outOfBounds=lBounds)
-             if(present(outOfBounds)) outOfBounds=lBounds 
+             if(present(outOfBounds)) outOfBounds=lBounds
           else
              Select Case(particleID)
              case(Delta)
                 If (mediumSwitch_Delta) then
                    WidthBaryonMedium= delta_fullWidth(mass,momentumLRF(1:3),rhoP+rhoN)
                 end if
-             
-             case(nucleon)   
-                if(mediumSwitch_proton_neutron) then  
+
+             case(nucleon)
+                if(mediumSwitch_proton_neutron) then
                    WidthBaryonMedium=proton_width_medium(momentumLRF,rhoP,rhoN)
                 end if
              end select
@@ -494,7 +494,7 @@ contains
 
        else
 
-          if (mediumSwitch_coll.and.particleID.le.(nres+1)) then 
+          if (mediumSwitch_coll.and.particleID.le.(nres+1)) then
              ! do nothing
           else
              Select Case(particleID)
@@ -552,7 +552,7 @@ contains
     if(initFlag) call readInput
 
     call ResetMassAssInfo(MassAssInfo)
-    MassAssInfo%Mass0 = hadron(ID)%mass 
+    MassAssInfo%Mass0 = hadron(ID)%mass
     MassAssInfo%Gamma0 = FullWidthBaryon(ID,hadron(ID)%mass)
 
     if (MassAssInfo%Gamma0 .lt. 1e-3) then
@@ -568,9 +568,9 @@ contains
     if (.not.mediumSwitch) then ! vacuum width
 
        call SetMassAssInfo_FromArray(MassAssInfo,MassAssInfo_baryon(ID),iG,mixG)
-    
+
     else
-       
+
        if (mediumSwitch_coll) then
           call TRACEBACK('Not yet implemented')
        else
@@ -602,7 +602,7 @@ contains
   ! NAME
   ! subroutine InitMassAssInfo_Baryon
   ! PURPOSE
-  ! This routine initializes the array of information used by the 
+  ! This routine initializes the array of information used by the
   ! improved massass routines.
   !***********************************************************************
   subroutine InitMassAssInfo_Baryon
@@ -614,12 +614,12 @@ contains
 
     integer :: ID
     real :: mass0, gamma0
-    
+
     if (.not.Get_UseMassAssInfo()) return
 
     if (.not.mediumSwitch) then
        do ID = 1,nbar
-          mass0 = hadron(ID)%mass 
+          mass0 = hadron(ID)%mass
           gamma0 = FullWidthBaryon(ID,mass0)
           if (gamma0.ge. 1e-3) call Init_Vacuum
        end do
@@ -634,7 +634,7 @@ contains
           if (mediumSwitch_proton_neutron) then
              call TRACEBACK('Not yet implemented')
           else
-             mass0 = hadron(ID)%mass 
+             mass0 = hadron(ID)%mass
              gamma0 = FullWidthBaryon(ID,mass0)
              if (gamma0.ge. 1e-3) call Init_Vacuum
           endif
@@ -645,14 +645,14 @@ contains
              ! depends on density and momentum !!!
              call Init_Delta()
           else
-             mass0 = hadron(ID)%mass 
+             mass0 = hadron(ID)%mass
              gamma0 = FullWidthBaryon(ID,mass0)
              if (gamma0.ge. 1e-3) call Init_Vacuum
           endif
 
           ! === all the others
           do ID = 3,nbar
-             mass0 = hadron(ID)%mass 
+             mass0 = hadron(ID)%mass
              gamma0 = FullWidthBaryon(ID,mass0)
              if (gamma0.ge. 1e-3) call Init_Vacuum
           end do
@@ -687,13 +687,13 @@ contains
       allocate(MassAssInfo_baryon(ID)%n1(0:0))
       allocate(MassAssInfo_baryon(ID)%n2(0:0))
 
-      ! please note: Resonances 34,36,38 may get a very large 
+      ! please note: Resonances 34,36,38 may get a very large
       ! MaxBWD in the order 40..80 for a maxmass~3GeV
 
       BinM = (/MinMass,mass0-2*gamma0,mass0-gamma0,mass0-0.5*gamma0,mass0,&
            & mass0+gamma0, mass0+2*gamma0, mass0+5*gamma0, mass0+10*gamma0, &
            & mass0+20*gamma0,MaxMass/)
-      
+
       do iB=1,nB
          if(BinM(iB).lt.MinMass) BinM(iB) = MinMass
          if(BinM(iB).gt.MaxMass) BinM(iB) = MaxMass
@@ -701,7 +701,7 @@ contains
 
       if (verboseInit) write(*,'(A10,20f13.4)') 'BinM',BinM
 
-      BinY = 2*atan2(2*(BinM-mass0),gamma0) 
+      BinY = 2*atan2(2*(BinM-mass0),gamma0)
 
 
       do iB=1,nB-1
@@ -715,24 +715,24 @@ contains
          nB2 = iB
          if (BinW(iB) > 0.0) exit
       end do
-            
-         
+
+
       if (verboseInit) write(*,'(A10,7(" "),20f13.4)') 'BinW',BinW(1:nb-1)/sum(BinW(1:nb-1))
-      
+
       call GetMaxQ(ID,mass0,gamma0,0.0, BinM,BinQ)
 
       if (verboseInit) write(*,'(A10,7(" "),20f13.4)') 'BinQ',BinQ(1:nb-1)
       if (verboseInit) write(*,*) 'nBin: ',nB1,nB2
 
       ! Now we store the information in the global array:
-      
+
       MassAssInfo_baryon(ID)%W(0,1:nB-1) = BinW(1:nB-1)
       MassAssInfo_baryon(ID)%Q(0,1:nB-1) = BinQ(1:nB-1)
       MassAssInfo_baryon(ID)%M(0,1:nB)   = BinM(1:nB)
       MassAssInfo_baryon(ID)%Y(0,1:nB)   = BinY(1:nB)
       MassAssInfo_baryon(ID)%n1(0)       = nB1
       MassAssInfo_baryon(ID)%n2(0)       = nB2
-         
+
 
     end subroutine Init_Vacuum
 
@@ -750,7 +750,7 @@ contains
 
       call GetRhoValue(rhomin,drho,nrho)
 
-      mass0 = hadron(2)%mass 
+      mass0 = hadron(2)%mass
       gamma0= delta_fullWidth(mass0,(/0.0,0.0,0.0/),0.0)
 
       if (verboseInit) write(*,*) '-----------------------'
@@ -758,7 +758,7 @@ contains
 
       MinMass = hadron(ID)%minmass
       MaxMass = 3.0
-      
+
       ! We allocate memory in the global array:
       allocate(MassAssInfo_baryon(ID)%W(0:nrho,nB-1))
       allocate(MassAssInfo_baryon(ID)%Q(0:nrho,nB-1))
@@ -777,7 +777,7 @@ contains
          BinM = (/MinMass,mass0-2*gamma0,mass0-gamma0,mass0-0.5*gamma0,mass0,&
               & mass0+gamma0, mass0+2*gamma0, mass0+3*gamma0, mass0+5*gamma0, &
               & mass0+10*gamma0,MaxMass/)
-         
+
          do iB=1,nB
             if(BinM(iB).lt.MinMass) BinM(iB) = MinMass
             if(BinM(iB).gt.MaxMass) BinM(iB) = MaxMass
@@ -786,7 +786,7 @@ contains
          if (verboseInit) write(*,'(A10,20f13.4)') 'BinM',BinM
 
 
-         BinY = 2*atan2(2*(BinM-mass0),gamma0) 
+         BinY = 2*atan2(2*(BinM-mass0),gamma0)
 
 
          do iB=1,nB-1
@@ -800,17 +800,17 @@ contains
             nB2 = iB
             if (BinW(iB) > 0.0) exit
          end do
-            
-         
+
+
          if (verboseInit) write(*,'(A10,7(" "),20f13.4)') 'BinW',BinW(1:nb-1)/sum(BinW(1:nb-1))
-      
+
          call GetMaxQ_Delta(mass0,gamma0,rho, BinM,BinQ)
 
          if (verboseInit) write(*,'(A10,7(" "),20f13.4)') 'BinQ',BinQ(1:nb-1)
          if (verboseInit) write(*,*) 'nBin: ',nB1,nB2
 
          ! Now we store the information in the global array:
-         
+
          MassAssInfo_baryon(ID)%W(irho,1:nB-1) = BinW(1:nB-1)
          MassAssInfo_baryon(ID)%Q(irho,1:nB-1) = BinQ(1:nB-1)
          MassAssInfo_baryon(ID)%M(irho,1:nB)   = BinM(1:nB)
@@ -821,7 +821,7 @@ contains
       end do
 
     end subroutine Init_Delta
-    
+
   end subroutine InitMassAssInfo_Baryon
 
 end module baryonWidthMedium

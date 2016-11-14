@@ -9,8 +9,8 @@
 ! stored for many kinds of particles, as e.g. all pions, kaons etc
 ! at the same time.
 ! Output is in a gnuplot like multicolumn format
-! 
-! Features of Histograms provided by this module: 
+!
+! Features of Histograms provided by this module:
 ! - store paramaters of the x-binning
 ! - enable two y-values (y and y2)
 ! - track keeping of under-/over-score the given extreme values of x.
@@ -20,9 +20,9 @@
 !
 ! NOTES
 ! Programming is fairly similar to "module histf90"
-! 
+!
 ! INPUTS
-! ...(This module needs no input) 
+! ...(This module needs no input)
 !***************************************************************************
 module histMPf90
 
@@ -64,7 +64,7 @@ module histMPf90
   integer, dimension(nSet,61,-1:2), save :: Map2Hist_Baryon
   integer, dimension(nSet,61,-2:1), save :: Map2Hist_ABaryon
 
-  integer, dimension(nSet), save :: Map2Hist_N 
+  integer, dimension(nSet), save :: Map2Hist_N
 
   character*12,dimension(nSet,50), save :: Map2Hist_TIT
 
@@ -100,7 +100,7 @@ module histMPf90
   ! * real              :: y2 -- second weight to be added [OPTIONAL]
   ! or:
   ! * type(histogramMP) :: H  -- Histogramm to be used
-  ! * type(particle)    :: Part -- particle 
+  ! * type(particle)    :: Part -- particle
   ! * real              :: x  -- x-value
   ! * real              :: y  -- weight to be added
   ! * real              :: y2 -- second weight to be added [OPTIONAL]
@@ -167,7 +167,7 @@ contains
 
     Map2Hist_Baryon(1, 1, 1) =  8 ! p
     Map2Hist_Baryon(1, 1, 0) =  9 ! n
-    
+
     Map2Hist_ABaryon(1, 1, 0) = 10 ! n~
     Map2Hist_ABaryon(1, 1,-1) = 11 ! p~
 
@@ -216,7 +216,7 @@ contains
 
     Map2Hist_Baryon(2, 1, 1) = 12 ! p
     Map2Hist_Baryon(2, 1, 0) = 13 ! n
-    
+
     Map2Hist_ABaryon(2, 1, 0) = 14 ! n~
     Map2Hist_ABaryon(2, 1,-1) = 15 ! p~
 
@@ -242,7 +242,7 @@ contains
     Map2Hist_TIT(3,13) = 'D0'
     Map2Hist_TIT(3,14) = 'D~0'
     Map2Hist_TIT(3,15) = 'D-'
-    
+
 
     Map2Hist_Meson(3, 1, 1) =  1 ! pi+
     Map2Hist_Meson(3, 1, 0) =  2 ! pi0
@@ -252,7 +252,7 @@ contains
     Map2Hist_Meson(3, 5, 0) =  5 ! omega
     Map2Hist_Meson(3, 7, 0) =  6 ! phi
     Map2Hist_Meson(3, 9, 0) =  7 ! J/psi
-    
+
     Map2Hist_Meson(3,10, 1) =  8 ! K+
     Map2Hist_Meson(3,10, 0) =  9 ! K0
     Map2Hist_Meson(3,11, 0) = 10 ! K~0
@@ -302,7 +302,7 @@ contains
     Map2Hist_Meson(4, 5, 0) =  9 ! omega
     Map2Hist_Meson(4, 6, 0) = 10 ! etaPrime
     Map2Hist_Meson(4, 7, 0) = 11 ! phi
-    
+
     Map2Hist_Meson(4,10, 1) = 12 ! K+
     Map2Hist_Meson(4,10, 0) = 13 ! K0
     Map2Hist_Meson(4,11, 0) = 14 ! K~0
@@ -348,15 +348,15 @@ contains
   ! subroutine CreateHistMP(H, HName,x1,x2,bin, iPartSet)
   ! PURPOSE
   ! This is the Constructor of a multi-particle 1D-Histogram!
-  ! Allocate Memory for the entries and put additional variables to their 
-  ! default. 
-  ! The parameter iPartSet specifies, which particles should be included. 
+  ! Allocate Memory for the entries and put additional variables to their
+  ! default.
+  ! The parameter iPartSet specifies, which particles should be included.
   !
   ! INPUTS
   ! * type(histogramMP) :: H         -- Histogramm to be created
   ! * character*(*)     :: HName     -- Name of Histogram
   ! * real              :: x1,x2,bin -- Minimal/maximal value for x-coordinate
-  !                                     to be considered, bin-width 
+  !                                     to be considered, bin-width
   ! * integer           :: iPartSet  -- particle set to consider
   !
   ! possible values for "iPartSet" are:
@@ -366,7 +366,7 @@ contains
   ! * 4: all non-strange mesons
   ! * ... to be continued
   !
-  ! 
+  !
   ! OUTPUT
   ! ---
   !***************************************************************************
@@ -533,7 +533,7 @@ contains
 
     if(x.lt.H%xExtreme(iH,1)) H%xExtreme(iH,1)=x
     if(x.gt.H%xExtreme(iH,2)) H%xExtreme(iH,2)=x
-    
+
     if (x < H%xMin) then
        iBin = -1
     else if (x >= H%xMax) then
@@ -545,7 +545,7 @@ contains
     H%yVal(iH,iBin,1) = H%yVal(iH,iBin,1)+y
     H%yVal(iH,iBin,2) = H%yVal(iH,iBin,2)+1.
     H%yVal(iH,iBin,3) = H%yVal(iH,iBin,3)+yy
-    
+
   end subroutine AddHistMP_IH
 
   !***************************************************************************
@@ -648,7 +648,7 @@ contains
     endif
 
   end function Map2HistMP_KF
-  
+
   !***************************************************************************
   !****s* histMPf90/WriteHistMP
   ! NAME
@@ -674,7 +674,7 @@ contains
   ! The Histogram Data is not affected!!!
   !
   ! If you select "DoAve", the average value (built by dividing column 3 by
-  ! column 1) is printed instead of the value of column 3 or column 1. 
+  ! column 1) is printed instead of the value of column 3 or column 1.
   ! This behaviour differs from the behaviour in module histf90 and hist2Df90,
   ! where on additional column is inserted in teh output.
   ! Setting this flag overrides settings according iColumn, add and mul.
@@ -692,11 +692,11 @@ contains
     type(histogram),intent(in),optional :: H2
     character*(*),  intent(in),optional :: file
     logical,        intent(in),optional :: dump
-    
+
     real,dimension(:,:),allocatable :: S
     real,dimension(:),  allocatable :: z
     integer             :: iBin, iBinMax,i,iC,nP, iFile
-    
+
     real :: addFak
     real :: mulFak
     real :: maxZ!,Z
@@ -710,7 +710,7 @@ contains
     maxZ = 99.0
     writeZ = .false.
     iFile = 65
-    
+
     if (present(add)) addFak = add
     if (present(mul)) mulFak = mul
     if (present(iColumn)) iC = iColumn
@@ -725,7 +725,7 @@ contains
     end if
 
     if (.not.allocated(H%yVal)) return
-    
+
     nP = Map2Hist_N(H%iSet)
     iBinMax = ubound(H%yVal,dim=2)
 
@@ -774,7 +774,7 @@ contains
     write(iFile,1001)
     write(iFile,1001) 'minimum',  (H%xExtreme(i,1),i=1,nP)
     write(iFile,1001) 'maximum',  (H%xExtreme(i,2),i=1,nP)
-    
+
     call WriteHistMP_Names(H, iFile)
 
     if (writeZ) then
@@ -877,13 +877,13 @@ contains
     close(iF)
 
   end subroutine DumpHistMP
-  
+
   !***************************************************************************
   !****s* histMPf90/FetchHistMP
   ! NAME
   ! subroutine FetchHistMP(H,file,iFile,flagOK)
   ! PURPOSE
-  ! Read in all the histogram information previously dumped unformatted 
+  ! Read in all the histogram information previously dumped unformatted
   ! (i.e. binary) to a file
   !
   ! INPUTS
@@ -893,7 +893,7 @@ contains
   ! * type(histogramMP) :: H     -- Histogramm to be used
   ! * logical           :: flagOK -- flag, if reading was okay [OPTIONAL]
   !
-  ! H is read UNFORMATTED from the given file. Sizes are calculated as in 
+  ! H is read UNFORMATTED from the given file. Sizes are calculated as in
   ! CreateHist, also memory is allocated.
   !
   ! NOTES
@@ -904,7 +904,7 @@ contains
     type(histogramMP),intent(inout)       :: H
     character*(*),  intent(in)          :: file
     integer,        intent(in),optional :: iFile
-    logical,        intent(out),optional:: flagOK 
+    logical,        intent(out),optional:: flagOK
 
     integer :: iF
     integer :: L
@@ -948,7 +948,7 @@ contains
     if (present(flagOK)) flagOK=.true.
 
   end subroutine FetchHistMP
-  
+
   !***************************************************************************
 
 end module histMPf90

@@ -518,7 +518,7 @@ contains
       use callStack, only: traceback
 
       type(particle) :: part
-      
+
       part%ID = ProjectileID
       part%charge = ProjectileCharge
       part%antiparticle = ProjectileAnti

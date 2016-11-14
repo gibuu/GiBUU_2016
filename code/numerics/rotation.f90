@@ -95,9 +95,9 @@ contains
   ! PURPOSE
   ! Does first rotation around z and thereafter around y.
   !
-  ! As a result, e.g. the vector which had originally the spherical coordinates 
-  ! theta and phi is now rotated on the z-Axis. It's basically the inverse of 
-  ! rotateYZ. 
+  ! As a result, e.g. the vector which had originally the spherical coordinates
+  ! theta and phi is now rotated on the z-Axis. It's basically the inverse of
+  ! rotateYZ.
   !
   ! INPUTS
   ! * real                 :: phi   ! Angle around z-axis [radian]
@@ -146,9 +146,9 @@ contains
   ! NAME
   ! subroutine get_phi_theta (vector, theta, phi)
   ! PURPOSE
-  ! Translate the input "vector" into spherical coordinates. 
+  ! Translate the input "vector" into spherical coordinates.
   ! Returns phi and theta of vector:
-  ! * x-axis defines phi=0 
+  ! * x-axis defines phi=0
   ! * z-axis defines theta=0
   ! INPUTS
   ! real, dimension(1:3) :: vector
@@ -165,7 +165,7 @@ contains
 
     v2 = dot_product(vector,vector)
     if (v2>0) then
-       cosT=vector(3)/sqrt(v2)     
+       cosT=vector(3)/sqrt(v2)
        theta=acos(cosT)
        phi=atan2(vector(2),vector(1))
        if (phi<0) phi=phi+2.*pi

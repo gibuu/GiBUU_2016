@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PILCollected
-! NAME 
+! NAME
 ! module PILCollected
 ! PURPOSE
 ! Provides some routines cleaning up or resetting PIL modules. We call
@@ -34,16 +34,16 @@ module PILCollected
   PUBLIC :: PILCollected_ZERO
 
 contains
-  
+
   !***************************************************************************
   !****s* PILCollected/PILCollected_DeAlloc
-  ! NAME 
+  ! NAME
   ! subroutine PILCollected_DeAlloc
   ! PURPOSE
   ! Deallocate the memory of all lists
   !***************************************************************************
   subroutine PILCollected_DeAllocate()
-    
+
     call PIL_FormInfo_DeAllocate
     call PIL_mesonMom_DeAllocate
     call PIL_nLead_DeAllocate
@@ -57,7 +57,7 @@ contains
 
   !***************************************************************************
   !****s* PILCollected/PILCollected_ZERO
-  ! NAME 
+  ! NAME
   ! subroutine PILCollected_ZERO()
   ! PURPOSE
   ! Reset all lists by setting the counter of stored information to 0.

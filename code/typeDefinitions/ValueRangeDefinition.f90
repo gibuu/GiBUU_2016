@@ -12,7 +12,7 @@
 module ValueRangeDefinition
 
   !*************************************************************************
-  !****t* ValueRangeDefinition/ValueRange  
+  !****t* ValueRangeDefinition/ValueRange
   ! NAME
   ! type ValueRange
   ! PURPOSE

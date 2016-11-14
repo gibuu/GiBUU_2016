@@ -4,8 +4,8 @@
 ! module hist_multipleRuns
 ! PURPOSE
 ! Encapsulate routines and datas for 1D Histogramms, in which you want to store the results of several sequentiell runs.
-! 
-! Features of Histograms provided by this module: 
+!
+! Features of Histograms provided by this module:
 ! - store paramaters of the x-binning
 ! - enable two y-values (y and y2)
 ! - track keeping of under-/over-score the given extreme values of x.
@@ -13,19 +13,19 @@
 ! - provide simple histogram arithmetic (not yet implemented)
 ! - many others...
 !
-! Every Histogram prints his own multicolumn output. 
+! Every Histogram prints his own multicolumn output.
 ! A multicolumn output of many different histograms for the same x-value
 ! is not implemented. This is done by the module "histMPf90".
-! 
+!
 ! INPUTS
-! ...(This module needs no input) 
+! ...(This module needs no input)
 !***************************************************************************
 module hist_multipleRuns
   use histf90, only : histogram
 
-  
+
   integer, parameter:: NameLength = 40
-  
+
 
 
   !***************************************************************************
@@ -43,7 +43,7 @@ module hist_multipleRuns
      real, dimension (:) , Allocatable :: sumOfSquares  ! Sum (Squares of the result of a single run)
   end type histogram_mr
   !***************************************************************************
-  
+
 
 
 
@@ -55,13 +55,13 @@ contains
   ! subroutine CreateHist_mr(H, HName,x1,x2,bin)
   ! PURPOSE
   ! This is the Constructor of a 1D-Histogram!
-  ! Allocate Memory for the entries and put additional variables to their 
+  ! Allocate Memory for the entries and put additional variables to their
   ! default.
   ! INPUTS
   ! * type(histogram_mr) :: H         -- Histogramm to be created
   ! * character*(*)      :: HName     -- Name of Histogram
   ! * real               :: x1,x2,bin -- Minimal/maximal value for x-coordinate
-  !                                      to be considered, bin-width 
+  !                                      to be considered, bin-width
   ! OUTPUT
   ! H is changed
   !***************************************************************************
@@ -179,8 +179,8 @@ contains
   ! NAME
   ! subroutine WriteHist_mr(H,iFile,file)
   ! PURPOSE
-  ! Write out the histogram including error analysis. 
-  ! INPUTS 
+  ! Write out the histogram including error analysis.
+  ! INPUTS
   ! * type(histogram),intent(in)          :: H
   ! * integer,        intent(in)          :: iFile
   ! * character(*),   intent(in),optional :: file
@@ -203,8 +203,8 @@ contains
        open(iFile, file=file, status='unknown')
        rewind(iFile)
     end if
-    
-    
+
+
 1000 format (1X,'#####',/,1X,'##### Histogram ',A40,/,1X,'#####')
 1010 format (1P,1X,'##### Underflow: ',2E11.4,/,&
           & 1X,'##### Entries  : ',    2E11.4,/,&
@@ -220,11 +220,11 @@ contains
     if(H%numRuns.lt.1) return
 
     write(iFile,1000) H%total%Name
-    
+
 
     S = SUM(h%total%yval,dim=1) - h%total%yVal(-1,1:3) - h%total%yVal(0,1:3)
 
-    
+
     write(iFile,1010) &
          & h%total%yVal(-1,1), h%total%yVal(-1,2), &
          & S(1)        , S(2)        , &
@@ -234,7 +234,7 @@ contains
 
     write(iFile,'(1X,"#####",/,1X,"#####",A,I4)') ' Number of runs=',H%numruns
     write(iFile,'(1X,"#####",/,1X,"#####",A)') ' x, y(1), y(2), error of y(1)'
-    
+
     ibinLoop: do iBin=1,ubound(h%total%yval,dim=1)
        if(H%numRuns.gt.1) then
           error= 1/float(H%numRuns)/float(H%numRuns-1)*(h%sumOfSquares(ibin)-&
@@ -261,7 +261,7 @@ contains
     if (present(file)) then
        close(iFile)
     end if
-    
+
   end subroutine WriteHist_mr
-  
+
 end module hist_multipleRuns

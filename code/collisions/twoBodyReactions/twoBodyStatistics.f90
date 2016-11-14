@@ -33,6 +33,34 @@ module twoBodyStatistics
   logical, save :: flag_rate=.false.
   !********************************************************************
 
+  !********************************************************************
+  !****g* twoBodyStatistics/flag_varirate
+  ! PURPOSE
+  ! If .true., then the calculation and output of the collision rates
+  ! from subroutine varirate will be done
+  ! SOURCE
+  !
+  logical, save :: flag_varirate=.false.
+  !********************************************************************
+
+  !********************************************************************
+  !****g* twoBodyStatistics/varirate_chargeZero
+  ! PURPOSE
+  ! If this flag to .true., then all charge states are combined together
+  ! SOURCE
+  !
+  logical, save :: varirate_chargeZero=.true.
+  !********************************************************************
+
+
+  !********************************************************************
+  !****g* twoBodyStatistics/varirate_size
+  ! PURPOSE
+  ! size of array to hold all rates
+  ! SOURCE
+  !
+  integer, save :: varirate_size=100
+  !********************************************************************
 
   !********************************************************************
   !****g* twoBodyStatistics/sqrts_mode
@@ -78,9 +106,13 @@ contains
     ! Namelist which includes the input switches:
     ! * flag_sqrts
     ! * flag_rate
+    ! * flag_varirate
     ! * sqrts_mode
+    ! * varirate_chargeZero
+    ! * varirate_size
     !*************************************************************************
-    NAMELIST /ColStat/ flag_sqrts, flag_rate, sqrts_mode
+    NAMELIST /ColStat/ flag_sqrts, flag_rate, flag_varirate, sqrts_mode, &
+         varirate_chargeZero, varirate_size
 
     call Write_ReadingInput('ColStat',0)
     rewind(5)
@@ -89,8 +121,14 @@ contains
 
     write(*,*) ' flag_sqrts = ', flag_sqrts
     write(*,*) ' flag_rate  = ', flag_rate
+    write(*,*) ' flag_varirate  = ', flag_varirate
     if (flag_sqrts) &
       write(*,*) ' sqrts_mode  =  ', sqrts_mode
+
+    if (flag_varirate) then
+       write(*,*) ' chargeZero : ', varirate_chargeZero
+       write(*,*) ' size       : ', varirate_size
+    end if
 
     call Write_ReadingInput('ColStat',1)
 
@@ -319,6 +357,10 @@ contains
   logical :: flagLambdaProd, flagLambdaAbs
 
   if (initFlag) call init
+  if (flag_varirate) then
+     call varirate(teilchenIn, teilchenOut, time)
+     return
+  end if
   if (.not.flag_rate) return
 
   if (firstCall) then
@@ -796,5 +838,138 @@ contains
 
   end subroutine rate
 
+  !*************************************************************************
+  !****s* twoBodyStatistics/varirate
+  ! NAME
+  ! subroutine varirate(partIn,partOut,time)
+  ! PURPOSE
+  ! Computes the collision rates for alltypes of collisions.
+  !
+  ! Here the list of input and output channels are generated on the fly,
+  ! thus this routine calculates the "variate-rate", or short: "varirate".
+  !
+  ! INPUTS
+  ! * type(particle), intent(in), dimension(:) :: partIn -- incoming particles
+  ! * type(particle), intent(in), dimension(:) :: partOut -- outgoing particles
+  ! * real, intent(in) :: time -- current time step
+  !
+  ! OUTPUT
+  ! * file "VariRate.particles.dat", "VariRate.rates.dat"
+  !*************************************************************************
+  subroutine varirate(partIn,partOut,time)
+
+    use particleDefinition
+    use IdTable
+    use preEventDefinition
+    use PreEvListDefinition
+    use CallStack, only: Traceback
+    use PreEvList, only: CreateSortedPreEvent, ComparePreEvent, &
+         PreEvList_INIT, PreEvList_INSERT, PreEvList_Print, &
+         PreEvList_GET, PreEvList_PrintEntry
+
+    type(particle), intent(in), dimension(:)  :: partIn
+    type(particle), intent(in), dimension(:)  :: partOut
+    real, intent(in) :: time
+
+    real, save :: time_prev=-100.
+    logical, save :: firstCall=.true.
+
+    type(tPreEvList), save :: ListIn, ListOut
+    type(tPreEvListEntry) :: ePreEvIn, ePreEvOut, Vin, Vout
+    integer :: iPosIn, iPosOut
+    integer :: i,j,h
+
+    integer, dimension(:,:), allocatable, save :: EntryArr
+    integer, save :: nEntryArr
+
+
+    if (firstCall) then
+       call PreEvList_INIT(ListIn)
+       call PreEvList_INIT(ListOut)
+
+       nEntryArr = varirate_size
+       allocate(EntryArr(nEntryArr,nEntryArr))
+       EntryArr = 0
+
+       firstCall = .false.
+    end if
+
+    if (time.ne.time_prev) then ! === do output ===
+
+       open(313,file='VariRate.particles.dat')
+       write(313,'("# time =",f13.5)') time_prev
+       call PreEvList_Print(313, ListIn, 1.0, doSort=.false.)
+       call PreEvList_Print(313, ListOut, 1.0, doSort=.false.)
+       close(313)
+
+       open(313,file='VariRate.rates.dat')
+       write(313,'("# time =",f13.5)') time_prev
+
+       do i=1,ListIn%nEntries
+          do j=i,ListOut%nEntries
+
+             if (EntryArr(i,j) > 0) then
+
+                if (.not.PreEvList_GET(ListIn, Vin, i)) call Traceback()
+                if (.not.PreEvList_GET(ListOut, Vout, j)) call Traceback()
+
+                h = EntryArr(i,j)+EntryArr(j,i)
+
+                if (ComparePreEvent(Vin%PreE,Vout%PreE) <= 0) then
+                   call PreEvList_PrintEntry(313,Vin,1.0,doWeight=.false.,noAdvance=.true.)
+                   write(313,'(" --> ")',advance='no')
+                   call PreEvList_PrintEntry(313,Vout,1.0,doWeight=.false.,noAdvance=.true.)
+                   write(313,'(" : ",2i10," # ",i10,f9.5)') EntryArr(i,j),EntryArr(j,i), &
+                        h, (EntryArr(i,j)-EntryArr(j,i)) * 1.0/h
+
+                else
+                   call PreEvList_PrintEntry(313,Vout,1.0,doWeight=.false.,noAdvance=.true.)
+                   write(313,'(" --> ")',advance='no')
+                   call PreEvList_PrintEntry(313,Vin,1.0,doWeight=.false.,noAdvance=.true.)
+                   write(313,'(" : ",2i10," # ",i10,f9.5)') EntryArr(j,i),EntryArr(i,j), &
+                        h, (EntryArr(j,i)-EntryArr(i,j)) * 1.0/h
+                end if
+             end if
+
+          end do
+       end do
+       close(313)
+
+       time_prev = time
+    end if
+
+    ! ===== Now we are doing the actual work: the insertion ======
+
+    if (.not.CreateSortedPreEvent(partIn,ePreEvIn%preE,chargeZero=varirate_chargeZero)) then
+       call Traceback('Problems in CollHist_UpdateHist: preEvIn. STOP!')
+    endif
+    if (.not.CreateSortedPreEvent(partOut,ePreEvOut%preE,chargeZero=varirate_chargeZero)) then
+       call Traceback('Problems in CollHist_UpdateHist: preEvOut. STOP!')
+    endif
+
+    ! In the following, we insert both the in and the out channel in both lists.
+    ! This is done to keep both lists simultanous. This is some overkill, but
+    ! offers two different counters (->weight) for the in- and out-channels.
+
+    ePreEvIn%weight = 0.0
+    call PreEvList_INSERT(ListOut, ePreEvIn)
+    ePreEvIn%weight = 1.0
+    call PreEvList_INSERT(ListIn, ePreEvIn, iPosIn)
+
+    ePreEvOut%weight = 0.0
+    call PreEvList_INSERT(ListIn, ePreEvOut)
+    ePreEvOut%weight = 1.0
+    call PreEvList_INSERT(ListOut, ePreEvOut, iPosOut)
+
+    if ((iPosIn > nEntryArr).or.(iPosOut > nEntryArr)) then
+       write(*,*) 'more than ',nEntryArr,' input/output channels'
+       call Traceback()
+    end if
+
+    ! === Now the cross array is filled: ===
+
+    EntryArr(iPosIn,iPosOut) = EntryArr(iPosIn,iPosOut) + 1
+
+  end subroutine varirate
 
 end module twoBodyStatistics

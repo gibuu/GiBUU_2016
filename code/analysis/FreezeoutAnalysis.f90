@@ -5,7 +5,7 @@
 !
 ! PURPOSE
 ! This module provides routines to do a 'freeze out' analysis, i.e. it yields
-! access to the position of particles at their last interaction. Particles 
+! access to the position of particles at their last interaction. Particles
 ! being subject to some potentials have some additional freeze out condition,
 ! e.g. when the baryon density drops to the value 0.2/fm^3.
 !*******************************************************************************
@@ -45,7 +45,7 @@ module FreezeoutAnalysis
   real, save :: potThreshold = 0.005
   !
   ! PURPOSE
-  ! threshold value in GeV. If the absolute value of the potential is below 
+  ! threshold value in GeV. If the absolute value of the potential is below
   ! this value, the particle is considered to be 'free', e.g. it 'escaped'
   !*****************************************************************************
 
@@ -107,7 +107,7 @@ contains
     read(5,nml=Freezeout,iostat=ios)
 
     call Write_ReadingInput('Freezeout',0,ios)
-    
+
     write(*,*) 'Freezeout analysis (real,pert): ', &
                FreezeoutAnalysis_Real, FreezeoutAnalysis_Pert
     write(*,*) 'threshold potential: ',potThreshold,' GeV'
@@ -157,9 +157,9 @@ contains
              pPart => pertPart(i,j)
              if(pPart%Id <  0) exit
              if(pPart%Id <= 0) cycle
-             
+
              if (hadron(pPart%ID)%stability .ne. 0) cycle
-             
+
              pos(0) = Time
              pos(1:3) = pPart%position
              history = pPart%history

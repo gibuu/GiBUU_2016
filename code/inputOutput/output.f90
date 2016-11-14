@@ -34,7 +34,7 @@ module output
   !*************************************************************************
   !****g* output/chapter
   ! PURPOSE
-  ! Format of the output announcing the start of some chapter of the code. 
+  ! Format of the output announcing the start of some chapter of the code.
   ! USAGE
   ! write(*,chapter) 'Hallo'
   ! SOURCE
@@ -80,14 +80,14 @@ module output
   ! PURPOSE
   ! Flags, whether message at (error)level n should be printed or not.
   ! The (error) levels are:
-  ! * Level 5 (TERMINAL) -- A terminal error is not an informational error 
+  ! * Level 5 (TERMINAL) -- A terminal error is not an informational error
   !   because corrective action within the program is generally not reasonable.
-  !   In normal usage, execution should be terminated immediately when an 
+  !   In normal usage, execution should be terminated immediately when an
   !   error of this class occurs.
-  ! * Level 4 (FATAL) -- A fatal error indicates the existence of a 
-  !   condition that may be serious. In most cases, user or calling 
+  ! * Level 4 (FATAL) -- A fatal error indicates the existence of a
+  !   condition that may be serious. In most cases, user or calling
   !   routine must take corrective action to recover.
-  ! * Level 3 (WARNING) -- A warning indicates the existence of a 
+  ! * Level 3 (WARNING) -- A warning indicates the existence of a
   !   condition that may require corrective action by user or calling
   !   routine
   ! * Level 2 (ALERT) -- Indicates that the user should be adviced about
@@ -117,7 +117,7 @@ module output
   !
   ! PURPOSE
   ! Write the stored information about a particle to a file/stdout.
-  ! 
+  !
   ! INPUTS
   ! * integer        :: iFile     -- number of file (6=stdout)
   ! * integer        :: iEnsemble -- number of Ensemble (maybe arbitrary)
@@ -141,7 +141,7 @@ module output
 
 
   public :: Write_ReadingInput, Write_InitStatus, writeFileDocu
-  public :: WriteParticle, WriteParticle_debug, WriteParticleVector 
+  public :: WriteParticle, WriteParticle_debug, WriteParticleVector
   public :: intToChar, intToChar4, intToChar_pm
   public :: realToChar, realTochar4
   public :: timeMeasurement, printTime
@@ -198,7 +198,7 @@ contains
   logical function DoPr(iLevel)
 
     integer, intent(in) :: iLevel
-    
+
 !    DoPr = .FALSE.            ! may be ommitted if you compile with "checks"
 !    if (iLevel.lt.-10) return ! may be ommitted if you compile with "checks"
 !    if (iLevel.gt.5)   return ! may be ommitted if you compile with "checks"
@@ -270,7 +270,7 @@ contains
 
     integer p0
     p0=abs(Mod(nr,10))
-    
+
     if (nr<0) then
        intToChar_pm='-'//Achar(p0+48)
     else
@@ -373,7 +373,7 @@ contains
   ! Write a Message about starting/finishing "initializing" something
   ! INPUTS
   ! * character(*) :: Text -- Name of file/Jobcard/...
-  ! * integer      :: Code -- 0   : start initialization, 
+  ! * integer      :: Code -- 0   : start initialization,
   !                           <>0 : finished initialization
   !*************************************************************************
   subroutine Write_InitStatus(Text,Code)
@@ -392,8 +392,8 @@ contains
 
   end subroutine Write_InitStatus
 
-   
-  
+
+
   !************************************************************************
   ! cf. interface WriteParticle1
   !************************************************************************
@@ -453,7 +453,7 @@ contains
     integer :: i
 
     call setToDefault(hPart)
-    
+
     write(iFile,'(200("="))')
     call WriteParticle1(iFile)
 
@@ -506,7 +506,7 @@ contains
     write(*,*) 'History=',Part%history
     write(*,*) 'ScaleCS=',Part%ScaleCS, 'FirstEvent=',Part%firstEvent
     write(*,*) 'Event(1:2)=', Part%event,  'Perweight=',Part%perWeight
-    
+
     if (present(med)) write(*,*) 'Density=', med%density
     write(*,*)
 
@@ -522,7 +522,7 @@ contains
   ! Writes the information of a given filename and its documenation to a central file.
   !
   ! INPUTS
-  ! * character(*) :: filename 
+  ! * character(*) :: filename
   ! * character(*) :: docu -- Documentation of the output file "filename"
   !*************************************************************************
   subroutine writeFileDocu(filename,docu)
@@ -557,11 +557,11 @@ contains
   !
   ! Opens 7 files and writes the information of the particles to these files.
   ! Only for the file "...ALL.dat" the subroutine WriteParticle is used; all
-  ! other information is written in an own format. 
+  ! other information is written in an own format.
   !
   ! INPUTS
   ! * character(*) :: filename -- base name of files (some extensions are added)
-  ! * type(particle),dimension(:,:) :: pv -- particle vector 
+  ! * type(particle),dimension(:,:) :: pv -- particle vector
   !*************************************************************************
   subroutine WriteParticleVector(filename,pv)
     use particleDefinition
@@ -569,7 +569,7 @@ contains
     character(*), intent(in) :: filename
     type(particle),dimension(:,:),intent(in) :: PV ! particleVector
     integer :: i,j
-    
+
     Open(96,File=filename//"_velo.dat")
     Open(97,File=filename//"_pos.dat")
     Open(98,File=filename//"_mom.dat")
@@ -577,7 +577,7 @@ contains
     Open(100,File=filename//"_forma.dat")
     Open(101,File=filename//"_2.dat")
     Open(102,File=filename//"_ALL.dat")
-    
+
     write(96,'(A)') "# number,ensemble, ID of particle,charge, velocity "
     write(97,'(A)') "# number,ensemble, ID of particle,charge, position[fm]"
     write(98,'(A)') "# number,ensemble, ID of particle,charge, 4-momentum[GeV]"
@@ -585,21 +585,21 @@ contains
     write(100,'(A)')"# number,ensemble, scaleCS, ,formationTime, productionTime,lastCollisionTime, in_Formation"
     write(101,'(A)')"# number,ensemble, mass,coulombPotential, offShellParameter, firstevent "
     call WriteParticle(102)
-    
+
     do i=1,size(pv,dim=1)
        do j=1,size(pv,dim=2)
           if (pv(i,j)%Id <= 0) cycle
           Write(96,'(4I10,3E14.5)')    pv(i,j)%number, i, pv(i,j)%ID,pv(i,j)%Charge,pv(i,j)%velocity
           Write(97,'(4I10,3E14.5)')    pv(i,j)%number, i, pv(i,j)%ID,pv(i,j)%Charge,pv(i,j)%position
           Write(98,'(4I10,4E14.5)')    pv(i,j)%number, i, pv(i,j)%ID,pv(i,j)%Charge,pv(i,j)%momentum
-          
+
           Write(99,'(4I10,2L4,e14.3)')  pv(i,j)%number, i, pv(i,j)%event,pv(i,j)%perturbative,&
                & pv(i,j)%antiparticle,pv(i,j)%perweight
           Write(100,'(2I10,4F10.4,L4)') pv(i,j)%number, i, pv(i,j)%scaleCS,pv(i,j)%formationTime,pv(i,j)%productionTime,&
                & pv(i,j)%lastCollisionTime,pv(i,j)%in_Formation
-          Write(101,'(2I10,3F10.4,I8)') pv(i,j)%number, i, pv(i,j)%mass,0.0,pv(i,j)%offShellParameter,& 
+          Write(101,'(2I10,3F10.4,I8)') pv(i,j)%number, i, pv(i,j)%mass,0.0,pv(i,j)%offShellParameter,&
                & pv(i,j)%firstEvent
-          
+
           call WriteParticle(102,i,j,pv(i,j))
        end do
     end do
@@ -619,16 +619,16 @@ contains
   !****s* output/timeMeasurement
   ! NAME
   ! subroutine timeMeasurement(ForceReset)
-  ! 
+  !
   ! PURPOSE
   ! Use this as an stopwatch.
   !
-  ! If you do not use the optional parameter "ForceReset", the default 
+  ! If you do not use the optional parameter "ForceReset", the default
   ! behaviour is like this:
   ! * the first call sets the stopwatch to zero
   ! * all following (second, third, ...) calls just print the time
   !
-  ! only by calling this routine and setting the optional parameter 
+  ! only by calling this routine and setting the optional parameter
   ! ForceReset=.true. can rewind the stopwatch to zero
   !
   ! INPUTS
@@ -642,7 +642,7 @@ contains
 
     logical, intent(in), optional :: ForceReset
     integer, intent(in), optional :: iFile
-    
+
     integer :: timeEnd, timeRate
     logical, save :: DoReset=.true. ! Initialize at first time
     integer, save :: timestart
@@ -653,7 +653,7 @@ contains
     end if
     ii = 6
     if (Present(iFile)) ii = iFile
-    
+
     If (DoReset) then
       call system_clock(timeEnd,timeRate)
       timeStart = timeEnd

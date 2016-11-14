@@ -28,8 +28,8 @@ contains
     end do
     close(100)
 
-    do i=lbound(part,dim=1),ubound(part,dim=1) 
-       call setToDefault(part(i,:))    
+    do i=lbound(part,dim=1),ubound(part,dim=1)
+       call setToDefault(part(i,:))
        do j=1,50
           part(i,j)%ID=delta
           part(i,j)%charge=charge
@@ -56,8 +56,8 @@ contains
     integer :: numDeltas
 
     numDeltas=0
-    do i=lbound(part,dim=1),ubound(part,dim=1) 
-       do j=lbound(part,dim=2),ubound(part,dim=2) 
+    do i=lbound(part,dim=1),ubound(part,dim=1)
+       do j=lbound(part,dim=2),ubound(part,dim=2)
           if(part(i,j)%ID.eq.delta) then
              if(part(i,j)%event(1).eq.0) then
                 numDeltas=numDeltas+1

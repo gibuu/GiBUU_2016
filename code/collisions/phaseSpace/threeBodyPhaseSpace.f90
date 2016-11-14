@@ -10,9 +10,9 @@ module threeBodyPhaseSpace
 
   implicit none
   PRIVATE
-  
+
   PUBLIC :: Integrate_3BodyPS,Integrate_3bodyPS_Resonance
-  
+
 contains
 
 
@@ -29,7 +29,7 @@ contains
   ! OUTPUT
   ! * real :: ps = Integral of phase space
   ! NOTES
-  ! Formerly known as "bops3".Is now faster than bops3.  
+  ! Formerly known as "bops3".Is now faster than bops3.
   ! The code is so hard to read, since I wanted to make it faster.
   ! This routine is called often, therefore the optimization became important!
   !*************************************************************************
@@ -53,7 +53,7 @@ contains
     !  ps=Integral[ (m13max-m13min)/srts**2 dm12]
     !  ps=SUM_i [( 1./srts**2* (m13max(i)-m13min(i))*((srts-mass3)**2-   m1m2Squared)/float(nm12))] with i=1,...,nm12
     !  ps=SUM_i [(m13max(i)-m13min(i))]        /srts**2* *((srts-mass3)**2-   m1m2Squared)/float(nm12))   with i=1,...,nm12
-    !  First we evaluate the sum and then the factor is multiplied 
+    !  First we evaluate the sum and then the factor is multiplied
 
     ! (1) Evaluate Integral( m13max-m13min)
     m1m2Squared=(mass1+mass2)**2
@@ -106,8 +106,8 @@ contains
   ! * ps(2) : Only (nucleon kaonBar) width in nominator of spectral function
   ! NOTES
   ! Formerly known as "massInt"
-  ! 
-  ! Be careful : since there is a mass cut off on the masses, there is no 
+  !
+  ! Be careful : since there is a mass cut off on the masses, there is no
   ! normalization off the spectral functions any more
   !*************************************************************************
   function Integrate_3bodyPS_Resonance (srts, mass1, mass2, resonanceID, scalarPotential) result (ps)
@@ -133,7 +133,7 @@ contains
 
     momLRF=0.
 
-    ! Standard output: 
+    ! Standard output:
     ps=0.
 
     ! Check Input, check wether resonance is meson or baryon
@@ -168,7 +168,7 @@ contains
           if(mesonFlag) then
              gamtot=WidthMesonMedium(resonanceID,mass,momLRF,vacuum)
           else
-             gamtot=WidthBaryonMedium(resonanceID,mass,momLRF,vacuum) 
+             gamtot=WidthBaryonMedium(resonanceID,mass,momLRF,vacuum)
           end if
 
           spectral(1)=2./pi*mass**2*gamtot/((mass**2- mres0**2)**2+gamtot**2*mass**2)
@@ -176,7 +176,7 @@ contains
              spectral(2)=0
           else
              ! spectral function * Gamma( nucleon kaonBar )/Gamma_tot
-             spectral(2)=spectral(1)*partialWidthBaryonMedium(resonanceID,mass,.false.,kaonBar,nucleon,momLRF,vacuum)/gamtot 
+             spectral(2)=spectral(1)*partialWidthBaryonMedium(resonanceID,mass,.false.,kaonBar,nucleon,momLRF,vacuum)/gamtot
            end if
 
           psa = Integrate_3bodyPS (srts, mass1, mass2, mass+scalarPotential)

@@ -64,7 +64,7 @@ module initHeavyIon
   !
   logical, save :: coulomb=.false.
   ! PURPOSE
-  ! If .true., then a Coulomb propagation from coulombDistance = 10000 fm 
+  ! If .true., then a Coulomb propagation from coulombDistance = 10000 fm
   ! to distance is performed.
   !*************************************************************************
 
@@ -322,8 +322,8 @@ contains
         write(*,'(A,3G15.8)') 'betaCM2Lab          =', betaCM2Lab
       end if
 
-      gammaTarg = 1./sqrt( 1. - targetNuc%velocity(3)**2 ) 
-      gammaProj = 1./sqrt( 1. - projectileNuc%velocity(3)**2 ) 
+      gammaTarg = 1./sqrt( 1. - targetNuc%velocity(3)**2 )
+      gammaProj = 1./sqrt( 1. - projectileNuc%velocity(3)**2 )
 
     end subroutine setVelocity
 
@@ -343,7 +343,7 @@ contains
       real :: distance_touch, vP, vT
 
       ! check whether input distance is reasonable and readjust it if needed:
-      distance_touch = (5.*targetNuc%surface+targetNuc%radius)/gammaTarg & 
+      distance_touch = (5.*targetNuc%surface+targetNuc%radius)/gammaTarg &
                      + (5.*projectileNuc%surface+projectileNuc%radius)/gammaProj + 1.
 
       If (distance < distance_touch) then
@@ -354,7 +354,7 @@ contains
          write (*,*) '(Radius of target)/gammaTarg     =', targetNuc%radius / gammaTarg
          write (*,*) '(Radius of projectile)/gammaProj =', projectileNuc%radius / gammaProj
          distance = distance_touch
-         Write (*,*) 'Readjusted distance between centers along z-axis =', distance 
+         Write (*,*) 'Readjusted distance between centers along z-axis =', distance
       end if
 
       if (cmsFlag) then
@@ -385,7 +385,7 @@ contains
     ! NOTES
     ! The size of the grid is fixed.
     !***********************************************************************
-    subroutine adjustGrid  
+    subroutine adjustGrid
       use densitymodule, only : acceptGrid
 
       real :: Rlong_min, Rtr_min!, Rlong_max, Rtr_max

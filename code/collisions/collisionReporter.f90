@@ -122,7 +122,7 @@ contains
        write(*,*) '  number sqrt(s)-bins=',cR_sizeE
        write(*,*) '  delta  timesteps   =',cR_deltaT,' fm'
        write(*,*) '  delta  sqrt(s)-bins=',cR_deltaE,' GeV'
-       
+
        write(*,*)
        write(*,*) '  ===> MAX: ',cR_sizeT*cR_deltaT,' fm *',cR_sizeE*cR_deltaE,' GeV'
 

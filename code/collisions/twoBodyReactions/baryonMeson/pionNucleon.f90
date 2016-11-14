@@ -7,13 +7,13 @@
 ! Implemented are the following reactions:
 ! * pion nucleon -> X
 ! Public routines:
-! * pionNuc 
+! * pionNuc
 ! Public variables:
 ! * matrixDeltaEta
 !****************************************************************************
 module pionNucleon
   implicit none
-  Private 
+  Private
 
   ! Debug-flags
   logical,parameter :: debugFlag=.false.
@@ -26,8 +26,8 @@ module pionNucleon
   !****g* pionNucleon/matrixDeltaEta
   ! SOURCE
   !
-  real, parameter :: matrixDeltaEta=7.   
-  ! PURPOSE      
+  real, parameter :: matrixDeltaEta=7.
+  ! PURPOSE
   ! Matrix Element for pi N -> eta Delta ; see old "commcoll"->matdeta
   !****************************************************************************
 
@@ -43,13 +43,13 @@ contains
   !
   ! PURPOSE
   ! Evaluates pion Nucleon -> anything cross sections and returns also a "preevent"
-  ! 
-  ! This routine does a Monte-Carlo-decision according to the partial cross 
-  ! sections to decide on a final state with maximal 3 (or 4) final state particles. 
-  ! These are returned in the vector teilchenOut. 
-  ! The kinematics of these teilchen is only fixed in the case of a single 
-  ! produced resonance. 
-  ! Otherwise the kinematics still need to be established. 
+  !
+  ! This routine does a Monte-Carlo-decision according to the partial cross
+  ! sections to decide on a final state with maximal 3 (or 4) final state particles.
+  ! These are returned in the vector teilchenOut.
+  ! The kinematics of these teilchen is only fixed in the case of a single
+  ! produced resonance.
+  ! Otherwise the kinematics still need to be established.
   !
   ! INPUTS
   ! * real                          :: srts        -- sqrt(s) in the process (free one!!)
@@ -62,14 +62,14 @@ contains
   ! * real    :: sigmaTot         -- total Xsection
   ! * real    :: sigmaElast       -- elastic Xsection
   ! * type(preEvent),dimension(1:4) :: teilchenOut -- colliding particles
-  ! 
+  !
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
-  ! * 2-particle : pi N, omega N, phi N, eta Delta,  Kaon Lambda , Sigma Kaon, 
-  !   pion Delta, rho N, rhoDelta, sigma N, pion P11_1440, rho Delta 
+  ! * 1-particle : baryon Resonances
+  ! * 2-particle : pi N, omega N, phi N, eta Delta,  Kaon Lambda , Sigma Kaon,
+  !   pion Delta, rho N, rhoDelta, sigma N, pion P11_1440, rho Delta
   ! * 3-particle : omega pi N, phi pi N, K KBar N, Lambda Kaon Pion, Sigma Kaon Pion
-  ! * Not yet implemented : pi N -> pi pi N which is used for the matching to 
+  ! * Not yet implemented : pi N -> pi pi N which is used for the matching to
   !   the high energy region
   !****************************************************************************
   subroutine pionNuc (srts, teilchenIn, mediumATcollision, momentumLRF, teilchenOut, sigmaTot, sigmaElast, plotFlag)
@@ -91,7 +91,7 @@ contains
     logical, intent(in), optional               :: plotFlag
 
     !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ! cross sections named according to final states 
+    ! cross sections named according to final states
     real :: omegaN, phiN, etaDelta                                         ! exactly one possible final state
     real :: omegaPiN, phiPiN                                               ! same Xsection for all isospin channels
     real :: lambdaKaon, sigmaN, etaN, piPiN, piPiPiN
@@ -135,7 +135,7 @@ contains
        stop
     end if
 
-    If (nucleon_particle%antiParticle) then ! Invert all particles in antiparticles 
+    If (nucleon_particle%antiParticle) then ! Invert all particles in antiparticles
        nukCharge = -nukcharge
        pionCharge= -pionCharge
        antiParticleInput=.true.
@@ -172,7 +172,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.pionCharge+nukCharge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,pionCharge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,pionCharge, &
             & nukCharge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -207,7 +207,7 @@ contains
       real, dimension(1:4) :: sigmaGolub, sigmaHuang
       real :: elastic, sigmaHuangLam, sibirtpiCross, sigma_pitot, sigma_HiEl, isoZ_nuk
       logical :: background, propagated, perturbative, successElastic
-      integer :: deltaCharge,rhoCharge,new_pionCharge,new_nukCharge,new_deltaCharge,new_p11Charge 
+      integer :: deltaCharge,rhoCharge,new_pionCharge,new_nukCharge,new_deltaCharge,new_p11Charge
       real, dimension(0:3) :: momentum_vacuum        ! Total Momentum in vacuum
       real, dimension(1:3) :: position
       real, dimension(-1:1) :: sigma_total_param, sigma_elast_param
@@ -244,7 +244,7 @@ contains
          if ((new_NukCharge==1).or.(new_NukCharge==0)) then
             piN(new_PionCharge) = barMes_R_barMes(pion,nucleon,pion,nucleon,pionCharge,nukCharge, &
                                                   new_pionCharge,new_nukCharge,background,propagated,Vacuum,momentum_vacuum, &
-                                                  pionMass,nukMass,position,perturbative,srts) 
+                                                  pionMass,nukMass,position,perturbative,srts)
             if (DebugFlag) write(*,*) piN(new_PionCharge)
          end if
       End do
@@ -254,13 +254,13 @@ contains
          If (nukcharge == 0) then
             elastic = piN_elastic(-pionCharge,srts,successElastic)
             if (successElastic) &
-               piN(pionCharge) = max(0.,elastic-barMes_R_barMes(pion,nucleon,pion,nucleon, & 
+               piN(pionCharge) = max(0.,elastic-barMes_R_barMes(pion,nucleon,pion,nucleon, &
                                                                 pionCharge,nukcharge,pionCharge,nukcharge,.false.,.true., &
                                                                 Vacuum,momentum_vacuum,pionMass,nukMass,position,perturbative,srts))
          else if (nukcharge == 1) then
             elastic = piN_elastic(pionCharge,srts,successElastic)
             if (successElastic) &
-               piN(pionCharge) = max(0.,elastic-barMes_R_barMes(pion,nucleon,pion,nucleon, & 
+               piN(pionCharge) = max(0.,elastic-barMes_R_barMes(pion,nucleon,pion,nucleon, &
                                                                 pionCharge,nukcharge,pionCharge,nukcharge,.false.,.true., &
                                                                 Vacuum,momentum_vacuum,pionMass,nukMass,position,perturbative,srts))
          else
@@ -270,7 +270,7 @@ contains
         ! pi0 = (pi+ + pi-)/2
         elastic = 0.5 * (piN_elastic(+1,srts,successElastic) + piN_elastic(-1,srts,successElastic))
         if (successElastic) &
-          piN(pionCharge) = max(0.,elastic-barMes_R_barMes(pion,nucleon,pion,nucleon, & 
+          piN(pionCharge) = max(0.,elastic-barMes_R_barMes(pion,nucleon,pion,nucleon, &
                                                            pionCharge,nukcharge,pionCharge,nukcharge,.false.,.true., &
                                                            Vacuum,momentum_vacuum, pionMass,nukMass,position,perturbative,srts))
       end if
@@ -282,12 +282,12 @@ contains
 
 
       ! Charge Exchange : Subtract resonance contribution from data
-      If (nukcharge==0 .and. pionCharge==0) then       ! pi n -> pi p 
-         piN(pionCharge-1)= max(0.,piN_chargeExchange(srts)-barMes_R_barMes(pion,nucleon,pion,nucleon, & 
+      If (nukcharge==0 .and. pionCharge==0) then       ! pi n -> pi p
+         piN(pionCharge-1)= max(0.,piN_chargeExchange(srts)-barMes_R_barMes(pion,nucleon,pion,nucleon, &
                             pionCharge,nukcharge,pionCharge-1,nukcharge+1,.false.,.true.,Vacuum,momentum_vacuum,&
                             pionMass,nukMass,position,perturbative,srts) )
-      else if (nukcharge==1 .and. pionCharge<=0) then ! pi  p -> pi n 
-         piN(pionCharge+1)= max(0.,piN_chargeExchange(srts)-barMes_R_barMes(pion,nucleon,pion,nucleon, & 
+      else if (nukcharge==1 .and. pionCharge<=0) then ! pi  p -> pi n
+         piN(pionCharge+1)= max(0.,piN_chargeExchange(srts)-barMes_R_barMes(pion,nucleon,pion,nucleon, &
                             pionCharge,nukcharge,pionCharge+1,nukcharge-1,.false.,.true.,Vacuum,momentum_vacuum,&
                             pionMass,nukMass,position,perturbative,srts))
       end if
@@ -297,13 +297,13 @@ contains
       !**************************************************************
       ! -> omega N
       !**************************************************************
-      sigmaGolub(1:2) = golub_omega (srts)     ! Golub returns the cross section for pi- p -> omega n 
+      sigmaGolub(1:2) = golub_omega (srts)     ! Golub returns the cross section for pi- p -> omega n
       ! There is always a I=1/2 resonance as intermediate state :
-      omegaN=clebschSquared(1.,0.5,0.5,real(pionCharge),isoZ_nuk) &  
+      omegaN=clebschSquared(1.,0.5,0.5,real(pionCharge),isoZ_nuk) &
              * 3./2.* (sigmaGolub(1)-barMes_R_barMes(pion,nucleon,omegaMeson,nucleon,-1,1,0,0,.false.,.true.,Vacuum, &
                                                      momentum_vacuum,pionMass,nukMass,position,perturbative,srts))
-      ! factor 3./2. to divide by the isospin clebsch for pi- p -> omega n 
-      If (omegaN<0.) then 
+      ! factor 3./2. to divide by the isospin clebsch for pi- p -> omega n
+      If (omegaN<0.) then
          omegaN=0.
          If(debugFlag) Write(*,*) 'Problem in pionNuc : pion N -> Omega N &
               &    resonance Contribution greater than elementary crossSection'
@@ -316,7 +316,7 @@ contains
       !**************************************************************
       ! -> phi N
       !**************************************************************
-      sigmaGolub = golub_phi (srts, 0.)   ! Golub returns the cross section for pi- p -> phi n 
+      sigmaGolub = golub_phi (srts, 0.)   ! Golub returns the cross section for pi- p -> phi n
       phiN = clebschSquared(1.,0.5,0.5,real(pionCharge),isoZ_nuk) * 3./2. * sigmaGolub(1)
 
       !**************************************************************
@@ -330,13 +330,13 @@ contains
       !**************************************************************
       kaonKaonBarN(:)=0.
       sibirtpiCross = sibirtpi(srts)
-      ! pion proton ->Kaon KaonBar N 
+      ! pion proton ->Kaon KaonBar N
       ! Index :
       ! 1  outgoing K^+   kbar^0                 ! =-1
       ! 0  outgoing K^0   kbar^0                 ! =-2
       ! -1 outgoing K^0  Kbar^-                  ! =1
       ! -2 outgoing K^+  kbar^-                  ! =0
-      If (nukCharge==1) then 
+      If (nukCharge==1) then
          Select Case(pionCharge)
          Case(-1)
             kaonKaonBarN(1)=0.
@@ -381,7 +381,7 @@ contains
 
 
       !**************************************************************
-      ! -> Lambda Kaon 
+      ! -> Lambda Kaon
       !**************************************************************
       lambdaKaon=0.
       If (srts>(hadron(Lambda)%mass+mK)) then
@@ -404,7 +404,7 @@ contains
                                                         pionMass,nukMass,position,perturbative,srts)
          End Select
 
-         If (lambdaKaon<0.) then 
+         If (lambdaKaon<0.) then
             lambdaKaon=0.
             Write(*,*) 'Problem in pionNuc : pion N -> Lambda Kaon resonance', &
                        '  Contribution greater than elementary crossSection'
@@ -415,9 +415,9 @@ contains
       ! -> Sigma Kaon
       !**************************************************************
       ! sigmaKaon(0:1) : Index is charge of final state kaon
-      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      ! 
+      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      !
       ! sigmaHuang(2) = pi^{0}  p  ->   K^{+}  Sigma0       !
-      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !           
+      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !
       ! sigmaHuang(4) = pi^{-}  p  ->   K^{+}   Sigma-     !
       sigmaKaon(:)=0.
       If (srts>(hadron(SigmaResonance)%mass+mK)) then
@@ -469,7 +469,7 @@ contains
             If ((deltaCharge>=-1).and.(deltaCharge<=2)) then
                pionDelta(new_PionCharge)=barMes_R_barMes(pion,nucleon,pion,Delta,pionCharge,nukCharge,&
                                                          new_PionCharge,deltaCharge,background,propagated,Vacuum,momentum_vacuum,&
-                                                         pionMass,nukMass,position,perturbative,srts) 
+                                                         pionMass,nukMass,position,perturbative,srts)
             end If
          End Do
       End If
@@ -484,7 +484,7 @@ contains
             If ((rhoCharge>=-1).and.(rhoCharge<=1)) then
                rhoN(rhoCharge)=barMes_R_barMes(pion,nucleon,rho,nucleon,pionCharge,nukCharge,rhoCharge, &
                                                new_nukCharge,background,propagated,Vacuum,momentum_vacuum, &
-                                               pionMass,nukMass,position,perturbative,srts) 
+                                               pionMass,nukMass,position,perturbative,srts)
             end If
          end Do
       end If
@@ -492,7 +492,7 @@ contains
       !**************************************************************
       !  -> rhoDelta
       !**************************************************************
-      ! Evaluate backGrounds by subtracting Resonance cross section 
+      ! Evaluate backGrounds by subtracting Resonance cross section
       ! of propagated resonances off the cross section for all resonances:
       rhoDelta=0.
       If (srts>(hadron(delta)%minmass+hadron(rho)%minmass)) then
@@ -501,7 +501,7 @@ contains
             If ((rhoCharge>=-1).and.(rhoCharge<=1)) then
                rhoDelta(rhoCharge)=barMes_R_barMes(pion,nucleon,rho,Delta,pionCharge,nukCharge,&
                                                    rhoCharge,new_DeltaCharge,background,propagated,Vacuum,momentum_vacuum,&
-                                                   pionMass,nukMass,position,perturbative,srts) 
+                                                   pionMass,nukMass,position,perturbative,srts)
             end if
          end do
       end if
@@ -516,7 +516,7 @@ contains
             If ((new_pionCharge>=-1).and.(new_pionCharge<=1)) then
                piP11_1440(new_pionCharge)=barMes_R_barMes(pion,nucleon,pion,P11_1440,pionCharge,nukCharge, &
                                           new_pionCharge,new_p11Charge,background,propagated,Vacuum,momentum_vacuum, &
-                                          pionMass,nukMass,position,perturbative,srts) 
+                                          pionMass,nukMass,position,perturbative,srts)
             end If
          end Do
       end If
@@ -529,7 +529,7 @@ contains
          If (srts>(hadron(sigmaMeson)%minmass+mN)) then
             sigmaN=barMes_R_barMes(pion,nucleon,sigmaMeson,nucleon,pionCharge,nukCharge, &
                                    0,nukCharge+pionCharge,background,propagated,Vacuum,momentum_vacuum, &
-                                   pionMass,nukMass,position,perturbative,srts) 
+                                   pionMass,nukMass,position,perturbative,srts)
          end If
       end If
 
@@ -539,9 +539,9 @@ contains
       etaN=0.
       If ((nukCharge+pionCharge==0).or.(nukCharge+pionCharge==1)) then
          If (srts>(hadron(eta)%mass+mN)) then
-            etaN=barMes_R_barMes(pion,nucleon,eta,nucleon,pionCharge,nukCharge, & 
+            etaN=barMes_R_barMes(pion,nucleon,eta,nucleon,pionCharge,nukCharge, &
                                  0,nukCharge+pionCharge,background,propagated,Vacuum,momentum_vacuum, &
-                                 pionMass,nukMass,position,perturbative,srts) 
+                                 pionMass,nukMass,position,perturbative,srts)
          end If
       end If
 
@@ -550,17 +550,17 @@ contains
       !**************************************************************
       sigmaRes = barMes2resonance (pion,nucleon,pionCharge,nukCharge,.true.,mediumAtCollision, &
                                    momentumLRF,massRes,pionMass,nukMass,position,perturbative,srts)
-      
+
       !**************************************************************
       ! pi N -> Sigma Kaon Pion
       ! pi N -> Lambda Kaon Pion
-      !**************************************************************     
+      !**************************************************************
       call piN_to_strangeBaryon_kaon_pion_matrix(srtS,pionCharge,nukCharge, LambdaKaonPion, SigmaKaonPion)
-   
+
       !**************************************************************
       ! -> pi pi N, pi pi pi N
       !**************************************************************
-      ! We use these channels to put missing strength of the Xsection 
+      ! We use these channels to put missing strength of the Xsection
       ! at higher energies into this channel.
       ! But first we put missing strength into the elastic channel.
 
@@ -620,7 +620,7 @@ contains
       !##############################################################
       ! Do the flux correction for each channel
       !##############################################################
-      ! We do this for each channel since they might show up 
+      ! We do this for each channel since they might show up
       ! separately in the output, if makeoutput is called.
       If (fluxCorrector_flag) then
          sigmaElast=sigmaElast*fluxcorrector
@@ -649,8 +649,8 @@ contains
       !##############################################################
       ! Sum up everything for the total cross section
       !##############################################################
-      ! Be careful since sigma elast is already included in the 
-      ! partial cross sections, therefore it is not included in the 
+      ! Be careful since sigma elast is already included in the
+      ! partial cross sections, therefore it is not included in the
       ! total cross section
 
       sigmaTot = omegaN + phiN + etaDelta + Sum(piN) + lambdaKaon &
@@ -670,12 +670,12 @@ contains
     ! subroutine MakeDecision
     ! PURPOSE
     ! Decides on the final state which is returned via teilchenOut by Monte-Carlo.
-    !  * Assigns charges and ID's. 
-    !  * Only for resonance-production also the mass is assigned, since the mass 
+    !  * Assigns charges and ID's.
+    !  * Only for resonance-production also the mass is assigned, since the mass
     !    of the resonance needed to be calculated earlier.
-    ! The Monte-Carlo routine is adding up channels until the sum is exceeding 
+    ! The Monte-Carlo routine is adding up channels until the sum is exceeding
     ! x*sigma(total). x has a flat distribution in [0,1].
-    ! The last added channel is then the one which is chosen for the event. 
+    ! The last added channel is then the one which is chosen for the event.
     !****************************************************************************
     subroutine MakeDecision
       use random, only: rn, ranCharge
@@ -686,7 +686,7 @@ contains
       integer,dimension (1:4)  :: izmin4,izmax4,izout4     ! needed for ranCharge
       logical :: ranChargeFlag
       integer, dimension (1:2) :: channel_index
-      
+
       cut=rn()*sigmaTot ! random number for Monte-Carlo decision
 
       totalCharge=pionCharge+nukCharge
@@ -938,7 +938,7 @@ contains
       !############################################################
       ! Error message if no channel is chosen
       !############################################################
-      write (*,*) 'Error in makeDecision : No decision made', & 
+      write (*,*) 'Error in makeDecision : No decision made', &
                    cut, sum(kaonKaonBarN), teilchenOut(:)%ID, teilchenOut(:)%Charge, sigmaTot
       Stop
 
@@ -952,7 +952,7 @@ contains
     ! PURPOSE
     ! Writes several cross sections to file as function of srts and plab [GeV].
     ! Filenames:
-    ! * 'piN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'piN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'piN_strangeProd.dat'        : strangeness production
     ! * 'piN_resProd.dat'            : Baryon resonance production
     ! * 'piN_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state
@@ -996,7 +996,7 @@ contains
       write (104,'(19F9.4)') srts, plab, piN(-1:1), phiN, omegaN, piP11_1440(-1:1), omegaPiN, phiPiN, &
                                          rhoN(-1:1), sigmaN, etaN, pipiN, pipipiN
       write (105, '(9F9.4)') srts, plab, pionDelta, etaDelta, rhoDelta
-      
+
       Close(101)
       Close(102)
       Close(103)

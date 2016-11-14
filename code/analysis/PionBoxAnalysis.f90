@@ -37,34 +37,42 @@ module PionBoxAnalysis
 
   type(histogram), save :: hMassRho
   type(histogramMC), save :: hMCMomPion
-  type(histogramMP), save :: hMP_pSet2, hMP_pSet4
+  type(histogramMP), save :: hMP_pSet2, hMP_pSet4,hMP_ESet2, hMP_ESet4
   real, dimension(:,:), allocatable, save :: arrMultSet2, arrMultSet4
   type(tTmunuNmu), dimension(:), allocatable, save :: arrTmunuNmu
   type(tTmunuNmu), dimension(2), save :: arrTmunuNmu_hadr
 
 
   logical, save :: initFlag=.true.
+  logical, parameter :: do_Tmunu_pirho=.false.
 
-  logical, save :: flagEnsemble=.false.
-  
   !***************************************************************************
   !****g* PionBoxAnalysis/do_Tmunu
   ! SOURCE
-  logical,save  :: do_Tmunu=.false.
+  logical,save :: do_Tmunu=.false.
+  ! PURPOSE
+  ! Switch for Tmunu output. default: Only one file for all ensemble!
+  ! you may change this with the flag perEnsemble_Tmunu
+  !***************************************************************************
+
+  !***************************************************************************
+  !****g* PionBoxAnalysis/perEnsemble_Tmunu
+  ! SOURCE
+  logical,save :: perEnsemble_Tmunu=.false.
   ! PURPOSE
   ! Switch for Tmunu output. One file per ensemble!
   !
-  ! NOTE 
-  ! this may slow down the execution dramatically, since huge output to the 
-  ! hard drive is induced. 
+  ! NOTE
+  ! this may slow down the execution dramatically, since huge output to the
+  ! hard drive is induced.
   ! You may observe this, if e.g the cpu load drops permanently to 30%.
   ! Thus: switch it on, only if you want it!
   !***************************************************************************
-  
+
   !***************************************************************************
   !****g* PionBoxAnalysis/do_P
   ! SOURCE
-  logical,save  :: do_P=.false.
+  logical,save :: do_P=.false.
   ! PURPOSE
   ! Switch for dN/p^2 dp output
   !***************************************************************************
@@ -72,10 +80,11 @@ module PionBoxAnalysis
   !***************************************************************************
   !****g* PionBoxAnalysis/do_velrel
   ! SOURCE
-  logical,save  :: do_velrel=.false.
+  logical,save :: do_velrel=.false.
   ! PURPOSE
   ! Switch for calculating velrel
   !***************************************************************************
+
 contains
   !***************************************************************************
   !****s* PionBoxAnalysis/DoBoxAnalysisTime
@@ -101,7 +110,7 @@ contains
     real, save :: mulfak
 
     integer :: i,j, iID, iCh
-    real :: mom, mass
+    real :: mom0,mom, mass
     type(particle), POINTER :: pPart
     integer :: parents(1:3)
 
@@ -109,8 +118,9 @@ contains
 
     ! string constants may be broken over multiple continuation lines:
     character(len=*), parameter :: headTmunu = "# 1: timestep &
-         &2: T00 3: T01 4: T02 5: T03 &
-         &6: T11 7: T22 8: T33 9: T21 10: T31 11: T32 &
+         &2: T00 3: T11 4: T22 5: T33 &
+         &6: T01 7: T02 8: T03 &
+         &9: T21 10: T31 11: T32 &
          &12: N0 13: N1 14: N2 15: N3 &
          &16: J0 17: J1 18: J2 19: J3"
 
@@ -120,7 +130,7 @@ contains
 
        call readInput
 
-       if ((do_Tmunu) .and. (flagEnsemble) .and. (nEns > 9999)) then
+       if ((do_Tmunu) .and. (perEnsemble_Tmunu) .and. (nEns > 9999)) then
           call TRACEBACK("PionBoxAnalysis: Tmunu not prepared for more than 9999 ensembles.")
        end if
 
@@ -130,7 +140,7 @@ contains
        mulfak = 1.0/(nEns*boxVol)
 
        !----- mass distribution: -----
-       call CreateHist(hMassRho, "mass(rho)", 0.0, 1.2, 0.01)
+       call CreateHist(hMassRho, "mass(rho)", 0.0, 2.5, 0.01)
        call CreateHistMC(hMCMomPion, "momentum(pion)", 0.0, 2.5, 0.02, 6)
        hMCMomPion%yDesc(1:6) = (/ "original  ",  &
             "rho       ", "sigma     ", "other dec ", &
@@ -142,6 +152,8 @@ contains
 !       call CreateHistMP(hMP_pSet4, "dN/p^2 dp", 0.0, 2.5, 0.05, 4)
        call CreateHistMP(hMP_pSet2, "dN/p^2 dp", 0.0, 2.5, 0.02, 2)
        call CreateHistMP(hMP_pSet4, "dN/p^2 dp", 0.0, 2.5, 0.02, 4)
+       call CreateHistMP(hMP_ESet2, "dN/pE dE", 0.0, 2.5, 0.02, 2)
+       call CreateHistMP(hMP_ESet4, "dN/pE dE", 0.0, 2.5, 0.02, 4)
 
        nHist = Map2HistMP_getN(2)
        allocate( arrMultSet2(0:nHist, 2) )
@@ -163,14 +175,16 @@ contains
           open(123,file="PionBoxAnalysis_Tmunu.dat", status="unknown")
           write(123,'(A)') headTmunu
           close(123)
-          open(123,file="PionBoxAnalysis_Tmunu.pion.dat", status="unknown")
-          write(123,'(A)') headTmunu
-          close(123)
-          open(123,file="PionBoxAnalysis_Tmunu.rho.dat", status="unknown")
-          write(123,'(A)') headTmunu
-          close(123)
+          if (do_Tmunu_pirho) then
+             open(123,file="PionBoxAnalysis_Tmunu.pion.dat", status="unknown")
+             write(123,'(A)') headTmunu
+             close(123)
+             open(123,file="PionBoxAnalysis_Tmunu.rho.dat", status="unknown")
+             write(123,'(A)') headTmunu
+             close(123)
+          end if
 
-          if (flagEnsemble) then
+          if (perEnsemble_Tmunu) then
              do i=1,nEns
                 open(123,file="PionBoxAnalysis_Tmunu."//intToChar4(i)//".dat", status="unknown")
                 write(123,'(A)') headTmunu
@@ -184,6 +198,8 @@ contains
 
     call ClearHistMP(hMP_pSet2)
     call ClearHistMP(hMP_pSet4)
+    call ClearHistMP(hMP_ESet2)
+    call ClearHistMP(hMP_ESet4)
     arrMultSet2 = 0.0
     arrMultSet4 = 0.0
 
@@ -206,6 +222,7 @@ contains
           if(pPart%Id <= 0) cycle
 
           mom = absMom(pPart)
+          mom0 = pPart%momentum(0)
 
           select case(pPart%ID)
           case (101)
@@ -221,7 +238,7 @@ contains
                 case default
                    iCh = 4
                 end select
-             else 
+             else
                 if (parents(1)==101 .and. parents(2)==101) then
                    iCh = 5
                 else
@@ -236,6 +253,9 @@ contains
 
           call AddHistMP(hMP_pSet2, pPart, mom, 1.0/(mom**2), 1.0)
           call AddHistMP(hMP_pSet4, pPart, mom, 1.0/(mom**2), 1.0)
+
+          call AddHistMP(hMP_ESet2, pPart, mom0, 1.0/(mom0*mom), 1.0)
+          call AddHistMP(hMP_ESet4, pPart, mom0, 1.0/(mom0*mom), 1.0)
 
           arrMultSet2(0,1) = arrMultSet2(0,1) + 1.0
           arrMultSet4(0,1) = arrMultSet4(0,1) + 1.0
@@ -252,15 +272,17 @@ contains
           ! fill Tmunu and Jmu:
           if (do_Tmunu) then
              call fillTmunu(TmunuNmu, pPart)
-             select case(pPart%ID)
-             case (101)
-                call fillTmunu(arrTmunuNmu_hadr(1), pPart)
-             case (103)
-                call fillTmunu(arrTmunuNmu_hadr(2), pPart)
-             end select
-             if (flagEnsemble) call fillTmunu(arrTmunuNmu(i), pPart)
+             if (do_Tmunu_pirho) then
+                select case(pPart%ID)
+                case (101)
+                   call fillTmunu(arrTmunuNmu_hadr(1), pPart)
+                case (103)
+                   call fillTmunu(arrTmunuNmu_hadr(2), pPart)
+                end select
+             end if
+             if (perEnsemble_Tmunu) call fillTmunu(arrTmunuNmu(i), pPart)
           end if
-          
+
        end do
     end do
 
@@ -272,6 +294,9 @@ contains
        if (mod(timestep,5)==1) then
           call WriteHistMP(hMP_pSet2, file='p_Set2_'//intTochar4(timestep)//'.dat', add=1e-20, mul=mulfak, iColumn=1)
           call WriteHistMP(hMP_pSet4, file='p_Set4_'//intTochar4(timestep)//'.dat', add=1e-20, mul=mulfak, iColumn=1)
+          call WriteHistMP(hMP_ESet2, file='E_Set2_'//intTochar4(timestep)//'.dat', add=1e-20, mul=mulfak, iColumn=1)
+          call WriteHistMP(hMP_ESet4, file='E_Set4_'//intTochar4(timestep)//'.dat', add=1e-20, mul=mulfak, iColumn=1)
+
           call WriteHist(hMassRho, file='massRho_'//intTochar4(timestep)//'.dat', add=1e-20, mul=mulfak)
           !          call WriteParticleVector('parts_'//intTochar(timestep),realPart)
           !          call WriteHistMC(hMCMomPion, file='MomPion_'//intTochar4(timestep)//'.dat', add=1e-20, mul=mulfak)
@@ -287,7 +312,7 @@ contains
     write(123,'(i11,1P,100E12.4,0P)') timestep, &
          & arrMultSet4(1:,1)*mulfak,arrMultSet4(0,1)*mulfak
     close(123)
-    
+
 
     if (do_Tmunu) then
 
@@ -298,21 +323,24 @@ contains
             & TmunuNmu%Jmu(:)*mulfak
        close(123)
 
-       open(123,file="PionBoxAnalysis_Tmunu.pion.dat",status="old",position='append')
-       write(123,'(i11,1P,100E14.6,0P)') timestep, &
-            & arrTmunuNmu_hadr(1)%Tmunu(:)*mulfak, &
-            & arrTmunuNmu_hadr(1)%Nmu(:)*mulfak, &
-            & arrTmunuNmu_hadr(1)%Jmu(:)*mulfak
-       close(123)
 
-       open(123,file="PionBoxAnalysis_Tmunu.rho.dat",status="old",position='append')
-       write(123,'(i11,1P,100E14.6,0P)') timestep, &
-            & arrTmunuNmu_hadr(2)%Tmunu(:)*mulfak, &
-            & arrTmunuNmu_hadr(2)%Nmu(:)*mulfak, &
-            & arrTmunuNmu_hadr(2)%Jmu(:)*mulfak
-       close(123)
+       if (do_Tmunu_pirho) then
+          open(123,file="PionBoxAnalysis_Tmunu.pion.dat",status="old",position='append')
+          write(123,'(i11,1P,100E14.6,0P)') timestep, &
+               & arrTmunuNmu_hadr(1)%Tmunu(:)*mulfak, &
+               & arrTmunuNmu_hadr(1)%Nmu(:)*mulfak, &
+               & arrTmunuNmu_hadr(1)%Jmu(:)*mulfak
+          close(123)
 
-       if (flagEnsemble) then 
+          open(123,file="PionBoxAnalysis_Tmunu.rho.dat",status="old",position='append')
+          write(123,'(i11,1P,100E14.6,0P)') timestep, &
+               & arrTmunuNmu_hadr(2)%Tmunu(:)*mulfak, &
+               & arrTmunuNmu_hadr(2)%Nmu(:)*mulfak, &
+               & arrTmunuNmu_hadr(2)%Jmu(:)*mulfak
+          close(123)
+       end if
+
+       if (perEnsemble_Tmunu) then
           ! since we print all information for every ensemble, we must not divide by nEns here
           do i=1,nEns
              open(123,file="PionBoxAnalysis_Tmunu."//intToChar4(i)//".dat", status="old",position='append')
@@ -329,7 +357,7 @@ contains
        ! calculate average of velrel
        call CalcAverageVelRel(realPart,timestep,nEns,nPart)
     end if
-    
+
   end subroutine DoPionBoxAnalysisTime
 
   !***************************************************************************
@@ -337,7 +365,7 @@ contains
   ! NAME
   ! subroutine CalcAverageVelRel(realPart,timestep,nEns,nPart)
   ! PURPOSE
-  ! calculate the average v_rel of all particles with each other. Due to 
+  ! calculate the average v_rel of all particles with each other. Due to
   ! speed reasons, it may be a good idea to correlate only particles in the
   ! same ensemble, but this s only a approximation.
   !***************************************************************************
@@ -376,11 +404,11 @@ contains
              if(pPart2%Id <  0) exit
              if(pPart2%Id <= 0) cycle
              m2 = pPart2%mass**2
-             
+
              ptot = pPart1%momentum + pPart2%momentum
              s = ptot(0)**2-sum(ptot(1:3)**2)
              velrel = sqrt( max(0.0,(s-m1-m2)**2/4-m1*m2) )/( pPart1%momentum(0)*pPart2%momentum(0) )
-             
+
 !             vrel_vector=pPart1%velocity-pPart2%velocity
 !             vrel = sqrt(Dot_product(vrel_vector,vrel_vector))
 
@@ -390,7 +418,7 @@ contains
 
              sum0 = sum0 + 1
              sum1 = sum1 + velrel
-             
+
           end do
        end do
     end do
@@ -414,13 +442,14 @@ contains
 
     real :: oneE
     oneE = 1.0/pPart%momentum(0)
-    
-    TmunuNmu%Tmunu(0:3) = TmunuNmu%Tmunu(0:3) + pPart%momentum(0:3) ! T00,T01,T02,T03
-    TmunuNmu%Tmunu(4:6) = TmunuNmu%Tmunu(4:6) + pPart%momentum(1:3)**2*oneE ! T11,T22,T33
+
+    TmunuNmu%Tmunu(0) = TmunuNmu%Tmunu(0) + pPart%momentum(0) ! T00
+    TmunuNmu%Tmunu(1:3) = TmunuNmu%Tmunu(1:3) + pPart%momentum(1:3)**2*oneE ! T11,T22,T33
+    TmunuNmu%Tmunu(4:6) = TmunuNmu%Tmunu(4:6) + pPart%momentum(1:3) ! T01,T02,T03
     TmunuNmu%Tmunu(7)   = TmunuNmu%Tmunu(7)   + pPart%momentum(2)*pPart%momentum(1)*oneE ! T21
     TmunuNmu%Tmunu(8)   = TmunuNmu%Tmunu(8)   + pPart%momentum(3)*pPart%momentum(1)*oneE ! T31
     TmunuNmu%Tmunu(9)   = TmunuNmu%Tmunu(9)   + pPart%momentum(3)*pPart%momentum(2)*oneE ! T32
-    
+
     TmunuNmu%Nmu(0:3) = TmunuNmu%Nmu(0:3) + pPart%momentum(0:3) * oneE
     if (pPart%charge .ne. 0) then
        TmunuNmu%Jmu(0:3) = TmunuNmu%Jmu(0:3) + pPart%momentum(0:3) * pPart%charge * oneE
@@ -446,12 +475,12 @@ contains
     ! PURPOSE
     ! Includes the switches:
     ! * do_Tmunu
+    ! * perEnsemble_Tmunu
     ! * do_P
-    ! * do_velreö
+    ! * do_velrel
     !*************************************************************************
     NAMELIST /pionBoxAnalysis/ &
-         do_Tmunu, do_P, do_velrel
-
+         do_Tmunu, do_P, do_velrel, perEnsemble_Tmunu
     integer :: ios
 
     call Write_ReadingInput('pionBoxAnalysis',0)
@@ -459,10 +488,10 @@ contains
     read(5,nml=pionBoxAnalysis,IOSTAT=ios)
     call Write_ReadingInput('pionBoxAnalysis',0,ios)
 
-    write(*,*) '  do Tmunu: ',do_Tmunu,'   flagEnsemble: ',flagEnsemble
+    write(*,*) '  do Tmunu: ',do_Tmunu,'   perEnsemble: ',perEnsemble_Tmunu
     write(*,*) '  do P:     ',do_P
     write(*,*) '  do velrel:',do_velrel
-    
+
     call Write_ReadingInput('pionBoxAnalysis',1)
   end subroutine readInput
 

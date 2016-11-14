@@ -4,21 +4,21 @@
 ! module deuterium
 !
 ! PURPOSE
-! Includes subroutines to model the momentum distribution of nucleons in 
+! Includes subroutines to model the momentum distribution of nucleons in
 ! a Deuterium.
 !*************************************************************************
 module deuterium
 
   implicit none
   PRIVATE
-  
+
   PUBLIC :: initDeuterium
 
-  
+
   !*************************************************************************
   !****g* deuterium/waveFunction_switch
   ! SOURCE
-  ! 
+  !
   integer, save :: waveFunction_switch = 1
   !
   ! PURPOSE
@@ -35,17 +35,17 @@ module deuterium
   !*************************************************************************
   !****g* deuterium/iParam
   ! SOURCE
-  ! 
+  !
   integer, save :: iParam = 1
   !
   ! PURPOSE
   ! Choose parameterization of momentum distribution when using the Bonn potential.
   ! Possible values:
-  ! * 1 --   Full Bonn  (MaH87) 
-  ! * 2 --   OBEPQ      (MaH87) 
-  ! * 3 --   OBEPQ-A    (Mac89) 
-  ! * 4 --   OBEPQ-B    (Mac89) 
-  ! * 5 --   OBEPQ-!    (Mac89) 
+  ! * 1 --   Full Bonn  (MaH87)
+  ! * 2 --   OBEPQ      (MaH87)
+  ! * 3 --   OBEPQ-A    (Mac89)
+  ! * 4 --   OBEPQ-B    (Mac89)
+  ! * 5 --   OBEPQ-!    (Mac89)
   ! * 6 --   OBEPR      (MaH87)  self-made
   ! * 7 --   Paris
   ! References:
@@ -59,7 +59,7 @@ module deuterium
   !*************************************************************************
   !****g* deuterium/pMax
   ! SOURCE
-  ! 
+  !
   real,save :: pMax = 0.5
   !
   ! PURPOSE
@@ -70,7 +70,7 @@ module deuterium
   !*************************************************************************
   !****g* deuterium/scaleMomentum
   ! SOURCE
-  ! 
+  !
   real, save :: scaleMomentum = 1.0
   !
   ! PURPOSE
@@ -80,7 +80,7 @@ module deuterium
 
 
   logical, parameter :: argonne_no_pWave=.true.
-  
+
   logical, save :: inputFlag = .true.
 
 
@@ -140,8 +140,8 @@ contains
   ! subroutine initDeuterium(teilchen,nuc,eventNummer,keepNumber)
   ! PURPOSE
   ! Represents nucleus 'nuc' in phase space by testparticles which
-  ! are stored in vector 'teilchen'.  
-  ! The ordering in the vector teilchen is choosen to be random. 
+  ! are stored in vector 'teilchen'.
+  ! The ordering in the vector teilchen is choosen to be random.
   ! The nucleus must be Deuterium.
   !
   ! NOTES
@@ -149,15 +149,15 @@ contains
   !   spatial distribution added later
   ! * The first nucleon is initialized at the origin, while the
   !   second nucleon gets its spatial coordinate according
-  !   the squared wave function. 
-  ! * The averaged deuterium radius is <r_d>~=2.0 fm. 
+  !   the squared wave function.
+  ! * The averaged deuterium radius is <r_d>~=2.0 fm.
   !   The variable r used here is the distance between the two
-  !   nucleons. Therefore: <r_d> = 1/2 * sqrt(Int_0^Infty dr r^2 psi^2) 
+  !   nucleons. Therefore: <r_d> = 1/2 * sqrt(Int_0^Infty dr r^2 psi^2)
   !
-  ! INPUTS 
+  ! INPUTS
   ! * type(nucleus)                 :: nuc
-  ! * type(particle),dimension(:,:) :: teilchen 
-  ! * integer                       :: eventNummer 
+  ! * type(particle),dimension(:,:) :: teilchen
+  ! * integer                       :: eventNummer
   !   -- eventNummer is given as "%event" to any initialized nucleon.
   ! * logical                       :: keepNumber
   !   -- flag whether each testparticle gets unique number or not
@@ -182,7 +182,7 @@ contains
     integer :: producedProtons !Counts number of produced protons
     integer :: i,k,index,offset, chargeSave,numberSave
 
-    ! Create the deuterium_pointerList which stores information on the 
+    ! Create the deuterium_pointerList which stores information on the
     If (allocated(deuterium_pointerList)) DeAllocate(deuterium_pointerList)
     Allocate(deuterium_pointerList(lBound(teilchen,dim=1):uBound(teilchen,dim=1)))
     do k=lBound(teilchen,dim=1),uBound(teilchen,dim=1)
@@ -241,7 +241,7 @@ contains
                 ! half of their relative distance, such that the center of mass is situated at the origin
                 Teilchen(i,index)%position=0.5*Teilchen(i,index)%position
                 deuterium_pointerList(i)%part1%position=-Teilchen(i,index)%position
-                ! Please note: while the relative position is defined as r=r1-r2, 
+                ! Please note: while the relative position is defined as r=r1-r2,
                 ! the relative momentum is p=1/2(p1-p2) [The reduced mass is mu=m/2].
                 ! Therefore the argument of the wave functionis the proton momentum,
                 ! not half of it.
@@ -255,7 +255,7 @@ contains
                       deuterium_pointerList(i)%part1%momentum(1:3)/deuterium_pointerList(i)%part1%momentum(0)
              endif
          End Do
-         
+
        End do
        If (producedProtons/=nuc%charge) then
           Write(*,*) 'Problem in initDeuterium 1', producedProtons, nuc%charge
@@ -295,13 +295,13 @@ contains
                 deuterium_pointerList(i)%part1 =>Teilchen(i,index)
              else
                 Teilchen(i,index)%position = choosePosition()  ! argument of wave function is relative distance
-                ! The first particle was first chosen at the origin. Now we shift the 
-                ! first and second particle by  half of their relative distance, such 
+                ! The first particle was first chosen at the origin. Now we shift the
+                ! first and second particle by  half of their relative distance, such
                 ! that the center of mass is situated at the origin:
                 Teilchen(i,index)%position=0.5*Teilchen(i,index)%position
                 deuterium_pointerList(i)%part1%position=-Teilchen(i,index)%position
 
-                ! Please note: while the relative position is defined as r=r1-r2, 
+                ! Please note: while the relative position is defined as r=r1-r2,
                 ! the relative momentum is p=1/2(p1-p2) [The reduced mass is mu=m/2].
                 ! Therefore the argument of the wave function is the proton momentum,
                 ! not half of it.
@@ -322,7 +322,7 @@ contains
           end if
        End do
     endif
-    
+
     open(100,file="RelMom_deuteriumInit.dat")
     open(101,file="RelPos_deuteriumInit.dat")
     call deuteriumPL_getSpectra(deuterium_pointerList,100,101,0.)
@@ -359,7 +359,7 @@ contains
       ! assume vacuum dispersion relation:
       momentum(0)=Sqrt(dot_product(momentum(1:3),momentum(1:3))+mN**2)
     end function chooseMomentum
-        
+
     subroutine boostIt (nucl, i)
         use lorentzTrafo, only: lorentz
         use inputGeneral, only: eventtype
@@ -369,7 +369,7 @@ contains
         integer :: i
 
         !Do nothing if nucleus rests in calculation frame :
-        If (sum(Abs(nucl%velocity))<0.000001) then 
+        If (sum(Abs(nucl%velocity))<0.000001) then
            ! Write(*,*) 'No boost necessary! Velocity of nucleus:',nucl%velocity
            ! Shift to actual position of center of mass of nucleus
            deuterium_pointerList(i)%part1%position(1:3)=deuterium_pointerList(i)%part1%position(1:3)+nucl%position
@@ -386,7 +386,7 @@ contains
            end if
 
            ! boost members of nucleus from restframe to calculation frame,
-           ! which is moving with -beta seen from the rest frame: 
+           ! which is moving with -beta seen from the rest frame:
            call lorentz(-nucl%velocity,deuterium_pointerList(i)%part1%momentum)
            call lorentz(-nucl%velocity,deuterium_pointerList(i)%part2%momentum)
 
@@ -399,7 +399,7 @@ contains
            deuterium_pointerList(i)%part1%position(1:3)=deuterium_pointerList(i)%part1%position(1:3)+nucl%position
            deuterium_pointerList(i)%part2%position(1:3)=deuterium_pointerList(i)%part2%position(1:3)+nucl%position
         end if
-        
+
         ! shift particles along z-axis to avoid overlapping between projectile & target:
         if (eventType==HeavyIon) then
           if (eventNummer==1) then
@@ -415,7 +415,7 @@ contains
 
     function choosePosition() result (r)
       use argonneV18, only: argonne_WF_rSpace
-      
+
       real, dimension(1:3) :: r
 
       real, parameter :: maxDist = 20.0 ! very loosely bound system !
@@ -426,9 +426,9 @@ contains
          return
       end if
 
-      Do 
+      Do
          rAbs=rn()*maxDist
-  
+
          if (WaveFunction_switch==bonn) then
             call wvfct_r_deuteron(rAbs,ws,wd,ideuteron(iParam))
             psi2 = (ws**2+wd**2)
@@ -454,7 +454,7 @@ contains
     use random, only: rn
 
     real :: p
-       
+
     real,parameter :: a=0.016,b=0.008  !Parameters of comparing function f(x)
     real,save :: Area
     real :: xRan,ARan,yRan,yMax,psi2
@@ -462,10 +462,10 @@ contains
     logical , save :: initFlag =.true.
 
     Select CASE(waveFunction_switch)
-    CASE(0) 
+    CASE(0)
        p=0.
        return
-    CASE(BONN) 
+    CASE(BONN)
        if (iParam<1 .or. iParam>7) then
           write(*,*) 'Error in deuteriumFermi: iParam=',iParam
           stop
@@ -474,7 +474,7 @@ contains
              Area=(a-f(pMax*1000.))/b !convert to MeV
              initFlag=.false.
           end if
-          
+
           MonteCarlo_bonn : do
              ARan=Area*rn()
              xRan=PofA(ARan)
@@ -487,7 +487,7 @@ contains
           p=xRan/1000.!GeV
           return
        end if
-    CASE(argonne) 
+    CASE(argonne)
        MonteCarlo_argonne : do
           p=rn()*pmax
           psi2= argonne_WF_kSpace(p,argonne_no_pWave)*p**2
@@ -503,70 +503,70 @@ contains
     end Select
 
   contains
-    
+
     real function f(x)  ! comparing function for Monte Carlo
       real,intent(in) :: x
       f=a*exp(-b*x)
     end function f
-    
+
     real function PofA(y)
       real,intent(in) :: y
       PofA=-log(1-y*b/a)/b
     end function PofA
-    
+
   end function deuteriumFermi
 
 
   subroutine wvfct_p_deuteron(p,ws,wd,ideuteron)
     !*************************************************************************
     !     subroutine for calculating the deuteron s- and d-waves
-    !     in momentum space using a Yukawa parametrization. 
-    !     Before calling this subroutine one has to initialize the 
+    !     in momentum space using a Yukawa parametrization.
+    !     Before calling this subroutine one has to initialize the
     !     appropriate parameter values by calling the subroutine cdmj(ideuteron)
     !     where "ideuteron" characterizes the potential model for the deuteron:
     !
-    !      ideuteron=2:   Full Bonn  (MaH87) 
-    !      ideuteron=10:  OBEPQ      (MaH87) 
-    !      ideuteron=11:  OBEPQ-A    (Mac89) 
-    !      ideuteron=12:  OBEPQ-B    (Mac89) 
-    !      ideuteron=13:  OBEPQ-!    (Mac89) 
+    !      ideuteron=2:   Full Bonn  (MaH87)
+    !      ideuteron=10:  OBEPQ      (MaH87)
+    !      ideuteron=11:  OBEPQ-A    (Mac89)
+    !      ideuteron=12:  OBEPQ-B    (Mac89)
+    !      ideuteron=13:  OBEPQ-!    (Mac89)
     !      ideuteron=20:  OBEPR      (MaH87)  self-made
-    !      ideuteron=40:  Paris 
+    !      ideuteron=40:  Paris
     !      MaH87: R. Machleidt et al. Phys. Rep. 149, 1 (1987)
     !      Mac89: R. Machleidt, Advances in Nucl. Phys. Vol 19
     !
-    !      ws: S-wave of the deuteron at momentum p 
-    !      wd: D-wave of the deuteron at momentum p 
+    !      ws: S-wave of the deuteron at momentum p
+    !      wd: D-wave of the deuteron at momentum p
     !      in Yukawa parametrization Mac89, equation D.26
     !      dimension of p [MeV], of wave function [MeV^(-3/2)]
     !
-    !      normalization: 
-    !      integral from 0 -> infty dp*p**2*(ws**2+ wd**2) = 1 
-    !      consider  Mac89, equation D.12 
+    !      normalization:
+    !      integral from 0 -> infty dp*p**2*(ws**2+ wd**2) = 1
+    !      consider  Mac89, equation D.12
     !
     !**********************************************************************
 
     double precision,intent(in) :: p
     double precision,intent(out) :: ws,wd
     integer,intent(in) :: ideuteron
-    
+
     logical,save :: initFlag=.true.
-    
-    !used in cdmj  
+
+    !used in cdmj
     double precision,dimension(20),save :: c,d,xm2
     integer,save :: jmax
-    
+
     double precision :: PI,factor,x
     integer :: j
-    
+
     if(initFlag) then
        call cdmj
        initFlag=.false.
     end if
-    
+
     PI=4D0*DATAN(1D0)
     factor= dsqrt(2d0/pi)
-    
+
     ws=0.d0
     wd=0.d0
     do j=1,jmax
@@ -574,20 +574,20 @@ contains
        ws=ws+x*c(j)
        wd=wd+x*d(j)
     end do
-    
+
     ws=ws*factor
     wd=wd*factor
-    
+
   contains
-    
+
     subroutine cdmj
 
       double precision,parameter :: HQC=197.3286D0
       double precision :: alpha,xm0,Aconst,Bconst,Cconst
-      
-      IF (IDEUTERON.EQ.2) THEN !     full model 
+
+      IF (IDEUTERON.EQ.2) THEN !     full model
          JMAX=11
-         ALPHA=.231609D0 
+         ALPHA=.231609D0
          C( 1)= .90457337D+0
          C( 2)=-.35058661D+0
          C( 3)=-.17635927D+0
@@ -623,11 +623,11 @@ contains
          D( 2)= -0.52115578d0
          D( 3)= -0.57197401d0
          D( 4)=  0.27570246e+01
-         D( 5)= -0.26157324e+02 
+         D( 5)= -0.26157324e+02
          D( 6)=  0.84419883e+02
          D( 7)= -0.98308997e+02
          D( 8)=  0.38498490e+02
-         
+
       ELSEIF(IDEUTERON.EQ.11)THEN   ! OBEPQA [Mac89]
          JMAX=11
          ALPHA=  0.231607d0
@@ -640,7 +640,7 @@ contains
          C( 7)=  0.42789416e+03
          C( 8)= -0.46272723e+03
          C( 9)=  0.25255966e+03
-         C(10)= -0.54964903e+02 
+         C(10)= -0.54964903e+02
          D( 1)=  0.23345605e-01
          D( 2)= -0.57467557e+00
          D( 3)=  0.92159360e+00
@@ -683,7 +683,7 @@ contains
          C( 8)= -0.45277411E+03
          C( 9)=  0.27676633E+03
          C(10)= -0.66461680E+02
-         D( 1)=  0.23550301E-01 
+         D( 1)=  0.23550301E-01
          D( 2)= -0.52404123E+00
          D( 3)=  0.15311637E+00
          D( 4)= -0.50123809E+01
@@ -712,11 +712,11 @@ contains
          D( 6)= -0.88888448E+03
          D( 7)=  0.21410284E+04
          D( 8)= -0.30936406E+04
-         
+
       ELSEIF(IDEUTERON.eq.40)THEN  ! original PARIS
          JMAX=13
          ALPHA=  0.23162461D+00   ! T=0-nucleon mass
-         C( 1)=  0.88688076D+00 
+         C( 1)=  0.88688076D+00
          C( 2)= -0.34717093D+00
          C( 3)= -0.30502380D+01
          C( 4)=  0.56207766D+02
@@ -734,27 +734,27 @@ contains
          D( 4)= -0.69462922D+02
          D( 5)=  0.41631118D+03
          D( 6)= -0.12546621D+04
-         D( 7)=  0.12387830D+04 
+         D( 7)=  0.12387830D+04
          D( 8)=  0.33739172D+04
          D( 9)= -0.13041151D+05
          D(10)=  0.19512524D+05
-         
-      ELSE  
+
+      ELSE
          write(*,*) ' ERROR CDMJ/IDEUTERON'
          STOP
       ENDIF
-      
+
       XM0=.9D0
       if(ideuteron.eq.40)xm0=1d0
       DO J=1,JMAX
          XM2(J)=(ALPHA+(J-1D0)*XM0)**2
       end DO
-      
+
       C(JMAX)=0D0
       DO J=1,JMAX-1
-         C(JMAX)=C(JMAX)-C(J)  
+         C(JMAX)=C(JMAX)-C(J)
       end DO
-      
+
       ACONST=0D0
       BCONST=0D0
       CCONST=0D0
@@ -781,34 +781,34 @@ contains
   subroutine wvfct_r_deuteron(r,ws,wd,ideuteron)
     !*************************************************************************
     !     subroutine for calculating the deuteron s- and d-waves
-    !     in r space using a Yukawa parametrization. 
+    !     in r space using a Yukawa parametrization.
     !
     !     please note: r is the relative distance of proton and neutron
     !
     !      dimension of r [fm], of wave function [fm^(-1/2)]
     !
-    !      normalization: 
-    !      integral from 0 -> infty dr*(ws**2+ wd**2) = 1 
+    !      normalization:
+    !      integral from 0 -> infty dr*(ws**2+ wd**2) = 1
     !**********************************************************************
 
     real,intent(in) :: r
     real,intent(out) :: ws,wd
     integer,intent(in) :: ideuteron
-    
+
     logical,save :: initFlag=.true.
     double precision,parameter :: HQC=197.3286D0
     !used in cdmj
     double precision,dimension(20),save :: c,d,xm2
     integer,save :: jmax
-    
+
     double precision :: x,mjr
     integer :: j
-    
+
     if(initFlag) then
        call cdmj
        initFlag=.false.
     end if
-    
+
     ws=0.d0
     wd=0.d0
     do j=1,jmax
@@ -820,17 +820,17 @@ contains
 
     ws = ws/sqrt(HQC)
     wd = wd/sqrt(HQC)
-    
+
   contains
-    
+
     subroutine cdmj
       ! this routine is the same as above (not nice, but convenient)
 
       double precision :: alpha,xm0,Aconst,Bconst,Cconst
-      
-      IF (IDEUTERON.EQ.2) THEN !     full model 
+
+      IF (IDEUTERON.EQ.2) THEN !     full model
          JMAX=11
-         ALPHA=.231609D0 
+         ALPHA=.231609D0
          C( 1)= .90457337D+0
          C( 2)=-.35058661D+0
          C( 3)=-.17635927D+0
@@ -866,11 +866,11 @@ contains
          D( 2)= -0.52115578d0
          D( 3)= -0.57197401d0
          D( 4)=  0.27570246e+01
-         D( 5)= -0.26157324e+02 
+         D( 5)= -0.26157324e+02
          D( 6)=  0.84419883e+02
          D( 7)= -0.98308997e+02
          D( 8)=  0.38498490e+02
-         
+
       ELSEIF(IDEUTERON.EQ.11)THEN   ! OBEPQA [Mac89]
          JMAX=11
          ALPHA=  0.231607d0
@@ -883,7 +883,7 @@ contains
          C( 7)=  0.42789416e+03
          C( 8)= -0.46272723e+03
          C( 9)=  0.25255966e+03
-         C(10)= -0.54964903e+02 
+         C(10)= -0.54964903e+02
          D( 1)=  0.23345605e-01
          D( 2)= -0.57467557e+00
          D( 3)=  0.92159360e+00
@@ -926,7 +926,7 @@ contains
          C( 8)= -0.45277411E+03
          C( 9)=  0.27676633E+03
          C(10)= -0.66461680E+02
-         D( 1)=  0.23550301E-01 
+         D( 1)=  0.23550301E-01
          D( 2)= -0.52404123E+00
          D( 3)=  0.15311637E+00
          D( 4)= -0.50123809E+01
@@ -955,11 +955,11 @@ contains
          D( 6)= -0.88888448E+03
          D( 7)=  0.21410284E+04
          D( 8)= -0.30936406E+04
-         
+
       ELSEIF(IDEUTERON.eq.40)THEN  ! original PARIS
          JMAX=13
          ALPHA=  0.23162461D+00   ! T=0-nucleon mass
-         C( 1)=  0.88688076D+00 
+         C( 1)=  0.88688076D+00
          C( 2)= -0.34717093D+00
          C( 3)= -0.30502380D+01
          C( 4)=  0.56207766D+02
@@ -977,27 +977,27 @@ contains
          D( 4)= -0.69462922D+02
          D( 5)=  0.41631118D+03
          D( 6)= -0.12546621D+04
-         D( 7)=  0.12387830D+04 
+         D( 7)=  0.12387830D+04
          D( 8)=  0.33739172D+04
          D( 9)= -0.13041151D+05
          D(10)=  0.19512524D+05
-         
-      ELSE  
+
+      ELSE
          write(*,*) ' ERROR CDMJ/IDEUTERON'
          STOP
       ENDIF
-      
+
       XM0=.9D0
       if(ideuteron.eq.40)xm0=1d0
       DO J=1,JMAX
          XM2(J)=(ALPHA+(J-1D0)*XM0)**2
       end DO
-      
+
       C(JMAX)=0D0
       DO J=1,JMAX-1
-         C(JMAX)=C(JMAX)-C(J)  
+         C(JMAX)=C(JMAX)-C(J)
       end DO
-      
+
       ACONST=0D0
       BCONST=0D0
       CCONST=0D0
@@ -1022,5 +1022,5 @@ contains
 
 
 
-  
+
 end module deuterium

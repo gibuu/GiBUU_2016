@@ -5,7 +5,7 @@
 ! PURPOSE
 ! Includes the cross sections for omega-nucleon scattering in the resonance regime.
 ! Public routines:
-! * omegaNuc 
+! * omegaNuc
 !****************************************************************************
 module omegaNucleon
   implicit none
@@ -41,29 +41,29 @@ contains
   ! * logical                        :: useHiEnergy ---
   !   .true. if High-Energy cross sections are given by paramBarMesHE
   ! * real                           :: HiEnergySchwelle ---
-  !   threshold sqrt(s) for paramBarMesHE, i.e. at which energy the cross 
+  !   threshold sqrt(s) for paramBarMesHE, i.e. at which energy the cross
   !   sections of paramBarMesHE are used
   !
   ! Debugging:
-  ! * logical,optional               :: plotFlag --- Switch on plotting of the  Xsections 
-  ! 
+  ! * logical,optional               :: plotFlag --- Switch on plotting of the  Xsections
+  !
   ! RESULT
   ! * real       :: sigmaTot         --- total Xsection
   ! * real       :: sigmaElast       --- elastic Xsection
-  ! 
-  ! This routine does a Monte-Carlo-decision according to the partial cross 
-  ! sections to decide on a final state with maximal 3 final state particles. 
-  ! These are returned in the vector teilchenOut. The kinematics of these 
-  ! teilchen is only fixed in the case of a single produced resonance. 
+  !
+  ! This routine does a Monte-Carlo-decision according to the partial cross
+  ! sections to decide on a final state with maximal 3 final state particles.
+  ! These are returned in the vector teilchenOut. The kinematics of these
+  ! teilchen is only fixed in the case of a single produced resonance.
   ! Otherwise the kinematics still need to be established. The
   ! result is:
   ! * type(preEvent),dimension(1:3) :: teilchenOut --- particles
-  ! 
-  ! The cross sections are based upon a parametrization by Golubeva. 
+  !
+  ! The cross sections are based upon a parametrization by Golubeva.
   ! See routine golub_omega in parametrizationBarMes.
   ! NOTES
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   ! * 2-particle : pi N, omega N, K Lambda, K Sigma
   ! * 3-particle : pi pi N
   !**************************************************************************
@@ -100,9 +100,9 @@ contains
     ! Local variables
     real :: fluxCorrector    ! Correction of the fluxfactor due to different velocities in the medium compared to the vacuum
     real :: s
-    type(particle) :: omega_particle, nucleon_particle    
+    type(particle) :: omega_particle, nucleon_particle
     logical :: antiParticleInput, failFlag
-    real, dimension(Delta:nbar) :: sigmaRes, massRes    ! partial cross sections for omega N -> R, and resonance masses   
+    real, dimension(Delta:nbar) :: sigmaRes, massRes    ! partial cross sections for omega N -> R, and resonance masses
 
     antiParticleINPUT=.false. ! .true. if antiparticle in the input
 
@@ -125,7 +125,7 @@ contains
     end if
 
     If (nucleon_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        nucleon_particle%Charge        =  -nucleon_particle%Charge
        nucleon_particle%antiparticle  = .false.
        omega_particle%Charge          =  -omega_particle%Charge
@@ -164,7 +164,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.nucleon_particle%charge+omega_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error', omega_particle%Charge, nucleon_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error', omega_particle%Charge, nucleon_particle%Charge, &
                                                                          teilchenOut(:)%Charge, teilchenOut(:)%ID
        stop
     end if
@@ -230,7 +230,7 @@ contains
           call writeparticle(6,0,0,nucleon_Particle)
           detailedBalanceFactor= 0.
         else
-          detailedBalanceFactor= 1./3.*(pFinal/pInitial)**2        
+          detailedBalanceFactor= 1./3.*(pFinal/pInitial)**2
           ! given by detailed balance: factor 1/3 due to (2j+1)-Terms in cross section and different
           ! spins in initial and final state
         end if
@@ -281,7 +281,7 @@ contains
       end if
 
       !*******************************************************************************************
-      ! omega N -> R 
+      ! omega N -> R
       !*****************************************************************************************
 
       ! Full resonance contribution in the medium
@@ -327,27 +327,27 @@ contains
       end if
 
       !**************************************************************
-      ! -> Lambda Kaon 
+      ! -> Lambda Kaon
       !**************************************************************
       lambdaKaon=0.
       If(srts.gt.(hadron(Lambda)%mass+mK)) then
          ! huanglam gives : pi^{-} p -> Lambda Kaon^{0}
          lambdaKaon = 0.5 * huangLam(srts) * ratio  ! assume that sigma(omega p -> Lambda K^+) = sigma(pi^0 p -> Lambda K^+) * p_piN/p_omegaN
-                                             ! No resonance contribution 
+                                             ! No resonance contribution
       end if
 
       !**************************************************************
       ! -> Sigma Kaon
       !**************************************************************
       ! sigmaKaon(0:1) : Index is charge of final state kaon
-      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      ! 
+      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      !
       ! sigmaHuang(2) = pi^{0}  p  ->   K^{+}  Sigma0       !
-      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !           
+      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !
       ! sigmaHuang(4) = pi^{-}  p  ->   K^{+}   Sigma-     !
       sigmaKaon(:)=0.
       If(srts.gt.(hadron(SigmaResonance)%mass+mK)) then
-         sigmaHuang = huang(srts) * ratio       ! correction due to detailed balance 
-         If(nucleon_particle%Charge.eq.1) then 
+         sigmaHuang = huang(srts) * ratio       ! correction due to detailed balance
+         If(nucleon_particle%Charge.eq.1) then
             sigmaKaon(1)=sigmaHuang(2)     ! assume that sigma(omega p -> K^+ Sigma^0) = sigma(pi^0 p -> K^+ Sigma^0)
             sigmaKaon(0)=2.*sigmaKaon(1)   ! by isospin consideration
          else                              ! neutron Xsections by charge conjugation
@@ -426,7 +426,7 @@ contains
       cut=cut-omegaN
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If(piN(pionCharge).ge.cut) then
             teilchenOut(1)%Id=pion
             teilchenOut(2)%Id=nucleon
@@ -490,22 +490,22 @@ contains
 
     end subroutine makeDecision
 
-    
+
     !******************************************************************************************
     !****s* omegaNucleon/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV]
-    ! . 
+    ! .
     ! Filenames:
-    ! * 'omegaN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'omegaN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'omegaN_resProd.dat'            : Baryon production (Resonances with ID's 1:40)
     ! * 'omegaN_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state
     ! * 'omegaN_strangeProd.dat'        : Kaon and hyperon in final state
     !******************************************************************************************
-    
+
     subroutine makeOutPut
 
       logical, save :: initFlag=.true.

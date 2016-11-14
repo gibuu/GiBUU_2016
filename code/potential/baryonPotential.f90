@@ -108,7 +108,7 @@ module baryonPotentialModule
   !****g* baryonPotentialModule/SurfacePotFlag
   ! PURPOSE
   ! Switch for the surface term in the nucleon potential.
-  ! SOURCE 
+  ! SOURCE
   !
   logical, save :: SurfacePotFlag = .false.
   ! NOTES
@@ -120,7 +120,7 @@ module baryonPotentialModule
   !*************************************************************************
   !****g* baryonPotentialModule/noPerturbativePotential
   ! PURPOSE
-  ! Switch for potential of perturbative particles. 
+  ! Switch for potential of perturbative particles.
   ! If .true. then perturbative baryons feel no potential.
   ! SOURCE
   !
@@ -138,7 +138,7 @@ module baryonPotentialModule
   ! * 1 = nucleon (spin=1/2) potential times 2/3 [according to Ericson/Weise book]
   ! * 2 = 100 MeV * rho/rhoNull
   ! * 3 = nucleon (spin=1/2) potential
-  ! SOURCE 
+  ! SOURCE
   !
   integer, save :: DeltaPot = 1
   ! NOTES
@@ -153,19 +153,19 @@ module baryonPotentialModule
   ! * 0 = no potential
   ! * 1 = nucleon (spin=1/2) potential times (3+S)/3 (i.e. according to the share of the light quarks)
   ! * 2 = nucleon (spin=1/2) potential
-  ! SOURCE 
+  ! SOURCE
   !
   integer, save :: HypPot = 1
   ! NOTES
   ! Can be set to different value in jobcard, namelist 'baryonPotential'
   !*************************************************************************
 
-  
+
   !*************************************************************************
   !****g* baryonPotentialModule/rho_0
   ! PURPOSE
   !  Nuclear matter density for EQS_Type=99
-  ! SOURCE 
+  ! SOURCE
   !
   real, save :: rho_0=0.16
   ! NOTES
@@ -176,7 +176,7 @@ module baryonPotentialModule
   !****g* baryonPotentialModule/p_0
   ! PURPOSE
   ! momentum for which U(p_0,rho=rho_0)=0 for EQS_Type=99
-  ! SOURCE 
+  ! SOURCE
   !
   real, save :: p_0 =0.8
   ! NOTES
@@ -187,7 +187,7 @@ module baryonPotentialModule
   !****g* baryonPotentialModule/U_0
   ! PURPOSE
   ! U(p=0,rho=rho_0) for EQS_Type=99
-  ! SOURCE 
+  ! SOURCE
   !
   real, save :: U_0 =0.075
   ! NOTES
@@ -198,7 +198,7 @@ module baryonPotentialModule
   !****g* baryonPotentialModule/bindingEnergy
   ! PURPOSE
   ! Nuclear matter binding energy for EQS_Type=99
-  ! SOURCE 
+  ! SOURCE
   !
   real, save :: bindingEnergy=0.016
   ! NOTES
@@ -209,7 +209,7 @@ module baryonPotentialModule
   !****g* baryonPotentialModule/compressibility
   ! PURPOSE
   ! Nuclear matter compressibility for EQS_Type=99
-  ! SOURCE 
+  ! SOURCE
   !
   real, save :: compressibility=0.290
   ! NOTES
@@ -220,9 +220,9 @@ module baryonPotentialModule
   !*************************************************************************
   !****g* baryonPotentialModule/nLoopReAdjust
   ! PURPOSE
-  ! number of iterations, if density is readjusted 
+  ! number of iterations, if density is readjusted
   ! (cf. type(nucleus)%ReAdjustForConstBinding)
-  ! SOURCE 
+  ! SOURCE
   !
   integer, save :: nLoopReAdjust = 10
   ! NOTES
@@ -431,18 +431,18 @@ contains
   ! INPUTS
   ! * type(particle) :: teilchen    -- boosted to LRF
   ! * type(medium)   :: med         -- medium information
-  ! * logical        :: positionNotSet -- 
+  ! * logical        :: positionNotSet --
   !   .true. :  %position of particle is not well defined
-  ! * integer, OPTIONAL :: EQS_in -- 
+  ! * integer, OPTIONAL :: EQS_in --
   !   If present, then we use EQS_in as EQS type, if not present
   !   then EQS is chosen according to EQS_Type.
-  ! 
-  ! Some routines like Yukawa might need the position of the particle, 
+  !
+  ! Some routines like Yukawa might need the position of the particle,
   ! and not only the densities.
-  ! Therefore, the positionNotSet-flag is used to check whether the position 
-  ! is actually set. If e.g. Yukawa is used and the position is not set, 
+  ! Therefore, the positionNotSet-flag is used to check whether the position
+  ! is actually set. If e.g. Yukawa is used and the position is not set,
   ! then the code stops.
-  ! 
+  !
   ! NOTES
   ! Baryon potential is defined as 0th component of a vector potential in the LRF.
   !*****************************************************************************
@@ -473,7 +473,7 @@ contains
 
     if (present(EQS_in)) then
       EQS = EQS_in
-    else 
+    else
       EQS = EQS_Type
     end if
 
@@ -512,7 +512,7 @@ contains
 
     case(1:5,9:12)
        ! Skyrme potential is renormalized due to Yukawa contribution
-       alphaRenorm=alpha(EQS)+getYukawaAlpha()*1000.    
+       alphaRenorm=alpha(EQS)+getYukawaAlpha()*1000.
 
        skyrme = (alphaRenorm*med%density/rhoNull + beta(EQS)*(med%density/rhoNull)**tau(EQS)) / 1000.
 
@@ -620,11 +620,11 @@ contains
   ! real function variableSkyrme(rho,p)
   ! PURPOSE
   ! * This function evaluates a variable Skyrme mean field potential
-  ! * It's variable in the sense, that the potential parameters are no longer 
-  !   fixed by the above tables "alpha", "beta",... They are evaluated based 
-  !   on the input values of rhoNull, p_0, u_0, bindingEnergy and 
+  ! * It's variable in the sense, that the potential parameters are no longer
+  !   fixed by the above tables "alpha", "beta",... They are evaluated based
+  !   on the input values of rhoNull, p_0, u_0, bindingEnergy and
   !   compressibility!
-  ! 
+  !
   ! INPUTS
   ! * real, intent(in) :: rho ! Density in GeV**3
   ! * real, intent(in) :: p   ! Momentumin GeV
@@ -633,7 +633,7 @@ contains
   ! * Single particle potential in GeV
   !
   ! NOTES
-  ! * This function is initializing the potential parameters when its called 
+  ! * This function is initializing the potential parameters when its called
   !   for the first time.
   ! * See Oliver's Phd thesis appendix A.4
   ! * Stops the code if there is no solution for the parameters.
@@ -686,17 +686,17 @@ contains
     real, intent(in) ::  pIn
     real, intent(in) ::  rho
     real, intent(in), OPTIONAL :: pF_in
-    
+
     integer,parameter ::  isum=5
 
     real      pfermi, p
     real      pot, t1, t2, t3, t4, t5, t6, t7
     real      xtest, temp, zwi
-    integer   isu 
-    
+    integer   isu
+
 
     p = pin/hbarc !  convert p in units 1/fm
-    if(p.lt.1.0e-10) then 
+    if(p.lt.1.0e-10) then
        p = 1.0e-10
     end if
 
@@ -738,11 +738,11 @@ contains
        t5 = 2.0*pfermi/lambda
        t6 = (p+pfermi)/lambda
        t7 = (p-pfermi)/lambda
-       
+
        pot = t2*t3+t5-2.0*(atan(t6)-atan(t7))
        pot = pot*t1
        pot = pot*2.0*c/rhoNull
-       
+
     end if
     momentumDependentPart = pot/1000. !convert to GeV
     return
@@ -760,7 +760,7 @@ contains
     use dichteDefinition
     use densitymodule, only : densityAt
     use minkowski, only : abs4
-    
+
     real::rho,rho1p,rho1m
     real, dimension(1:3), intent(in) :: a, rvec
     real, dimension(1:3)  :: rvec1p,rvec1m
@@ -802,7 +802,7 @@ contains
 
     type(tnucleus), pointer, save :: targetNucleus
     type(particle), intent(in) :: teilchen
-    
+
     type(dichte)::pos
     real::rho!,r
     real,save :: b1,b2,ck,a,rho0,b3,eta,E0  ! ,eof
@@ -814,7 +814,7 @@ contains
 !        e0f=targetNucleus%chemPot
        call startcond(rho0,E0,ck,b3,b1,b2,a,eta)
        stepsize=gridSpacing
-       
+
        firsttime=.false.
     end if
 
@@ -845,7 +845,7 @@ contains
     use constants, only: pi, hbarc
 
     type(particle), intent(in) :: teilchen
-    
+
     type(dichte)::pos
     real::rho,pAbs!,r
     real,save :: b1,b2,ck,a,rho0,b3,eta,E0,lambdaLDA,alphaLDA,CLDA!,e0f
@@ -855,7 +855,7 @@ contains
     if(firsttime) then
        call startcondWelke(rho0,E0,ck,b3,b1,b2,a,eta,lambdaLDA,alphaLDA,CLDA)
        stepsize=gridSpacing
-       
+
        firsttime=.false.
     end if
 
@@ -879,7 +879,7 @@ contains
   ! function SurfacePart(teilchen,spar)
   ! PURPOSE
   ! Determines the surface contribution to the total baryon potential
-  ! INPUTS 
+  ! INPUTS
   ! * type(particle) :: teilchen -- particle, in a position of which grad(\nabla\rho) has to be calculated.
   ! * real           :: spar  -- Parameter of surface part of baryon potential
   ! OUTPUT
@@ -889,11 +889,11 @@ contains
     use particleDefinition
     use dichteDefinition
     use constants, only : hbarc
-    use densitymodule, only : gridSpacing    
+    use densitymodule, only : gridSpacing
 
     type(particle), intent(in) :: teilchen
     real,           intent(in) :: spar
-    
+
     SurfacePart = -2.* spar * rhoLaplace(teilchen%position,gridSpacing)
     SurfacePart = SurfacePart * hbarc
   end function SurfacePart
@@ -905,8 +905,8 @@ contains
   ! real function rearrangementPotential (teilchen, med)
   ! PURPOSE
   ! Returns the value of the rearrangement potential.
-  ! INPUTS 
-  ! * type(particle) :: teilchen -- particle whose rearrangement potential 
+  ! INPUTS
+  ! * type(particle) :: teilchen -- particle whose rearrangement potential
   !   should be calculated. It should be boosted to LRF.
   !   The position of the particle must be set!!!
   ! * type(medium) :: med -- density information
@@ -954,7 +954,7 @@ contains
        return
     case(1:5,9:12)
        ! Skyrme potential is renormalized due to Yukawa contribution
-       alphaRenorm=alpha(EQS_Type)+getYukawaAlpha()*1000.    
+       alphaRenorm=alpha(EQS_Type)+getYukawaAlpha()*1000.
 
        skyrme_b = (alphaRenorm*(med%density/rhoNull) &
                 + 2./(tau(EQS_Type)+1.)*beta(EQS_Type) &
@@ -1005,7 +1005,7 @@ contains
        EQS = EQS98MomDep
 
     end select
-    
+
     Select Case(EQS)
     case(1:2,5,9:11) ! momentum dependent
        pAbs=Sqrt(Dot_Product(Teilchen%momentum(1:3),Teilchen%momentum(1:3)))
@@ -1022,11 +1022,11 @@ contains
             rearrangementPotential=0.
          end select
       End if
-    else 
+    else
 !     Multiply potential for s=-1 baryons by 2./3. according to the
 !     share of the light quarks:
       rearrangementPotential=rearrangementPotential*2./3.
-    end If  
+    end If
 
   end function rearrangementPotential
 
@@ -1036,22 +1036,22 @@ contains
   ! NAME
   ! subroutine HandPotentialToDensityStatic(nuc)
   ! PURPOSE
-  ! This routine tabulates the proton and neutron density as a function of 
+  ! This routine tabulates the proton and neutron density as a function of
   ! the radius. It also tabulates the Coulomb potential and the baryon
-  ! potentials for protons and neutrons *for the corresponding Fermi momentum*. 
-  ! With this, the routine which actually readjusts the density according 
+  ! potentials for protons and neutrons *for the corresponding Fermi momentum*.
+  ! With this, the routine which actually readjusts the density according
   ! constant Fermi energy is called.
   ! This is repeated several times, until some convergence is believed to
   ! happen. (This is necessary, since the local thomas fermi momentum depends
   ! on the density.) (Also Coulomb depends on the density, but this is of
   ! minor importance here.)
-  ! If the potential is not momentum dependent, no iteration would be 
+  ! If the potential is not momentum dependent, no iteration would be
   ! necessary.
   !
   ! Some complications are due to the calculation of the baryon potential in
   ! baryonPotentialModule/BaryonPotential and the used tabulations.
-  ! 
-  ! INPUTS 
+  !
+  ! INPUTS
   ! * type(tNucleus) :: nuc
   ! OUTPUT
   ! * The potential at input is frozen and stored in a r dependent grid
@@ -1121,7 +1121,7 @@ contains
        do i=0,nuc%MaxIndex
           x = i*nuc%dx
           Part%position(1) = x
-          
+
           rP = nuc%densTab(i,1)
           rN = nuc%densTab(i,2)
 
@@ -1129,7 +1129,7 @@ contains
           med%densityProton  = rP
           med%densityNeutron = rN
 
-          ! Coulomb potential is calcuated by integrating the charge over the 
+          ! Coulomb potential is calcuated by integrating the charge over the
           ! included volume:
           if (useCoulomb) then
              IntCoulomb1=IntCoulomb1 + x**2*rP
@@ -1138,11 +1138,11 @@ contains
              else
                 IntCoulomb2=IntCoulomb2 + rP
              end if
-             PotC(i) = IntCoulomb2 * (-4.0*pi*1./137.*hbarc) * nuc%dx**2 ! in GeV 
+             PotC(i) = IntCoulomb2 * (-4.0*pi*1./137.*hbarc) * nuc%dx**2 ! in GeV
           end if
 
           if (EQS_Type==98) then ! iLoop=2,3,...
-             ! now we undo the rescaling, because we need the density only for 
+             ! now we undo the rescaling, because we need the density only for
              ! calculating the fermi momentum
              rP = rP/nuc%facP
              rN = rN/nuc%facN
@@ -1152,7 +1152,7 @@ contains
           pF = (3*pi**2*(rP+rN)/2)**(1./3.)*hbarc
           Part%momentum(1) = pF
           Part%momentum(0) = sqrt(Part%mass**2+pF**2)
-          
+
           Part%charge = 0
 !!$       pF = (3*pi**2*(rN))**(1./3.)*hbarc
 !!$       Part%momentum(1) = pF
@@ -1195,11 +1195,11 @@ contains
        if ((verbose).or.(iLoop == nLoopReAdjust)) then
           call PlotPot
        end if
-          
+
        call ReAdjust(nuc, PotP, PotN, PotC)
 
        EQS_Type = 98 ! we have to know this already in the next loop
-       
+
     end do
 
     call CalculateRearrangePot
@@ -1219,7 +1219,7 @@ contains
       real :: VbigP, VbigN
       integer :: i
       real :: x, drB, rB, rB0
-      
+
       allocate(StoreUbP(0:nuc%MaxIndex))
       allocate(StoreUbN(0:nuc%MaxIndex))
 
@@ -1246,14 +1246,14 @@ contains
          VbigN = VbigN+drB*StorePotN(i)
          StoreUbN(i) = rB*2*VbigN/rB**2
 
-         if (verbose) then 
+         if (verbose) then
             write(213,'(i5,10f12.5)') i,x,rB, &
                  & StoreUbP(i)*1000,StoreUbN(i)*1000, &
                  & StorePotP(i)*1000,StorePotN(i)*1000
          end if
          rB0 = rB
       end do
-      if (verbose) then 
+      if (verbose) then
          close(213)
       endif
     end subroutine CalculateRearrangePot
@@ -1288,7 +1288,7 @@ contains
       do i=0,nuc%MaxIndex,5
           x = i*nuc%dx
           Part%position(1) = x
-          
+
           rP = nuc%densTab(i,1)
           rN = nuc%densTab(i,2)
 

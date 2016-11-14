@@ -71,7 +71,7 @@ contains
   integer, save :: imode=1                 ! 0 --- interaction volume is divided by the average gamma-factor of
                                            !       the colliding particles 1 and 2 in their c.m. frame
                                            ! 1 --- interaction volume is divided by the gamma-factor of
-                                           !       the 3-d particle in the cm frame of 1 and 2 
+                                           !       the 3-d particle in the cm frame of 1 and 2
 
   logical, save :: debug=.false.
 
@@ -109,7 +109,7 @@ contains
   coll_4point(1:3) = ( particle1%momentum(0)*particle1%position(1:3) &
                      &+particle2%momentum(0)*particle2%position(1:3) ) &
                   &/( particle1%momentum(0) + particle2%momentum(0) )
-   
+
   !Evaluate the velocity of the CM-frame of colliding particles:
   beta(1:3) = ( particle1%momentum(1:3)+particle2%momentum(1:3) ) &
           & / ( particle1%momentum(0) + particle2%momentum(0) )
@@ -141,7 +141,7 @@ contains
   if(imode.eq.0) then
     ! Use average gamma-factor in CM frame:
     gamma_use=0.5*(particle1%momentum(0)/mstar1 &
-           &     + particle2%momentum(0)/mstar2) 
+           &     + particle2%momentum(0)/mstar2)
     !*** Test: ************************************************
     !   gamma_use=1.
     !**********************************************************
@@ -176,7 +176,7 @@ contains
     particle_momentum(0:3)=particles(i)%momentum(0:3)
     call lorentz(beta,particle_momentum,'check_for_Nbody 5')
 
-!   Compute position of the i-th particle at the collision time 
+!   Compute position of the i-th particle at the collision time
 !   in the CM frame of colliding particles:
     particle_4point(1:3)=particle_4point(1:3)&
                         &+(coll_4point(0)-particle_4point(0))&
@@ -185,8 +185,8 @@ contains
 
     dx(1:3)=particle_4point(1:3)- coll_4point(1:3)
 
-!   In the case of imode.eq.0 we determine whether the i-th particle is inside 
-!   an interaction volume, which is an ellipsoid centered in the collision point in 
+!   In the case of imode.eq.0 we determine whether the i-th particle is inside
+!   an interaction volume, which is an ellipsoid centered in the collision point in
 !   CM frame compressed along the collision axis by gamma-factor. The transverse
 !   half-axis of the ellipsoid is r0=sqrt(sigma/pi/10.)
 
@@ -194,7 +194,7 @@ contains
 
 !     Determine whether the i-th particle is inside an interaction volume,
 !     which is an ellipsoid centered in the collision point in CM frame
-!     compressed along the velocity of the i-th particle by gamma-factor of the i-th particle. 
+!     compressed along the velocity of the i-th particle by gamma-factor of the i-th particle.
 !     The transverse half-axis of the ellipsoid is r0=sqrt(sigma/pi/10.)
 
       mstar_i = particle_momentum(0)**2 - dot_product( particle_momentum(1:3),&
@@ -230,7 +230,7 @@ contains
         gamma=gamma_use
       end if
     endif
-  
+
   end do particles_loop
 
   end subroutine check_for_Nbody
@@ -240,32 +240,32 @@ contains
 ! !****s* masterNBody/xsection
 ! ! PURPOSE
 ! ! computes the total cross section (mb) for the scattering of particle1 on particle2
-! 
+!
 !   use particleDefinition
 !   use particleProperties, only : isMeson, isBaryon, hadron
 !   use twoBodyTools, only : sqrtS_free
 !   use constants, only: mN
-! 
+!
 !   type(particle), intent(in) :: particle1,particle2 ! colliding particles
-!   real :: stringfactor,srts,plab  
-! 
+!   real :: stringfactor,srts,plab
+!
 ! ! Currently only baryon-baryon collisions are included:
 !   if(isMeson(particle1%ID) .or. isMeson(particle2%ID)) then
 !     xsection= 0.
 !     return
 !   end if
-! 
+!
 ! ! Simple recipie: *********
 !   xsection= 40.
 !   return
 ! !**************************
-! 
+!
 ! ! Don't consider antibaryons:
 !   if(particle1%antiparticle .or. particle2%antiparticle) then
 !     xsection= 0.
 !     return
 !   end if
-! 
+!
 !   stringFactor=1.
 !   If(particle1%in_Formation) stringFactor=stringFactor*particle1%scaleCS
 !   If(particle2%in_Formation) stringFactor=stringFactor*particle2%scaleCS
@@ -273,7 +273,7 @@ contains
 !     xsection= 0.
 !     return
 !   end if
-! 
+!
 ! ! Use proton-proton total cross section (mb):
 !   srts=sqrtS_free((/particle1,particle2/))
 !   if(srts.lt.2.6) then
@@ -286,9 +286,9 @@ contains
 !        return
 !     endif
 !   end if
-!   
-!   plab= sqrt(srts**4/(4*mN**2)-srts**2)    
-!    
+!
+!   plab= sqrt(srts**4/(4*mN**2)-srts**2)
+!
 !   if(plab < 0.4) then
 !     xsection= 34.*(plab/0.4)**(-2.104)
 !   else if(plab < 0.8) then
@@ -300,18 +300,18 @@ contains
 !   else
 !     xsection= 48.0+0.522*log(plab)**2-4.51*log(plab)
 !   end if
-! 
+!
 ! ! Cutoffs:
 !   if(max(particle1%ID,particle2%ID) > 1) then
 !     xsection= min(xsection,80.4) ! Resonance scattering
 !   else
 !     xsection= min(xsection,55.)  ! Nucleon-nucleon scattering
 !   end if
-!     
+!
 !   xsection= xsection*stringfactor
-! 
+!
 ! !  write(*,*)'id1,id2,srts,plab,sigma:',particle1%ID,particle2%ID,srts,plab,xsection
-! 
+!
 !   end function xsection
 
 
@@ -335,7 +335,7 @@ contains
   ! check_for_Nbody. The energy and momentum of the particles 1,2 and 3 in their c.m.
   ! system are redistributed in such a way that the particle 3 stops in that system
   ! and gives its energy to the relative motion of 1 and 2. Then a 2-body collision
-  ! of 1 and 2 is simulated in a usual way. 
+  ! of 1 and 2 is simulated in a usual way.
   !***
   ! AUTHOR
   ! Alexei Larionov
@@ -381,7 +381,7 @@ contains
   type(dichte) :: density
   type(medium) :: mediumAtCollision
   type(particle) :: particle1,particle2,particle3
-  type(preEvent),dimension(1:4) :: chosenEvent 
+  type(preEvent),dimension(1:4) :: chosenEvent
 
   integer :: maxID, k, nAttempts, i
 
@@ -496,7 +496,7 @@ contains
   if(.not.getRMF_flag()) then
       ! Here we assume that calculation is done without mean field at all
       sqrtS_corr = sqrts_12
-  else 
+  else
       sqrtS_corr = sqrts_12 - mstar1 - mstar2 + particle1%mass + particle2%mass
   end if
 
@@ -507,7 +507,7 @@ contains
 
   if (debug) write (*,*) 'Xsections:', sigmaTot, sigmaElast, HiEnergyFlag
 
-  ! We assume that the collision will always happen provided that the total cross section 
+  ! We assume that the collision will always happen provided that the total cross section
   ! is not zero. The geometrical collision criterion is not checked here, since it
   ! has been already checked before in collide_2body.
 
@@ -600,10 +600,10 @@ contains
 
               do i=1,maxId
 
-                ! This is needed because energyCorrection takes finalState in the CM frame 
-                ! and returns it in the calculational frame:  
+                ! This is needed because energyCorrection takes finalState in the CM frame
+                ! and returns it in the calculational frame:
                 impuls = finalState(i)%momentum
-                call lorentz(betacm_12,impuls, 'generate_3body_collision_8') 
+                call lorentz(betacm_12,impuls, 'generate_3body_collision_8')
                 finalState(i)%momentum = impuls
 
               end do
@@ -625,12 +625,12 @@ contains
 
                 write(*,*) ' In generate_3body_collision: energy correction FAILED:'
                 write(*,*) ' Colliding particles:', particle1%Id, particle2%Id, &
-                                                  & particle1%antiparticle, particle2%antiparticle  
+                                                  & particle1%antiparticle, particle2%antiparticle
                 write(*,*) ' Corrected sqrtS:', sqrtS_corr
                 write(*,*) ' wished sqrtS:', sqrts_12
                 write(*,*) ' Bare masses:', particle1%mass, particle2%mass
                 write(*,*) ' Effective masses:', mstar1, mstar2
-                write(*,*) ' Final particles:', finalState(1:maxId)%Id, finalState(1:maxId)%antiparticle 
+                write(*,*) ' Final particles:', finalState(1:maxId)%Id, finalState(1:maxId)%antiparticle
                 write(*,*) ' Final bare masses:',  finalState(1:maxId)%mass
                 write(*,*) ' Sum of final bare masses:', sum(finalState(1:maxId)%mass)
                 do k = 0,3
@@ -661,7 +661,7 @@ contains
 
   ! Add 3-d colliding particle to the list of outgoing particles:
   ! (It is assumed that the particle 3 interacted elastically with
-  !  1 and 2. Thus its productionTime and formationTime are not changed.) 
+  !  1 and 2. Thus its productionTime and formationTime are not changed.)
   finalState(maxID+1)=particle3
   finalState(maxID+1)%number=0
 
@@ -704,7 +704,7 @@ contains
     !   Chooses randomly momenta of incoming three particles in their common CM frame.
     !   Also free energies of particles and the new sqrts_12 of colliding particles 1 and 2 are computed.
     !   INPUTS
-    ! * integer, intent(in) :: imode ! =1 --- 3-body phase space sampling, 
+    ! * integer, intent(in) :: imode ! =1 --- 3-body phase space sampling,
     !                                ! =2 --- 3-d particle is stopped, momenta of 1-st and 2-nd particles
     !                                !        are randomly rotated,
     !                                ! =3 --- 3-d particle is stopped,  momenta of 1-st and 2-nd particles
@@ -731,8 +731,8 @@ contains
 
       p3 = momenta_in_3BodyPS (sqrtsStar, (/mstar1,mstar2,mstar3/))
 
-      particle1%momentum(1:3)=p3(1:3,1)      
-      particle2%momentum(1:3)=p3(1:3,2)      
+      particle1%momentum(1:3)=p3(1:3,1)
+      particle2%momentum(1:3)=p3(1:3,2)
       particle3%momentum(1:3)=p3(1:3,3)
 
       particle1%momentum(0) = sqrt( mstar1**2 + dot_product( particle1%momentum(1:3), &
@@ -754,13 +754,13 @@ contains
       ! assuming that the 3-d particle is stopped in the common c.m. frame:
       sqrts_12=sqrtsStar-mstar3
 
-      if(debug) write(*,*)'sqrts_12_ini,sqrts_12:', sqrts_12_ini,sqrts_12 
+      if(debug) write(*,*)'sqrts_12_ini,sqrts_12:', sqrts_12_ini,sqrts_12
 
       s_12=sqrts_12**2
 
       ! Compute maximum possible c.m. momentum of the 1-st and 2-nd particle:
       qcm_12=(s_12+mstar1**2-mstar2**2)**2/4./s_12-mstar1**2
-      qcm_12=sqrt(max(0.,qcm_12))            
+      qcm_12=sqrt(max(0.,qcm_12))
 
     end select
 
@@ -772,8 +772,8 @@ contains
 
     case(3)
 
-      ! Cm velocity of 1 and 2 in the cm frame of 1,2 and 3: 
-      beta_12 = lorentzCalcBeta (momentum_12, 'generate_3body_collision_5') 
+      ! Cm velocity of 1 and 2 in the cm frame of 1,2 and 3:
+      beta_12 = lorentzCalcBeta (momentum_12, 'generate_3body_collision_5')
 
       ! Lorentz trafo of 1 to the cm frame of 1 and 2:
       momentum_1(0:3)=particle1%momentum(0:3)
@@ -790,7 +790,7 @@ contains
 
     end select
 
-    ! Determine the new momenta of all three particles in their common CM frame, 
+    ! Determine the new momenta of all three particles in their common CM frame,
     ! 3-d particle is assumed to be at rest (imode=2 or 3)
     particle1%momentum(1:3)=qcm_12*momentum_1(1:3)
     particle2%momentum(1:3)=-particle1%momentum(1:3)
@@ -875,11 +875,11 @@ contains
 
 ! Statistical variables (do not influence dynamics):
   integer, parameter :: Nmax=400 ! max possible value of n_found
-  integer, save, dimension(0:1,2:Nmax+2) :: num_Nbody_collisions ! number of N-body collisions (0 -- at a given time step, 1 -- time integrated) 
+  integer, save, dimension(0:1,2:Nmax+2) :: num_Nbody_collisions ! number of N-body collisions (0 -- at a given time step, 1 -- time integrated)
   integer, parameter :: numQ=100 ! number of Q-bins
   real, parameter :: dQ=0.1 ! Q-bin
   integer, save, dimension(numQ,2:Nmax+2) :: num_Nbody_collisions_vs_Q_pair, num_Nbody_collisions_vs_Q_cluster
-  real, save, dimension(0:1,2:Nmax+2) :: Q_pair_vs_N, Q_cluster_vs_N 
+  real, save, dimension(0:1,2:Nmax+2) :: Q_pair_vs_N, Q_cluster_vs_N
 
 ! Working variables:
   real, save :: Q_pair_tot, Q_cluster_tot
@@ -960,7 +960,7 @@ contains
            write(36,'(f7.3,401i7)') Q_pair, num_Nbody_collisions_vs_Q_pair(i,:)
          end do
 
-         open(36,file='Q_pair_vs_N.dat',status='unknown')       
+         open(36,file='Q_pair_vs_N.dat',status='unknown')
          write(36,*)'# Kin energy per particle vs cluster size'
          write(36,*)'# accouniting the colliding pair only'
          write(36,*)'# N:  Q_pair:'
@@ -979,7 +979,7 @@ contains
            write(36,'(f7.3,401i7)') Q_cluster, num_Nbody_collisions_vs_Q_cluster(i,:)
          end do
 
-         open(36,file='Q_cluster_vs_N.dat',status='unknown')       
+         open(36,file='Q_cluster_vs_N.dat',status='unknown')
          write(36,*)'# Kin energy per particle vs cluster size'
          write(36,*)'# N:  Q_cluster:'
          do i=2,ubound(Q_cluster_vs_N,dim=2)
@@ -989,14 +989,14 @@ contains
          write(36,*)'# Average kin energy:', &
                     Q_cluster_tot/float(max(1,sum(num_Nbody_collisions(1,:))))
 
-      end if 
+      end if
 
       return
 
     end if
 
   end if
- 
+
   if(n_found > Nmax) then
     write(*,*)'In Nbody_analysis: n_found > Nmax', n_found,Nmax
     write(*,*)'Increase Nmax !!!!'
@@ -1015,7 +1015,7 @@ contains
 
   p_pair= particle1%momentum + particle2%momentum
   p_cluster= p_pair
-  if(n_found > 0) then                 
+  if(n_found > 0) then
     do i=1,n_found
       p_cluster=p_cluster+particles(ind_found(i))%momentum
     end do
@@ -1026,7 +1026,7 @@ contains
                &    - dot_product(p_cluster(1:3),p_cluster(1:3)))
   Q_pair= sqrts_pair - particle1%mass - particle2%mass
   Q_cluster= sqrts_cluster - particle1%mass - particle2%mass
-  if(n_found > 0) then                 
+  if(n_found > 0) then
     do i=1,n_found
       Q_cluster=  Q_cluster - particles(ind_found(i))%mass
     enddo
@@ -1046,7 +1046,7 @@ contains
     num_Nbody_collisions_vs_Q_cluster(ibin,2+n_found)= &
                     & num_Nbody_collisions_vs_Q_cluster(ibin,2+n_found) + 1
   endif
-! Average kin energy per particle: 
+! Average kin energy per particle:
 ! accounting for the colliding pair only:
   Q_pair_vs_N(0,2+n_found)= Q_pair_vs_N(0,2+n_found) + Q_pair
   Q_pair_tot= Q_pair_tot + Q_pair

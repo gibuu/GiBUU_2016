@@ -1,6 +1,6 @@
 !***************************************************************************
 !****m* /PIL_rhoDiffractive
-! NAME 
+! NAME
 ! module PIL_rhoDiffractive
 ! PURPOSE
 ! cf. module PIL_nLead
@@ -19,7 +19,7 @@ module PIL_rhoDiff
 
   !***************************************************************************
   !****t* PIL_rhoDiffractive/diffractiveInfo
-  ! NAME 
+  ! NAME
   ! type diffractiveInfo
   ! PURPOSE
   ! a container of the information to be stored
@@ -66,7 +66,7 @@ module PIL_rhoDiff
 contains
   !***************************************************************************
   !****s* PIL_rhoDiffractive/PIL_rhoDiffractive_DeAlloc
-  ! NAME 
+  ! NAME
   ! subroutine PIL_rhoDiffractive_DeAlloc
   ! PURPOSE
   ! Deallocate the memory for this list and the corresponding index list.
@@ -78,7 +78,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_rhoDiffractive/PIL_rhoDiffractive_ZERO
-  ! NAME 
+  ! NAME
   ! subroutine PIL_rhoDiffractive_ZERO()
   ! PURPOSE
   ! Reset the list by setting the counter of stored information to 0.
@@ -91,7 +91,7 @@ contains
 
   !***************************************************************************
   !****s* PIL_rhoDiffractive/PIL_rhoDiffractive_PUT
-  ! NAME 
+  ! NAME
   ! subroutine PIL_rhoDiffractive_PUT(number,r,epsR,recoil)
   ! PURPOSE
   ! Store the information "r" connected with particle "number" in the list.
@@ -115,12 +115,12 @@ contains
     iEntry = PILIndex_PUT(IndexList, number,"rhoDiffractive")
 
 !    write(*,*) '###PUT: ',number,r,iEntry
-    
+
     if (iEntry>0) then      ! everything is ok
        ValueList(iEntry)%val = r
        ValueList(iEntry)%valEpsR = epsR
        ValueList(iEntry)%valRecoil = recoil
-    else 
+    else
        call PIL_rhoDiffractive_Allocate() ! do (re)allocate
        ValueList(-iEntry)%val = r
        ValueList(-iEntry)%valEpsR = epsR
@@ -131,7 +131,7 @@ contains
 
   !***************************************************************************
   !****f* PIL_rhoDiffractive/PIL_rhoDiffractive_GET
-  ! NAME 
+  ! NAME
   ! logical function PIL_rhoDiffractive_GET(number,r,epsR,recoil)
   ! PURPOSE
   ! Get the stored information of particle "number"
@@ -176,7 +176,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_rhoDiffractive/PIL_rhoDiffractive_Allocate
-  ! NAME 
+  ! NAME
   ! subroutine PIL_rhoDiffractive_Allocate
   ! PURPOSE
   ! Do the allocation and reallocation of the value vector.
@@ -189,7 +189,7 @@ contains
     implicit none
 
     integer :: n0, n1
-    type(diffractiveInfo), allocatable :: L0(:) 
+    type(diffractiveInfo), allocatable :: L0(:)
 
     n1 = size(IndexList%PartNumber) ! new size
 
@@ -215,7 +215,7 @@ contains
     ValueList(1:n0)%valRecoil(1) = L0(1:n0)%valRecoil(1)
     ValueList(1:n0)%valRecoil(2) = L0(1:n0)%valRecoil(2)
     ValueList(1:n0)%valRecoil(3) = L0(1:n0)%valRecoil(3)
-    
+
     deallocate(L0)
 
   end subroutine PIL_rhoDiffractive_Allocate
@@ -223,7 +223,7 @@ contains
 
   !***************************************************************************
   !****is* PIL_rhoDiffractive/PIL_rhoDiffractive_Print
-  ! NAME 
+  ! NAME
   ! subroutine PIL_rhoDiffractive_Print(file)
   ! PURPOSE
   ! Print the list to file
@@ -231,14 +231,14 @@ contains
 !   subroutine PIL_rhoDiffractive_Print(file)
 !     implicit none
 !     integer, intent(IN) :: file
-! 
+!
 !     integer :: i
-! 
+!
 !     write(file,*) '****** PIL_rhoDiffractive:',IndexList%nEntry
 !     do i=1,IndexList%nEntry
 !        write(file,'(i8.0,i8.0,g12.5)') i,IndexList%PartNumber(i),ValueList(IndexList%Entry(i))%val
 !     end do
-! 
+!
 !   end subroutine PIL_rhoDiffractive_Print
 
 end module PIL_rhoDiff

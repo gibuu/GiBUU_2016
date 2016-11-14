@@ -3,12 +3,12 @@
 ! NAME
 ! module baryonWidth
 ! PURPOSE
-! When this module is initialized then all information 
-! for the VACUUM width is once calculated for all resonances 
-! and then stored into the field gammaField, which is of 
-! type gammaFieldType. This is done by initWidth. 
-! Afterwards this field is used to return full and 
-! partial width of the resonances in the vacuum by the 
+! When this module is initialized then all information
+! for the VACUUM width is once calculated for all resonances
+! and then stored into the field gammaField, which is of
+! type gammaFieldType. This is done by initWidth.
+! Afterwards this field is used to return full and
+! partial width of the resonances in the vacuum by the
 ! subroutine "partialWidthBaryon, fullWidthBaryon"
 ! USES
 ! module baryonWidthVacuum
@@ -27,7 +27,7 @@ module baryonWidth
   real, parameter :: deltaMass=0.004
 
   ! The type used for storage:
-  type tGammaField 
+  type tGammaField
      real :: gammatotal           !total decay rate
      real, dimension(nDecays) :: ratio      ! ratio of different decay channels
      real, dimension(nDecays) :: rho_AB_atPole ! Formula 2.76 in Effes PhD thesis evaluated at the polemass of the resonance
@@ -36,10 +36,10 @@ module baryonWidth
   ! Field which holds all the information for concerning  the vacuum width, initialized in "initWidth"
   ! First Index: ID of Resonance
   ! Second Index: Mass Index in the range (0,maxIndexMass)
-  type(tGammaField), dimension(:,:), allocatable, save  :: gammaField 
+  type(tGammaField), dimension(:,:), allocatable, save  :: gammaField
 
   ! Flag to check wether this module is initialized by initWidth
-  logical, save :: initFlag=.true.  
+  logical, save :: initFlag=.true.
 
   ! Switching debugging infos off and on
   logical, parameter :: debug=.false.
@@ -60,14 +60,14 @@ module baryonWidth
   !*************************************************************************
   !****g* baryonWidth/readTable
   ! PURPOSE
-  ! There is a tabulation of the widths saved in buuinput which is used to 
+  ! There is a tabulation of the widths saved in buuinput which is used to
   ! initialize ('baryonWidthVacuum.dat.bz2').
-  ! If you don't want to use this pre-tabulated input, 
-  ! then you can set "readTable=.false". This is useful for runs on 
+  ! If you don't want to use this pre-tabulated input,
+  ! then you can set "readTable=.false". This is useful for runs on
   ! a cluster where you want to minimize input/output. Also it is necessary
   ! if the decay channels have been modified (cf. DecayChannels.dat).
   ! SOURCE
-  ! 
+  !
   logical, save :: readTable = .true.
   !*************************************************************************
 
@@ -80,7 +80,7 @@ module baryonWidth
   ! It will only have an effects if readTable == .false. or reading of the
   ! tabulation file fails for some reason.
   ! SOURCE
-  ! 
+  !
   logical, save :: writeTable = .false.
   !*************************************************************************
 
@@ -98,10 +98,10 @@ contains
   ! INPUTS
   ! * integer :: ID                           -- id of resonance
   ! * real :: mass                            -- p_mu p^mu = mass of the resonance (offshell)
-  ! * logical :: inWidth                      -- .true. => in width(only important for channels with unstable particles), .false. => out width 
+  ! * logical :: inWidth                      -- .true. => in width(only important for channels with unstable particles), .false. => out width
   ! * integer :: mesonID, baryonID            -- ID's of the decay products which one is interested in
-  ! * real, optional :: mesonMass, baryonMass -- Possibility to define the masses of the incoming baryon and meson, 
-  !                                              needed in the case of the In-Width if one of them is off-shell. 
+  ! * real, optional :: mesonMass, baryonMass -- Possibility to define the masses of the incoming baryon and meson,
+  !                                              needed in the case of the In-Width if one of them is off-shell.
   !                                              Otherwise not relevant.
   !*****************************************************************************
   function partialwidthBaryon (ID, mass, inWidth, mesonID, baryonID, mesonMass, baryonMass) result(width)
@@ -146,8 +146,8 @@ contains
           massIndex=maxIndexMass
        end if
 
-       ! Decide wether you need the width to scatter into the resonance or out of the resonance. And return 
-       ! the compressed decay ratios and the full width. Compressed means summed over all angular momenta of a 
+       ! Decide wether you need the width to scatter into the resonance or out of the resonance. And return
+       ! the compressed decay ratios and the full width. Compressed means summed over all angular momenta of a
        ! specific decay product.
        width=0.
 
@@ -162,7 +162,7 @@ contains
                 If (Decay2BodyBaryon(dId)%stable(1) .and. Decay2BodyBaryon(dId)%stable(2)) then
                    !STABLE FINAL STATE
                    !hier fehlen die IsoSpion-Clebsche, ansonsten Formel 2.77 aus Effenbergers Dr.-Arbeit:
-                   width = width + gammaField(ID,massIndex)%ratio(i) * gammaField(ID,massIndex)%gammaTotal  
+                   width = width + gammaField(ID,massIndex)%ratio(i) * gammaField(ID,massIndex)%gammaTotal
                 else
                    ! UNSTABLE FINAL STATE
                    ! Evaluate momentum of products in resonance rest frame
@@ -172,7 +172,7 @@ contains
                       momentum = pCM(mass, hadron(mesonID)%mass, hadron(baryonID)%mass, lDummy)
                    end if
                    partialVacuumWidth=hadron(ID)%width*hadron(ID)%decays(i)
-                   if (partialVacuumWidth<1E-6) cycle 
+                   if (partialVacuumWidth<1E-6) cycle
                    ! Get Angular momentum of decay products
                    L = getAngularMomentum_baryon(i,ID)
                    !hier fehlen die IsoSpion-Clebsche, ansonsten Formel 2.77 aus Effenbergers Dr.-Arbeit:
@@ -249,7 +249,7 @@ contains
        !       Write(*,*) 'Mass of resonance is out of bounds. Mass=', mass
        !       write(*,*) 'ID=',ID
        FullWidthBaryon = gammaField(ID,maxIndexMass)%gammaTotal
-    else 
+    else
        ! Do linear interpolation between next two grid points "down" and "down+1"
        down = floor((mass-hadron(ID)%minmass)/deltaMass)
        mass_down = hadron(ID)%minmass+float(down)*deltaMass
@@ -266,7 +266,7 @@ contains
   ! NAME
   ! function decayWidthBaryon (ID, mass) result(decayWidth)
   ! PURPOSE
-  ! This function returns the mass-dependent partial widths of all decay channels. 
+  ! This function returns the mass-dependent partial widths of all decay channels.
   ! INPUTS
   ! * integer :: ID -- id of resonance
   ! * real :: mass -- p_mu p^mu = mass of the resonance (offshell)
@@ -314,7 +314,7 @@ contains
         decayWidth(i) = 0.
       else If (mass > hadron(ID)%minmass+deltaMass*(maxIndexMass-1)) then
         decayWidth(i) = gamma_tot * gammaField(ID,maxIndexMass)%ratio(i)
-      else 
+      else
         ! Do linear interpolation between next two grid points "down" and "down+1"
         decayWidth(i) = gamma_tot * (gammaField(ID,down  )%ratio(i) * (1.-weight) + &
                                      gammaField(ID,down+1)%ratio(i) *     weight)
@@ -349,9 +349,9 @@ contains
 
     call Write_InitStatus("widths of the baryons",0)
 
-    ! allocate the field which holds the decay ratio information for each baryon, depending on mass, 
+    ! allocate the field which holds the decay ratio information for each baryon, depending on mass,
     ! first index: baryon ID
-    ! second index : mass 
+    ! second index : mass
     Allocate(gammaField(1:nbar,0:maxIndexMass))
 
     if (readTable .and. .not. get_rhoDelta_is_sigmaDelta() .and. .not. get_rho_dilep()) then
@@ -368,7 +368,7 @@ contains
 
     ! Initialize the gamma fields for the baryons by calling vacuumWidth
     do resonanceID=1,nbar
-       If (debug) then 
+       If (debug) then
           write(*,*)  "Resonance=", resonanceID
        else
           write(*,'(A)',advance='no') '.'
@@ -382,7 +382,7 @@ contains
           gammaField(resonanceID,MassIndex)%rho_AB_atPole=rho_AB_atPole
 
           !****************Debugging
-          If (debug) Write(100+resonanceId,'(6F14.9)') mass, gammaTotal 
+          If (debug) Write(100+resonanceId,'(6F14.9)') mass, gammaTotal
           If (debug .and. massIndex/=0)  then
              ! Just an important check for consistency:
              ! rho_AB_atPole must be independent of the mass index.
@@ -582,7 +582,7 @@ contains
   ! NAME
   ! real function BaryonWidth_gammaN (ID, m_R, m, charge)
   ! PURPOSE
-  ! This function calculates the decay width of a baryon resonance going 
+  ! This function calculates the decay width of a baryon resonance going
   ! into a nucleon and a gamma*,
   ! using the matrix elements from hadronTensor_ResProd.
   ! INPUTS
@@ -620,8 +620,8 @@ contains
     if (hadronTensor_R(p_N,p_R,ID,charge,EM,hadronTensor,m_R) ) then
       matrixElement_Squared = 2./(2.*s+1.) * electronChargeSQ &
                               * (-hadronTensor(0,0)+hadronTensor(1,1)+hadronTensor(2,2)+hadronTensor(3,3))
-      ! 2s+1 comes from averaging over the resonance spin 
-      ! factor 2 cancels the average over nucleon spin (which is included in hadronTensor) 
+      ! 2s+1 comes from averaging over the resonance spin
+      ! factor 2 cancels the average over nucleon spin (which is included in hadronTensor)
     else
       matrixElement_Squared = 0.
     end if
@@ -637,7 +637,7 @@ contains
   ! NAME
   ! subroutine readInput
   ! PURPOSE
-  ! Reads input in jobcard out of namelist "BaryonWidth". 
+  ! Reads input in jobcard out of namelist "BaryonWidth".
   !************************************************************************
   subroutine readInput
     use output, only: Write_ReadingInput
@@ -685,7 +685,7 @@ contains
   !
   ! NOTES
   ! * The size of BinMaxQ has to be at least the size of BinM minus 1.
-  ! * It first calculates Q at the boundaries, then it iterates over the 
+  ! * It first calculates Q at the boundaries, then it iterates over the
   !   tabulated width values in order to take into account, that the Q
   !   value may be larger inbetween the boundaries.
   ! * if the Q value is maximal at the upper bound, we store its value as
@@ -739,7 +739,7 @@ contains
   ! subroutine InitializeSpectralIntegral(massMax)
   ! PURPOSE
   ! Calculates the integral over the spectral functions and stores the
-  ! values. 
+  ! values.
   ! Prints a warning message, if the difference to unity is too large
   !************************************************************************
   subroutine InitializeSpectralIntegral(massMax)
@@ -770,7 +770,7 @@ contains
           if (massMax > mass0) arrSpectralIntegral(id) = 1.0
           cycle
        end if
-       
+
        mmin = hadron(id)%minmass
        mmax = massMax
        if (mmax < mmin) cycle ! integral is zero
@@ -805,12 +805,10 @@ contains
     end do
 
     call Write_InitStatus("baryonWidth/InitializeSpectralIntegral",1)
-    
+
 
   end subroutine InitializeSpectralIntegral
 
 
 
 end module baryonWidth
-
-

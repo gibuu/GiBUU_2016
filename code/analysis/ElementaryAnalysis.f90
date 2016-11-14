@@ -27,17 +27,17 @@ module ElementaryAnalysis
   !****g* ElementaryAnalysis/DoH2d
   ! SOURCE
   !
-  logical, save :: DoH2d=.false.    
+  logical, save :: DoH2d=.false.
   ! PURPOSE
   ! if .true. than make output of 2-dimensional histograms
-  ! (they could produce files of size 240 mb)  
+  ! (they could produce files of size 240 mb)
   !*************************************************************************
 
   !*************************************************************************
   !****g* ElementaryAnalysis/Do45ForAllEvents
   ! SOURCE
   !
-  logical, save :: Do45ForAllEvents = .false. 
+  logical, save :: Do45ForAllEvents = .false.
   ! PURPOSE
   ! flag to decide,
   ! whether DoElementaryAnalysis4(5).dat is written for all events
@@ -48,7 +48,7 @@ module ElementaryAnalysis
   !****g* ElementaryAnalysis/DodNNbar
   ! SOURCE
   !
-  logical, save :: DodNNbar=.false.    
+  logical, save :: DodNNbar=.false.
   ! PURPOSE
   !*************************************************************************
 
@@ -56,7 +56,7 @@ module ElementaryAnalysis
   !****g* ElementaryAnalysis/DoPanda
   ! SOURCE
   !
-  logical, save :: DoPanda=.false.    
+  logical, save :: DoPanda=.false.
   ! PURPOSE
   ! if .true., elementary analysis for channels with S = -2 and -3 (Xi, Omega)
   !*************************************************************************
@@ -65,7 +65,7 @@ module ElementaryAnalysis
   !****g* ElementaryAnalysis/Dodsigdt
   ! SOURCE
   !
-  logical, save :: Dodsigdt=.false.    
+  logical, save :: Dodsigdt=.false.
   ! PURPOSE
   !*************************************************************************
 
@@ -73,7 +73,7 @@ module ElementaryAnalysis
   !****g* ElementaryAnalysis/Do2Part
   ! SOURCE
   !
-  logical, save :: Do2Part=.false.    
+  logical, save :: Do2Part=.false.
   ! PURPOSE
   !*************************************************************************
 
@@ -139,13 +139,13 @@ contains
   !
   ! INPUTS
   ! * type(particle), dimension(:,:) :: realparticles  --  real particle vector
-  ! * logical :: finalFlag -- .true. if it is the last call for one specific 
+  ! * logical :: finalFlag -- .true. if it is the last call for one specific
   !   energy, therefore final output must be made.
-  ! 
+  !
   ! RESULT
   ! * total, elastic and strangeness production cross sections (mbarn)
-  ! * pion (pi^-,pi^0,pi^+), 
-  !   kaon (K^0,K^+), antikaon (K^-,Kbar^0), 
+  ! * pion (pi^-,pi^0,pi^+),
+  !   kaon (K^0,K^+), antikaon (K^-,Kbar^0),
   !   pion Lambda and pion Sigma (S^-,S^0,S^+)
   !   production cross sections (mbarn)
   !
@@ -159,7 +159,7 @@ contains
   ! See the headers of these files for their contents.
   !
   ! NOTES
-  ! * The files "OutChannels.nnn.dat" list the cross section for every 
+  ! * The files "OutChannels.nnn.dat" list the cross section for every
   !   ouput channel that occured in the run !
   !*************************************************************************
   subroutine DoElementaryAnalysis (realparticles, finalFlag)
@@ -184,7 +184,7 @@ contains
     use PreEvList, only: CreateSortedPreEvent, PreEvList_CLEAR, PreEvList_INIT, PreEvList_INSERT, PreEvList_Print
     use constants, only : pi, mN, mPi
 
-    type(particle), dimension(:,:), intent(in), target :: realparticles 
+    type(particle), dimension(:,:), intent(in), target :: realparticles
     logical, intent (in)             :: finalFlag
 
     character(15),dimension(2) :: name
@@ -197,7 +197,7 @@ contains
                   sigma_3pion_pbarp(-1:1),sigma_4pion_pbarp,sigma_2pion,sigma_2pion_Eta,sigma_2pion_KKbar
     real, save :: sigma_antikaon_nucleon
     real, save :: sigma_pion_Lambda,sigma_pion_Sigma(-1:1)
-    integer, parameter :: N_max=100             ! Maximum number of particles produced in an event 
+    integer, parameter :: N_max=100             ! Maximum number of particles produced in an event
     real, save :: P_Npion(0:N_max)             ! Pion multiplicity distribution
     real, save :: sigma_prong(0:N_max)         ! topological Xsections
     integer, parameter :: Nmom=100             ! Number of momentum bins
@@ -301,7 +301,7 @@ contains
        P_Npion=0.
        sigma_prong=0.
        pion_events=0.
-       dNpiondMom=0.       
+       dNpiondMom=0.
        sigma_2pion=0.
        sigma_2pion_Eta=0.
        sigma_2pion_KKbar=0.
@@ -326,7 +326,7 @@ contains
           sigma_SmpToS0n = 0.
           sigma_I0LL = 0.0
           sigma_I1SL = 0.0
-          sigma_LS0 = 0. 
+          sigma_LS0 = 0.
           sigma_Xi0n = 0.
           sigma_LSm = 0.
 
@@ -340,7 +340,7 @@ contains
           sigma_OmegaP_to_Xi0Lambda = 0.0
           sigma_OmegaP_to_Xi0Sigma0 = 0.0
           sigma_OmegaP_to_XimSigmap = 0.0
-          sigma_OmegaN_to_XimLambda = 0.0 
+          sigma_OmegaN_to_XimLambda = 0.0
           sigma_OmegaN_to_XimSigma0 = 0.0
           sigma_OmegaN_to_Xi0Sigmam = 0.0
 
@@ -349,7 +349,7 @@ contains
           sigma_OmegaP_to_Xi0LambdaX = 0.0
           sigma_OmegaP_to_Xi0Sigma0X = 0.0
           sigma_OmegaP_to_XimSigmapX = 0.0
-          sigma_OmegaN_to_XimLambdaX = 0.0 
+          sigma_OmegaN_to_XimLambdaX = 0.0
           sigma_OmegaN_to_XimSigma0X = 0.0
           sigma_OmegaN_to_Xi0SigmamX = 0.0
 
@@ -371,7 +371,7 @@ contains
        do i=-1,1
          call CreateHist(hEnergyPion(i), 'dsigma/dE, <pT2>(E) '//piName(i), &
              & 0.0, Emax, 0.02)
-        
+
          if(DoH2d) then
             call CreateHist2D(h2dMomentPion(i), 'dsigma/dpL dpT2, '//piName(i), &
                 & (/-1.0,0.0/), (/p_lab+1.0,pT2max/), (/0.02,0.02/) , .true.)
@@ -512,8 +512,8 @@ contains
              pT2= pPart%momentum(1)**2+pPart%momentum(2)**2
 
              if(DoH2d) then
-                call AddHist2D(h2dMomentPion(pPart%charge), (/pL,pT2/), 1.0) 
-                call AddHist2D(h2dEnergyPion(pPart%charge), (/pPart%momentum(0),pT2/), 1.0) 
+                call AddHist2D(h2dMomentPion(pPart%charge), (/pL,pT2/), 1.0)
+                call AddHist2D(h2dEnergyPion(pPart%charge), (/pPart%momentum(0),pT2/), 1.0)
              end if
              call AddHist(hEnergyPion(pPart%charge), pPart%momentum(0), 1.0, pT2)
           case(eta)
@@ -523,11 +523,11 @@ contains
           case(kaonBar)
              numKaonBar(pPart%charge)=numKaonBar(pPart%charge)+1
           case(JPsi)
-             sigma_JPsi=sigma_JPsi+1.             
+             sigma_JPsi=sigma_JPsi+1.
           end select
 
           if (isStrange(pPart%ID)) flag3 = .true. ! do not reset to .false. !
-          
+
           if (pPart%ID.ne.pion) flag_not_only_pions=.true.
 
           if(isBaryon(pPart%ID) .and. .not.pPart%antiParticle) numBaryons=numBaryons+1
@@ -537,7 +537,7 @@ contains
        !if( totCharge.ne.particleCharge(1)+particleCharge(2) .and. numBaryons.ne.0 ) then
        !  write(*,*)' In DoElementaryAnalysis: charge not conserved !'
        !  write(*,*)' Summary charge of incoming particles:', particleCharge(1)+particleCharge(2)
-       !  write(*,*)' Total charge of the produced event:', totCharge  
+       !  write(*,*)' Total charge of the produced event:', totCharge
        !  Particle_loop_print : do j = 1,size(realParticles,dim=2)
        !     if(realParticles(i,j)%ID <= 0) cycle Particle_loop_print
        !     write(*,*) realParticles(i,j)%ID, realParticles(i,j)%charge
@@ -560,7 +560,7 @@ contains
                   Q2=MomentumTransfer2(first,projectile)
               else
                   Q2=MomentumTransfer2(second,projectile)
-              end if            
+              end if
               call AddHist(dsigdt_elastic,Q2,1.)
          end if
 
@@ -595,7 +595,7 @@ contains
              call AddHist(dsigdt_SigmaBarLambda,Q2,1.)
          end if
 
-         
+
 
        end if
 
@@ -670,11 +670,11 @@ contains
             sigma_Lambda_LambdaBar_KKbar_X=sigma_Lambda_LambdaBar_KKbar_X+1.
           else if(numpart >=4 .and. sum(numN(:))==1 .and.  sum(numNBar(:))==1) then
             sigma_Lambda_LambdaBar_NNbar_X=sigma_Lambda_LambdaBar_NNbar_X+1.
-          end if            
-          !Particle_loop_Lambda_LambdaBar : do j = 1,size(realParticles,dim=2)   
+          end if
+          !Particle_loop_Lambda_LambdaBar : do j = 1,size(realParticles,dim=2)
           !   if(realParticles(i,j)%ID <= 0) cycle Particle_loop_Lambda_LambdaBar
-          !   write(*,*) 'Lambda_LambdaBar-event:',i,realParticles(i,j)%ID,realParticles(i,j)%charge 
-          !End Do Particle_loop_Lambda_LambdaBar          
+          !   write(*,*) 'Lambda_LambdaBar-event:',i,realParticles(i,j)%ID,realParticles(i,j)%charge
+          !End Do Particle_loop_Lambda_LambdaBar
        end if
 
        PANDA1 : if (DoPanda) then
@@ -701,37 +701,37 @@ contains
              if (numN(0)==1 .and. numLambda==1) sigma_SmpToLn = sigma_SmpToLn + 1.
              if (numN(0)==1 .and. numSigma(0)==1) sigma_SmpToS0n = sigma_SmpToS0n + 1.
 
-             !Xi + N channels: 
+             !Xi + N channels:
 
-             !Xi^- p, Xi^0 n --> Lambda Lambda : 
-             if (numLambda==2) sigma_I0LL = sigma_I0LL + 1. 
+             !Xi^- p, Xi^0 n --> Lambda Lambda :
+             if (numLambda==2) sigma_I0LL = sigma_I0LL + 1.
 
-             !Xi^- p, Xi^0 n --> Lambda Sigma^0 : 
+             !Xi^- p, Xi^0 n --> Lambda Sigma^0 :
              if (numLambda==1 .and. numSigma(0)==1) sigma_LS0 = sigma_LS0 + 1.
 
-             !Xi^- p --> Xi^0 n : 
+             !Xi^- p --> Xi^0 n :
              if (numXi(0)==1 .and. numN(0)==1) sigma_Xi0n = sigma_Xi0n + 1.
 
-             !Xi^0 p --> Lambda Sigma^+ : 
+             !Xi^0 p --> Lambda Sigma^+ :
              if (numLambda==1 .and. numSigma(1)==1) sigma_I1SL = sigma_I1SL + 1.
 
-             !Xi^- n --> Lambda Sigma^- : 
+             !Xi^- n --> Lambda Sigma^- :
              if (numLambda==1 .and. numSigma(-1)==1) sigma_LSm = sigma_LSm + 1.
 
           end if
 
-          !K^- proton --> Xi+Kaon channels: 
+          !K^- proton --> Xi+Kaon channels:
           if (numpart==2) then
              if (numXi(-1)==1 .and. numKaon(1)==1) sigma_KbarNuk_to_XiK(1) = sigma_KbarNuk_to_XiK(1) + 1.
              if (numXi(0)==1  .and. numKaon(0)==1) sigma_KbarNuk_to_XiK(2) = sigma_KbarNuk_to_XiK(2) + 1.
           endif
-          !K^- proton --> Xi+Kaon+1pion channels: 
+          !K^- proton --> Xi+Kaon+1pion channels:
           if (numpart==3) then
-             if (numXi(-1)==1 .and. numKaon(0)==1 .and. numPi(1)==1) & 
+             if (numXi(-1)==1 .and. numKaon(0)==1 .and. numPi(1)==1) &
                   & sigma_KbarNuk_to_XiK(3) = sigma_KbarNuk_to_XiK(3) + 1.
-             if (numXi(-1)==1 .and. numKaon(1)==1 .and. numPi(0)==1) & 
+             if (numXi(-1)==1 .and. numKaon(1)==1 .and. numPi(0)==1) &
                   & sigma_KbarNuk_to_XiK(4) = sigma_KbarNuk_to_XiK(4) + 1.
-             if (numXi(0)==1 .and. numKaon(1)==1 .and. numPi(-1)==1) & 
+             if (numXi(0)==1 .and. numKaon(1)==1 .and. numPi(-1)==1) &
                   & sigma_KbarNuk_to_XiK(5) = sigma_KbarNuk_to_XiK(5) + 1.
           endif
           if (numXi(-1)==1) sigma_KbarNuk_to_XiMinus_X = sigma_KbarNuk_to_XiMinus_X + 1.
@@ -758,7 +758,7 @@ contains
           end if
           if(numpart==3 .and. numEtas==1) sigma_2pion_Eta=sigma_2pion_Eta+1.
           if(numpart==4 .and. sum(numKaon(:))==1 .and. sum(numKaonBar(:))==1)&
-             &sigma_2pion_KKbar=sigma_2pion_KKbar+1. 
+             &sigma_2pion_KKbar=sigma_2pion_KKbar+1.
        end if
 
        !*** KKbar production in Nbar N annihilation: ************************************
@@ -766,9 +766,9 @@ contains
        if( sum(numKaon(:))==1 .and. sum(numKaonBar(:))==1 ) then
 
           if(numpart==2) then   ! K Kbar
-   
+
              if(numKaon(0)==1 .and. numKaonBar(-1)==1) then
-                sigma_KKbar(1)=sigma_KKbar(1)+1.           !  K^0 K^- 
+                sigma_KKbar(1)=sigma_KKbar(1)+1.           !  K^0 K^-
              else if(numKaon(1)==1 .and. numKaonBar(-1)==1) then
                 sigma_KKbar(2)=sigma_KKbar(2)+1.           !  K^+ K^-
              else if(numKaon(0)==1 .and. numKaonBar(0)==1) then
@@ -799,14 +799,14 @@ contains
              end if
 
           else if(numKaon(0)==1 .and. numKaonBar(0)==1) then
- 
+
              if(numpart==3 .and. numPions==1) then
                 sigma_KKbar(11)=sigma_KKbar(11)+0.25                 ! pi^0 2K^0_S   or  pi^- 2K^0_S
              else if(numpart==4 .and. numPions==2 .and. numPi(-1)==1) then
                 sigma_KKbar(12)=sigma_KKbar(12)+0.25                 ! pi^- pi^+ 2K^0_S   or  pi^0 pi^- 2K^0_S
-             else if(numpart==5 .and. numPions==3 .and. numPi(0)<=1) then 
+             else if(numpart==5 .and. numPions==3 .and. numPi(0)<=1) then
                 sigma_KKbar(13)=sigma_KKbar(13)+0.25               ! pi^- pi^0 pi^+ 2K^0_S   or   pi^+ pi^- pi^- 2K^0_S
-             else if(numpart==6 .and. numPions==4) then 
+             else if(numpart==6 .and. numPions==4) then
                 if(numPi(0)==0) then
                    sigma_KKbar(14)=sigma_KKbar(14)+0.25               ! pi^- pi^- pi^+ pi^+ 2K^0_S
                 else if(numPi(0)==2) then
@@ -815,10 +815,10 @@ contains
              end if
 
           else if(numKaon(1)==1 .and. numKaonBar(-1)==1) then
- 
-             if(numpart==3 .and. numPions==1) then 
+
+             if(numpart==3 .and. numPions==1) then
                 sigma_KKbar(16)=sigma_KKbar(16)+1.                 ! pi^0 K^+ K^-   or   pi^- K^+ K^-
-             else if(numpart==4 .and. numPions==2 .and. numPi(-1)==1) then 
+             else if(numpart==4 .and. numPions==2 .and. numPi(-1)==1) then
                 sigma_KKbar(17)=sigma_KKbar(17)+1.                 ! pi^- pi^+ K^+ K^-   or  pi^- pi^0  K^+ K^-
              else if(numpart==5 .and. numPions==3 .and. numPi(0)<=1) then
                 sigma_KKbar(18)=sigma_KKbar(18)+1.                 ! pi^- pi^0 pi^+ K^+ K^-  or  pi^+ pi^- pi^- K^+ K^-
@@ -832,7 +832,7 @@ contains
 
 
        PANDA2 : if (DoPanda) then
-          
+
           !Omega production channels
           if (numOmega==1) then
              !p + pbar --> Omega + OmegaBar (+X)
@@ -848,11 +848,11 @@ contains
           !rescattering channels including Omega baryon (exclusive):
           if (numpart==2) then
 
-             if ( (numXi(-1)==1 .or. numXi(0)==1) .and. & 
+             if ( (numXi(-1)==1 .or. numXi(0)==1) .and. &
                   & (numLambda==1 .or. numSigma(-1)==1 .or. numSigma(0)==1 .or. numSigma(1)==1) ) then
                 sigma_OmegaToXi = sigma_OmegaToXi + 1.
              endif
-          
+
              !Omega^- + proton channels:
              if (numXi(0)==1 .and. numLambda==1) sigma_OmegaP_to_Xi0Lambda = sigma_OmegaP_to_Xi0Lambda + 1.
              if (numXi(0)==1 .and. numSigma(0)==1) sigma_OmegaP_to_Xi0Sigma0 = sigma_OmegaP_to_Xi0Sigma0 + 1.
@@ -865,11 +865,11 @@ contains
 
           else
 
-             if ( (numXi(-1)==1 .or. numXi(0)==1) .and. & 
+             if ( (numXi(-1)==1 .or. numXi(0)==1) .and. &
                   & (numLambda==1 .or. numSigma(-1)==1 .or. numSigma(0)==1 .or. numSigma(1)==1) ) then
                 sigma_OmegaToXiX = sigma_OmegaToXiX + 1.
              endif
-          
+
              !Omega^- + proton channels:
              if (numXi(0)==1 .and. numLambda==1) sigma_OmegaP_to_Xi0LambdaX = sigma_OmegaP_to_Xi0LambdaX + 1.
              if (numXi(0)==1 .and. numSigma(0)==1) sigma_OmegaP_to_Xi0Sigma0X = sigma_OmegaP_to_Xi0Sigma0X + 1.
@@ -883,26 +883,26 @@ contains
           endif
 
        endif PANDA2
-       
+
        !##########
        if( (.not.flag_not_only_pions .and. numBaryons.eq.0) .or. Do45ForAllEvents) then
 
           pion_events=pion_events+1.
-          
+
           P_Npion(numPions)=P_Npion(numPions)+1.
 !          P_Npion(numChPart)=P_Npion(numChPart)+1.
-          
+
           Particle_loop2 : do j = 1,size(realParticles,dim=2)
-             
+
              if(realParticles(i,j)%ID <= 0) cycle Particle_loop2
-             
+
              if(realParticles(i,j)%ID .ne. pion) cycle Particle_loop2
-             
+
              pPart => realParticles(i,j)
-             
+
              momentum=pPart%momentum
              call lorentz(beta,momentum)
-             
+
              momentumAbs=sqrt(dot_product(momentum(1:3),momentum(1:3)))
              ibin=nint((momentumAbs-dmom/2.)/dmom)+1
              if(ibin.ge.1 .and. ibin.le.Nmom .and. pPart%charge.ne.0) then
@@ -918,7 +918,7 @@ contains
              call AddHist(dNpiondPhi,Phii,1.)
 
           End do Particle_loop2
-          
+
        end if
        !##########
 
@@ -927,7 +927,7 @@ contains
           if(realParticles(i,j)%ID <= 0) cycle Particle_loop3
           if(realParticles(i,j)%ID.eq.rho) call AddHist(dNrhodM,realParticles(i,j)%mass,1.)
           if(realParticles(i,j)%ID.eq.omegaMeson) call AddHist(dNomegadM,realParticles(i,j)%mass,1.)
-       end do Particle_loop3 
+       end do Particle_loop3
        !####################
 
        !##############
@@ -972,7 +972,7 @@ contains
     fnorm=siggeo/float(numensembles)/float(isu)
 
     do i=-1,1
-       
+
        if(DoH2d) then
           call WriteHist2D_Gnuplot(h2dMomentPion(i),141, add=1e-20,mul=fnorm,&
                &file='DoElementaryAnalysis6_p.'//piName(i)//'.'//intToChar(nwrite)//'.dat')
@@ -1006,7 +1006,7 @@ contains
                & '  pi-:   pi0:   pi+:   K+:    K-:    K0(ann,nonann):  Kbar0(ann,nonann):',&
                & '  LambdaLambdaBar:     LambdaLambdaBarX:',&
                & '  LambdaLambdaBarPi:  ... LambdaLambdaBar10Pi:',&
-               & '  LambdaLambdaBarKKbarX:  LambdaLambdaBarNNbarX:',&  
+               & '  LambdaLambdaBarKKbarX:  LambdaLambdaBarNNbarX:',&
                & '  Str:  piLambda: piSigma^-:  piSigma^0:  piSigma^+:  sigma_prong:   sigma_Lambda_Sigma0Bar_cc'
           close(31)
           !************************************************************************
@@ -1020,7 +1020,7 @@ contains
           write(31,'(A,I5)')              '# Number of runs at fixed energy:    ', isu
           write(31,'(3A)')                '# Elab:   p_lab:  srts:  KbarN:  NucNuc:  NucBarNuc:',&
                                          &' sigma_1pion_pbarp: sigma_2pion_pbarp:',&
-                                         &' sigma_3pion_pbarp: sigma_4pion_pbarp:' 
+                                         &' sigma_3pion_pbarp: sigma_4pion_pbarp:'
           close(31)
           !************************************************************************
           open(31,file='DoElementaryAnalysis3.dat')
@@ -1071,7 +1071,7 @@ contains
              write(31,'(A,I5)')             '# Number of runs at fixed energy:  ', isu
              write(31,'(2A)')&
                   & '# Ek_lab:  p_lab:   srts:   sigma_2pion_incl:  sigma_2pion_eta:   sigma_2pion_KKbar:',&
-                  & '  pi0 pi-:   pi0 pi0:    pi+ pi-:  pi+ pi0:' 
+                  & '  pi0 pi-:   pi0 pi0:    pi+ pi-:  pi+ pi0:'
              close(31)
              !************************************************************************
              open(31,file='KKbarChannels.dat')
@@ -1104,7 +1104,7 @@ contains
              write(31,'(A)')'# 19          pi^0 K^+ K^-   or   pi^- K^+ K^-'
              write(31,'(A)')'# 20          pi^- pi^+ K^+ K^-   or  pi^- pi^0  K^+ K^-'
              write(31,'(A)')'# 21          pi^- pi^0 pi^+ K^+ K^-  or  pi^+ pi^- pi^- K^+ K^-'
-             write(31,'(A)')'# 22          pi^- pi^- pi^+ pi^+ K^+ K^-'     
+             write(31,'(A)')'# 22          pi^- pi^- pi^+ pi^+ K^+ K^-'
              close(31)
              !************************************************************************
           end if
@@ -1136,7 +1136,7 @@ contains
           end if
 
        end if
-          
+
        !Normas:
        sigma_total=sigma_total*fnorm
        sigma_elastic=sigma_elastic*fnorm
@@ -1227,7 +1227,7 @@ contains
             & sigma_ANN, sigma_Y,&
             & sigma_pion(-1:1), sum(sigma_kaon(1,:)), sum(sigma_antikaon(-1,:)),&
             & sigma_kaon(0,1),sigma_kaon(0,2),sigma_antikaon(0,1),sigma_antikaon(0,2),&
-            & sigma_Lambda_LambdaBar,sigma_Lambda_LambdaBar_X,& 
+            & sigma_Lambda_LambdaBar,sigma_Lambda_LambdaBar_X,&
             & sigma_Lambda_LambdaBar_Pions(1:10),sigma_Lambda_LambdaBar_KKbar_X,&
             & sigma_Lambda_LambdaBar_NNbar_X,&
             & sigma_strangeness, sigma_pion_Lambda, sigma_pion_Sigma(-1:1),&
@@ -1238,13 +1238,13 @@ contains
 
           !Lambda(Sigma)+nucleon rescattering:
           open(31,file='Panda1.dat',position='append')
-          write(31,'(8e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, & 
+          write(31,'(8e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, &
                & sigma_LpToS0p,sigma_SmpToLn,sigma_SmpToS0n
           close(31)
 
           !Xi+nucleon rescattering:
           open(31,file='Panda2.dat',position='append')
-          write(31,'(10e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, & 
+          write(31,'(10e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, &
                & sigma_I0LL,sigma_LS0,sigma_Xi0n, &  !Xi^- p (Xi^0 n) channels
                & sigma_LSm, & !Xi^- n
                & sigma_I1SL !Xi^0 p
@@ -1252,32 +1252,32 @@ contains
 
           !Xi-production in ppBar collisions:
           open(31,file='Panda3.dat',position='append') !p pBar --> Xi XiBar(+X)
-          write(31,'(9e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, & 
-               & sigma_Xi_XiBar_X,sigma_Xi_XiBar, & 
+          write(31,'(9e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, &
+               & sigma_Xi_XiBar_X,sigma_Xi_XiBar, &
                & sigma_Xi0_Xi0Bar_X,sigma_Xi0_Xi0Bar
           close(31)
-          
+
           !Xi-production in Antikaon+Nucleon collisions:
-          open(31,file='Panda4.dat',position='append') 
-          write(31,'(11e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, & 
+          open(31,file='Panda4.dat',position='append')
+          write(31,'(11e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, &
                sigma_KbarNuk_to_XiK,sigma_KbarNuk_to_XiMinus_X
           close(31)
 
           !Omega(S=-3)-production:
-          open(31,file='Panda5.dat',position='append') 
-          write(31,'(11e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, & 
+          open(31,file='Panda5.dat',position='append')
+          write(31,'(11e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, &
                & sigma_OmegaBaryon, sigma_OmegaBaryonX
           close(31)
 
           !Omega(S=-3) rescattering:
-          open(31,file='Panda6.dat',position='append') 
-          write(31,'(20e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, & 
-               & sigma_OmegaToXiX, sigma_OmegaToXi, & 
-               & sigma_OmegaP_to_Xi0Lambda, sigma_OmegaP_to_Xi0LambdaX, & 
-               & sigma_OmegaP_to_Xi0Sigma0, sigma_OmegaP_to_Xi0Sigma0X, & 
-               & sigma_OmegaP_to_XimSigmap, sigma_OmegaP_to_XimSigmapX, & 
-               & sigma_OmegaN_to_XimLambda, sigma_OmegaN_to_XimLambdaX, & 
-               & sigma_OmegaN_to_XimSigma0, sigma_OmegaN_to_XimSigma0X, & 
+          open(31,file='Panda6.dat',position='append')
+          write(31,'(20e13.6)') ekin_lab, p_lab, srts, sigma_total, sigma_elastic, &
+               & sigma_OmegaToXiX, sigma_OmegaToXi, &
+               & sigma_OmegaP_to_Xi0Lambda, sigma_OmegaP_to_Xi0LambdaX, &
+               & sigma_OmegaP_to_Xi0Sigma0, sigma_OmegaP_to_Xi0Sigma0X, &
+               & sigma_OmegaP_to_XimSigmap, sigma_OmegaP_to_XimSigmapX, &
+               & sigma_OmegaN_to_XimLambda, sigma_OmegaN_to_XimLambdaX, &
+               & sigma_OmegaN_to_XimSigma0, sigma_OmegaN_to_XimSigma0X, &
                & sigma_OmegaN_to_Xi0Sigmam, sigma_OmegaN_to_Xi0SigmamX
           close(31)
 
@@ -1305,7 +1305,7 @@ contains
        if (pion_events.gt.0) then
           pinumAv=0.
           do j=0,N_max
-             pinumAv=pinumAv+float(j)*P_Npion(j) 
+             pinumAv=pinumAv+float(j)*P_Npion(j)
              write(31,*) j, P_Npion(j)
           end do
           write(31,*)'# Norma: ', sum(P_Npion(:))
@@ -1325,7 +1325,7 @@ contains
        write(31,*)'# sigma_elastic: ', sigma_elastic
        write(31,*)'# momentum, GeV/c:    dNpiondMom, c/GeV:'
        if (pion_events.gt.0) then
-          do j=1,Nmom 
+          do j=1,Nmom
              write(31,'(f6.3,8(1x,e10.3))')  (float(j)-0.5)*dmom, dNpiondMom(j,0), &
                   & dNpiondMom(j,1:6), sum(dNpiondMom(j,7:10))
           end do
@@ -1369,11 +1369,11 @@ contains
           open(31,file='TwoPionChannels.dat',position='append')
           write(31,5) ekin_lab, p_lab, srts, sigma_2pion, sigma_2pion_eta, sigma_2pion_KKbar,&
                &sigma_pipi(1:4)
-          close(31) 
+          close(31)
 
           open(31,file='KKbarChannels.dat',position='append')
           write(31,'(22(1x,e13.6))') ekin_lab, p_lab, srts, sigma_KKbar(1:19)
-          close(31) 
+          close(31)
 
        end if
 

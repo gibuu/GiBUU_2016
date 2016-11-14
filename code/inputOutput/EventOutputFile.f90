@@ -751,7 +751,7 @@ contains
   ! Therefore we allocate an array of "tParticleList". Unfortunately we can
   ! not use the "firstevent" entry directly as array index, since this
   ! is not starting with 1 and continously increasing for all kind
-  ! of eventtypes. Therefore we (ab)use the module "PILIndex", which 
+  ! of eventtypes. Therefore we (ab)use the module "PILIndex", which
   ! implements methods of "indexing". (We do not use the possibility of
   ! reallocating as provided by the module "PILIndex".)
   !*****************************************************************************
@@ -796,7 +796,7 @@ contains
              call ValueListAllocate(ValueList, size(IndexList%PartNumber))
              call ParticleList_APPEND(ValueList(-iiFE), pPart)
           endif
- 
+
        end do PartLoop
     end do
 

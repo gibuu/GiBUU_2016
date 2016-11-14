@@ -8,11 +8,11 @@
 !  Modified : 04/05/05 R. Holzmann  added resolution function
 !  Modified : 24/06/05 R. Holzmann  added pair acceptance
 !  Modified : 20/07/05 R. Holzmann  fixed error messages on input
-!  Modified : 06/02/06 R. Holzmann  support for diff. matrix sizes (v1.0) 
-!  Modified : 15/04/08 R. Holzmann  added function to set resolution (v1.1) 
+!  Modified : 06/02/06 R. Holzmann  support for diff. matrix sizes (v1.0)
+!  Modified : 15/04/08 R. Holzmann  added function to set resolution (v1.1)
 !  Modified : 07/02/09 R. Holzmann  added p-dependant Eloss in smear4momentum()
 !  Modified : 16/04/09 R. Holzmann  theta and phi resolution from Ar+KCl embedding
-!  Modified:  15/02/11 R. Holzmann  added support for non-gaussian momentum smearing 
+!  Modified:  15/02/11 R. Holzmann  added support for non-gaussian momentum smearing
 !  Mofified:  20/04/11 J. Weil      use stream I/O, generic intrinsics, etc
 !*******************************************************************************
 ! This file contains three modules:
@@ -67,7 +67,7 @@ contains
       case (0)  ! nearest neighbour
         if (u>-0.5 .and. u<=0.5) then
           kernel = 1.
-        else 
+        else
           kernel = 0.
         end if
 
@@ -75,7 +75,7 @@ contains
         ua = abs(u)
         if (ua<1.) then
           kernel = 1.-ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -85,7 +85,7 @@ contains
           kernel = 1.0-2.*ua*ua
         else if (ua<=1.5) then
           kernel = 1.5+(ua-2.5)*ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -95,7 +95,7 @@ contains
           kernel = 0.75-ua*ua
         else if (ua<=1.5) then
           kernel = 1.125+0.5*(ua-3.)*ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -105,7 +105,7 @@ contains
           kernel = 1.+(ua-2.)*ua*ua
         else if (ua<=2.) then
           kernel = 4.+((5.-ua)*ua-8.)*ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -115,7 +115,7 @@ contains
           kernel = 2./3.+(0.5*ua-1.)*ua*ua
         else if (ua<=2.) then
           kernel = 4./3.+((1.-ua/6.)*ua-2.)*ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -125,7 +125,7 @@ contains
           kernel = 1.+(1.5*ua-2.5)*ua*ua
         else if (ua<=2.) then
           kernel = 2.+((2.5-0.5*ua)*ua-4.)*ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -136,7 +136,7 @@ contains
           kernel = 8./9.+(7./6.*ua-2.)*ua*ua
         else if (ua<=2.) then
           kernel = 16./9.+((2.-7./18.*ua)*ua-10./3.)*ua
-        else 
+        else
           kernel = 0.
         end if
 
@@ -183,7 +183,7 @@ contains
 
       if (x>=(pos-ns*sig) .or. x<=(-lg10/left+pos-ns*sig)) then
          argn = 0.
-      else 
+      else
          argn = 1.
       end if
 
@@ -836,7 +836,7 @@ contains
       theta = abs(sampleGauss(theta,sigthms)) ! smear polar angle
       if (theta>pi) theta = twopi - theta  ! if > pi, mirror angle
       if (sinth>0.01) phi = sampleGauss(phi,sigphms/sinth) ! smear azimuth
-      if (phi<0.) phi = phi + twopi        ! and check if within range 
+      if (phi<0.) phi = phi + twopi        ! and check if within range
       if (phi>twopi) phi = phi - twopi
 
       sinth = sin(theta)
@@ -878,9 +878,9 @@ contains
 
       if (pid==2 .or. pid==3) then        ! e+ or e-
          mass = 0.000510998918
-      else if (pid==8 .or. pid==9) then   ! pi+ or pi- 
+      else if (pid==8 .or. pid==9) then   ! pi+ or pi-
          mass = 0.13957018
-      else if (pid==11 .or. pid==12) then ! K+ or K- 
+      else if (pid==11 .or. pid==12) then ! K+ or K-
          mass = 0.493677
       else if (pid==14) then                ! proton
          mass = 0.938272029
@@ -1012,7 +1012,7 @@ contains
       if (ilo<0 .or. jlo<0 .or. klo<0) return
       if (ihi>xdim+1 .or. jhi>ydim+1 .or. khi>zdim+1) return
 
-      sum_ = 0. 
+      sum_ = 0.
       do i=ilo,ihi                      ! triple interpolation loop
         u = (mass - (real(i)-0.5)*dm-mmin)/dm
         Kx = kernel(u,mod_)

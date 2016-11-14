@@ -8,7 +8,7 @@
 module mesonWidthMedium_tables
 
   use IDTable
-  
+
   implicit none
   PRIVATE
 
@@ -69,7 +69,7 @@ contains
   ! NAME
   ! subroutine readInput
   ! PURPOSE
-  ! Reads input in jobcard out of namelist "mesonWidthMedium_tables". 
+  ! Reads input in jobcard out of namelist "mesonWidthMedium_tables".
   !***************************************************************************
   subroutine readInput
 
@@ -142,7 +142,7 @@ contains
   ! * real ,intent(in)                 :: mass          -- Mass of meson !  p_mu p^mu = mass of the meson (offshell)
   ! * real, intent (in)                :: rhoN,rhoP     -- proton and neutron density in fm^-3
   ! * logical, optional, intent(in)    :: doMassCorrect_in ! only for debugging: switch on/off mass correction
-  ! 
+  !
   ! OUTPUT
   ! * real :: collisional width
   !
@@ -219,7 +219,7 @@ contains
        deltaX = (/ delta_absP(particleID), delta_Mass(particleID), delta_rhoN, delta_rhoP /)
        first = .false.
     else
-       ! Only update absP & mass parameters of the grid information 
+       ! Only update absP & mass parameters of the grid information
        minX(2)  = min_mass(particleID)
        maxX(1:2) = (/ max_absP(particleID), max_mass(particleID) /)
        deltaX(1:2) = (/ delta_absP(particleID), delta_Mass(particleID) /)
@@ -248,7 +248,7 @@ contains
     use output, only : intToChar,Write_ReadingInput
     use bzip
 
-!     character(20) :: format 
+!     character(20) :: format
     character(5) ::raute
     character(200) ::fileName
     integer :: particleID,index_absP,index_mass,index_rhoN,ios

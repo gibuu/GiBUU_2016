@@ -115,7 +115,7 @@ contains
     call InitPYR (Seed)
 
     call Write_ReadingInput('initRandom',1)
-    
+
     first = .false.
 
   end subroutine InitRan
@@ -433,7 +433,7 @@ contains
   !****s* random/ranCharge
   ! NAME
   ! subroutine ranCharge (izmin, izmax, iztot, izout, flag)
-  ! PURPOSE 
+  ! PURPOSE
   ! This subroutine distributes the charges randomly
   ! to a given total charge iztot.
   ! INPUTS

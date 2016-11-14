@@ -13,7 +13,7 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/useStatistics
   ! SOURCE
-  ! 
+  !
   logical, save :: useStatistics=.false.
   ! PURPOSE
   ! Generate statistical information using the module statistics.
@@ -33,8 +33,8 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/energyCheck
   ! SOURCE
-  ! 
-  real, save :: energyCheck=0.01   
+  !
+  real, save :: energyCheck=0.01
   ! PURPOSE
   ! Precision of energy check for each collision in GeV.
   !*****************************************************************************
@@ -43,8 +43,8 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/oneBodyProcesses
   ! SOURCE
-  ! 
-  logical,save :: oneBodyProcesses=.true. 
+  !
+  logical,save :: oneBodyProcesses=.true.
   ! PURPOSE
   ! Switch on/off one-body-induced processes.
   !*****************************************************************************
@@ -53,8 +53,8 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/oneBodyAdditional
   ! SOURCE
-  ! 
-  logical,save :: oneBodyAdditional=.true. 
+  !
+  logical,save :: oneBodyAdditional=.true.
   ! PURPOSE
   ! Switch on/off additional Pythia one-body-induced processes.
   !*****************************************************************************
@@ -62,8 +62,8 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/twoBodyProcesses
   ! SOURCE
-  ! 
-  logical,save :: twoBodyProcesses=.true. 
+  !
+  logical,save :: twoBodyProcesses=.true.
   ! PURPOSE
   ! Switch on/off two-body-induced processes.
   !*****************************************************************************
@@ -71,8 +71,8 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/twoBodyProcessesRealReal
   ! SOURCE
-  ! 
-  logical,save :: twoBodyProcessesRealReal=.true. 
+  !
+  logical,save :: twoBodyProcessesRealReal=.true.
   ! PURPOSE
   ! Switch on/off two-body-induced processes between two real particles.
   !*****************************************************************************
@@ -80,18 +80,18 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/twoBodyProcessesRealPert
   ! SOURCE
-  ! 
-  logical,save :: twoBodyProcessesRealPert=.true. 
+  !
+  logical,save :: twoBodyProcessesRealPert=.true.
   ! PURPOSE
-  ! Switch on/off two-body-induced processes between a 
+  ! Switch on/off two-body-induced processes between a
   ! real and a perturbative particle.
   !*****************************************************************************
 
   !*****************************************************************************
   !****g* collisionTerm/threeBodyProcesses
   ! SOURCE
-  ! 
-  logical,save :: threeBodyProcesses=.true. 
+  !
+  logical,save :: threeBodyProcesses=.true.
   ! PURPOSE
   ! Switch on/off three-body-induced processes.
   !*****************************************************************************
@@ -99,29 +99,29 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/threeMesonProcesses
   ! SOURCE
-  ! 
-  logical,save :: threeMesonProcesses=.false. 
+  !
+  logical,save :: threeMesonProcesses=.false.
   ! PURPOSE
   ! Switch on/off three-meson-induced processes.
   ! This are the backreactions for e.g. omega -> pi pi pi etc.
   !*****************************************************************************
 
-  
+
   !*****************************************************************************
   !****g* collisionTerm/twoPlusOneBodyProcesses
   ! SOURCE
-  ! 
-  logical,save :: twoPlusOneBodyProcesses=.false. 
+  !
+  logical,save :: twoPlusOneBodyProcesses=.false.
   ! PURPOSE
-  ! Switch on/off 2+1 body processes 
+  ! Switch on/off 2+1 body processes
   ! (two really colliding particles plus one nearby).
   !*****************************************************************************
 
   !*****************************************************************************
   !****g* collisionTerm/maxOut
   ! SOURCE
-  ! 
-  integer,save :: maxOut=100 
+  !
+  integer,save :: maxOut=100
   ! PURPOSE
   ! Maximal number of produced particles in one process.
   !*****************************************************************************
@@ -129,10 +129,10 @@ module collisionTerm
   !*****************************************************************************
   !****g* collisionTerm/printPositions
   ! SOURCE
-  ! 
-  logical,save :: printPositions=.false. 
+  !
+  logical,save :: printPositions=.false.
   ! PURPOSE
-  ! Switch on/off output of positions in real-pert collisions. 
+  ! Switch on/off output of positions in real-pert collisions.
   ! Produces statistical output.
   !*****************************************************************************
 
@@ -142,7 +142,7 @@ module collisionTerm
   !
   logical, save :: storeRho0Info = .false.
   ! PURPOSE
-  ! Flag whether in a rho0 decay the particle numbers of the 
+  ! Flag whether in a rho0 decay the particle numbers of the
   ! resulting charged pions are stored or not.
   !*****************************************************************************
 
@@ -165,7 +165,7 @@ module collisionTerm
   ! If this flag is true, then:
   ! for perturbative simulations all final state particles in a collision are set to zero;
   ! for real simulations %event index of incoming hadron is changed in the case of collision,
-  ! but actual collision is not simulated. 
+  ! but actual collision is not simulated.
   ! This is a way to mimick Glauber like calculations.
   ! NOTES
   ! The "absorption" is done with sigmaTot, not just by sigmaInEl.
@@ -178,8 +178,8 @@ module collisionTerm
   !
   logical, save :: annihilate = .false.
   ! PURPOSE
-  ! If this flag is true, then an annihilation of the antibaryons with 
-  ! the closest baryons will be simulated (by hand) starting from 
+  ! If this flag is true, then an annihilation of the antibaryons with
+  ! the closest baryons will be simulated (by hand) starting from
   ! annihilationTime.
   !*****************************************************************************
 
@@ -194,7 +194,7 @@ module collisionTerm
   ! NOTES
   ! This flag has an influence only when annihilate = .true.
   ! Before annihilationTime all the collision processes are not
-  ! activated. They start to act (if the corresponding switches 
+  ! activated. They start to act (if the corresponding switches
   ! oneBodyProcesses,twoBodyProcesses etc. are .true.) only after
   ! annihilationTime.
   !*****************************************************************************
@@ -229,11 +229,11 @@ module collisionTerm
   !
   logical, save :: noRecollisions = .false.
   ! PURPOSE
-  ! Outgoing particles of collisions are inserted somewhere in the particle 
+  ! Outgoing particles of collisions are inserted somewhere in the particle
   ! vector. Due to implementation issues, these outgoing particles may interact
   ! during the same timestep.
   !
-  ! Setting this flag to true, the parameter '%lastCollisionTime' is checked 
+  ! Setting this flag to true, the parameter '%lastCollisionTime' is checked
   ! against the actual time variable and collisions of these particles are
   ! excluded.
   !*****************************************************************************
@@ -337,27 +337,27 @@ contains
     write(*,*) 'Maximal number of final state particles :', maxOut
     write(*,*) 'debug              ?', debug
     write(*,*) 'protocol collisions?', collisionProtocol
-    write(*,*) 'print positions    ?', printPositions 
+    write(*,*) 'print positions    ?', printPositions
     write(*,*) 'Statistical output ?' ,useStatistics
     write(*,*) 'Switching off perturbative NN collisions:',noNucNuc
     write(*,*) 'Store pion numbers in rho0 decay:        ',storeRho0Info
     write(*,*) '              -"-      only diffractive: ',storeRho0InfoOnlyDifr
 
-    if (DoJustAbsorptive) then 
+    if (DoJustAbsorptive) then
        write(*,*)
        write(*,*) 'ATTENTION: absorptive treatment !!!!'
        write(*,*)
     endif
 
 
-    if (annihilate) then 
+    if (annihilate) then
        write(*,*)
        write(*,*) 'ATTENTION: annihilation of the antibaryons by hand !!!!'
        write(*,*) '  annihilation time:  ', annihilationTime
        write(*,*)
     endif
 
-    if (justDeleteDelta) then 
+    if (justDeleteDelta) then
        write(*,*)
        write(*,*) 'ATTENTION: Delta N N -> NNN and Delta N -> NN: Finalstate not populated !!!!'
        write(*,*) 'ATTENTION: ONLY FOR TESTING,  NOT FOR REGULAR USE !!!!'
@@ -386,8 +386,8 @@ contains
   ! We loop over the particle vectors several times in order to allow for
   ! multi-step decay chains and to make sure that everything has decayed.
   ! INPUTS
-  ! * type(particle), dimension(:,:) :: teilchenReal -- real particles 
-  ! * type(particle), dimension(:,:) :: teilchenPert -- perturbative particles 
+  ! * type(particle), dimension(:,:) :: teilchenReal -- real particles
+  ! * type(particle), dimension(:,:) :: teilchenPert -- perturbative particles
   ! * real                           :: time
   !*****************************************************************************
   subroutine ForceDecays(teilchenPert, teilchenReal, time)
@@ -406,7 +406,7 @@ contains
     !       call WriteHist(hXStot,121,file="CollTerm.XS.tot.dat",DoAve=.true.)
     !       call WriteHist(hXSElast,121,file="CollTerm.XS.elast.dat",DoAve=.true.)
 
-    If (oneBodyProcesses) then 
+    If (oneBodyProcesses) then
        ! At the end of all time steps the resonances are forced to decay:
        Do i=1,100
           ! Evaluate final decays
@@ -443,12 +443,12 @@ contains
   ! NAME
   ! subroutine collideMain (teilchenPert, teilchenReal, time)
   ! PURPOSE
-  ! Evaluates the collision term for a given real and perturbative particle vector. 
-  ! There are reactions induced by a single particle (decays), 
+  ! Evaluates the collision term for a given real and perturbative particle vector.
+  ! There are reactions induced by a single particle (decays),
   ! two particles and even three particles.
   ! INPUTS
-  ! * type(particle), dimension(:,:) :: teilchenReal -- real particles 
-  ! * type(particle), dimension(:,:) :: teilchenPert -- perturbative particles 
+  ! * type(particle), dimension(:,:) :: teilchenReal -- real particles
+  ! * type(particle), dimension(:,:) :: teilchenPert -- perturbative particles
   ! * real                           :: time
   !*****************************************************************************
   subroutine collideMain (teilchenPert, teilchenReal, time)
@@ -461,7 +461,7 @@ contains
     use CallStack, only: Traceback
     use ThreeMeson, only: DoThreeMeson
 
-    
+
     type(particle), intent(inout), dimension(:,:) :: teilchenPert, teilchenReal
     real, intent(in) :: time
 
@@ -471,7 +471,7 @@ contains
     If (initFlag) call ReadInput
 
     If (size(teilchenPert,dim=1) /= size(teilchenReal,dim=1)) then
-       write(*,*) 'Number of ensembles in real and perturbative particle vectors do not fit' 
+       write(*,*) 'Number of ensembles in real and perturbative particle vectors do not fit'
        write(*,*) 'Real :' , size(teilchenReal,dim=1)
        write(*,*) 'Perturbative :' , size(teilchenPert,dim=1)
        call Traceback('Critical Error in collideMain! Stop!')
@@ -503,13 +503,13 @@ contains
        if (DoPr(2)) Write(*,paragraph)   "3-Body Processes"
        call threeBody (teilchenPert, teilchenReal, time)
     end if
-    
+
     ! Evaluate three-meson interactions
     If (threeMesonProcesses)  then
        if (DoPr(2)) Write(*,paragraph)   "3-Meson Processes"
        call DoThreeMeson(time)
     end if
-    
+
     nullify(deuterium_pertOrigin)
 
   end subroutine collideMain
@@ -519,16 +519,16 @@ contains
   !*****************************************************************************
   !****s* collisionTerm/oneBody
   ! NAME
-  ! logical function oneBody(partPert, partReal, time, ForceFlag) 
+  ! logical function oneBody(partPert, partReal, time, ForceFlag)
   ! PURPOSE
   ! Administrates the 1-body processes (i.e. decays).
   !
   ! INPUTS
   ! * type(particle),dimension(:,:) :: partPert -- perturbative particles
-  ! * type(particle),dimension(:,:) :: partReal -- real particles 
+  ! * type(particle),dimension(:,:) :: partReal -- real particles
   ! * real    :: time      -- actual time step
   ! * logical :: ForceFlag --
-  !   .true. = let particles decay (decay probability=1), 
+  !   .true. = let particles decay (decay probability=1),
   !   do not consider the width anymore for the decay probability.
   !   This is useful at the end of a run.
   !
@@ -536,7 +536,7 @@ contains
   ! * partPert and partReal are changed.
   ! * The return value indicates whether any decays have occurred.
   !*****************************************************************************
-  logical function oneBody(partPert, partReal, time, ForceFlag) 
+  logical function oneBody(partPert, partReal, time, ForceFlag)
 
     use master_1Body, only : decayParticle
     use inputGeneral, only : fullEnsemble, numEnsembles
@@ -552,7 +552,7 @@ contains
 
     type(particle), intent(inout), dimension(:,:) :: partPert, partReal
     real, intent(in) :: time
-    logical, intent(in) :: ForceFlag 
+    logical, intent(in) :: ForceFlag
 
     integer :: index,ensemble
     type(particle),target         :: resonance   ! particle which shall decay
@@ -618,7 +618,7 @@ contains
                      partReal(ensemble,index)=finalState(i)
                      flag1=.true.
                   else
-                     ! Find empty space in the particle vector: 
+                     ! Find empty space in the particle vector:
                      If (fullensemble) then
                         call setIntoVector(finalState(i:i),partReal,setFlag)
                      else
@@ -675,7 +675,7 @@ contains
             deuterium_pertOrigin_flag=1
 
             call decayParticle(resonance,finalState,flag,pauliFlag,ForceFlag,time)
-            If((.not.PauliFlag).and.(.not.ForceFlag)) then   
+            If((.not.PauliFlag).and.(.not.ForceFlag)) then
                ! Note : a) PauliFlag is set if the Pauli Blocking was already considered in the decay width
                !        b) If particles are forced to decay then we forget about Pauli blocking
                if (.not.flag) cycle index_loop
@@ -687,6 +687,8 @@ contains
             if (.not.flag) cycle index_loop
 
             oneBody = .true.  ! at this point we know that the decay is happening
+
+            call rate((/resonance/),finalState,time)  ! Compute various collision rates
 
             ! (1a) some statistics
 
@@ -734,7 +736,7 @@ contains
 
             call CollHist_UpdateHist((/resonance/), finalState, (/ensemble,index/), posOut, resonance%perweight)
 
-            ! (4) Check that setting into perturbative particle vector worked out 
+            ! (4) Check that setting into perturbative particle vector worked out
             If (.not.setFlag) then
                write(*,*) 'Perturbative particle vector too small!'
                write(*,*) size(finalState),  lBound(partPert), uBound(partPert)
@@ -766,7 +768,7 @@ contains
   !
   ! INPUTS
   ! * type(particle),dimension(:,:) :: partPert -- perturbative particles
-  ! * type(particle),dimension(:,:) :: partReal -- real particles 
+  ! * type(particle),dimension(:,:) :: partReal -- real particles
   ! * real                          :: time         -- actual time step
   !
   ! OUTPUT
@@ -869,7 +871,7 @@ contains
 
                partIn(1) = part1
 
-               If (ensemble2.eq.ensemble1) then 
+               If (ensemble2.eq.ensemble1) then
                   index2_end=index1-1
                else
                   index2_end=size_real_dim2
@@ -906,11 +908,11 @@ contains
                   if (annihilate .and. HiEnergyType.eq.-3) cycle index2_loop
 
                   flag_3Body=.false.
-                  part3=>partReal(ensemble1,1)  ! This is just dummy setting to avoid stop when 
+                  part3=>partReal(ensemble1,1)  ! This is just dummy setting to avoid stop when
                   ! twoPlusOneBodyProcesses=.false.
 
                   ! Check for possible presence of another particles nearby
-                  ! (currently only for heavy ion collisions, for the parallel 
+                  ! (currently only for heavy ion collisions, for the parallel
                   !  ensemble mode and only for the baryons):
                   If (twoPlusOneBodyProcesses .and. eventtype==HeavyIon .and. .not.fullEnsemble &
                        .and. (isBaryon(part1%ID) .or. isBaryon(part2%ID))) then
@@ -920,7 +922,7 @@ contains
                      call check_for_Nbody((/index1,index2/),time,coll_time,&
                           & partReal(ensemble1,:),n_found,ind_found,ind_min,sigma,gamma)
 
-                     if(debug) write(*,*)'after check_for_Nbody:', n_found 
+                     if(debug) write(*,*)'after check_for_Nbody:', n_found
 
                      call Nbody_analysis((/index1,index2/),time,&
                           & partReal(ensemble1,:),n_found,ind_found,sigma,gamma)
@@ -936,7 +938,7 @@ contains
                              & finalState_3Body,flag_3Body,time,HiEnergyFlag_3Body,HiEnergyType_3Body)
                         if( .not.flag_3Body ) cycle index2_loop
                      else
-                        call sqrts_distribution((/part1,part2/),1)                    
+                        call sqrts_distribution((/part1,part2/),1)
                      end if
 
                   end If  ! End of many-body check
@@ -1016,11 +1018,11 @@ contains
                   if (DoJustAbsorptive) then
                      if (part1%id==particleId .and. (part1%antiparticle.eqv.antiparticle) .and. &
                           part1%charge==particleCharge) then
-                        part1%event=number 
+                        part1%event=number
                         cycle index1_loop
                      else if (part2%id==particleId .and. (part2%antiparticle.eqv.antiparticle) .and. &
                           part2%charge==particleCharge) then
-                        part2%event=number 
+                        part2%event=number
                         cycle index2_loop
                      end if
                   end if
@@ -1085,7 +1087,7 @@ contains
                            part3 = finalState(i)
                            flag3 = .true.
                         else
-                           ! Find empty space in the particle vector: 
+                           ! Find empty space in the particle vector:
                            If (fullensemble) then
                               call setIntoVector (finalState(i:i), partReal, setFlag, NumbersAlreadySet)
                            else
@@ -1174,7 +1176,7 @@ contains
             NULLIFY(deuterium_pertOrigin)
             deuterium_pertOrigin=>partReal(ensemble1,index1)
             deuterium_pertOrigin_flag=2
-            ensemble2_loop : do ensemble2=ensemble2_Start,ensemble2_End  
+            ensemble2_loop : do ensemble2=ensemble2_Start,ensemble2_End
                ! loop over second particle = perturbative
                index2_loop : do index2=1,size_Pert_dim2
                   part2 => partPert(ensemble2,index2)
@@ -1200,7 +1202,7 @@ contains
                   !                  If(debug) write(*,*) 'final states. IDs=',finalState%ID,'  charges=',finalState%Charge
                   !                  If(debug) write(*,*) 'HiEnergy: ',HiEnergyFlag,HiEnergyType
 
-                  flag = finalCheck((/part1,part2/), finalState, HiEnergyFlag) 
+                  flag = finalCheck((/part1,part2/), finalState, HiEnergyFlag)
                   if (.not.flag) cycle index2_loop
 
                   if (.not.pauliIsIncluded) flag = checkPauli(finalState,partReal)
@@ -1227,8 +1229,9 @@ contains
                      end if
                   end if
 
+                  call rate((/part1,part2/),finalState,time)  ! Compute various collision rates
 
-                  ! (1) Label event by eventNumber, such that we can track the perturbative particle to its 
+                  ! (1) Label event by eventNumber, such that we can track the perturbative particle to its
                   ! real scattering partner.
 
                   number = pert_numbering(part1)
@@ -1280,7 +1283,7 @@ contains
 
                   call CollHist_UpdateHist((/part1,part2S/), finalState, (/ensemble2,index2/), posOut, finalState(1)%perweight)
 
-                  ! (4) Check that setting into perturbative particle vector worked out 
+                  ! (4) Check that setting into perturbative particle vector worked out
                   If (.not.setFlag) then
                      write(*,*) 'Perturbative particle vector too small!'
                      write(*,*) size(finalState),  lBound(partPert), uBound(partPert)
@@ -1313,17 +1316,17 @@ contains
   !
   ! PURPOSE
   ! * Administrates the 2-body processes.
-  ! * The collision criteria is based upon the local collision criteria. 
-  !   Therefore the volume elements (module VolumeElements) must be 
+  ! * The collision criteria is based upon the local collision criteria.
+  !   Therefore the volume elements (module VolumeElements) must be
   !   initialized. Only scatterings within one volume element are allowed.
   !
-  ! NOTES 
-  ! For real-real collisions there is still the Kodama procedure implemented. 
+  ! NOTES
+  ! For real-real collisions there is still the Kodama procedure implemented.
   ! This shall be changed in the future.
   !
   ! INPUTS
-  ! * type(particle),intent(inOUT),target,dimension(:,:) :: partReal -- real particles 
-  ! * type(particle),intent(inOUT),target,dimension(:,:) :: partPert -- perturbative particles 
+  ! * type(particle),intent(inOUT),target,dimension(:,:) :: partReal -- real particles
+  ! * type(particle),intent(inOUT),target,dimension(:,:) :: partPert -- perturbative particles
   ! * real, intent(in) :: time
   !
   ! OUTPUT
@@ -1370,7 +1373,7 @@ contains
        ! if RealReal happened, we have to rebuild tVE_Real!
        call VolumeElements_CLEAR_Real
        call VolumeElements_SETUP_Real(partReal)
-       call VolumeElements_SETUP_Pert(partPert)       
+       call VolumeElements_SETUP_Pert(partPert)
        call realPert
     end if
 
@@ -1383,6 +1386,7 @@ contains
     subroutine realReal
       use VolumeElements, only: VolumeElements_InitGetPart_RealReal, VolumeElements_GetPart_RealReal
       use collisionNumbering, only: check_justCollided, real_numbering, real_firstnumbering, ReportEventNumber
+      use twoBodyStatistics, only : rate
 
       type(particle), pointer :: part1, part2
 
@@ -1402,7 +1406,7 @@ contains
          ! ??? should be n for n odd and (n-1) for n even ???
          ! ??? max number of pairs: n*(n-1)/2, i.e. 15,21 for n=6,7
          ! ??? number of selected pairs: n/2 (integer division), i.e 3,3 for n=6,7
-         
+
          ! Check that they didn't collide just before
          If (check_justCollided(part1,part2)) cycle
 
@@ -1418,18 +1422,20 @@ contains
          ! weightLocal=Number of real particles in volume, integer
 
          if (.not.flag) cycle
-                  
-         flag = finalCheck ((/part1,part2/), finalState, HiEnergyFlag) 
+
+         flag = finalCheck ((/part1,part2/), finalState, HiEnergyFlag)
          if (.not.flag) cycle
 
          if(.not.pauliIsIncluded) flag = checkPauli(finalState,partReal)
          if (.not.flag) cycle
 
+         call rate((/part1,part2/),finalState,time)  ! Compute various collision rates
+
          ! (1) Label event by eventNumber
          number=real_numbering()
          finalState%event(1)=number
          finalState%event(2)=number
-         
+
          finalState%lastCollisionTime = time
          finalState%perturbative = .false.
          finalState%perweight = min(Part1%perweight, Part2%perweight)
@@ -1448,7 +1454,7 @@ contains
          else
             part1%Id=0
          end if
-         
+
          If (particlePropagated(finalState(2))) then
             part2 = finalState(2)
             posOut(1:2,2) = (/iEns2,iInd2/)
@@ -1485,6 +1491,7 @@ contains
       use VolumeElements, only: VolumeElements_InitGetPart_RealPert, VolumeElements_GetPart_RealPert
       use CollHistory, only: CollHist_UpdateHist
       use collisionNumbering, only: check_justCollided, pert_numbering, pert_firstnumbering, ReportEventNumber
+      use twoBodyStatistics, only : rate
 
       logical :: numbersAlreadySet, pauliIsIncluded
       integer :: nRealPart, number2
@@ -1501,7 +1508,7 @@ contains
 
       call VolumeElements_InitGetPart_RealPert
 
-      do 
+      do
          if (.not. VolumeElements_GetPart_RealPert(part1, part2, nRealPart,iEns2,iInd2)) exit
 
          ! Check that they didn't collide just before
@@ -1522,8 +1529,8 @@ contains
          if (.not.flag) cycle
 !         If(debug) write(*,*) 'final states. IDs=',finalState%ID,'  charges=',finalState%Charge
 !         If(debug) write(*,*) 'HiEnergy: ',HiEnergyFlag,HiEnergyType
-                  
-         flag = finalCheck((/part1,part2/), finalState, HiEnergyFlag) 
+
+         flag = finalCheck((/part1,part2/), finalState, HiEnergyFlag)
          if (.not.flag) cycle
 
          if(.not.pauliIsIncluded) flag = checkPauli(finalState,partReal)
@@ -1564,7 +1571,9 @@ contains
             end if
          end if
 
-         ! (1) Label event by eventNumber, such that we can track the perturbative particle to its 
+         call rate((/part1,part2/),finalState,time)  ! Compute various collision rates
+
+         ! (1) Label event by eventNumber, such that we can track the perturbative particle to its
          ! real scattering partner.
 
          number=pert_numbering(part1)
@@ -1612,7 +1621,7 @@ contains
 
          call CollHist_UpdateHist((/part1,partS2/), finalState, (/iEns2,iInd2/), posOut, finalState(1)%perweight)
 
-         ! (4) Check that setting into perturbative particle vector worked out 
+         ! (4) Check that setting into perturbative particle vector worked out
          If (.not.setFlag) then
             write(*,*) 'Perturbative particle vector too small!'
             write(*,*) size(finalState),  lBound(partPert), uBound(partPert)
@@ -1648,7 +1657,7 @@ contains
   ! * type(particle), intent(in), optional :: p
   !
   ! OUTPUT
-  ! * file 'ProdPlaces_pionPlus.dat'    -- All saved positions of pi^+ 
+  ! * file 'ProdPlaces_pionPlus.dat'    -- All saved positions of pi^+
   ! * file 'ProdPlaces_pionNull.dat'    -- All saved positions of pi^0
   ! * file 'ProdPlaces_pionMinus.dat'   -- All saved positions of pi^-
   ! * file 'ProdPlaces_nucleon.dat'     -- All saved positions of nucleons
@@ -1712,7 +1721,7 @@ contains
   !
   ! INPUTS
   ! * type(particle),dimension(:,:) :: partPert -- perturbative particles
-  ! * type(particle),dimension(:,:) :: partReal -- real particles 
+  ! * type(particle),dimension(:,:) :: partReal -- real particles
   ! * real                          :: time         -- actual time step
   !
   ! OUTPUT
@@ -1727,11 +1736,12 @@ contains
     use collisionNumbering, only : pert_numbering,real_numbering, ReportEventNumber,real_firstnumbering
     use output, only : WriteParticleVector
     use VolumeElements, only : VolumeElements_NukSearch,VolumeElements_CLEAR,VolumeElements_SETUP_PERT, &
-         VolumeElements_SETUP_REAL !,VolumeElements_Statistics  
+         VolumeElements_SETUP_REAL !,VolumeElements_Statistics
     use CollHistory, only: CollHist_UpdateHist
     use pauliBlockingModule, only: checkPauli
     use insertion, only: particlePropagated, setIntoVector
     use CallStack, only: Traceback
+    use twoBodyStatistics, only : rate
 
     type(particle), intent(inout), dimension(:,:) :: partPert, partReal
     real, intent(in) :: time
@@ -1743,7 +1753,7 @@ contains
     type(particle), pointer:: neutron1, neutron2               ! Closest neutrons
     type(particle), pointer:: scatterPartner1, scatterPartner2 ! Particles which one is scattering with
     type(particle), dimension(1:3) :: FinalState
-    ! logical :: justDeleteDelta=.false. ! If Delta shall be just deleted - 
+    ! logical :: justDeleteDelta=.false. ! If Delta shall be just deleted -
     !                                   ! therefore energy conservation is violated.
     integer, dimension(2,maxOut) :: posOut
     type(particle) :: partS2
@@ -1784,12 +1794,12 @@ contains
           end if
 
           If (.not.successFlag) cycle
-          call make_3Body_Collision(partPert(i,j),proton1,proton2,neutron1,neutron2, & 
+          call make_3Body_Collision(partPert(i,j),proton1,proton2,neutron1,neutron2, &
                scatterPartner1,scatterPartner2,finalstate,successFlag)
 
           If (.not.successFlag) cycle
 
-          If (partPert(i,j)%ID==Delta .and. JustDeleteDelta) then 
+          If (partPert(i,j)%ID==Delta .and. JustDeleteDelta) then
              ! just delete the delta, no final state
              finalState%event(1)=pert_numbering(scatterPartner1)
              finalState%event(2)=pert_numbering(scatterPartner2)
@@ -1800,7 +1810,7 @@ contains
              cycle
           end if
 
-          successflag = finalCheck((/partPert(i,j),scatterPartner1,scatterPartner2/), finalState, .false.) 
+          successflag = finalCheck((/partPert(i,j),scatterPartner1,scatterPartner2/), finalState, .false.)
           If (.not. successFlag) cycle
           If (partPert(i,j)%ID/=Delta) then
              successflag = checkPauli(finalState,partReal)
@@ -1808,8 +1818,8 @@ contains
              ! Pauli Blocking is already included in the delta "decay width", therefore we should not count it twice!
              successFlag = .true.
           end if
-          if (.not. successflag) cycle 
-          ! (1) Label event by eventNumber, such that we can track the perturbative particle to its 
+          if (.not. successflag) cycle
+          ! (1) Label event by eventNumber, such that we can track the perturbative particle to its
           ! real scattering partner.
           finalState%event(1)=pert_numbering(scatterPartner1)
           finalState%event(2)=pert_numbering(scatterPartner2)
@@ -1824,6 +1834,8 @@ contains
           enddo
 
           call ReportEventNumber((/partPert(i,j),scatterPartner1,scatterPartner2/), finalState, finalState(1)%event, time, 3112)
+
+          call rate((/partPert(i,j),scatterPartner1,scatterPartner2/), finalState, time)
 
           ! (2) Eliminate incoming perturbative particles
           partS2 = partPert(i,j)
@@ -1844,7 +1856,7 @@ contains
 
           call CollHist_UpdateHist((/partS2,scatterPartner1,scatterPartner2/), finalState, (/i,j/), posOut, finalState(1)%perweight)
 
-          ! (4) Check that setting into perturbative particle vector worked out 
+          ! (4) Check that setting into perturbative particle vector worked out
           If (.not.successFlag) then
              write(*,*) 'Perturbative particle vector too small!'
              write(*,*) size(finalState),  lBound(partPert), uBound(partPert)
@@ -1878,11 +1890,11 @@ contains
           end if
 
           If (.not. successFlag) cycle
-          call make_3Body_Collision (partReal(i,j), proton1, proton2, neutron1, neutron2, & 
+          call make_3Body_Collision (partReal(i,j), proton1, proton2, neutron1, neutron2, &
                scatterPartner1, scatterPartner2, finalstate, successFlag)
           If (.not. successFlag) cycle
 
-          If (partReal(i,j)%ID==Delta .and. JustDeleteDelta) then 
+          If (partReal(i,j)%ID==Delta .and. JustDeleteDelta) then
              number = real_numbering()
              call ReportEventNumber((/partReal(i,j),scatterPartner1,scatterPartner2/), &
                   finalState, (/number,number/), time, 3111)
@@ -1894,7 +1906,7 @@ contains
              cycle
           end if
 
-          successflag = finalCheck((/partReal(i,j),scatterPartner1,scatterPartner2/), finalState, .false.) 
+          successflag = finalCheck((/partReal(i,j),scatterPartner1,scatterPartner2/), finalState, .false.)
           If (.not. successFlag) cycle
           If (partReal(i,j)%ID/=Delta) then
              successflag = checkPauli(finalState,partReal)
@@ -1902,7 +1914,7 @@ contains
              ! Pauli Blocking is already included in the delta "decay width", therefore we should not count it twice!
              successFlag = .true.
           end if
-          if (.not. successflag) cycle 
+          if (.not. successflag) cycle
 
           ! (1) Label event by eventNumber
           number = real_numbering()
@@ -1917,6 +1929,8 @@ contains
           finalState%firstEvent = number
 
           call ReportEventNumber((/partReal(i,j),scatterPartner1,scatterPartner2/), finalState, finalState(1)%event, time, 3111)
+
+          call rate((/partReal(i,j),scatterPartner1,scatterPartner2/), finalState, time)
 
           ! (2) Eliminate incoming particles
           partReal(i,j)%Id = 0
@@ -1947,20 +1961,20 @@ contains
   ! NAME
   ! function finalCheck(partIn, partOut, HiEnergyFlagge, woher) result(flag)
   ! PURPOSE
-  ! Checks the final state of a collision for the conservation of all 
-  ! quantum numbers,  also including momentum and energy conservation. 
+  ! Checks the final state of a collision for the conservation of all
+  ! quantum numbers,  also including momentum and energy conservation.
   !
-  ! For HiEnergy events we do not check charge and momentum conservation, 
-  ! this MUST be done separately. 
-  ! The reason for this is, that some particles which are produced by 
-  ! Pythia/Fritiof can not be propagated by BUU and therefore do not show up in 
+  ! For HiEnergy events we do not check charge and momentum conservation,
+  ! this MUST be done separately.
+  ! The reason for this is, that some particles which are produced by
+  ! Pythia/Fritiof can not be propagated by BUU and therefore do not show up in
   ! the final state vector "partOut"
   ! ("unknown particles wont be propagated").
   !
   ! INPUTS
   ! * type(particle),dimension(:)  :: partIn  -- Incoming particles
   ! * type(particle),dimension(:)  :: partOut -- Outgoing particles
-  ! * logical, optional            :: HiEnergyFlag -- 
+  ! * logical, optional            :: HiEnergyFlag --
   !   .true. if it was a HiEnergy event.
   !   if .true. then energy conservation is not checked
   !   and code does not stop if charge conservation is violated
@@ -2048,7 +2062,7 @@ contains
        end if
     end do
     if (baryon_number_In /= baryon_number_Out) then
-       if (Present(woher)) then 
+       if (Present(woher)) then
           write(*,*)'Problems in '//trim(woher)//' : Baryon number conservation'
        else
           write(*,*)'Problems in collisionTerm: Baryon number conservation'
@@ -2080,7 +2094,7 @@ contains
        end if
     end do
     if (strangeness_In /= strangeness_Out) then
-       if (Present(woher)) then 
+       if (Present(woher)) then
           write(*,*)'Problems in '//trim(woher)//' : Strangeness conservation'
        else
           write(*,*)'Problems in collisionTerm: Strangeness conservation'
@@ -2105,7 +2119,7 @@ contains
     totalCharge_In  =   Sum(partIn%charge)
     totalCharge_Out =   Sum(partOut%charge)
     if (totalCharge_In /= totalCharge_Out) then
-       if(Present(woher)) then 
+       if(Present(woher)) then
           write(*,*)'Problems in '//trim(woher)//' : Charge conservation'
        else
           write(*,*)'Problems in collisionTerm: Charge conservation'
@@ -2130,7 +2144,7 @@ contains
 
     Do k=0,3
        if(abs(momentum_In(k)-momentum_Out(k)).gt.energyCheck) then
-          if (Present(woher)) then 
+          if (Present(woher)) then
              write(*,*)'Problems in '//trim(woher)//' : Energy/momentum conservation'
           else
              write(*,*)'Problems in collisionTerm: Energy/momentum conservation'

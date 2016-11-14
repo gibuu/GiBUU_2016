@@ -70,7 +70,7 @@ contains
   ! subroutine InvMasses_Write (mul)
   !
   ! PURPOSE
-  ! Write out the histograms 
+  ! Write out the histograms
   !
   ! INPUTS
   ! * real, intent(in) :: mul -- multiplicative factor for writing histograms
@@ -136,7 +136,7 @@ contains
   ! NAME
   ! subroutine InvMasses_FillEvent(L)
   ! PURPOSE
-  ! Given one event, this routine calculates all possible invariant 
+  ! Given one event, this routine calculates all possible invariant
   ! masses and fills the corresponding histograms.
   !
   ! INPUTS
@@ -148,7 +148,7 @@ contains
   !   an additional argument to the routine. (A direct call to some
   !   routine, as done before directly in the module HiLeptonAnalysis,
   !   is not appropriate.)
-  !   
+  !
   !   It could e.g. be done as for 'FindRho0':
   !     allocate(Probs(EventArr(i,j)%particleList%nEntries))
   !     pNode => EventArr(i,j)%particleList%first
@@ -197,7 +197,7 @@ contains
 
           pNode2=>pNode1%next
           do
-             if (.not. ASSOCIATED(pNode2)) exit 
+             if (.not. ASSOCIATED(pNode2)) exit
 
              iH2 = PartClass(pNode2%V%ID,pNode2%V%charge,pNode2%V%antiparticle)
              if (iH2>0) then
@@ -222,7 +222,7 @@ contains
                   ! exclusive pi-N spectra (including resonance contributions)
                   parents1 = history_getParents (pNode1%V%history)
                   parents2 = history_getParents (pNode2%V%history)
-  
+
                   ! check if any of the two comes from a resonance decay
                   if (isBaryonResonance(parents1(1)) .and. parents1(1)==parents2(1)) then
                     ! both come from the same resonance

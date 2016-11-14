@@ -13,6 +13,7 @@ module AssignMassMC
 
   PUBLIC :: AssignMass_1
   PUBLIC :: AssignMass_2
+  PUBLIC :: AssignMass_1_Therm
 
 contains
   !*************************************************************************
@@ -38,7 +39,7 @@ contains
   ! OUTPUT
   ! * real :: mass -- the selected mass value
   ! * integer, OPTIONAL:: nReject -- number of steps in rejection method
-  ! 
+  !
   ! NOTES
   ! * mass shifts due to potentials (vector mesons) are not considered yet
   !*************************************************************************
@@ -71,13 +72,13 @@ contains
          & '("Problem in AssignMass_1: (nTry)    ID=",i3," mass= (",2G12.4,")")'
     character(*), parameter :: form2 =  &
          & '("Message in AssignMass_1: (Q-viol)  ID=",i3," mass= (",2G12.4,"): ",G12.5," Q=",G12.5)'
-    
+
     mass = 0.0
     if (present(nReject)) nReject=0
 
 !    call writeMedium(mediumAtPos)
-    
-    
+
+
 
     if (isMeson(ID)) then
        call GetMassAssInfo_Meson(MAI,ID,momLRF,mediumAtPos)
@@ -85,7 +86,7 @@ contains
     else if (isBaryon(ID)) then
        call GetMassAssInfo_Baryon(MAI,ID,momLRF,mediumAtPos)
        gamma = WidthBaryonMedium(ID,srts,momLRF,mediumAtPos)
-    else 
+    else
        call TRACEBACK("ID not allowed")
     end if
 
@@ -100,7 +101,7 @@ contains
 
 
     iTry = 0
-    do 
+    do
        iTry = iTry+1
 
        ! STEP 1: Select the mass region:
@@ -112,11 +113,11 @@ contains
        ymax = MAI%Y(iB+1)
        Qmax = MAI%Q(iB)
 
-       ! STEP 2: generate random value according Cauchy with constant width 
-       
+       ! STEP 2: generate random value according Cauchy with constant width
+
        y = ymin + rn()*(ymax-ymin)
        mass = 0.5*tan(0.5*y)*MAI%Gamma0 + MAI%Mass0
-       
+
        ! STEP 3: Do the rejection
 
        if (isMeson(ID)) then
@@ -149,13 +150,13 @@ contains
        if (present(nReject)) nReject=iTry
 
        if (rn()*Qmax <= Q) return ! ==> solution found
-       
+
        if (iTry >= nTry) then
           if (DoPr(1)) write(*,form1) ID, MAI%M(iB),MAI%M(iB+1)
           mass = MAI%Mass0
           return ! ==> solution found
        end if
-       
+
     end do
 
 
@@ -220,12 +221,12 @@ contains
     if (present(nReject)) nReject=0
 
     do i=1,2
-       
+
        if (isMeson(ID(i))) then
           call GetMassAssInfo_Meson(MAI(i),ID(i),momLRF,mediumAtPos)
        else if (isBaryon(ID(i))) then
           call GetMassAssInfo_Baryon(MAI(i),ID(i),momLRF,mediumAtPos)
-       else 
+       else
           write(*,*) i,ID(i)
           call TRACEBACK("ID not allowed")
        end if
@@ -235,13 +236,13 @@ contains
     end do
     ! we need a second loop !!!
     do i=1,2
-       
+
        if (isMeson(ID(i))) then
           gamma = WidthMesonMedium(ID(i),maxmass(i),momLRF,mediumAtPos)
        else
           gamma = WidthBaryonMedium(ID(i),maxmass(i),momLRF,mediumAtPos)
        end if
-       
+
        call SetUpperBin(MAI(i),maxmass(i),gamma,nBin(i))
     end do
 
@@ -285,7 +286,7 @@ contains
 !!$    stop
 
     iTry = 0
-    do 
+    do
        iTry = iTry+1
 
 !!$       write(*,*)
@@ -322,7 +323,7 @@ contains
              end if
              Q(i) = MassAssInfoQ(MAI(i)%Mass0,MAI(i)%Gamma0,mass(i),gamma)
           end if
-          
+
        end do
 
 !!$       write(*,*) '1:',mass(1),Q(1)
@@ -346,5 +347,71 @@ contains
 
   end subroutine AssignMass_2
 
+  !*************************************************************************
+  !****s* AssignMassMC/AssignMass_1_Therm
+  ! NAME
+  ! subroutine AssignMass_1_Therm(ID, T, srts,momLRF,mediumAtPos, mass, nReject)
+  !
+  ! PURPOSE
+  ! return a mass for a particle, which is distributed according the
+  ! actual parametrizations of the spectral function multiplied with a
+  ! Boltzmann-Factor for the temperature T, i.e. according
+  !   A(m) * m^2 * K_2(m/T)
+  !
+  ! For stable particles, it returns the pole mass, while for particles
+  ! with non-vanishing width the returned value is distributed according
+  ! a relativistiv Breit-Wigner distribution with a mass dependend width.
+  !
+  ! INPUTS
+  ! * integer :: ID -- ID of the particle
+  ! * real :: T -- Teemperature
+  ! * real :: srts -- maximal energy available
+  ! * real, dimension(0:3) :: momLRF -- momentum of resonance in LRF
+  ! * type(medium) :: mediumAtPos -- medium at position
+  !
+  ! OUTPUT
+  ! * real :: mass -- the selected mass value
+  ! * integer, OPTIONAL:: nReject -- number of steps in rejection method
+  !
+  ! NOTES
+  ! * mass shifts due to potentials (vector mesons) are not considered yet
+  !*************************************************************************
+  subroutine AssignMass_1_Therm(ID, T,srts,momLRF,mediumAtPos, mass, nReject)
+
+    use particleProperties, only: hadron
+    use besselK, only: BesselK2
+    use random
+
+    integer, intent(in) :: ID
+    real, intent(in) :: T
+    real, intent(in) :: srts
+    real,intent(in),dimension(0:3)  :: momLRF
+    type(medium),intent(in) :: mediumAtPos
+    real, intent(out) :: mass
+    integer,intent(out),OPTIONAL :: nReject
+
+    integer :: nRejectTMP,nReject2,iTry
+    real :: fak,fak0,minMass
+
+    minMass = hadron(ID)%minMass
+    fak0 = (minmass**2*BesselK2(minMass/T))
+
+    iTry=0
+    do
+       iTry = iTry+1
+
+       call AssignMass_1(ID, srts,momLRF,mediumAtPos, mass, nRejectTMP)
+
+       nReject2 = nReject2+nRejectTMP
+       !       if (present(nReject)) nReject=iTry
+       if (present(nReject)) nReject=nReject2
+
+       fak = mass**2*BesselK2(mass/T)
+
+       if(rn()*fak0 <= fak) return ! ==> solution found
+    end do
+
+
+  end subroutine AssignMass_1_Therm
 
 end module AssignMassMC

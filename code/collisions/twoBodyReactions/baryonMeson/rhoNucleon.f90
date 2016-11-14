@@ -5,7 +5,7 @@
 ! PURPOSE
 ! Includes the cross sections for rho-nucleon scattering in the resonance regime
 ! Public routines:
-! * rhoNuc 
+! * rhoNuc
 !****************************************************************************
 module rhoNucleon
   implicit none
@@ -34,12 +34,12 @@ contains
   ! * type(medium), intent(in)                      :: mediumATcollision     ! Medium informations at the position of the collision
   ! * real, intent(in) ,dimension(0:3)              :: momentumLRF           ! Total Momentum in LRF
   ! High energy matching:
-  ! * logical,intent(in)                            :: useHiEnergy            
+  ! * logical,intent(in)                            :: useHiEnergy
   ! * .true. if High-Energy cross sections are given by paramBarMesHE
-  ! * real,intent(in)                               :: HiEnergySchwelle      
+  ! * real,intent(in)                               :: HiEnergySchwelle
   ! * threshold sqrt(s) for paramBarMesHE, i.e. at which energy the cross sections of paramBarMesHE are used
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
   ! RESULT
   ! * real, intent(out)                                        :: sigmaTot         ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast       ! elastic Xsection
@@ -49,7 +49,7 @@ contains
   ! maximal 3 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established.
   ! Possible final states are :
-  ! * 1-particle : baryon Resonances 
+  ! * 1-particle : baryon Resonances
   ! * 2-particle : pi N, K Lambda, K Sigma
   !****************************************************************************
   subroutine rhoNuc (srts, teilchenIN, mediumATcollision, momentumLRF, teilchenOUT, sigmaTot, sigmaElast, &
@@ -90,7 +90,7 @@ contains
     ! Local variables
     real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities in the medium compared to the vacuum
     real :: s
-    type(particle) :: rho_particle, nucleon_particle    
+    type(particle) :: rho_particle, nucleon_particle
     logical :: antiParticleInput, failFlag
 
     antiParticleINPUT=.false. ! .true. if antiparticle in the input
@@ -103,7 +103,7 @@ contains
 
     ! (1) Check  Input
     call searchInInput(teilchenIn,rho,nucleon,rho_particle,nucleon_particle,failFlag)
-    
+
     If (failFlag) Write(*,*) 'Wrong input in RhoNuc', teilchenIn%ID
     If (abs(rho_particle%charge)>1) write(*,*) 'wrong rho charge in rhoNuc', rho_particle%charge
 
@@ -114,7 +114,7 @@ contains
     end if
 
     If (nucleon_particle%antiParticle) then
-       ! Invert all particles in antiparticles 
+       ! Invert all particles in antiparticles
        nucleon_particle%Charge        =  -nucleon_particle%Charge
        nucleon_particle%antiparticle  = .false.
        rho_particle%Charge          =  -rho_particle%Charge
@@ -153,7 +153,7 @@ contains
 
     ! (5) Check Output
     If (Sum(teilchenOut(:)%Charge).ne.nucleon_particle%charge+rho_particle%charge) then
-       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,rho_particle%Charge, & 
+       write(*,*) 'No charge conservation in pionNuc!!! Critical error' ,rho_particle%Charge, &
                   nucleon_particle%Charge, teilchenOut(:)%Charge,teilchenOut(:)%ID
        stop
     end if
@@ -215,7 +215,7 @@ contains
 
 
       !*******************************************************************************************
-      ! rho N -> R 
+      ! rho N -> R
       !*****************************************************************************************
 
       sigmaRes=0.
@@ -243,16 +243,16 @@ contains
          ratio=p_piN/p_rhoN
       else
          ratio=1.
-      end if      
+      end if
 
       !**************************************************************
-      ! -> Lambda Kaon 
+      ! -> Lambda Kaon
       !**************************************************************
       lambdaKaon=0.
       If (srts>(hadron(Lambda)%mass+mK)) then
          ! huanglam gives : pi^{-} p -> Lambda Kaon^{0}
          sigmaHuangLam = huangLam(srts) * ratio ! correction due to detailed balance
-         sigma_R = barMes_R_barMes(rho,nucleon,kaon,Lambda, & 
+         sigma_R = barMes_R_barMes(rho,nucleon,kaon,Lambda, &
                                    -1,1,0,0,.false.,.true.,Vacuum,momentum_vacuum, &
                                    rho_particle%Mass,nucleon_particle%Mass,position,perturbative,srts)
          Select Case(rho_particle%Charge)
@@ -264,7 +264,7 @@ contains
             If (nucleon_particle%Charge==0) lambdaKaon = sigmaHuangLam - sigma_R
          End Select
 
-         If (lambdaKaon<0.) then 
+         If (lambdaKaon<0.) then
             lambdaKaon=0.
             Write(*,*) 'Problem in rhoNuc : rho N -> Lambda Kaon resonance', &
                        '  Contribution greater than elementary crossSection'
@@ -276,9 +276,9 @@ contains
       ! -> Sigma Kaon
       !**************************************************************
       ! sigmaKaon(0:1) : Index is charge of final state kaon
-      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      ! 
+      ! sigmaHuang(1) = pi^{+}  p  ->   K^{+}  Sigma+      !
       ! sigmaHuang(2) = pi^{0}  p  ->   K^{+}  Sigma0       !
-      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !           
+      ! sigmaHuang(3) = pi^{-}  p  ->   K^{0}  Sigma0      !
       ! sigmaHuang(4) = pi^{-}  p  ->   K^{+}   Sigma-     !
       sigmaKaon(:)=0.
       If (srts>(hadron(SigmaResonance)%mass+mK)) then
@@ -329,7 +329,7 @@ contains
       ! Be careful since sigma elast is already included in the partial cross sections, therefore it is not
       ! included in the total cross section
 
-      sigmaTot = sum(piN) + sum(sigmaRes) + lambdaKaon + sum(sigmaKaon)  
+      sigmaTot = sum(piN) + sum(sigmaRes) + lambdaKaon + sum(sigmaKaon)
 
     end subroutine evaluateXsections
 
@@ -366,7 +366,7 @@ contains
       !############################################################
 
       ! piN production
-      Do pionCharge=-1,1 
+      Do pionCharge=-1,1
          If (piN(pionCharge)>=cut) then
             teilchenOut(1:2)%Id = (/pion,nucleon/)
             teilchenOut(1:2)%Charge = (/pionCharge,totalCharge-pionCharge/)
@@ -380,7 +380,7 @@ contains
          teilchenOut(1:2)%Id = (/kaon,Lambda/)
          teilchenOut(1:2)%Charge = (/totalCharge,0/)
          return
-      end if         
+      end if
       cut=cut-lambdaKaon
 
       ! Sigma Kaon production
@@ -417,7 +417,7 @@ contains
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV].
     ! Filenames:
-    ! * 'rhoN_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'rhoN_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'rhoN_resProd.dat'            : Baryon resonance production
     ! * 'rhoN_nonStrange_nuk.dat'     : non-strange meson with nucleon in final state
     ! * 'rhoN_strangeProd.dat'        : Kaon and hyperon in final state

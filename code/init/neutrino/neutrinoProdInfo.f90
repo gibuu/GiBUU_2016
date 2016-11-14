@@ -29,17 +29,17 @@ module neutrinoProdInfo
   end type tneutrinoProdInfo
   !
   ! PURPOSE
-  ! This holds all information we want to store connected to 
+  ! This holds all information we want to store connected to
   ! neutrino induced reactions.
   !********************************************************************
-  
+
   type(tneutrinoProdInfo),save,dimension(:),allocatable :: nuProdInfo
-  
+
   PUBLIC :: neutrinoProdInfo_Init
   PUBLIC :: neutrinoProdInfo_Store
   PUBLIC :: neutrinoProdInfo_Get
   PUBLIC :: neutrinoProdInfo_Dump
- 
+
 contains
 
   !********************************************************************
@@ -62,8 +62,8 @@ contains
   subroutine neutrinoProdInfo_Init(NumInitialEvents)
 
     integer,intent(in) :: NumInitialEvents
-    
-   
+
+
     if(allocated(nuProdInfo)) then
        DeAllocate(nuProdInfo)
     end if
@@ -99,7 +99,7 @@ contains
   !
   ! PURPOSE
   ! Store the event info connected with number "i":
-  ! 
+  !
   !
   ! INPUTS
   ! * integer :: i -- actual number of event
@@ -208,5 +208,5 @@ contains
     end if
 
   end subroutine neutrinoProdInfo_Dump
-  
+
 end module NeutrinoProdInfo

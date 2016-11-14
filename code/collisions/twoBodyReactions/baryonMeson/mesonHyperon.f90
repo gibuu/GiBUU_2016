@@ -1,3 +1,4 @@
+!****************************************************************************
 !****m* /mesonHyperon
 ! NAME
 ! module mesonHyperon
@@ -9,7 +10,7 @@
 module mesonHyperon
 
   implicit none
-  Private 
+  Private
 
   ! Debug-flags
   logical,parameter :: debugFlag=.false.
@@ -28,11 +29,11 @@ contains
   ! subroutine mesonY(srts,teilchenIN,mediumATcollision,momentumLRF,teilchenOUT,sigmaTot,sigmaElast,plotFlag)
   !
   ! PURPOSE
-  ! Evaluates Y pi -> Y^*, Lambda eta -> Lambda(1670),   
+  ! Evaluates Y pi -> Y^*, Lambda eta -> Lambda(1670),
   ! Y^* pi -> Y^*, Y pi ->  Kbar N and Y^* pi ->  Kbar N
-  !                 as well as 
+  !                 as well as
   ! Ybar pi -> Y^*bar,  LambdaBar eta -> antiLambdaBar(1670),
-  ! Y^*bar pi -> Y^*bar, Ybar pi ->  K Nbar 
+  ! Y^*bar pi -> Y^*bar, Ybar pi ->  K Nbar
   ! and Y^*bar pi ->  K Nbar cross sections and returns also a "preevent"
   !
   ! INPUTS
@@ -42,18 +43,18 @@ contains
   ! * real, intent(in) ,dimension(0:3)              :: momentumLRF           ! Total Momentum in LRF
   !
   ! Debugging:
-  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections 
-  ! 
+  ! * logical, intent(in),optional                  :: plotFlag              ! Switch on plotting of the  Xsections
+  !
   ! OUTPUT
   ! * real, intent(out)                                        :: sigmaTot       ! total Xsection
   ! * real, intent(out)                                        :: sigmaElast     ! elastic Xsection
-  ! 
+  !
   ! This routine does a Monte-Carlo-decision according to the partial cross sections to decide on a final state with
   ! maximal 2 final state particles. These are returned in the vector teilchenOut. The kinematics of these teilchen is
   ! only fixed in the case of a single produced resonance. Otherwise the kinematics still need to be established. The result is:
   ! * type(preEvent),dimension(1:3), intent(out)               :: teilchenOut    !   outgoing particles
-  ! 
-  ! The cross sections are based on parameterization by M. Effenberger. 
+  !
+  ! The cross sections are based on parameterization by M. Effenberger.
   ! NOTES
   ! Possible final states are :
   ! * 1-particle : Y^*, Ybar^*
@@ -86,7 +87,7 @@ contains
 
   ! Local variables
   real :: fluxCorrector        ! Correction of the fluxfactor due to different velocities in the medium compared to the vacuum
-  type(particle) :: meson_particle, hyperon_particle    
+  type(particle) :: meson_particle, hyperon_particle
   integer :: isrts,qmeson,qhyperon
   logical :: antiParticleInput
   integer :: totalCharge   ! total charge of colliding particles
@@ -98,10 +99,10 @@ contains
 
   ! Fields to store discretised background cross sections
   ! (same as in Effe's code) and respective resonance contributions
-  ! to the given channels: 
+  ! to the given channels:
 
   !    Lambda pi^0 -> K^- p, K^0 n (sum over final isospins):
-  real, dimension(0:nssmmax), save :: slaka,slaka_res 
+  real, dimension(0:nssmmax), save :: slaka,slaka_res
 
   !    Sigma pi -> Kbar N:
   !    first index = charge of incoming state = 3*q_Sigma+q_meson
@@ -135,7 +136,7 @@ contains
            .and.teilchenIn(1)%Id>=Lambda .and. teilchenIn(1)%Id<=omegaResonance) then
     meson_particle   = teilchenIn(2)
     hyperon_particle = teilchenIn(1)
-  else 
+  else
     Write(*,*) 'Wrong input in mesonHyperon', teilchenIn%ID
     stop
   end if
@@ -201,7 +202,7 @@ contains
     ! NAME
     ! subroutine evaluateXsections
     ! PURPOSE
-    ! Evaluates Y(Y^*) pi -> Y^* and Y(Y^*) pi ->  Kbar N 
+    ! Evaluates Y(Y^*) pi -> Y^* and Y(Y^*) pi ->  Kbar N
     ! cross sections.
     ! NOTES
     ! There is a resonance contribution to Y(Y^*) pi scattering.
@@ -212,7 +213,7 @@ contains
     use constants, only: mN, mK
     use twoBodyTools, only: pCM
 
-    real, dimension(1:3) :: position 
+    real, dimension(1:3) :: position
     logical :: perturbative
 
     real, parameter :: m2yst_km=22., m2yst_k0=15. ! (mb GeV^2) matrix element squared for the Kbar N -> Y^* pi (see Effe's PhD, p. 239)
@@ -226,9 +227,9 @@ contains
     sigmaRes = barMes2resonance(meson_particle%Id,hyperon_particle%Id,qmeson,qhyperon,.true.,mediumATcollision,&
                                 momentumLRF,massRes,meson_particle%mass,hyperon_particle%mass,position,perturbative,srts)
     sigmaRes_tot=sum(sigmaRes(:))
-    
+
     sigbg=0.
-    
+
     ! Non-resonant contributions:
     if (meson_particle%Id==pion .and. srts > mN + mK) then
 
@@ -237,7 +238,7 @@ contains
 
         select case (hyperon_particle%ID)
         case (Lambda)
-          !* Lambda pi -> N Kbar:     
+          !* Lambda pi -> N Kbar:
           sigbg=slaka(isrts)
         case (SigmaResonance)
           !* Sigma pi -> N Kbar:
@@ -258,7 +259,7 @@ contains
             end if
           else
             isoFactor=1./2.
-          end if         
+          end if
           if (qhyperon+qmeson==0) then
              sigbg=isoFactor*2./(2.*hadron(hyperon_particle%Id)%spin+1.) &
                    *pfinal/pinitial/srts**2 * m2yst_km
@@ -272,7 +273,7 @@ contains
 
     ! Elastic and total cross sections:
     ! NOTE: elastic Xsection is only due to the resonance contribution.
-    ! Therefore, it is computed only for plotting purposes 
+    ! Therefore, it is computed only for plotting purposes
     ! (see subroutine evaluateResContr, called from makeoutput below).
     ! Otherwise it is not needed and putted to zero to save CPU time.
     sigmaElast=0.
@@ -295,7 +296,7 @@ contains
     ! NAME
     ! subroutine init
     ! PURPOSE
-    ! Tabulates the backgrond cross sections for  Y pi ->  Kbar N. 
+    ! Tabulates the backgrond cross sections for  Y pi ->  Kbar N.
     !**************************************************************
     subroutine init
 
@@ -304,7 +305,7 @@ contains
     use constants, only : pi, mN, mPi, mK
     use clebschGordan, only: ClebschSquared
     use twoBodyTools, only: pCM_sqr
-                           
+
     real :: srts,s,momCM2_Lambda_pi,momCM2_Sigma_pi,gamma_tot
     real :: iso_res,gamma_in_Lambda_pi,gamma_in_Sigma_pi,gamma_out
     real :: SpinFactor,sigma_res_Lambda_pi,sigma_res_Sigma_pi
@@ -312,7 +313,7 @@ contains
     integer :: i,k,resID
 
   !    Lambda pi^0 -> K^- p, K^0 n (sum over final isospins):
-  !  real, dimension(0:nssmmax), save :: slaka,slaka_res 
+  !  real, dimension(0:nssmmax), save :: slaka,slaka_res
 
   !    Sigma pi -> Kbar N:
   !    first index = charge of incoming state = 3*q_Sigma+q_meson
@@ -377,7 +378,7 @@ contains
 
         ! Isospin of the resonance:
         iso_res=float(hadron(resID)%isoSpinTimes2)/2.
-        
+
         ! In-widths:
 
         if(abs(iso_res-1.).lt.0.0001) then
@@ -387,12 +388,12 @@ contains
         end if
 
         gamma_in_Sigma_pi=partialwidthBaryon(resID,srts,.true.,pion,SigmaResonance)
-  
+
         ! Out-width:
         gamma_out=partialwidthBaryon(resID,srts,.false.,kaonBar,nucleon)
 
         SpinFactor=(2.*hadron(resId)%spin+1.)/2.
-      
+
         sigma_res_Lambda_pi=SpinFactor*4.*pi/momCM2_Lambda_pi*s &
                 &*gamma_in_Lambda_pi &
                 &/((s-hadron(resID)%mass**2)**2+gamma_tot**2*s)*0.389
@@ -479,7 +480,7 @@ contains
                             &+isoFactor*sigma_res_Sigma_pi*gamma_out
         end if
 
-      end do 
+      end do
       ! End of loop over S=-1 resonances
 
       !*use isospin symmetrie for other channels         :
@@ -509,7 +510,7 @@ contains
     ! PURPOSE
     ! Chooses randomly one of possible outgoing channels in meson-hyperon
     ! collision. Outgoing channels are: Y^* and Kbar N.
-    ! Also the charges of outgoing particles are selected. 
+    ! Also the charges of outgoing particles are selected.
     !**************************************************************
     subroutine makeDecision
 
@@ -546,9 +547,9 @@ contains
           teilchenOut(1:2)%Charge = (/0,1/)
         else if(totalCharge==-1) then
           teilchenOut(1:2)%Charge = (/-1,0/)
-        else 
+        else
           if (hyperon_particle%Id==SigmaResonance) then
-            ! pi Sigma -> Kbar N:          
+            ! pi Sigma -> Kbar N:
             sum=0.
             cut2=rn()*ssigka(3*qhyperon+qmeson,1,isrts)
             do qkaon=-1,0
@@ -564,7 +565,7 @@ contains
               teilchenOut(1:2)%Charge = 0
             end if
           end if
-        end if 
+        end if
 
       end if
 
@@ -575,12 +576,12 @@ contains
     !****s* mesonHyperon/makeOutput
     ! NAME
     ! subroutine makeOutput
-    ! 
+    !
     ! PURPOSE
     ! Writes all cross sections to file as function of srts and plab [GeV]
-    ! . 
+    ! .
     ! Filenames:
-    ! * 'mesonY_sigTotElast.dat'        : sigmaTot, sigmaElast 
+    ! * 'mesonY_sigTotElast.dat'        : sigmaTot, sigmaElast
     ! * 'mesonY_KbarN.dat'          : Kbar Nucleon outgoing channel (summed
     ! *                              over final isospins)
     ! * 'pionLambda_KbarN.dat'   : pi Lambda -> Kbar N isospin averaged
@@ -626,7 +627,7 @@ contains
       isrts=min(nint((srts-srtmess0)/dmssrt),nssmmax)
       write (103,'(4F9.3)') srts, plab_Lambda, slaka(isrts), slaka_res(isrts)
       write (104,'(4F9.3)') srts, plab_Sigma, sum(ssigka(-4:4,1,isrts))/9., &
-                           & sum(ssigka_res(-4:4,1,isrts))/9.  
+                           & sum(ssigka_res(-4:4,1,isrts))/9.
       Close(101)
       Close(102)
       Close(103)
@@ -642,9 +643,9 @@ contains
     ! PURPOSE
     ! Computes elastic cross section Y (Y^*) pi -> Y (Y^*) pi
     ! and Kbar N production (final isospin sum) Y (Y^*) pi -> Kbar N
-    ! due to intermediate resonances 
+    ! due to intermediate resonances
     ! OUTPUT
-    ! * real, intent(out)          :: sigmaElast_res     ! resonance contribution to the elastic Xsection 
+    ! * real, intent(out)          :: sigmaElast_res     ! resonance contribution to the elastic Xsection
     ! * real, intent(out)          :: sigmaKbarN_res  ! resonance contribution to the Kbar N production cross section summed over final isospins
     !**************************************************************
 
@@ -653,8 +654,8 @@ contains
     use baryonWidth, only : partialWidthBaryon, fullWidthBaryon
     use constants, only : pi
     use clebschGordan
-                           
-    real, intent(out)          :: sigmaElast_res     ! resonance contribution to the elastic Xsection 
+
+    real, intent(out)          :: sigmaElast_res     ! resonance contribution to the elastic Xsection
     real, intent(out)          :: sigmaKbarN_res  ! resonance contribution to the Kbar N production cross section summed over final isospins
     real :: s,momCM2,gamma_tot,gamma_in,SpinFactor
     real :: iso_res,iso_meson,iso_hyperon,isoFactor
@@ -684,7 +685,7 @@ contains
 
       ! Isospin of the resonance:
       iso_res=float(hadron(resID)%isoSpinTimes2)/2.
-      
+
       ! In-width:
       gamma_in=partialwidthBaryon(resID,srts,.true.,&
                &meson_particle%Id,hyperon_particle%Id,&

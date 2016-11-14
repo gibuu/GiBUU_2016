@@ -24,8 +24,8 @@ module propagation_RMF
   !*************************************************************************
   !****g* propagation_RMF/predictorCorrector
   ! PURPOSE
-  ! Switch for predictor-corrector method in the propagation. 
-  ! If .false. then simple Euler method is used 
+  ! Switch for predictor-corrector method in the propagation.
+  ! If .false. then simple Euler method is used
   ! (i.e. only predictor step is done)
   ! SOURCE
   !
@@ -38,7 +38,7 @@ module propagation_RMF
   Public :: propagate_RMF ! subroutine to propagate particles
 
 contains
-  
+
 
   !**************************************************************************
   subroutine init
@@ -83,16 +83,16 @@ contains
     type(particle),intent(inOut),dimension(:,:) :: realTeilchen
     type(particle),intent(inOut),dimension(:,:) :: pertTeilchen
     real, intent(in) :: delta_T
-    integer, intent(in) :: TimeStep 
+    integer, intent(in) :: TimeStep
 
     ! Working variables:
-    real, save, Allocatable, dimension(:,:,:) :: rk_re, pk_re, rk_pe, pk_pe    ! arrays to store the coordinates and momenta 
-                                                                               ! at the current time   
-    real, save, Allocatable, dimension(:,:,:) :: pdot_old_re, pdot_old_pe      ! arrays to store dp^*/dt calculated 
-                                                                               ! at the current time  
-    real, save, Allocatable, dimension(:,:,:) :: velocity_old_re, velocity_old_pe    ! arrays to store the particle velocities 
-                                                                                     ! at the current time 
- 
+    real, save, Allocatable, dimension(:,:,:) :: rk_re, pk_re, rk_pe, pk_pe    ! arrays to store the coordinates and momenta
+                                                                               ! at the current time
+    real, save, Allocatable, dimension(:,:,:) :: pdot_old_re, pdot_old_pe      ! arrays to store dp^*/dt calculated
+                                                                               ! at the current time
+    real, save, Allocatable, dimension(:,:,:) :: velocity_old_re, velocity_old_pe    ! arrays to store the particle velocities
+                                                                                     ! at the current time
+
     integer, save :: n_ensembles, n_particles_re, n_particles_pe
     integer :: i, j
     real, dimension(1:3) :: pdot
@@ -116,32 +116,32 @@ contains
 
     if( TimeStep == 1 ) delta_T_old = delta_T
 
-    ! Predictor Step: 
+    ! Predictor Step:
 
     Loop_over_ensembles_1 : Do i=1,n_ensembles
 
       if(.not.freezeRealParticles) then
           Do j=1,n_particles_re
-    
+
               If ( realTeilchen(i,j)%id == 0 ) then
                  cycle
               else If( realTeilchen(i,j)%id < 0 ) then
                  exit
               end If
-     
+
               call rhs(realTeilchen(i,j),delta_T_old,pdot)
-    
+
               rk_re(i,j,1:3) = realTeilchen(i,j)%position(1:3)
               pk_re(i,j,1:3) = realTeilchen(i,j)%momentum(1:3)
-    
+
               realTeilchen(i,j)%position(1:3) = realTeilchen(i,j)%position(1:3) &
                                          &+ delta_T*realTeilchen(i,j)%velocity(1:3)
 
               realTeilchen(i,j)%momentum(1:3) = realTeilchen(i,j)%momentum(1:3)+delta_T*pdot(1:3)
-    
+
               pdot_old_re(i,j,1:3) = pdot(1:3)
               velocity_old_re(i,j,1:3) = realTeilchen(i,j)%velocity(1:3)
-    
+
           end do
       end if
 
@@ -152,7 +152,7 @@ contains
           else If( pertTeilchen(i,j)%id < 0 ) then
              exit
           end If
- 
+
           call rhs(pertTeilchen(i,j),delta_T_old,pdot)
 
           rk_pe(i,j,1:3) = pertTeilchen(i,j)%position(1:3)
@@ -175,8 +175,8 @@ contains
 
     ! Corrector step (optional):
 
-    If (predictorCorrector) then 
-       
+    If (predictorCorrector) then
+
        if(.not.freezeRealParticles) then
            call updateRMF(realTeilchen)
            call updateCoulomb
@@ -186,15 +186,15 @@ contains
 
           if(.not.freezeRealParticles) then
               Do j=1,n_particles_re
-        
+
                   If ( realTeilchen(i,j)%id == 0 ) then
                      cycle
                   else If( realTeilchen(i,j)%id < 0 ) then
                      exit
                   end If
-     
+
                   call rhs(realTeilchen(i,j),delta_T,pdot)
-    
+
                   realTeilchen(i,j)%position(1:3) = rk_re(i,j,1:3) &
                                                  &+ delta_T*0.5*( velocity_old_re(i,j,1:3) &
                                                  &               +realTeilchen(i,j)%velocity(1:3) )
@@ -212,20 +212,20 @@ contains
               else If( pertTeilchen(i,j)%id < 0 ) then
                  exit
               end If
- 
+
               call energyDeterminationRMF( pertTeilchen(i,j) )
               pertTeilchen(i,j)%velocity(1:3) = pertTeilchen(i,j)%momentum(1:3) &
                                         & / pertTeilchen(i,j)%momentum(0)
 
               call rhs(pertTeilchen(i,j),delta_T,pdot)
-    
+
               pertTeilchen(i,j)%position(1:3) =  rk_pe(i,j,1:3) &
                                               & + delta_T*0.5*( velocity_old_pe(i,j,1:3) &
                                               &                +pertTeilchen(i,j)%velocity(1:3) )
-    
+
               pertTeilchen(i,j)%momentum(1:3) =  pk_pe(i,j,1:3) &
                                               & + delta_T*0.5*( pdot_old_pe(i,j,1:3) &
-                                              &                +pdot(1:3) )                               
+                                              &                +pdot(1:3) )
           end do
 
        end do Loop_over_ensembles_2
@@ -245,7 +245,7 @@ contains
            else If( pertTeilchen(i,j)%id < 0 ) then
                exit
            end If
- 
+
            call energyDeterminationRMF( pertTeilchen(i,j) )
            pertTeilchen(i,j)%velocity(1:3) = pertTeilchen(i,j)%momentum(1:3) &
                                         & / pertTeilchen(i,j)%momentum(0)
@@ -307,11 +307,11 @@ contains
 
     ! nuclear part (only for baryons, kaons and antikaons):
     if( (isBaryon(id)  .or. id.eq.Kaon .or. id.eq.kaonBar) .and. factor.gt.0. ) then
-   
+
         index1 = nint( place(1) / gridSpacing(1) )
         index2 = nint( place(2) / gridSpacing(2) )
         index3 = nint( place(3) / gridSpacing(3) )
-      
+
         if( abs(index1) <= gridPoints(1)-1 .and. &
            &abs(index2) <= gridPoints(2)-1 .and. &
            &abs(index3) <= gridPoints(3)-1 ) then     ! Inside grid:
@@ -322,7 +322,7 @@ contains
 
               V1 = Selfenergy_vector(Index1+1,Index2,Index3,k,id,charge,anti)
               V2 = Selfenergy_vector(Index1-1,Index2,Index3,k,id,charge,anti)
-       
+
               dV_dr(k,1) = ( V1 - V2) / (2.*gridSpacing(1))
 
               V1 = Selfenergy_vector(Index1,Index2+1,Index3,k,id,charge,anti)
@@ -332,7 +332,7 @@ contains
 
               V1 = Selfenergy_vector(Index1,Index2,Index3+1,k,id,charge,anti)
               V2 = Selfenergy_vector(Index1,Index2,Index3-1,k,id,charge,anti)
-     
+
               dV_dr(k,3) = ( V1 - V2) / (2.*gridSpacing(3))
 
            end do
@@ -356,7 +356,7 @@ contains
 
            if ( kaonpot_flag .and. (teilchen%id == kaon .or. teilchen%id == kaonBar) ) then
               do i1=1,3
-                 dsigma_dr(i1) = -dsigma_dr(i1) & 
+                 dsigma_dr(i1) = -dsigma_dr(i1) &
                       &          + ( dot_product( V(0:k_max),dV_dr(0:k_max,i1) ) ) / (2.*gridSpacing(i1))
               end do
               dsigma_dr(1:3) = dsigma_dr(1:3) / DiracMass(Index1,Index2,Index3,mass,id,charge,anti)
@@ -364,34 +364,34 @@ contains
 
 
            do i1 = 1,3
-      
+
              !**** Space derivative contributions
-             !**** to the rhs of equation dp^*/dt=pdot 
+             !**** to the rhs of equation dp^*/dt=pdot
              !**** pdot_space(i1) = -domega_dr(0,i1) -drho_dr(0,i1)
 
              !**** vector field contributions:
              pdot_space(i1) = -dV_dr(0,i1)
 
-             if(lorentz_flag) then      
+             if(lorentz_flag) then
                pdot_space(i1) = pdot_space(i1) &
-                    & + dot_product( teilchen%velocity(1:3), (dV_dr(1:3,i1)-dV_dr(i1,1:3)) ) 
+                    & + dot_product( teilchen%velocity(1:3), (dV_dr(1:3,i1)-dV_dr(i1,1:3)) )
              end if
 
              ! For antibaryons or antikaons the vector field changes sign:
              if( anti .or. id.eq.kaonBar ) pdot_space(i1) = -pdot_space(i1)
 
              !**** Add-up scalar field contributions:
-             pdot_space(i1) = pdot_space(i1) -(DiracMass(Index1,Index2,Index3,mass,id,charge,anti)) & 
+             pdot_space(i1) = pdot_space(i1) -(DiracMass(Index1,Index2,Index3,mass,id,charge,anti)) &
                                            &  / teilchen%momentum(0) *  dsigma_dr(i1)
- 
-             !**** Time derivative contribution
-             !**** to the rhs of equation dp^*/dt=pdot   
 
-             if(lorentz_flag) then      
-                pdot_time(i1) = ( & 
-                     &   SelfEnergy_vector_old(Index1,Index2,Index3,i1,id,charge,anti) & 
-                     & - SelfEnergy_vector(Index1,Index2,Index3,i1,id,charge,anti)  & 
-                     &           ) / dt  
+             !**** Time derivative contribution
+             !**** to the rhs of equation dp^*/dt=pdot
+
+             if(lorentz_flag) then
+                pdot_time(i1) = ( &
+                     &   SelfEnergy_vector_old(Index1,Index2,Index3,i1,id,charge,anti) &
+                     & - SelfEnergy_vector(Index1,Index2,Index3,i1,id,charge,anti)  &
+                     &           ) / dt
                 ! For antibaryons or antikaons the vector field changes sign:
                 if( anti .or. id.eq.kaonBar ) pdot_time(i1) = -pdot_time(i1)
              else
@@ -407,7 +407,7 @@ contains
     !**** electromagnetic part
     cpot = emfoca(place,impuls,teilchen%charge,teilchen%ID,emForce)
     pdot_space(1:3) = pdot_space(1:3) + emForce(1:3)
-      
+
     !**** Total derivative dp^*/dt
     pdot = pdot_space + pdot_time
 

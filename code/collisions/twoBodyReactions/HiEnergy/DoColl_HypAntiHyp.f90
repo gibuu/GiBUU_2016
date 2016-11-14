@@ -16,7 +16,7 @@ contains
   !*************************************************************************
   !****s* Coll_HypAntiHyp/DoColl_YYbar
   ! NAME
-  ! subroutine DoColl_YYbar(inPart,outPart,flagOK,sqrtS,pcm,beta,outChannel) 
+  ! subroutine DoColl_YYbar(inPart,outPart,flagOK,sqrtS,pcm,beta,outChannel)
   !
   ! PURPOSE
   ! Perform a collision of particles given in "inPart" with energy "sqrtS" and
@@ -24,7 +24,7 @@ contains
   !
   ! "pcm" and "beta" are vectors used for Boost and Rotation of the event.
   !
-  ! if "flagOK" is false, no event happened, the output in "outPart" should 
+  ! if "flagOK" is false, no event happened, the output in "outPart" should
   ! be neglected!
   !
   ! INPUTS
@@ -33,7 +33,7 @@ contains
   ! * real, dimension(0:3)        :: pcm      -- c.m. momentum of 1-st particle
   ! * real, dimension(1:3)        :: beta     -- boost vector
   ! * integer,                    :: outChannel  -- outgoing channel = 1 - LambdaBar+Lambda
-  ! *                                                                = 2 - Lambda+SigmaBar or LambdaBar+Sigma 
+  ! *                                                                = 2 - Lambda+SigmaBar or LambdaBar+Sigma
   ! *                                                                = 3 - Xi+XiBar
   !
   ! OUTPUT
@@ -41,10 +41,10 @@ contains
   ! * logical                     :: flagOK   ! event okay ?
   !
   ! NOTES
-  ! This routine is applicable for baryon-antibaryon collisions only. 
+  ! This routine is applicable for baryon-antibaryon collisions only.
   !*************************************************************************
 
-  subroutine DoColl_YYbar(inPart,outPart,flagOK,sqrtS,pcm,beta,outChannel) 
+  subroutine DoColl_YYbar(inPart,outPart,flagOK,sqrtS,pcm,beta,outChannel)
 
     use constants, only: twoPi
     use particleDefinition, only : particle
@@ -62,7 +62,7 @@ contains
     integer,                    intent(in)   :: outChannel
     logical,                    intent(out)  :: flagOK
 
-    real :: x, s, prcm, pcmOut  
+    real :: x, s, prcm, pcmOut
     real :: ctheta, stheta, phi, cphi, sphi ! random variables
     real :: h1,h2,h3
     real :: phiB, thetaB ! boost angles
@@ -89,11 +89,11 @@ contains
 
     s=sqrtS**2
 
-    if( .not.getRMF_flag() ) then 
+    if( .not.getRMF_flag() ) then
        prcm= sqrt(dot_product(pcm(1:3),pcm(1:3)))
     else
        prcm = ( s + inPart(1)%mass**2 - inPart(2)%mass**2 )**2/(4.*s) &
-               & - inPart(1)%mass**2 
+               & - inPart(1)%mass**2
        prcm = sqrt( max(0.,prcm) )
     end if
 
@@ -105,7 +105,7 @@ contains
        if(totCharge /= 0) then
           write(*,*)'In DoColl_YYbar: wrong charge of initial state'
           write(*,*)'for Lambda+LambdaBar production : ', totCharge
-          stop 
+          stop
        end if
 
        outPart(1:2)%Id=Lambda
@@ -119,7 +119,7 @@ contains
        if(abs(totCharge) > 1) then
           write(*,*)'In DoColl_YYbar: wrong charge of initial state'
           write(*,*)'for  Lambda SigmaBar / LambdaBar Sigma production : ', totCharge
-          stop 
+          stop
        end if
 
        x = rn()
@@ -143,27 +143,27 @@ contains
 
     case(3)   ! Xi+XiBar
 
-       outPart(1:2)%Id=Xi 
-       if( totCharge == 0 ) then 
+       outPart(1:2)%Id=Xi
+       if( totCharge == 0 ) then
           x = rn()
-          if (x < 0.5) then                ! Xi^- + XiBar^+  
-             outPart(nAnti)%charge=1 
-          else                             ! Xi^0 + XiBar^0  
+          if (x < 0.5) then                ! Xi^- + XiBar^+
+             outPart(nAnti)%charge=1
+          else                             ! Xi^0 + XiBar^0
              outPart(nAnti)%charge=0
           end if
-       else if( totCharge == -1) then     ! Xi^- + XiBar^0  
+       else if( totCharge == -1) then     ! Xi^- + XiBar^0
           outPart(nAnti)%charge=0
        else if( totCharge == 1) then      ! Xi^0 + XiBar^+
           outPart(nAnti)%charge=1
        else
           write(*,*)'In DoColl_YYbar: wrong charge of initial state'
           write(*,*)'for Xi+XiBar production : ', totCharge
-          stop 
+          stop
        end if
 
        outPart(3-nAnti)%charge= totCharge - outPart(nAnti)%charge
 
-       outPart(1:2)%mass=hadron(Xi)%mass 
+       outPart(1:2)%mass=hadron(Xi)%mass
 
        ctheta = 2*rn()-1   ! isotropic angular distribution
 
@@ -173,7 +173,7 @@ contains
        flagOK=.false.
        outPart%Id=0
        return
-    end if       
+    end if
 
 ! c.m. momentum of outgoing particles:
     pcmOut=sqrt((s-outPart(1)%mass**2+outPart(2)%mass**2)**2/(4.*s)-outPart(2)%mass**2)
@@ -185,23 +185,23 @@ contains
 ! set other variables:
 
     stheta = sqrt(1.0-ctheta**2)
-    
+
     cphi = cos(phi)
     sphi = sin(phi)
-    
+
     h1 = pcmOut * stheta*cphi
     h2 = pcmOut * stheta*sphi
     h3 = pcmOut * ctheta
 
 ! boost to final system:
-    
+
     call MP_Set3(1, outPart(1)%mass,  h1,  h2,  h3 )
     call MP_Set3(2, outPart(2)%mass, -h1, -h2, -h3 )
-    
+
     phiB   = atan2(pcm(2),pcm(1))
     thetaB = atan2(sqrt(pcm(1)**2+pcm(2)**2),pcm(3))
-    
-    call MP_ROBO(1,2, thetaB, phiB, beta(1),beta(2),beta(3) ) 
+
+    call MP_ROBO(1,2, thetaB, phiB, beta(1),beta(2),beta(3) )
 
     do i=1,2                   ! set momenta according scattering
        do j=1,3
