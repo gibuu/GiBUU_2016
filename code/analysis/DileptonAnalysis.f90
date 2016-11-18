@@ -1753,6 +1753,11 @@ contains
   subroutine WriteFullEvent (parts, dil, pnr, pw, iso, f)
     use particleDefinition
     use IdTable, only: electron, photon, pion, nucleon, EOV
+    use inputGeneral, only: eventType
+    use eventtypes, only: hiLepton
+    use EventInfo_HiLep, only: EventInfo_HiLep_Get
+    use eN_event, only: eNev_SetProcess, eNev_init_enQ, eNev_Set_PhiLepton
+    use eN_eventDefinition
 
     type(particle), intent(in) :: parts(:) ! particle vector
     real, intent(in) :: dil(0:3,1:2)       ! e+(e-) 4-momentum
@@ -1761,9 +1766,12 @@ contains
     integer, intent(in) :: iso, f
 
     real, dimension(0:3) :: ptot, pmiss
-    integer :: i,id
+    integer :: i,id,iFE,evtType
+    real :: w, nu, Q2, eps, phiL, thetaL
     integer, parameter :: iFile = 24
     character(len=16), parameter :: f3 = '(2I4,4ES13.5,I4)'
+    type(electronNucleon_event) :: evt
+    logical :: flagOK
 
     if (particle_source .and. (iso==1 .or. iso==3)) return                ! prevent double counting of rhos and phis
     if (writeEvents>=4 .and. .not. isExclusive (parts, pnr, iso)) return  ! print only exclusive events
@@ -1802,6 +1810,7 @@ contains
          ptot = ptot + dil(:,1) + dil(:,2)
          write (iFile, f3) -electron, 1, dil(0:3,1), parts(i)%ID
          write (iFile, f3) electron, -1, dil(0:3,2), parts(i)%ID
+         iFE = parts(i)%firstEvent
          if ((iso>=4 .and. iso<=7) .or. iso==9 .or. iso==10) then
             ! Dalitz decays: print missing particle
             pmiss = parts(i)%momentum - dil(:,1) - dil(:,2)
@@ -1812,12 +1821,27 @@ contains
             case (5,6,9)  ! pi0, eta, eta' Dalitz
                id = photon
             case(7,10)    ! Delta, N*(1520) Dalitz
-               id = nucleon
+               if (parts(i)%antiParticle) then
+                  id = -nucleon
+               else
+                  id = nucleon
+               end if
             end select
             write (iFile, f3) id, parts(i)%charge, pmiss(0:3), parts(i)%ID
          end if
       end if
     end do
+
+    if (eventType == hiLepton) then
+      if (EventInfo_HiLep_Get (0, iFE, w, nu, Q2, eps, evtType, phi_Lepton=phiL)) then
+        call eNev_SetProcess(evt, 1,1)  ! set to EM and electron
+        call eNev_init_enQ(evt, eps, nu, Q2, flagOK)
+        thetaL =  atan2(evt%lepton_in%momentum(1),evt%lepton_in%momentum(3))
+!         call eNev_Set_PhiLepton(evt, phiL)  ! possibly rotate by angle phi
+        if (flagOK) write (iFile, f3) electron, -1, evt%lepton_out%momentum(0:3), 0
+        write (iFile,'(A,1P,5e13.4,0P,I8)') '# 14 ', nu, Q2, eps, phiL, thetaL, evtType
+      end if
+    end if
 
     write (iFile, '(A)') '</event>'
     close (iFile)
