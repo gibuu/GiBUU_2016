@@ -328,7 +328,7 @@ contains
       else if(couplings_switch.eq.Dmitriev) then
          couplings=(f_pi_star_dimi/mPi)**2    *   (f_pi_dimi/mPi)**2
       else
-         stop'strange couplings in barbar_to_barbar_model'
+         stop 'strange couplings in barbar_to_barbar_model'
       end if
 
       mN4=unit4*mN
@@ -796,7 +796,7 @@ contains
       else if(couplings_switch.eq.Dmitriev) then
          couplings=(f_pi_deltadelta_doenges/mPi)**2    *   (f_pi_dimi/mPi)**2
       else
-         stop'strange couplings in barbar_to_barbar_model'
+         stop 'strange couplings in barbar_to_barbar_model'
       end if
 
       effenberger_matrixElement=1./8.*cutoff(t)**4/(t-mPi**2)**2 &

@@ -138,7 +138,7 @@ contains
          else if (j==2) then
             stableDummy=hadron(eta)%mass
          else
-            stop'error Integrate_2bodyPS_resonance'
+            stop 'error Integrate_2bodyPS_resonance'
          end if
 
          do resonanceIndex = resID_min, resID_max
