@@ -261,6 +261,19 @@ ifeq ($(FORT_NOPATH),pgf95)
     FLAGSFORALL += -Bstatic
   endif
 endif
+######################################################################
+##### FORTRAN COMPILER: LLVM/flang                                  ##
+######################################################################
+ifeq ($(findstring flang,$(FORT_NOPATH)),flang)
+  FORTVERS=`$(FORT) -v 2>&1|head -2`
+  FLAGSF90=-g
+  FLAGSF77=$(FLAGSF90)
+  FLAGSDOUBLE=-r8
+  FLAGSFORALL=-Mextend
+  ifeq ($(STATIC),1)
+    FLAGSFORALL += -Bstatic -static-flang-libs
+  endif
+endif
 
 #########################################################
 # Note: The compilers below are currently not supported.
