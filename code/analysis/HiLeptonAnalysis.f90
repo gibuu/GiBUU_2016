@@ -2124,7 +2124,7 @@ contains
        zHR%l=0.2     !minimum zh of hadron for binning (except. zh-binning)
        EHR%l=1.4
 
-    case(4) ! JLAB@12GeV (CLAS)
+    case(4,19,20) ! JLAB@12GeV (CLAS)
        !-------------------------------------------------------
        iDetector = 3
        nuR = ValueRange(2.0, 11.0, 0.2)

@@ -7,23 +7,23 @@
 
 ! file: ./inputOutput/input.f90
 &input
-      eventtype       =          14 ! HiLepton
-      numEnsembles    =         200
-      numTimeSteps    =         200
-      delta_T         = 0.1         ! time step size
+eventtype       =          14 ! HiLepton
+numEnsembles    =         200
+numTimeSteps    =         200
+delta_T         = 0.1         ! time step size
 
-      length_perturbative = 2000 ! okay up to ..., Xe
+length_perturbative = 2000 ! okay up to ..., Xe
 !      length_perturbative = 4000 ! okay for Pb
 
-      num_runs_SameEnergy=1  ! number of runs per energy
+num_runs_SameEnergy=1  ! number of runs per energy
 !      num_runs_SameEnergy=500  ! number of runs per energy
 
-      localEnsemble = .TRUE.
-      freezeRealParticles = .TRUE.
+localEnsemble = .TRUE.
+freezeRealParticles = .TRUE.
 
-      DoPrLevel(1) = .FALSE.
-      DoPrLevel(2) = .FALSE.
-      path_To_Input   = '~/GiBUU/buuinput'
+DoPrLevel(1) = .FALSE.
+DoPrLevel(2) = .FALSE.
+path_To_Input   = '~/GiBUU/buuinput'
 /
 
 ! file: ./density/nucleus.f90
@@ -32,11 +32,11 @@
 !      target_Z=  1, target_A=  1 ! proton,neutron, deuterium
 !      target_Z=  4, target_A=  9, densitySwitch_Static=4 ! Be
 !      target_Z=  6, target_A= 12, densitySwitch_Static=4 ! C
-      target_Z=  6, target_A= 12 ! C
+target_Z=  6, target_A= 12 ! C
 !      target_Z=  7, target_A= 14 ! N
 !      target_Z= 10, target_A= 20 ! Ne
 !      target_Z= 16, target_A= 32 ! S
-!      target_Z= 26, target_A= 56 ! Fe 
+!      target_Z= 26, target_A= 56 ! Fe
 !      target_Z= 29, target_A= 64 ! Cu
 !      target_Z= 36, target_A= 84 ! Kr
 !      target_Z= 54, target_A=131 ! Xe
@@ -60,12 +60,15 @@
 !      iExperiment=10 ! Hermes, 12GeV
 !      iExperiment=11 ! Hermes, 27GeV, arXiv:0704.3270 (attenuation)
 !      iExperiment=12 ! Mainz, Yoon: Ebeam=1.5GeV
-      iExperiment=13 ! Hermes, 27GeV, arXiv:0704.3712 (pT-broadening)
+iExperiment=13 ! Hermes, 27GeV, arXiv:0704.3712 (pT-broadening)
 !      iExperiment=14 ! JLAB,  5GeV, rho0 experiment
 !      iExperiment=15 ! JLAB,  4GeV, rho0 experiment
 !      iExperiment=16, EIC_Ee=3, EIC_EA=30 ! EIC, E_e and E_A given explicit (3+30,11+30,4+100)
-!      iExperiment=17 ! no detector, total cross section, Ebeam 
+!      iExperiment=17 ! no detector, total cross section, Ebeam
 !      iExperiment=18 ! E665, 470GeV
+!      iExperiment= 19 ! JLAB,   CLAS 12GeV RUNGROUP A optimized
+!      iExperiment= 20 ! JLAB,   CLAS 12GeV RUNGROUP A theoretical
+
 /
 
 ! file: ./analysis/HiLeptonAnalysis.f90
@@ -84,47 +87,47 @@
 
 ! file: ./density/density.f90
 &initDensity
-      densitySwitch   = 2 ! 2: static density
+densitySwitch   = 2 ! 2: static density
 /
 
 ! file: ./density/pauliBlocking.f90
 &initPauli
-      pauliSwitch     = 2 ! 0: no Pauli blocking, 1: dynamic, 2: analytic
+pauliSwitch     = 2 ! 0: no Pauli blocking, 1: dynamic, 2: analytic
 /
 
 ! file: ./numerics/random.f90
 &initRandom
-      SEED=45678                ! Seed for the random number
+SEED=45678                ! Seed for the random number
 /
 
 ! file: ./collisions/twoBodyReactions/HiEnergy/DoCollTools.f90
 &pythia
-      PARP(91) = 0.44     ! width intrinsic kT
+PARP(91) = 0.44     ! width intrinsic kT
 /
 
 ! file: ./potential/baryonPotential.f90
 &baryonPotential
-      noPerturbativePotential = T ! perturbative baryons feel no potential
+noPerturbativePotential = T ! perturbative baryons feel no potential
 /
 
 ! file: ./potential/mesonPotential.f90
 &mesonPotential
-      noPerturbativePotential = T ! perturbative mesons feel no potential
+noPerturbativePotential = T ! perturbative mesons feel no potential
 /
 
 ! file: ./collisions/twoBodyReactions/master_2Body.f90
 &master_2Body
-      correctEnergy_message=.false. ! reduce verbosity
+correctEnergy_message=.false. ! reduce verbosity
 /
 
 ! file: ./collisions/collisionTerm.f90
 &collisionterm
-      energyCheck     =  0.100
+energyCheck     =  0.100
 /
 
 ! file: ./collisions/insertion.f90
 &insertion
-      minimumEnergy   =  0.100 ! minimal kinetic energy of produced nucleons (GeV)
+minimumEnergy   =  0.100 ! minimal kinetic energy of produced nucleons (GeV)
 /
 
 ! file: ./analysis/EventOutputAnalysis.f90
@@ -135,10 +138,10 @@
 ! file: ./collisions/collisionReporter.f90
 &collReporter
 !      UseCollReporter=.TRUE. ! if you want that output
-      cR_sizeT = 100
-      cR_sizeE =  20
-      cR_DeltaT=  0.2
-      cR_DeltaE=  0.2
+cR_sizeT = 100
+cR_sizeE =  20
+cR_DeltaT=  0.2
+cR_DeltaE=  0.2
 /
 
 
