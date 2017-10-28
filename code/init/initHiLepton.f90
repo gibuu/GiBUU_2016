@@ -56,6 +56,8 @@ module initHiLepton
   ! * 16: EIC, E_e and E_A given explicit (3+30,11+30,4+100)
   ! * 17: no detector, total cross section, Ebeam
   ! * 18: E665, 470GeV
+  ! * 19: CLAS/JLAB, 12GeV RunGroupA optimized 10.6 GeV
+  ! * 20: CLAS/JLAB, 12GeV RunGroupA theoretical
   !
   ! please note:
   ! The entry "iExperiment == 0" replaces the old HiPhoton event type.
@@ -260,7 +262,7 @@ module initHiLepton
 
   Type(electronNucleon_event), save :: eNev_InitData
 
-  real, parameter, dimension(0:5,0:18) :: maxwArr = RESHAPE ( (/ &
+  real, parameter, dimension(0:5,0:20) :: maxwArr = RESHAPE ( (/ &
        & 0. , 0.     , 0.     , 0.     , 0.     , 0.     ,& !  0: 0
        & 0. , 4.57e-1, 0.     , 0.     , 0.     , 0.     ,& !  1: 1
        & 0. , 0.     , 0.     , 0.     , 0.     , 0.     ,& !  2: 1
@@ -279,8 +281,11 @@ module initHiLepton
        & 0. , 0.     , 0.     , 0.     , 8.15e-4, 0.     ,& ! 15: 4
        & 0. , 0.     , 0.     , 0.     , 0.     , 0.     ,& ! 16: 0
        & 1.e-4 , 0.  , 0.     , 0.     , 0.     , 0.     ,& ! 17: 0
-       & 5.5e-2, 0.  , 0.     , 0.     , 0.     , 0.     &  ! 18: 0
-       &/) , (/6,19/) )
+       & 5.5e-2, 0.  , 0.     , 0.     , 0.     , 0.     ,&  ! 18: 0
+       & 0. , 0.     , 0.     , 6.20e-3, 0.     , 0.     ,& ! 19: 3
+       & 0. , 0.     , 0.     , 6.20e-3, 0.     , 0.     & ! 20: 3
+
+       &/) , (/6,21/) )
 
 
   !*************************************************************************
@@ -800,7 +805,7 @@ contains
          user_maxw, &
          earlyPauli
 
-    character(40), dimension(0:18) :: NN
+    character(40), dimension(0:20) :: NN
     character(40), dimension(0: 5) :: ND
     integer :: ios
 
@@ -823,7 +828,8 @@ contains
     NN(16)= 'EIC'
     NN(17)= 'total cross section'
     NN(18)= 'E665:470'
-
+    NN(19)= 'CLAS/JLAB12 RunA'
+    NN(20)= 'CLAS/JLAB12 RunA'
     ND( 0)= 'no detector'
     ND( 1)= 'Hermes, full efficiency'
     ND( 2)= 'EMC, full efficiency'
@@ -858,7 +864,7 @@ contains
           iDetector = 1 ! HERMES
        case (6:9)
           iDetector = 2 ! EMC
-       case (4)
+       case (4,19,20)
           iDetector = 3 ! CLAS
        case (5,14,15)
           iDetector = 4 ! CLAS
@@ -990,7 +996,7 @@ contains
        qsqmin=0.5
        numin=2.
 
-    case(4:5,14:15) !=== JLab
+case(4:5,14:15,19:20) !=== JLab
 
        costmax=cos(0.1047) !   6°
        costmin=cos(2.4958) ! 142°
@@ -1014,7 +1020,10 @@ contains
           numin=2.05
           qsqmin=0.6
           ymax=0.97
-
+       Case(19)!JLab after 12 GeV Upgrade RunGroupA optimized
+          Ebeam=10.6
+       Case(20)!JLab after 12 GeV Upgrade RunGroupA theoretical
+          Ebeam=11.
        end select
 
     case(6:9) !=== EMC
